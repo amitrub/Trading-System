@@ -19,5 +19,4 @@ public  class User {
     private List<Integer> shopping_history;
 
 
-
 }
