@@ -24,7 +24,7 @@ public class ApiClient {
                     if(!client.isLogin())
                         client.Login("Roee", "1234");
                     else
-                        client.Logout();
+                        client.Logout("Roee", "1234");
                 }
                 case 3:
                     //search
