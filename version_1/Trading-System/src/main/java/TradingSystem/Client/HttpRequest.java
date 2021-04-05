@@ -1,9 +1,11 @@
 package TradingSystem.Client;
 
 import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.OutputStream;
@@ -18,8 +20,7 @@ public class HttpRequest {
             httpURLConnection.setRequestMethod("GET");
 
             //adding header
-            httpURLConnection.setRequestProperty("Auth","Token");
-            httpURLConnection.setRequestProperty("Data1","Value1");
+            httpURLConnection.setRequestProperty("userName","Roee");
 
             String line="";
             InputStreamReader inputStreamReader=new InputStreamReader(httpURLConnection.getInputStream());
@@ -39,25 +40,35 @@ public class HttpRequest {
         }
     }
 
-    public static void sendPOSTRequest(){
-        try {
-            String post_data="key1=value1&key2=value2";
+    public static String sendPOSTRequest(String urlStr, String userName, String pass){
 
-            URL url = new URL("https://postman-echo.com/post");
+
+        try {
+//            String post_data="key1=value1&key2=value2";
+            JSONObject post_data = new JSONObject();
+            post_data.put("userName", "Roee");
+            post_data.put("password", "1234");
+
+            URL url = new URL(urlStr);
             HttpURLConnection httpURLConnection=(HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");
+
             //adding header
-            httpURLConnection.setRequestProperty("Auth","Token");
-            httpURLConnection.setRequestProperty("Data1","Value1");
+//            httpURLConnection.setRequestProperty("Auth","Token");
+//            httpURLConnection.setRequestProperty("Data1","Value1");
+            httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+            httpURLConnection.setRequestProperty("Accept", "application/json");
             httpURLConnection.setDoOutput(true);
 
             //Adding Post Data
             OutputStream outputStream=httpURLConnection.getOutputStream();
-            outputStream.write(post_data.getBytes());
-            outputStream.flush();
-            outputStream.close();
-
-
+            OutputStreamWriter osw = new OutputStreamWriter(outputStream, "UTF-8");
+            osw.write(post_data.toString());
+            osw.flush();
+            osw.close();
+//            outputStream.write(post_data.toString());
+//            outputStream.flush();
+//            outputStream.close();
 
             System.out.println("Response Code "+httpURLConnection.getResponseCode());
 
@@ -70,14 +81,13 @@ public class HttpRequest {
             }
             bufferedReader.close();
             System.out.println("Response : "+response.toString());
-
-
-
+            return response.toString();
         }
         catch (Exception e){
             e.printStackTrace();
             System.out.println("Error in Making POST Request");
         }
+        return ";;";
     }
 
 
