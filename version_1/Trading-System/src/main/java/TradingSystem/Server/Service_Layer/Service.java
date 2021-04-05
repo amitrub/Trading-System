@@ -7,29 +7,56 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 public class Service {
-    private TradingSystem trading_system = TradingSystem.getInstance();
+    private TradingSystem tradingSystem = TradingSystem.getInstance();
+
+    @RequestMapping(path = "api/try")
+    @GetMapping
+    public Response try1(@RequestHeader("userName") String userName){
+        System.out.println(userName);
+        return new Response(1,"");
+    }
+
+    @RequestMapping(path = "api/try2")
+    @PostMapping
+    public Response try2(@RequestBody DummyUser dummyUser){
+        System.out.println(dummyUser);
+        return new Response(1,"");
+    }
 
     @RequestMapping(path = "api/register")
     @GetMapping
-    public Integer Register(String userName, String password){
-        return trading_system.Register(userName, password);
+    public Response Register(String userName, String password){
+        return tradingSystem.Register(userName, password);
     }
 
     @RequestMapping(path = "api/login")
+    @PostMapping
+    public Response Login(@RequestBody DummyUser dummyUser){
+        return tradingSystem.Login(dummyUser);
+    }
+
+    //todo- only subscriber
+    @RequestMapping(path = "api/logout")
     @GetMapping
-    public Integer Login(String userName, String password){ //todo id?
-        return 0;
+    public Response Logout(int userId){ //todo void?
+        return tradingSystem.Logout(userId);
     }
 
     public List<Object> Search(String objectToSearch){
+        return null;
+    }
+
+    public List<Store> ShowAllStores(){
+        return null;
+    }
+
+    public ShoppingCart ShowShoppingCart(int userId){
         return null;
     }
 
@@ -37,22 +64,11 @@ public class Service {
         return null;
     }
 
-    //todo- only subscriber
-    public void Logout(int userId){ //todo void?
-
-    }
-
-     public List<Store> ShowAllStores(){
-        return null;
-     }
-
     public List<Product> ShowAllProducts(){
         return null;
     }
 
-    public ShoppingCart ShowShoppingCart(int userId){
-        return null;
-    }
+
 
     //todo- only subscriber
     public void OpenStore(int id,String storeName){ //todo void? id?
