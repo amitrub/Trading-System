@@ -1,5 +1,6 @@
 package TradingSystem.Client;
 
+import TradingSystem.Server.Service_Layer.DummyUser;
 import org.json.JSONArray;
 import org.json.JSONException;
 
@@ -17,7 +18,7 @@ public class Client {
 
     public void Register(){
         String path = "register" ;
-        String response = HttpRequest.sendGetRequest(urlbase + path);
+        String response = HttpRequest.sendGetRequest(urlbase + path, Integer.toString(this.id));
         System.out.println(response);
         this.id = Integer.parseInt(response);
 //        try {
@@ -34,7 +35,8 @@ public class Client {
 
     public void Login(String userName, String pass){
         String path = "login" ;
-        String response = HttpRequest.sendPOSTRequest(urlbase + path, userName, pass);
+        DummyUser dummyUser = new DummyUser(userName, pass);
+        String response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.id));
         System.out.println(response);
         this.id = Integer.parseInt(response);
 //        try {
@@ -51,7 +53,8 @@ public class Client {
 
     public void Logout(String userName, String pass){
         String path = "logout" ;
-        String response = HttpRequest.sendPOSTRequest(urlbase + path, userName, pass);
+        DummyUser dummyUser = new DummyUser(userName, pass);
+        String response = HttpRequest.sendPOSTRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.id));
         System.out.println(response);
         this.id = Integer.parseInt(response);
 //        try {
@@ -75,22 +78,20 @@ public class Client {
 //        }
 //    }
 
-    public void getTest1(){
-        String response = HttpRequest.sendGetRequest(urlbase + "test1");
-        System.out.println(response);
-        try {
-            JSONArray out = new JSONArray(response.toString());
-            for (int i = 0; i<out.length(); i++)
-            {
-                System.out.println(out.getJSONObject(i).getString("id"));
-            }
-        }
-        catch (Exception e){
-            System.out.println("Error in Making Get Request");
-        }
-
-
-    }
+//    public void getTest1(){
+//        String response = HttpRequest.sendGetRequest(urlbase + "test1");
+//        System.out.println(response);
+//        try {
+//            JSONArray out = new JSONArray(response.toString());
+//            for (int i = 0; i<out.length(); i++)
+//            {
+//                System.out.println(out.getJSONObject(i).getString("id"));
+//            }
+//        }
+//        catch (Exception e){
+//            System.out.println("Error in Making Get Request");
+//        }
+//    }
 
 
 
