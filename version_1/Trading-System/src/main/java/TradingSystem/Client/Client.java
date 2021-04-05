@@ -4,7 +4,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 
 public class Client {
-    private String urlbase = "http://localhost:8080/api/" ;
+//    private String urlbase = "http://localhost:8080/api/" ;
+    private String urlbase = "http://10.100.102.59:8080/api/" ;
     private int id = -1;
 
     public Client() {

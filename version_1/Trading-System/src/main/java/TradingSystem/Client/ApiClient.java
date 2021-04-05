@@ -3,8 +3,6 @@ package TradingSystem.Client;
 import java.util.Scanner;
 
 public class ApiClient {
-
-    private static String urlbase = "http://localhost:8080/api/" ;
     private static Scanner sc = new Scanner(System.in);
 
     public static void main(String[] args) {
