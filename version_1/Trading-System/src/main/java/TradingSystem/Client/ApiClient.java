@@ -11,15 +11,7 @@ public class ApiClient {
         System.out.println("----Welcome to Trading-System!!----");
         while (system_on)
         {
-            System.out.println("1. Register");
-//            System.out.println("2. Add new store");
-//            System.out.println("3. Nevermind...");
-            System.out.println("0. Exit");
-            while (!sc.hasNextInt()) {
-                System.out.println("Invalid input, please try again");
-                sc.next();
-            }
-            int userChoose = sc.nextInt();
+            int userChoose = HomePage(client);
             switch (userChoose)
             {
                 case 0:
@@ -28,6 +20,18 @@ public class ApiClient {
                     break;
                 case 1:
                     client.Register();
+                case 2: {
+                    if(!client.isLogin())
+                        client.Login("Roee", "1234");
+                    else
+                        client.Logout("Roee", "1234");
+                }
+                case 3:
+                    //search
+                case 4:
+                    //show stores
+                case 5:
+                    //show shopping cart
 
 
             }
@@ -36,5 +40,31 @@ public class ApiClient {
         }
 
 
+    }
+
+    private static int HomePage(Client client) {
+        System.out.println("1. Register");
+        if(!client.isLogin())
+            System.out.println("2. Login");
+        else
+            System.out.println("2. Logout");
+        System.out.println("3. Search products");
+        System.out.println("4. Show Stores");
+        System.out.println("5. Show shopping cart");
+
+        //only subscriber
+        if(client.isLogin()){
+            System.out.println("--- Subscriber options ---");
+            System.out.println("6. Open Store");
+            System.out.println("7. Show history");
+            System.out.println("8. Write comment");
+            System.out.println("9. Show store history");
+        }
+        System.out.println("0. Exit");
+        while (!sc.hasNextInt()) {
+            System.out.println("Invalid input, please try again");
+            sc.next();
+        }
+        return sc.nextInt();
     }
 }
