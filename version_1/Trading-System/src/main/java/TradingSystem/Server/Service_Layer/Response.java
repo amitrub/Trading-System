@@ -30,7 +30,7 @@ public class Response {
 
     public Response(Integer id, String errMessage) {
         this.userID = id;
-        this.connID = "a";
+        this.connID = "";
         this.errMessage = errMessage;
     }
 
