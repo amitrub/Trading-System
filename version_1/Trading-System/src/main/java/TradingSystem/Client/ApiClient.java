@@ -11,6 +11,11 @@ public class ApiClient {
         System.out.println("----Welcome to Trading-System!!----");
         while (system_on)
         {
+            if(client.isLogin()){
+                System.out.println("Hi " + client.getUserName() + ", choose what you want to do:");
+            } else {
+                System.out.println("Hi guest, choose what you want to do:");
+            }
             int userChoose = HomePage(client);
             switch (userChoose)
             {

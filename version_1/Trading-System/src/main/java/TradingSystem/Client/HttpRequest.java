@@ -33,29 +33,25 @@ public class HttpRequest {
                 response.append(line);
             }
             bufferedReader.close();
-            JSONObject JO = new JSONObject(response.toString());
-            return new Response(JO.getString("id"), JO.getString("errMsg"));
-
-
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            return new Response(jsonResponse);
         }
         catch (Exception e){
-            return new Response(1, "");
-
+            //e.printStackTrace();
+            Response res = new Response(-1,  "Error in Making GET Request");
+            System.out.println(res);
+            return res;
         }
     }
 
     public static Response sendPOSTGETRequest(String urlStr, String post_data, String connID){
 
         try {
-//            String post_data="key1=value1&key2=value2";
-
             URL url = new URL(urlStr);
             HttpURLConnection httpURLConnection=(HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("POST");
 
             //adding header
-//            httpURLConnection.setRequestProperty("Auth","Token");
-//            httpURLConnection.setRequestProperty("Data1","Value1");
             httpURLConnection.setRequestProperty("connID", connID);
             httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
             httpURLConnection.setRequestProperty("Accept", "application/json");
@@ -67,9 +63,6 @@ public class HttpRequest {
             osw.write(post_data);
             osw.flush();
             osw.close();
-//            outputStream.write(post_data.toString());
-//            outputStream.flush();
-//            outputStream.close();
 
             System.out.println("Response Code "+httpURLConnection.getResponseCode());
 
@@ -81,16 +74,16 @@ public class HttpRequest {
                 response.append(line);
             }
             bufferedReader.close();
-            System.out.println("Response : "+response.toString());
 
-//            return response.toString();
-            return new Response(1, "");
+            JSONObject jsonResponse = new JSONObject(response.toString());
+            return new Response(jsonResponse);
         }
         catch (Exception e){
-            e.printStackTrace();
-            System.out.println("Error in Making POST Request");
+            //e.printStackTrace();
+            Response res = new Response(-1,  "Error in Making POST - GET Request");
+            System.out.println(res);
+            return res;
         }
-        return new Response(1, "");
     }
 
     public static String sendPOSTRequest(String urlStr, String post_data, String connID){
@@ -139,7 +132,6 @@ public class HttpRequest {
         }
         return ";;";
     }
-
 
     public static void ParseJsonResponse(){
         try {

@@ -7,6 +7,15 @@ public class Client {
 //    private String urlbase = "http://localhost:8080/api/" ;
     private String urlbase = "http://10.100.102.59:8080/api/" ;
     private int connID = -1;
+    private String userName;
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
 
     public boolean isLogin() {
         return connID != -1;
@@ -19,8 +28,8 @@ public class Client {
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
         Response response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.connID));
-        System.out.println(response);
-        this.connID = Integer.parseInt("1");
+        System.out.println("response: " + response);
+        this.connID = response.getId();
         return connID;
     }
 
@@ -28,16 +37,16 @@ public class Client {
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
         Response response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.connID));
-        System.out.println(response);
-        this.connID = Integer.parseInt("1");
+        System.out.println("response: " + response);
+        this.connID = response.getId();
         return connID;
     }
 
     public int Logout(String userName, String pass){
         String path = "logout" ;
         Response response = HttpRequest.sendGetRequest(urlbase + path, Integer.toString(this.connID));
-        System.out.println(response);
-        this.connID = Integer.parseInt("1");
+        System.out.println("response: " + response);
+        this.connID = response.getId();
         return connID;
     }
 
