@@ -1,5 +1,7 @@
 package TradingSystem.Server.Service_Layer;
 
+import org.json.JSONObject;
+
 public class DummyUser {
     String userName;
     String password;
@@ -19,9 +21,13 @@ public class DummyUser {
 
     @Override
     public String toString() {
-        return "DummyUser{" +
-                "userName='" + userName + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        JSONObject JO = new JSONObject();
+        try {
+            JO.put("userName", this.userName);
+            JO.put("password", this.password);
+        } catch (Exception e) {
+            System.out.println("dummyUser toString error");
+        }
+        return JO.toString();
     }
 }
