@@ -22,7 +22,7 @@ public class Service {
     public Response try1(@PathVariable int userID, @RequestHeader("connID") String connID){
         System.out.println(userID);
         System.out.println(connID);
-        return new Response(userID, "good");
+        return new Response(userID, "aaa","good2");
     }
 
 
