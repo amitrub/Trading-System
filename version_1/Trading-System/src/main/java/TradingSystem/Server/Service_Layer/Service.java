@@ -31,8 +31,8 @@ public class Service {
 
     @RequestMapping(path = "api/register")
     @GetMapping
-    public Response Register(String userName, String password){
-        return tradingSystem.Register(userName, password);
+    public Response Register(@RequestBody DummyUser dummyUser){
+        return tradingSystem.Register(dummyUser);
     }
 
     @RequestMapping(path = "api/login")
@@ -44,8 +44,9 @@ public class Service {
     //todo- only subscriber
     @RequestMapping(path = "api/logout")
     @GetMapping
-    public Response Logout(int userId){ //todo void?
-        return tradingSystem.Logout(userId);
+    public Response Logout(@RequestHeader("connID") int connID){
+        System.out.println(connID);
+        return tradingSystem.Logout(connID);
     }
 
     public List<Object> Search(String objectToSearch){
