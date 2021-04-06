@@ -16,8 +16,6 @@ import java.util.List;
 public class Service {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
-//    @RequestMapping(path = "api/try")
-    @ExceptionHandler
     @GetMapping("try/{userID}")
     public Response try1(@PathVariable int userID, @RequestHeader("connID") String connID){
         System.out.println(userID);
@@ -25,15 +23,19 @@ public class Service {
         return new Response(userID, "aaa","good2");
     }
 
-
     @PostMapping("try2/{id}")
     public Response try2(@RequestBody DummyUser dummyUser){
         System.out.println(dummyUser);
         return new Response(1,"");
     }
 
+    @GetMapping("try3")
+    public Integer try3(){
+        return 7;
+    }
+
     @RequestMapping(path = "register")
-    @GetMapping
+    @PostMapping
     public Response Register(@RequestBody DummyUser dummyUser){
         return tradingSystem.Register(dummyUser);
     }
@@ -47,7 +49,7 @@ public class Service {
     //todo- only subscriber
     @RequestMapping(path = "logout")
     @GetMapping
-    public Response Logout(@RequestHeader("connID") int connID){
+    public Response Logout(@RequestHeader("connID") String connID){
         System.out.println(connID);
         return tradingSystem.Logout(connID);
     }
