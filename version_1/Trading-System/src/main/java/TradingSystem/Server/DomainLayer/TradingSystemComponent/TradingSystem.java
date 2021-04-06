@@ -11,9 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TradingSystem {
 
-    int connectedUserCounter;
+    private int nextConnectedUserID;
+    private int nextUserID;
     private ConcurrentHashMap<Integer,User> connectedUser;
 
+    private ConcurrentHashMap<Integer,User> systemAdmins;
     private ConcurrentHashMap<Integer,User> users;
     private ConcurrentHashMap<Integer, Store> stores;
 
@@ -22,22 +24,46 @@ public class TradingSystem {
 
     private TradingSystem()
     {
-        connectedUser = new ConcurrentHashMap<>();
-        users = new ConcurrentHashMap<>();
-        stores = new ConcurrentHashMap<>();
+
+        this.connectedUser = new ConcurrentHashMap<>();
+        this.users = new ConcurrentHashMap<>();
+        this.stores = new ConcurrentHashMap<>();
+        this.systemAdmins = new ConcurrentHashMap<>();
+        this.nextUserID = 0;
+        this.nextConnectedUserID = 0;
     }
 
     public static TradingSystem getInstance()
     {
         if (tradingSystem == null)
+        {
             tradingSystem = new TradingSystem();
+            tradingSystem.Initialization();
+        }
+
 
         return tradingSystem;
     }
 
+    private synchronized int getNextConnectedUserID() {
+        this.nextConnectedUserID++;
+        return this.nextConnectedUserID;
+    }
+
+    private synchronized int getNextUserID() {
+        this.nextUserID++;
+        return this.nextUserID;
+    }
+
+    private void Initialization(){
+        User defaultAdmin = new User(1,"amit","qweasd");
+        this.systemAdmins.put(defaultAdmin.getId(),defaultAdmin);
+        this.users.put(defaultAdmin.getId(),defaultAdmin);
+    }
+
     //Check if there is a user if the same name then return -1
     //If there is no new user creator adds it to users in the hashmap and returns an ID number
-    public Response Register(String userName, String password){
+    public Response Register(DummyUser dummyUser){
         String msg = "";
         return new Response(1, msg);
     }
@@ -52,7 +78,7 @@ public class TradingSystem {
     }
 
 
-    public Response Logout(int userId){
+    public Response Logout(int connID){
         String msg = "";
         return new Response(3, msg);
 
