@@ -8,48 +8,47 @@ import TradingSystem.Server.Service_Layer.DummyUser;
 import TradingSystem.Server.Service_Layer.Response;
 
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TradingSystem {
 
-    private ConcurrentHashMap<Integer,Integer> systemAdmins;
-    private ConcurrentHashMap<String,Integer> connectedUser;
+    private ConcurrentHashMap<Integer, Integer> systemAdmins;
+    private ConcurrentHashMap<String, Integer> connectedUser;
 
-    public ConcurrentHashMap<Integer,User> users;
+    public ConcurrentHashMap<Integer, User> users;
     private ConcurrentHashMap<Integer, Store> stores;
 
-//    Singleton
+    //    Singleton
     private static TradingSystem tradingSystem = null;
 
-    private TradingSystem()
-    {
+    private TradingSystem() {
         this.connectedUser = new ConcurrentHashMap<>();
         this.users = new ConcurrentHashMap<>();
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
     }
 
-    public static TradingSystem getInstance()
-    {
-        if (tradingSystem == null){
+    public static TradingSystem getInstance() {
+        if (tradingSystem == null) {
             tradingSystem = new TradingSystem();
             tradingSystem.Initialization();
         }
         return tradingSystem;
     }
 
-    private void Initialization(){
-        User defaultAdmin = new User("amit","qweasd");
-        this.systemAdmins.put(defaultAdmin.getId(),defaultAdmin.getId());
-        this.users.put(defaultAdmin.getId(),defaultAdmin);
+    private void Initialization() {
+        User defaultAdmin = new User("amit", "qweasd");
+        this.systemAdmins.put(defaultAdmin.getId(), defaultAdmin.getId());
+        this.users.put(defaultAdmin.getId(), defaultAdmin);
     }
 
-    public void printUsers(){
+    public void printUsers() {
         Iterator it = this.users.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
+            Map.Entry pair = (Map.Entry) it.next();
             User user = (User) pair.getValue();
             System.out.println(user);
         }
@@ -57,26 +56,24 @@ public class TradingSystem {
 
     //Check if there is a user if the same name then return -1
     //If there is no new user creator adds it to users in the hashmap and returns an ID number
-    public Response Register(DummyUser dummyUser){
-        if(IsUserNameExist(dummyUser.getUserName()))
+    public Response Register(DummyUser dummyUser) {
+        if (IsUserNameExist(dummyUser.getUserName()))
             return new Response(true, "Error user name is taken");
         User newUser = new User(dummyUser.getUserName(), dummyUser.getPassword());
         users.put(newUser.getId(), newUser);
         printUsers();
-        return new Response(newUser.getId(), "",false, "Registration was successful");
+        return new Response(newUser.getId(), "", false, "Registration was successful");
     }
 
     //return connID and add user to connection Hash Map
     private synchronized String ConnectedUserID(Integer userID) {
         String uniqueID = "";
         boolean canExit = false;
-        while (!canExit)
-        {
+        while (!canExit) {
             uniqueID = UUID.randomUUID().toString();
-            if(!connectedUser.containsKey(uniqueID))
-            {
-                connectedUser.put(uniqueID,userID);
-                canExit= true;
+            if (!connectedUser.containsKey(uniqueID)) {
+                connectedUser.put(uniqueID, userID);
+                canExit = true;
             }
         }
         return uniqueID;
@@ -86,10 +83,10 @@ public class TradingSystem {
     public boolean IsUserNameExist(String userName) {
         Iterator it = this.users.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            int id = (int)pair.getKey();
+            Map.Entry pair = (Map.Entry) it.next();
+            int id = (int) pair.getKey();
             User user = (User) pair.getValue();
-            if(userName.equals(user.getUserName()))
+            if (userName.equals(user.getUserName()))
                 return true;
         }
         return false;
@@ -97,9 +94,9 @@ public class TradingSystem {
 
     //Finds if the user exists and if the password is correct, if not returns 1 and error message
     //If the user exists and a correct password returns an ID number returns an ID number
-    public Response Login(DummyUser dummyUser){
-        Response response = ValidPassword(dummyUser.getUserName(),dummyUser.getPassword());
-        if(response.isErr())
+    public Response Login(DummyUser dummyUser) {
+        Response response = ValidPassword(dummyUser.getUserName(), dummyUser.getPassword());
+        if (response.isErr())
             return response;
         String connID = ConnectedUserID(response.getUserID());
         printUsers();
@@ -111,27 +108,43 @@ public class TradingSystem {
     public Response ValidPassword(String userName, String password) {
         Iterator it = this.users.entrySet().iterator();
         while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            int id = (int)pair.getKey();
+            Map.Entry pair = (Map.Entry) it.next();
+            int id = (int) pair.getKey();
             User user = (User) pair.getValue();
-            if(userName.equals(user.getUserName()))
-            {
-                if(password.equals(user.getPassword()))
-                    return new Response(id,"", false,"");
+            if (userName.equals(user.getUserName())) {
+                if (password.equals(user.getPassword()))
+                    return new Response(id, "", false, "");
                 else
-                    return new Response(true,"Incorrect password");
+                    return new Response(true, "Incorrect password");
             }
         }
-        return new Response(true,"User not found");
+        return new Response(true, "User not found");
     }
 
-    public Response Logout(String connID){
-        if(connectedUser.containsKey(connID)){
+    public Response Logout(String connID) {
+        if (connectedUser.containsKey(connID)) {
             connectedUser.remove(connID);
-            return new Response(false,  "Logout was successful");
-        }
-        else{
+            return new Response(false, "Logout was successful");
+        } else {
             return new Response(true, "User not login");
         }
     }
 }
+
+    /*
+    public Response AddProductToShoppingCart(String connID, Integer productID, Integer quantity , Integer storeID ){
+        int userID=this.connectedUser.get(connID);
+        User user=this.users.get(userID);
+        Store store=this.stores.get(storeID);
+        if(store.checkProductExist(productID)) {
+            ConcurrentHashMap<Integer,Integer> products=user.getListProduct(storeID); //todo- return empty, not null
+            if (store.checkAbleToAddProduct(products,productID,quantity)) {
+                products.put(productID,quantity);
+                Double price=store.calculatePrice(products);
+                user.addProduct(productID,quantity,storeID,price);
+            }
+        }
+        return new Response(true, "User not login");
+    }
+}
+*/
