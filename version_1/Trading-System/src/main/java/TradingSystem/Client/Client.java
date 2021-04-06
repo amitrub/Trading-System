@@ -6,7 +6,8 @@ import TradingSystem.Server.Service_Layer.Response;
 public class Client {
 //    private String urlbase = "http://localhost:8080/api/" ;
     private String urlbase = "http://10.100.102.59:8080/api/" ;
-    private int connID = -1;
+    private int userID = -1;
+    private String connID = "";
     private String userName;
 
     public String getUserName() {
@@ -18,7 +19,7 @@ public class Client {
     }
 
     public boolean isLogin() {
-        return connID != -1;
+        return userID != -1;
     }
 
     public Client() {
@@ -27,27 +28,27 @@ public class Client {
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
-        Response response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.connID));
+        Response response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.userID));
         System.out.println("response: " + response);
-        this.connID = response.getId();
-        return connID;
+        this.userID = response.getId();
+        return userID;
     }
 
     public int Login(String userName, String pass){
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
-        Response response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.connID));
+        Response response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.userID));
         System.out.println("response: " + response);
-        this.connID = response.getId();
-        return connID;
+        this.userID = response.getId();
+        return userID;
     }
 
     public int Logout(String userName, String pass){
-        String path = "logout" ;
-        Response response = HttpRequest.sendGetRequest(urlbase + path, Integer.toString(this.connID));
+        String path = "try/" + this.userID;
+        Response response = HttpRequest.sendGetRequest(urlbase + path, Integer.toString(this.userID));
         System.out.println("response: " + response);
-        this.connID = response.getId();
-        return connID;
+        this.userID = response.getId();
+        return userID;
     }
 
 
@@ -56,7 +57,7 @@ public class Client {
 //            JSONArray out = new JSONArray(response.toString());
 //            for (int i = 0; i<out.length(); i++)
 //            {
-//                System.out.println(out.getJSONObject(i).getString("connID"));
+//                System.out.println(out.getJSONObject(i).getString("userID"));
 //            }
 //        }
 //        catch (Exception e){
@@ -66,7 +67,7 @@ public class Client {
 //        JSONArray out = new JSONArray(response.toString());
 //        for (int i = 0; i<out.length(); i++)
 //        {
-//            System.out.println(out.getJSONObject(i).getString("connID"));
+//            System.out.println(out.getJSONObject(i).getString("userID"));
 //        }
 //    }
 
@@ -77,7 +78,7 @@ public class Client {
 //            JSONArray out = new JSONArray(response.toString());
 //            for (int i = 0; i<out.length(); i++)
 //            {
-//                System.out.println(out.getJSONObject(i).getString("connID"));
+//                System.out.println(out.getJSONObject(i).getString("userID"));
 //            }
 //        }
 //        catch (Exception e){
