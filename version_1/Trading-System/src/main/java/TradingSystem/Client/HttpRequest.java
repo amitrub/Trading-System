@@ -34,7 +34,8 @@ public class HttpRequest {
             }
             bufferedReader.close();
             JSONObject jsonResponse = new JSONObject(response.toString());
-            return new Response(jsonResponse);
+            Response res = new Response(jsonResponse);
+            return res;
         }
         catch (Exception e){
             //e.printStackTrace();

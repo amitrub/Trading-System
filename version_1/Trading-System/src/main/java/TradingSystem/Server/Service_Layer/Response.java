@@ -44,18 +44,31 @@ public class Response {
         return userID;
     }
 
-    public String getErrMessage() {
-        return errMessage;
+    public void setUserID(Integer userID) {
+        this.userID = userID;
     }
 
     public String getConnID() {
         return connID;
     }
 
+    public void setConnID(String connID) {
+        this.connID = connID;
+    }
+
+    public String getErrMessage() {
+        return errMessage;
+    }
+
+    public void setErrMessage(String errMessage) {
+        this.errMessage = errMessage;
+    }
+
     @Override
     public String toString() {
         return "Response{" +
-                "id=" + userID +
+                "userID=" + userID +
+                ", connID='" + connID + '\'' +
                 ", errMessage='" + errMessage + '\'' +
                 '}';
     }
