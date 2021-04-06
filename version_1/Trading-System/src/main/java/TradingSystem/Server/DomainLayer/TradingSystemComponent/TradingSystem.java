@@ -7,13 +7,13 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.Service_Layer.DummyUser;
 import TradingSystem.Server.Service_Layer.Response;
 
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class TradingSystem {
 
-    private int nextConnectedUserID;
     private int nextUserID;
-    private ConcurrentHashMap<Integer,User> connectedUser;
+    private ConcurrentHashMap<String,Integer> connectedUser;
 
     private ConcurrentHashMap<Integer,User> systemAdmins;
     private ConcurrentHashMap<Integer,User> users;
@@ -30,7 +30,6 @@ public class TradingSystem {
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.nextUserID = 0;
-        this.nextConnectedUserID = 0;
     }
 
     public static TradingSystem getInstance()
@@ -45,9 +44,9 @@ public class TradingSystem {
         return tradingSystem;
     }
 
-    private synchronized int getNextConnectedUserID() {
-        this.nextConnectedUserID++;
-        return this.nextConnectedUserID;
+    private synchronized String getNextConnectedUserID() {
+        String uniqueID = UUID.randomUUID().toString();
+        return uniqueID;
     }
 
     private synchronized int getNextUserID() {

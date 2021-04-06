@@ -12,37 +12,40 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
+@RequestMapping(path = "api")
 public class Service {
-    private TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
-    @RequestMapping(path = "api/try")
-    @GetMapping
-    public Response try1(@RequestHeader("userName") String userName){
-        System.out.println(userName);
-        return new Response(1,"");
+//    @RequestMapping(path = "api/try")
+    @ExceptionHandler
+    @GetMapping("try/{userID}")
+    public Response try1(@PathVariable int userID, @RequestHeader("connID") String connID){
+        System.out.println(userID);
+        System.out.println(connID);
+        return new Response(userID, "good");
     }
 
-    @RequestMapping(path = "api/try2")
-    @PostMapping
+
+    @PostMapping("try2/{id}")
     public Response try2(@RequestBody DummyUser dummyUser){
         System.out.println(dummyUser);
         return new Response(1,"");
     }
 
-    @RequestMapping(path = "api/register")
+    @RequestMapping(path = "register")
     @GetMapping
     public Response Register(@RequestBody DummyUser dummyUser){
         return tradingSystem.Register(dummyUser);
     }
 
-    @RequestMapping(path = "api/login")
+    @RequestMapping(path = "login")
     @PostMapping
     public Response Login(@RequestBody DummyUser dummyUser){
         return tradingSystem.Login(dummyUser);
     }
 
     //todo- only subscriber
-    @RequestMapping(path = "api/logout")
+    @RequestMapping(path = "logout")
     @GetMapping
     public Response Logout(@RequestHeader("connID") int connID){
         System.out.println(connID);
