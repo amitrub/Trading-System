@@ -3,12 +3,13 @@ package TradingSystem.Server.Service_Layer;
 import org.json.JSONObject;
 
 public class Response {
-    Integer userID;
-    String connID;
-    String errMessage;
+    private Integer userID;
+    private String connID;
+    private String errMessage;
 
     public Response() {
         this.userID = -1;
+        this.connID = "";
         this.errMessage = "There is some Error!";
     }
 
@@ -29,7 +30,7 @@ public class Response {
 
     public Response(Integer id, String errMessage) {
         this.userID = id;
-        this.connID = "";
+        this.connID = "a";
         this.errMessage = errMessage;
     }
 
@@ -45,6 +46,10 @@ public class Response {
 
     public String getErrMessage() {
         return errMessage;
+    }
+
+    public String getConnID() {
+        return connID;
     }
 
     @Override
