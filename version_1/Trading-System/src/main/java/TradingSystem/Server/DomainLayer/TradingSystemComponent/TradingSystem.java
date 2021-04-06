@@ -14,10 +14,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TradingSystem {
 
-    private int nextUserID;
+    private ConcurrentHashMap<Integer,Integer> systemAdmins;
     private ConcurrentHashMap<String,Integer> connectedUser;
 
-    private ConcurrentHashMap<Integer,User> systemAdmins;
     public ConcurrentHashMap<Integer,User> users;
     private ConcurrentHashMap<Integer, Store> stores;
 
@@ -26,58 +25,28 @@ public class TradingSystem {
 
     private TradingSystem()
     {
-
         this.connectedUser = new ConcurrentHashMap<>();
         this.users = new ConcurrentHashMap<>();
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
-        this.nextUserID = 0;
     }
 
     public static TradingSystem getInstance()
     {
-        if (tradingSystem == null)
-        {
+        if (tradingSystem == null){
             tradingSystem = new TradingSystem();
             tradingSystem.Initialization();
         }
-
-
         return tradingSystem;
     }
 
-    private synchronized String getNextConnectedUserID() {
-        String uniqueID = UUID.randomUUID().toString();
-        return uniqueID;
-    }
-
-    private synchronized int getNextUserID() {
-        this.nextUserID++;
-        return this.nextUserID;
-    }
-
     private void Initialization(){
-        User defaultAdmin = new User(getNextUserID(),"amit","qweasd");
-        this.systemAdmins.put(defaultAdmin.getId(),defaultAdmin);
+        User defaultAdmin = new User("amit","qweasd");
+        this.systemAdmins.put(defaultAdmin.getId(),defaultAdmin.getId());
         this.users.put(defaultAdmin.getId(),defaultAdmin);
     }
 
-    //Check if there is a user if the same name then return -1
-    //If there is no new user creator adds it to users in the hashmap and returns an ID number
-    public Response Register(DummyUser dummyUser){
-        if(IsUserNameExist(dummyUser.getUserName()))
-            return new Response(-1, "Error user name is taken");
-        int id = getNextUserID();
-        User newUser = new User(id, dummyUser.getUserName(), dummyUser.getPassword());
-        users.put(id, newUser);
-        String connID = getNextConnectedUserID();
-        connectedUser.put(connID,id);
-        printUsers();
-        return new Response(id, connID, "Registration was successful");
-    }
-
-    public void printUsers()
-    {
+    public void printUsers(){
         Iterator it = this.users.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
@@ -86,6 +55,34 @@ public class TradingSystem {
         }
     }
 
+    //Check if there is a user if the same name then return -1
+    //If there is no new user creator adds it to users in the hashmap and returns an ID number
+    public Response Register(DummyUser dummyUser){
+        if(IsUserNameExist(dummyUser.getUserName()))
+            return new Response(true, "Error user name is taken");
+        User newUser = new User(dummyUser.getUserName(), dummyUser.getPassword());
+        users.put(newUser.getId(), newUser);
+        printUsers();
+        return new Response(newUser.getId(), "",false, "Registration was successful");
+    }
+
+    //return connID and add user to connection Hash Map
+    private synchronized String ConnectedUserID(Integer userID) {
+        String uniqueID = "";
+        boolean canExit = false;
+        while (!canExit)
+        {
+            uniqueID = UUID.randomUUID().toString();
+            if(!connectedUser.containsKey(uniqueID))
+            {
+                connectedUser.put(uniqueID,userID);
+                canExit= true;
+            }
+        }
+        return uniqueID;
+    }
+
+    //return true if user name is exist in the system
     public boolean IsUserNameExist(String userName) {
         Iterator it = this.users.entrySet().iterator();
         while (it.hasNext()) {
@@ -98,20 +95,20 @@ public class TradingSystem {
         return false;
     }
 
-
     //Finds if the user exists and if the password is correct, if not returns 1 and error message
     //If the user exists and a correct password returns an ID number returns an ID number
     public Response Login(DummyUser dummyUser){
-        int id = ValidPassword(dummyUser.getUserName(),dummyUser.getPassword());
-        if(id == -1)
-            return new Response(-1, "Error in login");
-        String connID = getNextConnectedUserID();
-        connectedUser.put(connID,id);
+        Response response = ValidPassword(dummyUser.getUserName(),dummyUser.getPassword());
+        if(response.isErr())
+            return response;
+        String connID = ConnectedUserID(response.getUserID());
         printUsers();
-        return new Response(id, connID, "Login was successful");
+        return new Response(response.getUserID(), connID, "Login was successful");
     }
 
-    public int ValidPassword(String userName, String password) {
+    //if valid return Response(userId, "", false, "")
+    //if not valid return Response(isErr: true, "Error Message")
+    public Response ValidPassword(String userName, String password) {
         Iterator it = this.users.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
@@ -120,24 +117,21 @@ public class TradingSystem {
             if(userName.equals(user.getUserName()))
             {
                 if(password.equals(user.getPassword()))
-                    return id;
+                    return new Response(id,"", false,"");
                 else
-                    return -1;
+                    return new Response(true,"Incorrect password");
             }
         }
-        return -1;
+        return new Response(true,"User not found");
     }
 
-
     public Response Logout(String connID){
-        if(connectedUser.containsKey(connID))
-        {
+        if(connectedUser.containsKey(connID)){
             connectedUser.remove(connID);
-            return new Response(-1,  "Logout was successful");
+            return new Response(false,  "Logout was successful");
         }
-        else
-        {
-            return new Response(-1, "User not login");
+        else{
+            return new Response(true, "User not login");
         }
     }
 }
