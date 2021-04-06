@@ -30,7 +30,7 @@ public class Client {
         DummyUser dummyUser = new DummyUser(userName, pass);
         Response response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.userID));
         System.out.println("response: " + response);
-        this.userID = response.getId();
+        this.userID = response.getUserID();
         return userID;
     }
 
@@ -39,7 +39,7 @@ public class Client {
         DummyUser dummyUser = new DummyUser(userName, pass);
         Response response = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), Integer.toString(this.userID));
         System.out.println("response: " + response);
-        this.userID = response.getId();
+        this.userID = response.getUserID();
         return userID;
     }
 
@@ -47,7 +47,7 @@ public class Client {
         String path = "try/" + this.userID;
         Response response = HttpRequest.sendGetRequest(urlbase + path, Integer.toString(this.userID));
         System.out.println("response: " + response);
-        this.userID = response.getId();
+        this.userID = response.getUserID();
         return userID;
     }
 

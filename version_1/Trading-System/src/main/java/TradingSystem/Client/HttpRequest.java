@@ -39,7 +39,7 @@ public class HttpRequest {
         catch (Exception e){
             //e.printStackTrace();
             Response res = new Response(-1,  "Error in Making GET Request");
-            System.out.println(res);
+            System.out.println("GET error: " + res);
             return res;
         }
     }
