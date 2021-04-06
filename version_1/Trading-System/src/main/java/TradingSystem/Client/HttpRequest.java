@@ -22,7 +22,7 @@ public class HttpRequest {
 
             //adding header
             httpURLConnection.setRequestProperty("connID", connID);
-            httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+//            httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
             httpURLConnection.setRequestProperty("Accept", "application/json");
 
             String line="";
@@ -65,7 +65,7 @@ public class HttpRequest {
             osw.flush();
             osw.close();
 
-            System.out.println("Response Code "+httpURLConnection.getResponseCode());
+            //System.out.println("Response Code "+httpURLConnection.getResponseCode());
 
             String line="";
             InputStreamReader inputStreamReader=new InputStreamReader(httpURLConnection.getInputStream());
