@@ -1,5 +1,6 @@
 package TradingSystem.Client;
 
+import TradingSystem.Server.Service_Layer.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -13,15 +14,14 @@ import java.io.OutputStream;
 
 public class HttpRequest {
 
-    public static String sendGetRequest(String urlStr, String id){
+    public static Response sendGetRequest(String urlStr, String connID){
         try {
             URL url = new URL(urlStr);
             HttpURLConnection httpURLConnection=(HttpURLConnection)url.openConnection();
             httpURLConnection.setRequestMethod("GET");
 
             //adding header
-            httpURLConnection.setRequestProperty("ID", id);
-            httpURLConnection.setRequestProperty("userName","Roee");
+            httpURLConnection.setRequestProperty("connID", connID);
             httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
             httpURLConnection.setRequestProperty("Accept", "application/json");
 
@@ -33,17 +33,18 @@ public class HttpRequest {
                 response.append(line);
             }
             bufferedReader.close();
-            return response.toString();
+            JSONObject JO = new JSONObject(response.toString());
+            return new Response(JO.getString("id"), JO.getString("errMsg"));
 
 
         }
         catch (Exception e){
-            return "Error in Making Get Request";
+            return new Response(1, "");
 
         }
     }
 
-    public static String sendPOSTGETRequest(String urlStr, String post_data, String id){
+    public static Response sendPOSTGETRequest(String urlStr, String post_data, String connID){
 
         try {
 //            String post_data="key1=value1&key2=value2";
@@ -55,7 +56,7 @@ public class HttpRequest {
             //adding header
 //            httpURLConnection.setRequestProperty("Auth","Token");
 //            httpURLConnection.setRequestProperty("Data1","Value1");
-            httpURLConnection.setRequestProperty("ID", id);
+            httpURLConnection.setRequestProperty("connID", connID);
             httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
             httpURLConnection.setRequestProperty("Accept", "application/json");
             httpURLConnection.setDoOutput(true);
@@ -81,17 +82,18 @@ public class HttpRequest {
             }
             bufferedReader.close();
             System.out.println("Response : "+response.toString());
-            return response.toString();
+
+//            return response.toString();
+            return new Response(1, "");
         }
         catch (Exception e){
             e.printStackTrace();
             System.out.println("Error in Making POST Request");
         }
-        return ";;";
+        return new Response(1, "");
     }
 
-
-    public static String sendPOSTRequest(String urlStr, String post_data, String id){
+    public static String sendPOSTRequest(String urlStr, String post_data, String connID){
 
         try {
 //            String post_data="key1=value1&key2=value2";
@@ -103,7 +105,7 @@ public class HttpRequest {
             //adding header
 //            httpURLConnection.setRequestProperty("Auth","Token");
 //            httpURLConnection.setRequestProperty("Data1","Value1");
-            httpURLConnection.setRequestProperty("ID", id);
+            httpURLConnection.setRequestProperty("connID", connID);
             httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
             httpURLConnection.setRequestProperty("Accept", "application/json");
             httpURLConnection.setDoOutput(true);

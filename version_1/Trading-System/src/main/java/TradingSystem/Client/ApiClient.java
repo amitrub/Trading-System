@@ -18,12 +18,18 @@ public class ApiClient {
                     System.out.println("Exit");
                     system_on = false;
                     break;
-                case 1:
-                    client.Register();
+                case 1: {
+                    System.out.println("Enter user name:");
+                    String userName = sc.nextLine();
+                    System.out.println("Enter password:");
+                    String pass = sc.nextLine();
+                    client.Register(userName, pass);
+                    client.Login(userName, pass);
+                }
                 case 2: {
-                    if(!client.isLogin())
-                        client.Login("Roee", "1234");
-                    else
+//                    if(!client.isLogin())
+//                        client.Login("Roee", "1234");
+//                    else
                         client.Logout("Roee", "1234");
                 }
                 case 3:
@@ -44,10 +50,14 @@ public class ApiClient {
 
     private static int HomePage(Client client) {
         System.out.println("1. Register");
-        if(!client.isLogin())
+        if(!client.isLogin()) {
             System.out.println("2. Login");
-        else
-            System.out.println("2. Logout");
+            System.out.println("   Logout");
+        }
+        else {
+            System.out.println("2. Login");
+            System.out.println("   Logout");
+        }
         System.out.println("3. Search products");
         System.out.println("4. Show Stores");
         System.out.println("5. Show shopping cart");
