@@ -3,41 +3,50 @@ package TradingSystem.Server.Service_Layer;
 import org.json.JSONObject;
 
 public class Response {
-    private Integer userID;
-    private String connID;
-    private String errMessage;
+    private Integer userID = -1;
+    private String connID = "";
+    private boolean isErr = false;
+    private String message = "";
 
     public Response() {
-        this.userID = -1;
-        this.connID = "";
-        this.errMessage = "There is some Error!";
     }
 
     public Response(JSONObject jsonObject){
         try {
             this.userID = jsonObject.getInt("userID");
             this.connID = jsonObject.getString("connID");
-            this.errMessage = jsonObject.getString("errMessage");
+            this.isErr = jsonObject.getBoolean("isErr");
+            this.message = jsonObject.getString("message");
         }
         catch (Exception e)
         {
-            this.userID = -1;
-            this.connID = "";
-            this.errMessage = "There is some Error!";
+            this.isErr = true;
+            this.message = "There is some Error!";
         }
 
     }
 
-    public Response(Integer id, String errMessage) {
+    public Response(Integer id, String message) {
         this.userID = id;
-        this.connID = "";
-        this.errMessage = errMessage;
+        this.message = message;
     }
 
-    public Response(Integer userID, String connID, String errMessage) {
+    public Response(Integer userID, String connID, String message) {
         this.userID = userID;
         this.connID = connID;
-        this.errMessage = errMessage;
+        this.message = message;
+    }
+
+    public Response(Integer userID, String connID, boolean isErr, String message) {
+        this.userID = userID;
+        this.connID = connID;
+        this.isErr = isErr;
+        this.message = message;
+    }
+
+    public Response(boolean isErr, String message) {
+        this.isErr = isErr;
+        this.message = message;
     }
 
     public Integer getUserID() {
@@ -56,12 +65,20 @@ public class Response {
         this.connID = connID;
     }
 
-    public String getErrMessage() {
-        return errMessage;
+    public boolean isErr() {
+        return isErr;
     }
 
-    public void setErrMessage(String errMessage) {
-        this.errMessage = errMessage;
+    public void setErr(boolean err) {
+        isErr = err;
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
     }
 
     @Override
@@ -69,7 +86,8 @@ public class Response {
         return "Response{" +
                 "userID=" + userID +
                 ", connID='" + connID + '\'' +
-                ", errMessage='" + errMessage + '\'' +
+                ", isErr=" + isErr +
+                ", Message='" + message + '\'' +
                 '}';
     }
 }

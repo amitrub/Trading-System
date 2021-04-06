@@ -11,6 +11,7 @@ import java.util.List;
 public  class User {
 
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private static int nextUserID = 0;
 
     private final Integer id;
     private String userName;
@@ -23,6 +24,15 @@ public  class User {
     private ShoppingCart shoppingCart;
     private List<Integer> shoppingHistory;
 
+    public User(String userName, String password) {
+        this.id = getNextUserID();
+        this.userName = userName;
+        this.password = password;
+        this.myFoundedStoresIDs = new LinkedList<>();
+        this.myOwnedStoresIDs = new LinkedList<>();
+        this.myManagedStoresIDs = new LinkedList<>();
+    }
+
     public User(Integer id, String userName, String password) {
         this.id = id;
         this.userName = userName;
@@ -30,6 +40,11 @@ public  class User {
         this.myFoundedStoresIDs = new LinkedList<>();
         this.myOwnedStoresIDs = new LinkedList<>();
         this.myManagedStoresIDs = new LinkedList<>();
+    }
+
+    private static synchronized int getNextUserID() {
+        nextUserID++;
+        return nextUserID;
     }
 
     public Integer getId() {

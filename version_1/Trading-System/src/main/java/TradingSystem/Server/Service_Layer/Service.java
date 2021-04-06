@@ -16,7 +16,7 @@ import java.util.List;
 public class Service {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
-    @GetMapping("try/{userID}")
+    @GetMapping("buy/{userID}")
     public Response try1(@PathVariable int userID, @RequestHeader("connID") String connID){
         System.out.println(userID);
         System.out.println(connID);
