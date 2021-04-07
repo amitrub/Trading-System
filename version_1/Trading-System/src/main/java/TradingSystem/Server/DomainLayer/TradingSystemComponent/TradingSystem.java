@@ -233,6 +233,21 @@ public class TradingSystem {
         return true;
     }
 
+    public Response AddStore(int userID, String connID, String storeName){
+        if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
+            Store newStore = new Store(storeName, userID);
+            //TODO
+
+            connectedSubscribers.remove(connID);
+            printUsers();
+            return new Response(false,  "Logout was successful");
+        }
+        else{
+            printUsers();
+            return new Response(true, "User not login");
+        }
+    }
+
 
 
 

@@ -51,6 +51,23 @@ public class Store {
         this.inventory=new Inventory(this.id,name);
     }
 
+    public Store(String name, Integer founderID) {
+        this.id = getNextStoreID();
+        this.name = name;
+        this.founderID = founderID;
+        this.ownersIDs = new LinkedList<Integer>();
+        this.ownersIDs.add(founderID);
+        this.managersIDs = new LinkedList<Integer>();
+        this.ownersAppointee=new ConcurrentHashMap<>();
+        this.managersAppointee=new ConcurrentHashMap<>();
+        this.discountPolicy = discountPolicy;
+        this.buyingPolicy = buyingPolicy;
+        this.rate =5.0; //todo- add rating!
+        this.Ratings=new ConcurrentHashMap<>();
+        this.shoppingHistory = new LinkedList<Integer>();
+        this.inventory=new Inventory(this.id,name);
+    }
+
     public Integer getId() {
         return id;
     }
