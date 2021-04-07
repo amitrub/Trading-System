@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
+import java.util.Collection;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
@@ -22,7 +23,7 @@ public class Inventory {
     //productID_quantity
     private ConcurrentHashMap<Integer, Integer> productQuantity;
     //productID_quantity
-    private ConcurrentHashMap<Integer, Boolean> productLock;
+    private ConcurrentHashMap<Integer, Lock> productLock;
 
 
     public Inventory(Integer storeID, String storeName)
@@ -31,7 +32,7 @@ public class Inventory {
         this.storeName=storeName;
         this.products= new ConcurrentHashMap<Integer, Product>();
         this.productQuantity=new ConcurrentHashMap<Integer, Integer>();
-        this.productLock=new ConcurrentHashMap<Integer, Boolean>();
+        this.productLock=new ConcurrentHashMap<Integer, Lock>();
     }
 
     private static synchronized int getNextProductID()
@@ -54,7 +55,7 @@ public class Inventory {
         Product p=new Product(productID, productName, category, price);
         this.products.put(productID,p);
         this.productQuantity.put(productID,0);
-        this.productLock.put(productID,false);
+        this.productLock.put(productID,new ReentrantLock());
     }
 
     public String deleteProduct(Integer productID,Integer storeID)
@@ -335,5 +336,19 @@ public class Inventory {
     public Double CalculateRateForProduct(Integer productID)
     {
         return this.products.get(productID).CalculateRate();
+    }
+
+    public void lockProduct(Integer productID) {
+        this.productLock.get(productID).lock();
+    }
+
+    public void unlockProduct(Collection<Integer> productID) {
+        this.productLock.get(productID).unlock();
+        this.productLock.get(productID).notifyAll();
+    }
+
+    //todo check!
+    public boolean productIsLock(Integer productID) {
+        return this.productLock.get(productID).tryLock();
     }
 }

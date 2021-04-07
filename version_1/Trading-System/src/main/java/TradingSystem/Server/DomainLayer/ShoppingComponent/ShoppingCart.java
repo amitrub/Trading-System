@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 import TradingSystem.Server.DomainLayer.StoreComponent.Inventory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -26,88 +27,77 @@ public class ShoppingCart {
 
     private Object payment;//?
 
-    public ShoppingCart(Integer userID)
-    {
+    public ShoppingCart(Integer userID) {
         this.userID = userID;
-        this.shoppingBags=new ConcurrentHashMap<Integer, ShoppingBag>();
-        this.pricePerShoppingBag=new ConcurrentHashMap<Integer, Double>();
+        this.shoppingBags = new ConcurrentHashMap<Integer, ShoppingBag>();
+        this.pricePerShoppingBag = new ConcurrentHashMap<Integer, Double>();
     }
 
-    public String addProductToBag(Integer productID, Integer storeID, Integer quantity)
-    {
-        ConcurrentHashMap<Integer,Integer> productsInTheBug=new ConcurrentHashMap<Integer,Integer>();
-        if(this.shoppingBags.get(storeID)!=null)
-        {
+    public String addProductToBag(Integer productID, Integer storeID, Integer quantity) {
+        ConcurrentHashMap<Integer, Integer> productsInTheBug = new ConcurrentHashMap<Integer, Integer>();
+        if (this.shoppingBags.get(storeID) != null) {
             productsInTheBug = shoppingBags.get(storeID).getProducts();
+        } else {
+            shoppingBags.put(storeID, new ShoppingBag(userID, storeID));
         }
-        else
-        {
-          shoppingBags.put(storeID,new ShoppingBag(userID,storeID));
-        }
-        if (tradingSystem.checkProductsExistInTheStore(productID, storeID, quantity))
-        {
-            if (tradingSystem.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug))
-            {
-                Double priceForBug=tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
-                shoppingBags.get(storeID).addProduct(productID,quantity);
+        if (tradingSystem.checkProductsExistInTheStore(productID, storeID, quantity)) {
+            if (tradingSystem.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
+                Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
+                shoppingBags.get(storeID).addProduct(productID, quantity);
                 shoppingBags.get(storeID).setFinalPrice(priceForBug);
-                Double price=this.calculatePrice();
+                Double price = this.calculatePrice();
                 this.setFinalPrice(price);
                 return "The product added successfully";
             }
 
-         return "Adding the product is against the store policy";
+            return "Adding the product is against the store policy";
         }
         return "The product is not exist in stock";
     }
 
     private synchronized Double calculatePrice() {
-        Double price=0.0;
+        Double price = 0.0;
         Iterator it = this.pricePerShoppingBag.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             Double p = (Double) pair.getValue();
-            price=price+p;
+            price = price + p;
         }
         return price;
     }
 
-    public synchronized void setFinalPrice(Double finalPrice)
-    {
+    public synchronized void setFinalPrice(Double finalPrice) {
         this.finalPrice = finalPrice;
     }
 
-    public ConcurrentHashMap<Integer, ShoppingBag> GetInfo(){
+    public ConcurrentHashMap<Integer, ShoppingBag> GetInfo() {
         return this.shoppingBags;
     }
 
     public String Purchase() throws InterruptedException {
         Iterator itBug = this.shoppingBags.entrySet().iterator();
-        while (itBug.hasNext())
-        {
+        while (itBug.hasNext()) {
             Map.Entry bugPair = (Map.Entry) itBug.next();
             int storeID = (int) bugPair.getKey();
             ShoppingBag SB = (ShoppingBag) bugPair.getValue();
             Iterator itProd = SB.getProducts().entrySet().iterator();
-                while (itProd.hasNext())
-                {
-                    Map.Entry prodPair = (Map.Entry) itProd.next();
-                    int productID = (int) prodPair.getKey();
-                    int productQuantity = (int) prodPair.getValue();
-                    while(tradingSystem.productIsLock(productID, storeID)){ //todo check!
-                        wait();
-                    }
-                    tradingSystem.lockProduct(productID, storeID);
-                    if (!tradingSystem.checkProductsExistInTheStore(productID, storeID, productQuantity))
-                    {
-                        releaseAllProduct();
-                        String storeName= tradingSystem.getStoreName(storeID);
-                        String productName=tradingSystem.getProductName(storeID,productID);
-                        return productName +" in The store" +storeName+" is not exist in the stock";
-                    }
+            while (itProd.hasNext()) {
+                Map.Entry prodPair = (Map.Entry) itProd.next();
+                int productID = (int) prodPair.getKey();
+                int productQuantity = (int) prodPair.getValue();
+                while (tradingSystem.productIsLock(productID, storeID)) { //todo check!
+                    wait();
                 }
+                tradingSystem.lockProduct(productID, storeID);
+                if (!tradingSystem.checkProductsExistInTheStore(productID, storeID, productQuantity)) {
+                    releaseAllProduct();
+                    String storeName = tradingSystem.getStoreName(storeID);
+                    String productName = tradingSystem.getProductName(storeID, productID);
+                    return productName + " in The store" + storeName + " is not exist in the stock";
+                }
+            }
         }
-        if(paymentAprove()){
+        if (paymentAprove()) {
             Buy();
             releaseAllProduct();
             return "The purchase was made successfully ";
@@ -146,16 +136,36 @@ public class ShoppingCart {
             Map.Entry bugPair = (Map.Entry) itBug.next();
             int storeID = (int) bugPair.getKey();
             ShoppingBag SB = (ShoppingBag) bugPair.getValue();
-           if(!tradingSystem.reduseProduct(SB.getProducts().values(), storeID))//todo- check if work
-           {
-               return false;
-           }
+            if (!tradingSystem.reduseProducts(SB.getProducts(), storeID))//todo- check if work
+            {
+                return false;
+            }
         }
-       return true;
+        return true;
     }
 
-    public Integer Purchase(Object Payment){
+    public Integer Purchase(Object Payment) {
         return 0;
+    }
+
+    public LinkedList<DummyProduct> ShowShoppingCart() {
+        LinkedList<DummyProduct> DummyProducts = new LinkedList<DummyProduct>();
+
+        Iterator itBug = this.shoppingBags.entrySet().iterator();
+        while (itBug.hasNext()) {
+            Map.Entry bugPair = (Map.Entry) itBug.next();
+            int storeID = (int) bugPair.getKey();
+            ShoppingBag SB = (ShoppingBag) bugPair.getValue();
+            Iterator itProd = SB.getProducts().entrySet().iterator();
+            while (itProd.hasNext()) {
+                Map.Entry prodPair = (Map.Entry) itProd.next();
+                int productID = (int) prodPair.getKey();
+                Product p = tradingSystem.getProduct(storeID,productID);
+                DummyProduct d=new DummyProduct(storeID,tradingSystem.getStoreName(storeID),productID,p.getProductName(),p.getPrice(),p.getCategory());
+                DummyProducts.add(d);
+            }
+        }
+        return DummyProducts;
     }
 }
 
@@ -181,7 +191,7 @@ public class ShoppingCart {
                     if (id == storeID) {
                         SB.addProduct(productID,quantity);
                         SB.setFinalPrice(price);
-                        this.pricePerShoppingBag.remove(SB.getNextShoppingBagID());//todo check if work
+                        this.pricePerShoppingBag.remove(SB.getNextShoppingBagID());
                         this.pricePerShoppingBag.put(SB.getNextShoppingBagID(),price);
                         this.finalPrice=calculatePrice();
                         return 0;

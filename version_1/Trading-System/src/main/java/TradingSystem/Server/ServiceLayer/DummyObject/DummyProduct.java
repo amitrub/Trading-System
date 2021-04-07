@@ -1,5 +1,6 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
