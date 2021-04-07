@@ -14,8 +14,10 @@ public class ShoppingBag {
 
     private Integer userID;
     private Integer storeID;
+
     //productID_quantity
     private ConcurrentHashMap<Integer,Integer> products;
+
     private Double finalPrice;
 
 

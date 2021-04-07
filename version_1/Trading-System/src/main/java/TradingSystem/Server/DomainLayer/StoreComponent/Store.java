@@ -4,10 +4,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Store {
@@ -91,8 +88,15 @@ public class Store {
         return "Only a store owner is allowed to edit the products details";
     }
 
-    public String reduceProduct(Integer productId, Integer quantityToReduce){
-       return inventory.reduceProduct(productId,quantityToReduce);
+    public boolean reduceProduct(Collection<Integer> productsId, Integer quantityToReduce){
+        for (Integer i:productsId
+             ) {
+            if(!inventory.reduceProduct(i,quantityToReduce))
+            {
+                return false;
+            }
+        }
+        return true;
     }
 
     //todo - ensure that the owner/manager is subscriber!
@@ -161,17 +165,18 @@ public class Store {
         return inventory.getProductID(this.id,computer);
     }
 
-    public void addRating(Integer userID, Double Rating){
+    public void addRatingToStore(Integer userID, Double Rating){
         this.Ratings.put(userID,Rating);
-        this.rate=CalculateRat();
+        this.rate=CalculateRate();
     }
 
-    public void removeRating(Integer userID){
+    public void removeRatingFromStore(Integer userID){
         this.Ratings.remove(userID);
-        this.rate=CalculateRat();
+        this.rate=CalculateRate();
     }
 
-    public Double CalculateRat(){
+    public Double CalculateRate()
+    {
         Integer NumOfUsaers=0;
         Double SumOfRating=0.0;
         Iterator it = this.Ratings.entrySet().iterator();
@@ -182,6 +187,21 @@ public class Store {
             SumOfRating=SumOfRating+Rate;
         }
         return SumOfRating/NumOfUsaers;
+    }
+
+    public void addRatingToProduct(Integer productID, Integer userID, Double Rating)
+    {
+        inventory.addRatingToProduct(productID,userID,Rating);
+    }
+
+    public void removeRatingFromProduct(Integer productID, Integer userID, Double Rating)
+    {
+        inventory.removeRatingFromProduct(productID,userID);
+    }
+
+    public Double CalculateRateForProduct(Integer productID)
+    {
+        return inventory.CalculateRateForProduct(productID);
     }
 
     public List<DummySearch> SearchByName(String name, int minprice, int maxprice, int prank) {
@@ -214,5 +234,37 @@ public class Store {
 
     public Double getRate() {
         return rate;
+    }
+
+    public boolean checkProductsExistInTheStore(Integer productID, Integer quantity){
+    return  true;
+    }
+
+    public boolean checkBuyingPolicy(Integer productID, Integer quantity, ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        return true;
+    }
+
+    public boolean calculateBugPrice(Integer productID, Integer quantity,ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        return true;
+    }
+
+    public boolean productIsLock(Integer productID){
+        return true;
+    }
+
+    public boolean lockProduct(Integer productID){
+        return true;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getProductName(Integer productID){
+        return "";
+    }
+
+    public void  unLockProducts(Collection<Integer> productID){
+
     }
 }
