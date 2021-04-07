@@ -54,6 +54,12 @@ public class Service {
         return tradingSystem.Logout(connID);
     }
 
+//    @RequestMapping(path = "searchByName")
+//    @GetMapping
+//    public List<DummyStore> searchByName(@RequestHeader("connID") String connID, @RequestBody String name){
+//        return tradingSystem.Logout(connID);
+//    }
+
     public List<Object> Search(String objectToSearch){
         return null;
     }
