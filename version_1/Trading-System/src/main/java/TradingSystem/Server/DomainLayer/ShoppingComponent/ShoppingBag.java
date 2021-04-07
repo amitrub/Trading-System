@@ -18,6 +18,7 @@ public class ShoppingBag {
     private ConcurrentHashMap<Integer,Integer> products;
     private Double finalPrice;
 
+
     public ShoppingBag(Integer userID, Integer storeID) {
         nextShoppingBagID=getnextShoppingBagID();
         this.userID = userID;
