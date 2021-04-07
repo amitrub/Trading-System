@@ -2,7 +2,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
@@ -195,7 +195,7 @@ public class TradingSystem {
         return list;
     }
 
-    public List<DummyProduct> ShowStoreProducts(int storeID){
+    public List<DummySearch> ShowStoreProducts(int storeID){
         return stores.get(storeID).ShowStoreProducts();
     }
 

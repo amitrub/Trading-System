@@ -1,7 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -10,23 +10,23 @@ public class SearchSystem {
 
     private final TradingSystem tradingSystem= TradingSystem.getInstance();
 
-    public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
-        List<DummyProduct> dummyProducts = new LinkedList<>();
+    public List<DummySearch> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
+        List<DummySearch> dummySearches = new LinkedList<>();
             for(Store store:tradingSystem.getStores().values()){
                 if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
-                    dummyProducts.addAll(store.SearchByName(name, minprice, maxprice,prank));
+                    dummySearches.addAll(store.SearchByName(name, minprice, maxprice,prank));
                 }
             }
-        return dummyProducts;
+        return dummySearches;
     }
 
-    public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
-        List<DummyProduct> dummyProducts = new LinkedList<>();
+    public List<DummySearch> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
+        List<DummySearch> dummySearches = new LinkedList<>();
         for(Store store:tradingSystem.getStores().values()){
             if(!store.SearchByCategory(category, minprice, maxprice,prank).isEmpty()){
-                dummyProducts.addAll(store.SearchByCategory(category, minprice, maxprice,prank));
+                dummySearches.addAll(store.SearchByCategory(category, minprice, maxprice,prank));
             }
         }
-        return dummyProducts;
+        return dummySearches;
     }
 }

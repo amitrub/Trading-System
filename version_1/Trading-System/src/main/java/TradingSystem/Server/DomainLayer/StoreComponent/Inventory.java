@@ -1,6 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -40,10 +40,10 @@ public class Inventory {
         return nextProductID;
     }
 
-    public LinkedList<DummyProduct> ShowStoreProducts(){
-        LinkedList<DummyProduct> products= new LinkedList<>();
+    public LinkedList<DummySearch> ShowStoreProducts(){
+        LinkedList<DummySearch> products= new LinkedList<>();
         for(Map.Entry<Integer,Product> productEntry:this.products.entrySet()){
-            products.add(new DummyProduct(this.storeID,this.storeName,productEntry.getKey(),productEntry.getValue().getProductName(),productEntry.getValue().getPrice(),productEntry.getValue().getCategory()));
+            products.add(new DummySearch(this.storeID,this.storeName,productEntry.getKey(),productEntry.getValue().getProductName(),productEntry.getValue().getPrice(),productEntry.getValue().getCategory()));
         }
         return products;
     }
@@ -306,16 +306,16 @@ public class Inventory {
         return products;
     }
 
-    public LinkedList<DummyProduct> getDummySearchForList(LinkedList<Integer> products)
+    public LinkedList<DummySearch> getDummySearchForList(LinkedList<Integer> products)
     {
-        LinkedList<DummyProduct> DummyProducts=new LinkedList<DummyProduct>();
+        LinkedList<DummySearch> dummySearches =new LinkedList<DummySearch>();
         for (Integer i:products
              ) {
             Product p=this.products.get(i);
-            DummyProduct D=new DummyProduct(this.storeID,storeName,p.getProductID(),p.getProductName(),p.getPrice(),p.getCategory());//productComments.get(i).getRate());
-            DummyProducts.add(D);
+            DummySearch D=new DummySearch(this.storeID,storeName,p.getProductID(),p.getProductName(),p.getPrice(),p.getCategory());//productComments.get(i).getRate());
+            dummySearches.add(D);
         }
-        return DummyProducts;
+        return dummySearches;
     }
 
     public void addRatingToProduct(Integer productID, Integer userID, Double rating)

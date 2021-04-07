@@ -2,7 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -77,7 +77,7 @@ public class Store {
         return nextStoreID;
     }
 
-    public List<DummyProduct> ShowStoreProducts(){
+    public List<DummySearch> ShowStoreProducts(){
         return inventory.ShowStoreProducts();
     }
 
@@ -229,7 +229,7 @@ public class Store {
         return inventory.CalculateRateForProduct(productID);
     }
 
-    public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank) {
+    public List<DummySearch> SearchByName(String name, int minprice, int maxprice, int prank) {
        LinkedList<Integer> FinalID=new LinkedList<>();
        if(name!=null){
            FinalID=inventory.getDummySearchByName(FinalID,name);
@@ -243,7 +243,7 @@ public class Store {
         return  inventory.getDummySearchForList(FinalID);
     }
 
-    public List<DummyProduct> SearchByCategory(String category, int minprice, int maxprice, int prank) {
+    public List<DummySearch> SearchByCategory(String category, int minprice, int maxprice, int prank) {
         LinkedList<Integer> FinalID = new LinkedList<>();
         if (category != null) {
             FinalID = inventory.getDummySearchByCategory(FinalID, category);

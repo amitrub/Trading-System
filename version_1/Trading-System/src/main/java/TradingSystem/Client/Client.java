@@ -1,6 +1,6 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.json.JSONArray;
@@ -54,7 +54,7 @@ public class Client {
         this.pass = pass;
         return userID;
     }
-    public ArrayList<DummyProduct> Search(String mode, String minPrice, String maxPrice, String p_rank, String s_rank) {
+    public ArrayList<DummySearch> Search(String mode, String minPrice, String maxPrice, String p_rank, String s_rank) {
         String path = "search";
         int min = Integer.parseInt(minPrice);
         int max = Integer.parseInt(maxPrice);
@@ -77,11 +77,11 @@ public class Client {
             System.out.println(errMsgGenerator("Client", "Client", "72", "Error in making serach JSON"));
         }
         JSONArray jsonArray = HttpRequest.sendPOSTGETRequestArr(urlbase + path, jsonSearch.toString(), this.connID);
-        ArrayList<DummyProduct> dummyProductResponeArr = DummyProduct.makeDummySearchFromJSON(jsonArray);
-        System.out.println(ANSI_YELLOW + "(Search) response: " + dummyProductResponeArr + ANSI_RESET);
+        ArrayList<DummySearch> dummySearchResponeArr = DummySearch.makeDummySearchFromJSON(jsonArray);
+        System.out.println(ANSI_YELLOW + "(Search) response: " + dummySearchResponeArr + ANSI_RESET);
 //        this.userID = response.getUserID();
 //        this.connID = response.getConnID();
-        return dummyProductResponeArr;
+        return dummySearchResponeArr;
     }
     public int showAllStores() { return 0; }
     public int showStoreProducts() { return 0; }
