@@ -18,21 +18,18 @@ public class Client {
     private String userName;
     private String pass;
 
+    public Client() {
+    }
     public String getUserName() {
         return userName;
     }
-
-    public void setUserName(String userName) {
-        this.userName = userName;
-    }
-
     public boolean isLogin() {
         return !(connID.equals(""));
     }
 
-    public Client() {
-    }
-
+    //Guest
+    public int connectSystem() { return 0; }
+    public int exitSystem() { return 0; }
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
@@ -45,7 +42,6 @@ public class Client {
         this.pass = pass;
         return userID;
     }
-
     public int Login(String userName, String pass){
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
@@ -58,17 +54,6 @@ public class Client {
         this.pass = pass;
         return userID;
     }
-
-    public int Logout(){
-        String path = "logout";
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbase + path, this.connID);
-        Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(Logout) response: " + response + ANSI_RESET);
-        this.userID = response.getUserID();
-        this.connID = response.getConnID();
-        return userID;
-    }
-
     public ArrayList<DummySearch> Search(String mode, String minPrice, String maxPrice, String p_rank, String s_rank) {
         String path = "search";
         int min = Integer.parseInt(minPrice);
@@ -98,6 +83,38 @@ public class Client {
 //        this.connID = response.getConnID();
         return dummySearchResponeArr;
     }
+    public int showAllStores() { return 0; }
+    public int showStoreProducts() { return 0; }
+    public int addProductToCart() { return 0; }
+    public int shopShoopingCart() { return 0; }
+
+    //Subscriber
+    public int Logout(){
+        String path = "logout";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbase + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(Logout) response: " + response + ANSI_RESET);
+        this.userID = response.getUserID();
+        this.connID = response.getConnID();
+        return userID;
+    }
+    public int addStore(){
+        return 0;
+    }
+    public int showUserHistory() { return 0; }
+    public int review() { return 0; }
+
+    //Store Owner Service
+    public int addProduct() { return 0; }
+    public int removeProduct() { return 0; }
+    public int editProduct() { return 0; }
+    public int showStoreHistory() { return 0; }
+
+    //Admin
+    public int showAllUsersHistory() { return 0; }
+
+
+
 
 
 
