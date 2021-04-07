@@ -138,4 +138,24 @@ public class TradingSystem {
     public String errMsgGenerator(String side, String className, String line, String msg) {
         return side + " : <" + className + " in line >" + line + " ; \"" + msg + "\"";
     }
+
+/*
+    public Response AddProductToShoppingCart(String connID, Integer productID, Integer quantity , Integer storeID ){
+        int userID=this.connectedUser.get(connID);
+        User user=this.users.get(userID);
+        Store store=this.stores.get(storeID);
+        if(store.checkProductExist(productID)) {
+            ConcurrentHashMap<Integer,Integer> products=user.getListProduct(storeID); //todo- return empty, not null
+            if (store.checkAbleToAddProduct(products,productID,quantity)) {
+                products.put(productID,quantity);
+                Double price=store.calculatePrice(products);
+                user.addProduct(productID,quantity,storeID,price);
+            }
+        }
+        return new Response(true, "User not login");
+    }
+}
+
+ */
+
 }

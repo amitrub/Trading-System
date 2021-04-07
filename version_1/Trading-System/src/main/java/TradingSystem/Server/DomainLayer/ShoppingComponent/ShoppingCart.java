@@ -21,15 +21,11 @@ public class ShoppingCart {
 
     private Object payment;//?
 
-    Inventory inventory;
-
-
 
     public ShoppingCart(Integer userID) {
         this.userID = userID;
         this.shoppingBags=new ConcurrentHashMap<Integer, ShoppingBag>();
         this.pricePerShoppingBag=new ConcurrentHashMap<Integer, Double>();
-        inventory=Inventory.getInstance();
     }
 
     public Integer addProduct(Integer productID, Integer quantity, Integer storeID, Double price){

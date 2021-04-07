@@ -2,31 +2,18 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 public class Product {
 
-    private static int nextProductID=0;
+    ;
     private Integer productID;
     private String productName;
     private String category;
     private Double price;
 
-    public Product(String productName, String category, Double price) {
-        productID=getNextProductID();
+    public Product(Integer productID,String productName, String category, Double price) {
+        this.productID=productID;
         this.productName = productName;
         this.category = category;
         this.price = price;
     }
-
-    public Product(Integer productID, String productName, String category, Double price) {
-        this.productID = productID;
-        this.productName = productName;
-        this.category = category;
-        this.price = price;
-    }
-
-    private static synchronized int getNextProductID() {
-        nextProductID++;
-        return nextProductID;
-    }
-
 
     public Integer getProductID() {
         return productID;

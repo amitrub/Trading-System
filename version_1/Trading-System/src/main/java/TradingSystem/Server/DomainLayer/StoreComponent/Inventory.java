@@ -10,64 +10,64 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Inventory {
 
+    Integer storeID;
+    private static int nextProductID=0;
     //productID_product
     private ConcurrentHashMap<Integer, Product> products;
-    //productID_storeID
-    private ConcurrentHashMap<Integer, Integer> productPerStore;
+    //poductID_quantity
+    private ConcurrentHashMap<Integer, Integer> productQuantity;
     //productID_comments
-    private ConcurrentHashMap<Integer, String> productComments;
+    private ConcurrentHashMap<Integer, Comment> productComments;
 
 
-
-    private static Inventory inventory = null;
-
-    private Inventory()
+    public Inventory(Integer storeID)
     {
+        this.storeID=storeID;
         this.products= new ConcurrentHashMap<Integer, Product>();
-        this.productPerStore = new ConcurrentHashMap<Integer, Integer>();
-        this.productComments = new ConcurrentHashMap<Integer, String>();
+        this.productQuantity=new ConcurrentHashMap<Integer, Integer>();
+        this.productComments = new ConcurrentHashMap<Integer, Comment>();
     }
 
-    public static Inventory getInstance()
-    {
-        if (inventory == null)
-            inventory = new Inventory();
-
-        return inventory;
+    private static synchronized int getNextProductID() {
+        nextProductID++;
+        return nextProductID;
     }
 
-    public void addProduct(Product p, Integer storeID){
-        products.put(p.getProductID(),p);
-        productPerStore.put(p.getProductID(),storeID);
+    public void addProduct(String productName, String category, Double price) {
+        Integer productID=getNextProductID();
+        Product p=new Product(productID, productName, category, price);
+        this.products.put(productID,p);
+        this.productQuantity.put(productID,0);
     }
 
-    public void deleteProduct(Integer productID,Integer storeID){
-        this.products.remove(productID);
-        this.productPerStore.remove(productID);
-        this.productComments.remove(productID);
-
+    public String deleteProduct(Integer productID,Integer storeID){
+            this.productQuantity.remove(productID);
+            this.products.remove(productID);
+            this.productComments.remove(productID);
+            return "The product delete";
     }
 
     public Product getProduct(Integer productId) {
         return this.products.get(productId);
     }
 
-    public void changeDetails(Integer productId, String productName, Double price, String category) {
-        Iterator it = this.products.entrySet().iterator();
+    public String addQuentityProduct(Integer productId, Integer quantity) {
+        Iterator it = this.productQuantity.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             int id = (int)pair.getKey();
+            int newQuantity=(int)pair.getValue()+quantity;
             if(id==productId) {
-                Product p= new Product(productId,productName,category,price);
-                this.products.remove(productId);
-                this.products.put(id, p);
+                this.productQuantity.remove(productId);
+                this.productQuantity.put(id, newQuantity);
+                return "The Inventory update";
             }
         }
-        String err="The product does not exist in the system";
-    }
+        return "The product does not exist in the system";
+        }
 
-    public void addCommentToProduct(Integer productId, String comment){
-    this.productComments.put(productId,comment);
+    public void addCommentToProduct(Integer productId,Integer userID, String comment){
+    this.productComments.put(productId,new Comment(userID,comment));
     }
 
     public boolean checkProductExist(Integer productID) {
@@ -80,10 +80,6 @@ public class Inventory {
             }
         }
         return false;
-    }
-
-    public int getStoreID(Integer productID) {
-        return this.productPerStore.get(productID);
     }
 
     public Integer getProductID(Integer storeID, String productName) {
@@ -100,15 +96,12 @@ public class Inventory {
 
     public LinkedList<Integer> getAllTheStoreProductID(Integer storeID){
         LinkedList<Integer> storeProducts=new LinkedList<>();
-        Iterator it = this.productPerStore.entrySet().iterator();
+        Iterator it = this.products.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             int PID = (int)pair.getKey();
-            int SID = (int)pair.getValue();
-            if(storeID==SID) {
                 storeProducts.add(PID);
             }
-        }
         return storeProducts;
     }
 
@@ -120,5 +113,42 @@ public class Inventory {
             products.add(p);
         }
         return products;
+    }
+
+
+    public String editProductDetails(Integer productId, String productName, Double price, String category) {
+        Iterator it = this.products.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            int id = (int)pair.getKey();
+            if(id==productId) {
+                Product p= new Product(productId,productName,category,price);
+                this.products.remove(productId);
+                this.products.put(id, p);
+                return "The product update";
+            }
+        }
+        return "The product does not exist in the system";
+    }
+
+    //todo- syncronize!
+    public String reduceProduct(Integer productId, Integer quantityToReduce) {
+        if(productQuantity.containsKey(productId)) {
+            Iterator it = this.productQuantity.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                int id = (int) pair.getKey();
+                int newQuantity = (int) pair.getValue() - quantityToReduce;
+                if (id == productId) {
+                    if (newQuantity > 0) {
+                        this.productQuantity.remove(productId);
+                        this.productQuantity.put(id, newQuantity);
+                        return "The quantity update";
+                    }
+                    return "There is not enough products in the system";
+                }
+            }
+        }
+        return "The product does not exist in the system";
     }
 }

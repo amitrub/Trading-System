@@ -14,6 +14,7 @@ public class Store {
 
     private static int nextStoreID=0;
 
+
     private Integer id;
     private String name;
 
@@ -30,13 +31,12 @@ public class Store {
     private BuyingPolicy buyingPolicy;
 
     private Double rate;
-    private Integer numberOfRatings;
+    //userID_rating
+    private ConcurrentHashMap<Integer, Double> Ratings;
+
     private List<Integer> shoppingHistory;
 
-    //poductID_quantity
-    private ConcurrentHashMap<Integer, Integer> productQuantity;
-
-    public Inventory inventory;
+    private Inventory inventory;
 
     public Store(String name, Integer founderID,  DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy) {
         this.id = getNextStoreID();
@@ -50,10 +50,9 @@ public class Store {
         this.discountPolicy = discountPolicy;
         this.buyingPolicy = buyingPolicy;
         this.rate =1.0; //todo- add rating!
-        this.numberOfRatings =0;
+        this.Ratings=new ConcurrentHashMap<>();
         this.shoppingHistory = new LinkedList<Integer>();
-        this.productQuantity=new ConcurrentHashMap<>();
-        this.inventory=Inventory.getInstance();
+        this.inventory=new Inventory(this.id);
     }
 
     private static synchronized int getNextStoreID() {
@@ -63,9 +62,7 @@ public class Store {
 
     public  String addNewProduct(Integer ownerId, String productName , Double price, String category) {
         if (this.ownersIDs.contains(ownerId)) {
-            Product p = new Product(productName, category, price);
-            productQuantity.put(p.getProductID(), 1);
-            inventory.addProduct(p, this.id);
+            inventory.addProduct(productName, category, price);
             return "The product added";
             //return 0;
         }
@@ -75,35 +72,14 @@ public class Store {
 
     public  String addProductToInventory(Integer ownerId, Integer productId, Integer quantity){
         if (this.ownersIDs.contains(ownerId)) {
-            Iterator it = this.productQuantity.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry)it.next();
-                int id = (int)pair.getKey();
-                int newQuantity=(int)pair.getValue()+quantity;
-                if(id==productId) {
-                        this.productQuantity.remove(productId);
-                        this.productQuantity.put(id, newQuantity);
-                        return "The Inventory update";
-                   //     return 0;
-                }
-            }
-            return "The product does not exist in the system";
-          //  return -1;
+            return inventory.addQuentityProduct(productId, quantity);
         }
         return "Only a store owner is allowed to add products to the Inventory";
-        //return -1;
     }
 
     public  String deleteProduct(Integer ownerId, Integer productId){
         if (this.ownersIDs.contains(ownerId)) {
-            inventory.deleteProduct(productId, this.id);
-           if(this.productQuantity.containsKey(productId)){
-                this.productQuantity.remove(id);
-                return "The product delete";
-                //return 0;
-            }
-            return "The product does not exist in the system";
-            //return -1;
+            return inventory.deleteProduct(productId, this.id);
         }
         return "Only a store owner is allowed to remove a product";
         //return -1;
@@ -111,35 +87,13 @@ public class Store {
 
     public String editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category) {
         if (this.ownersIDs.contains(ownerId)) {
-            Product p=inventory.getProduct(productId);
-            if(p!=null) {
-                inventory.changeDetails(productId, productName, price, category);
-                return "The product update";
-            }
-            return "The product does not exist in the system";
+           return inventory.editProductDetails(productId,productName,price,category);
         }
         return "Only a store owner is allowed to edit the products details";
     }
 
     public String reduceProduct(Integer productId, Integer quantityToReduce){
-        if(productQuantity.containsKey(productId)) {
-            Iterator it = this.productQuantity.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                int id = (int) pair.getKey();
-                int newQuantity = (int) pair.getValue() - quantityToReduce;
-                if (id == productId) {
-                    if (newQuantity < 0) {
-                        newQuantity = 1;
-                    }
-                    this.productQuantity.remove(productId);
-                    this.productQuantity.put(id, newQuantity);
-                    return "The quantity update";
-                }
-            }
-        }
-        return "The product does not exist in the system";
-
+       return inventory.reduceProduct(productId,quantityToReduce);
     }
 
     //todo - ensure that the owner/manager is subscriber!
