@@ -1,18 +1,15 @@
 package TradingSystem.Client;
 
+import static TradingSystem.Server.ServiceLayer.Configuration.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
-
 import java.util.ArrayList;
 
-import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class Client {
-    private String urlbase = "http://localhost:8080/api/" ;
-//    private String urlbase = "http://10.100.102.59:8080/api/" ;
     private int userID = -1;
     private String connID = "";
     private String userName;
@@ -28,12 +25,15 @@ public class Client {
     }
 
     //Guest
-    public int connectSystem() { return 0; }
+    public int connectSystem() {
+        
+        return 0;
+    }
     public int exitSystem() { return 0; }
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), this.connID);
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Register) response: " + response + ANSI_RESET);
         this.userID = response.getUserID();
@@ -45,7 +45,7 @@ public class Client {
     public int Login(String userName, String pass){
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbase + path, dummyUser.toString(), this.connID);
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Login) response: " + response + ANSI_RESET);
         this.userID = response.getUserID();
@@ -76,7 +76,7 @@ public class Client {
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "72", "Error in making serach JSON"));
         }
-        JSONArray jsonArray = HttpRequest.sendPOSTGETRequestArr(urlbase + path, jsonSearch.toString(), this.connID);
+        JSONArray jsonArray = HttpRequest.sendPOSTGETRequestArr(urlbaseGuest + path, jsonSearch.toString(), this.connID);
         ArrayList<DummySearch> dummySearchResponeArr = DummySearch.makeDummySearchFromJSON(jsonArray);
         System.out.println(ANSI_YELLOW + "(Search) response: " + dummySearchResponeArr + ANSI_RESET);
 //        this.userID = response.getUserID();
@@ -91,7 +91,7 @@ public class Client {
     //Subscriber
     public int Logout(){
         String path = "logout";
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbase + path, this.connID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Logout) response: " + response + ANSI_RESET);
         this.userID = response.getUserID();
@@ -112,12 +112,6 @@ public class Client {
 
     //Admin
     public int showAllUsersHistory() { return 0; }
-
-
-
-
-    public void connectSystem() {
-    }
 
 
     //        try {
