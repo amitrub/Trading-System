@@ -1,14 +1,14 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
 public class Comment {
-    Integer userID;
-    String comment;
-    Double rate;
+   private Integer userID;
+   private String comment;
+   private Double rate;
 
     public Comment(Integer userID, String comment) {
         this.userID = userID;
         this.comment = comment;
-        this.rate =-1.0;
+        this.rate=0.0;
     }
 
     public Integer getUserID() {

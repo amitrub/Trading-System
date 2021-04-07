@@ -15,7 +15,6 @@ public class Store {
 
     private static int nextStoreID=0;
 
-
     private Integer id;
     private String name;
 
@@ -50,10 +49,10 @@ public class Store {
         this.managersAppointee=new ConcurrentHashMap<>();
         this.discountPolicy = discountPolicy;
         this.buyingPolicy = buyingPolicy;
-        this.rate =1.0; //todo- add rating!
+        this.rate =5.0; //todo- add rating!
         this.Ratings=new ConcurrentHashMap<>();
         this.shoppingHistory = new LinkedList<Integer>();
-        this.inventory=new Inventory(this.id);
+        this.inventory=new Inventory(this.id,name);
     }
 
     private static synchronized int getNextStoreID() {
@@ -73,7 +72,7 @@ public class Store {
 
     public  String addProductToInventory(Integer ownerId, Integer productId, Integer quantity){
         if (this.ownersIDs.contains(ownerId)) {
-            return inventory.addQuentityProduct(productId, quantity);
+            return inventory.addQuantityProduct(productId, quantity);
         }
         return "Only a store owner is allowed to add products to the Inventory";
     }
@@ -159,18 +158,60 @@ public class Store {
         return this.shoppingHistory;
     }
 
-    //todo - here??
-    public Integer addProductToShopingBag(Integer userId, Integer productId, Integer quantity ){
-        return 0;
-    }
-
     public Integer getProductID(String computer) {
         return inventory.getProductID(this.id,computer);
     }
 
-    public List<DummySearch> SearchByName(String name, int minprice, int maxprice, int prank) {return new LinkedList<>();}
+    public void addRating(Integer userID, Double Rating){
+        this.Ratings.put(userID,Rating);
+        this.rate=CalculateRat();
+    }
 
-    public List<DummySearch> SearchByCategory(String category, int minprice, int maxprice, int prank) {return new LinkedList<>();}
+    public void removeRating(Integer userID){
+        this.Ratings.remove(userID);
+        this.rate=CalculateRat();
+    }
+
+    public Double CalculateRat(){
+        Integer NumOfUsaers=0;
+        Double SumOfRating=0.0;
+        Iterator it = this.Ratings.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            Double Rate=(Double) pair.getValue();
+            NumOfUsaers++;
+            SumOfRating=SumOfRating+Rate;
+        }
+        return SumOfRating/NumOfUsaers;
+    }
+
+    public List<DummySearch> SearchByName(String name, int minprice, int maxprice, int prank) {
+       LinkedList<Integer> FinalID=new LinkedList<>();
+       if(name!=null){
+           FinalID=inventory.getDummySearchByName(FinalID,name);
+       }
+        if(minprice!=-1&&maxprice!=-1){
+            FinalID=inventory.getDummySearchByPrice( FinalID,minprice,maxprice);
+        }
+        if(prank!=-1){
+            FinalID=inventory.getDummySearchByRate(FinalID,prank);
+        }
+        return  inventory.getDummySearchForList(FinalID);
+    }
+
+    public List<DummySearch> SearchByCategory(String category, int minprice, int maxprice, int prank) {
+        LinkedList<Integer> FinalID = new LinkedList<>();
+        if (category != null) {
+            FinalID = inventory.getDummySearchByCategory(FinalID, category);
+        }
+        if (minprice != -1 && maxprice != -1) {
+            FinalID = inventory.getDummySearchByPrice(FinalID, minprice, maxprice);
+        }
+        if (prank != -1) {
+            FinalID = inventory.getDummySearchByRate(FinalID, prank);
+        }
+        return inventory.getDummySearchForList(FinalID);
+    }
 
     public Double getRate() {
         return rate;

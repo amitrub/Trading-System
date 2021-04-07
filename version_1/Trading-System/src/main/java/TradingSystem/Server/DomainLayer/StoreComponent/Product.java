@@ -8,7 +8,7 @@ public class Product {
     private String category;
     private Double price;
 
-    public Product(Integer productID,String productName, String category, Double price) {
+    public Product(Integer productID, String productName, String category, Double price) {
         this.productID=productID;
         this.productName = productName;
         this.category = category;
@@ -42,4 +42,6 @@ public class Product {
     public void setPrice(Double price) {
         this.price = price;
     }
+
+
 }
