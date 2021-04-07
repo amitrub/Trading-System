@@ -2,22 +2,28 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Inventory {
+
+    private final Lock lock = new ReentrantLock();
 
     private Integer storeID;
     private String storeName;
     private static int nextProductID=0;
     //productID_product
     private ConcurrentHashMap<Integer, Product> products;
-    //poductID_quantity
+    //productID_quantity
     private ConcurrentHashMap<Integer, Integer> productQuantity;
-    //productID_comments
-    private ConcurrentHashMap<Integer, Comment> productComments;
+    //productID_quantity
+    private ConcurrentHashMap<Integer, Boolean> productLock;
 
 
     public Inventory(Integer storeID, String storeName)
@@ -26,7 +32,7 @@ public class Inventory {
         this.storeName=storeName;
         this.products= new ConcurrentHashMap<Integer, Product>();
         this.productQuantity=new ConcurrentHashMap<Integer, Integer>();
-        this.productComments = new ConcurrentHashMap<Integer, Comment>();
+        this.productLock=new ConcurrentHashMap<Integer, Boolean>();
     }
 
     private static synchronized int getNextProductID()
@@ -41,13 +47,14 @@ public class Inventory {
         Product p=new Product(productID, productName, category, price);
         this.products.put(productID,p);
         this.productQuantity.put(productID,0);
+        this.productLock.put(productID,false);
     }
 
     public String deleteProduct(Integer productID,Integer storeID)
     {
             this.productQuantity.remove(productID);
             this.products.remove(productID);
-            this.productComments.remove(productID);
+            this.productLock.remove(productID);
             return "The product delete";
     }
 
@@ -74,7 +81,17 @@ public class Inventory {
 
     public void addCommentToProduct(Integer productId,Integer userID, String comment)
     {
-    this.productComments.put(productId,new Comment(userID,comment));
+    this.products.get(productId).addComment(userID,comment);
+    }
+
+    public void removeCommentFromProduct(Integer productId,Integer userID)
+    {
+        this.products.get(productId).removeComment(userID);
+    }
+
+    public LinkedList<String> getAllCommentsForProduct(Integer productID)
+    {
+        return this.products.get(productID).getComments();
     }
 
     public boolean checkProductExist(Integer productID)
@@ -115,7 +132,7 @@ public class Inventory {
         return storeProducts;
     }
 
-    public LinkedList<Product> getAllTheProducs(LinkedList<Integer> productsID)
+    public LinkedList<Product> getAllTheProducts(LinkedList<Integer> productsID)
     {
         LinkedList<Product> products=new LinkedList<>();
         for (Integer i : productsID
@@ -143,7 +160,7 @@ public class Inventory {
     }
 
     //todo- syncronize!
-    public String reduceProduct(Integer productId, Integer quantityToReduce)
+    public boolean reduceProduct(Integer productId, Integer quantityToReduce)
     {
         if(productQuantity.containsKey(productId)) {
             Iterator it = this.productQuantity.entrySet().iterator();
@@ -152,16 +169,18 @@ public class Inventory {
                 int id = (int) pair.getKey();
                 int newQuantity = (int) pair.getValue() - quantityToReduce;
                 if (id == productId) {
-                    if (newQuantity > 0) {
+                    if (newQuantity > 0) { //todo-check
                         this.productQuantity.remove(productId);
                         this.productQuantity.put(id, newQuantity);
-                        return "The quantity update";
+                        return true;
                     }
-                    return "There is not enough products in the system";
+                    return false;
+                            //"There is not enough products in the system";
                 }
             }
         }
-        return "The product does not exist in the system";
+        return false;
+        // "The product does not exist in the system";
     }
 
     public LinkedList<Integer> getDummySearchByName( LinkedList<Integer> FinalID,String name)
@@ -229,7 +248,7 @@ public class Inventory {
                 Map.Entry pair = (Map.Entry) it.next();
                 int PID = (int) pair.getKey();
                 Product p = (Product) pair.getValue();
-                Double R = this.productComments.get(p.getProductID()).getRate();
+                Double R = this.products.get(PID).getRate();
                 if (R >= prank) {
                     products.add(PID);
                 }
@@ -241,7 +260,7 @@ public class Inventory {
                 Map.Entry pair = (Map.Entry) it.next();
                 int PID = (int) pair.getKey();
                 Product p = (Product) pair.getValue();
-                Double R = this.productComments.get(p.getProductID()).getRate();
+                Double R = this.products.get(PID).getRate();
                 if (R >= prank && FinalID.contains(PID)) {
                     products.add(PID);
                 }
@@ -292,15 +311,22 @@ public class Inventory {
         return DummyProducts;
     }
 
-    public LinkedList<DummySearch> getAllProducts(){
-        LinkedList<DummySearch> products= new LinkedList<>();
-        for(Map.Entry<Integer,Product> productEntry:this.products.entrySet()){
-            products.add(new DummySearch(this.storeID,this.storeName,productEntry.getKey(),productEntry.getValue().getProductName(),productEntry.getValue().getPrice(),productEntry.getValue().getCategory()));
-        }
-        return products;
+    public void addRatingToProduct(Integer productID, Integer userID, Double rating)
+    {
+       this.products.get(productID).addRate(userID,rating);
+       Double Rate=this.products.get(productID).CalculateRate();
+       this.products.get(productID).setRate(Rate);
     }
 
-    public Product getProductById(int id){
-        return products.get(id);
+    public void removeRatingFromProduct(Integer productID, Integer userID)
+    {
+        this.products.get(productID).removeRate(userID);
+        Double Rate=this.products.get(productID).CalculateRate();
+        this.products.get(productID).setRate(Rate);
+    }
+
+    public Double CalculateRateForProduct(Integer productID)
+    {
+        return this.products.get(productID).CalculateRate();
     }
 }
