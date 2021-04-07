@@ -176,9 +176,26 @@ public class TradingSystem {
         return side + " : <" + className + " in line >" + line + " ; \"" + msg + "\"";
     }
 
-    public ConcurrentHashMap<Integer, Store> getStores() {
-        return stores;
+    public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
+        List<DummyProduct> dummyProducts = new LinkedList<>();
+        for(Store store: stores.values()){
+            if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
+                dummyProducts.addAll(store.SearchByName(name, minprice, maxprice,prank));
+            }
+        }
+        return dummyProducts;
     }
+
+    public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
+        List<DummyProduct> dummyProducts = new LinkedList<>();
+        for(Store store: stores.values()){
+            if(!store.SearchByCategory(category, minprice, maxprice,prank).isEmpty()){
+                dummyProducts.addAll(store.SearchByCategory(category, minprice, maxprice,prank));
+            }
+        }
+        return dummyProducts;
+    }
+
 
     public List<DummyStore> ShowAllStores() {
         List<DummyStore> list = new LinkedList<>();
@@ -231,15 +248,13 @@ public class TradingSystem {
     public Response AddStore(int userID, String connID, String storeName){
         if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
             Store newStore = new Store(storeName, userID);
-            //TODO
-
-            connectedSubscribers.remove(connID);
-            printUsers();
-            return new Response(false,  "Logout was successful");
+            User user = subscribers.get(userID);
+            user.AddStore(newStore.getId());
+            stores.put(newStore.getId(),newStore);
+            return new Response(false,  "Add Store was successful");
         }
         else{
-            printUsers();
-            return new Response(true, "User not login");
+            return new Response(true, "Error in User details");
         }
     }
 
