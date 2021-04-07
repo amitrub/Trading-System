@@ -8,6 +8,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
@@ -20,63 +21,73 @@ import java.util.Map;
 public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
-    @GetMapping("buy/{userID}")
-    public Response try1(@PathVariable int userID, @RequestHeader("connID") String connID){
-        System.out.println(userID);
-        System.out.println(connID);
-        return new Response(userID, "aaa","good2");
-    }
-
-    @PostMapping("try2")
-    public String try2(@RequestBody Map<String, Object> dummyUser){
-        System.out.println(dummyUser.toString());
-        String name = (String) dummyUser.get("userName");
-//        try {
-//            name = obj.getString("name");
-//        }
-//        catch (Exception e){
-//            name = "Error";
+//    @GetMapping("buy/{userID}")
+//    public Response try1(@PathVariable int userID, @RequestHeader("connID") String connID){
+//        System.out.println(userID);
+//        System.out.println(connID);
+//        return new Response(userID, "aaa","good2");
+//    }
+//
+//    @PostMapping("try2")
+//    public String try2(@RequestBody Map<String, Object> dummyUser){
+//        System.out.println(dummyUser.toString());
+//        String name = (String) dummyUser.get("userName");
+////        try {
+////            name = obj.getString("name");
 ////        }
+////        catch (Exception e){
+////            name = "Error";
+//////        }
+//
+//        return name;
+//    }
+//
+//    @GetMapping("try3")
+//    public Integer try3(){
+//        return 8;
+//    }
 
-        return name;
-    }
-
-    @GetMapping("try3")
-    public Integer try3(){
-        return 8;
+    //return connID
+    @GetMapping()
+    public Response connectSystem(){
+        return null;
     }
 
     @PostMapping("register")
-    public Response Register(@RequestBody DummyUser dummyUser){
-        return tradingSystem.Register(dummyUser);
+    public Response Register(@RequestBody Map<String, Object> obj){
+        String userName = (String) obj.get("userName");
+        String password = (String) obj.get("password");
+        return null;
+//        return tradingSystem.Register(dummyUser);
     }
 
     @PostMapping("login")
-    public Response Login(@RequestBody DummyUser dummyUser){
-        return tradingSystem.Login(dummyUser);
+    public Response Login(@RequestBody Map<String, Object> obj){
+        String userName = (String) obj.get("userName");
+        String password = (String) obj.get("password");
+//        return tradingSystem.Login(dummyUser);
+        return null;
     }
 
-    @GetMapping("logout")
-    public Response Logout(@RequestHeader("connID") String connID){
-        System.out.println(connID);
-        return tradingSystem.Logout(connID);
-    }
-
-    @RequestMapping(path = "search")
-    @GetMapping
+    @PostMapping("search")
     public List<DummySearch> Search(@RequestBody Map<String, Object> obj){
+        boolean productNameMode = (boolean) obj.get("Product Name");
+        boolean productCategoryMode = (boolean) obj.get("Product Category");
+        int minPrice = (int) obj.get("minPrice");
+        int maxPrice = (int) obj.get("maxPrice");
+        int pRank = (int) obj.get("pRank");
+        int sRank = (int) obj.get("sRank");
         return null;
     }
 
-    @RequestMapping(path = "stores")
-    @GetMapping
-    public List<Store> ShowAllStores(){
+    @GetMapping("stores")
+    public List<DummyStore> ShowAllStores(){
         return null;
     }
 
-    @RequestMapping(path = "store/{storeID}")
+    @RequestMapping(path = "store/{storeID}/products")
     @GetMapping
-    public List<Product> ShowAllProducts(){
+    public List<Product> ShowAllProducts(@PathVariable int storeID){
         return null;
     }
 

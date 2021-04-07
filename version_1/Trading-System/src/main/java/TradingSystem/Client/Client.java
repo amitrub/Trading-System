@@ -99,6 +99,8 @@ public class Client {
         return dummySearchResponeArr;
     }
 
+    public void connectSystem() {
+    }
 
 
     //        try {

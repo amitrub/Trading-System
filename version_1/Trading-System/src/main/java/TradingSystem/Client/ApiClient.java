@@ -14,6 +14,9 @@ public class ApiClient {
 //        Client client = new Client();
         boolean system_on = true;
         System.out.println("----Welcome to Trading-System!!----");
+        //:TODO = getHttp connid
+        client.connectSystem();
+
         while (system_on)
         {
             if(client.isLogin()){
