@@ -81,7 +81,8 @@ public class Store {
         return inventory.ShowStoreProducts();
     }
 
-    public  String addNewProduct(Integer ownerId, String productName , Double price, String category) {
+    public  String addNewProduct(Integer ownerId, String productName , Double price, String category)
+    {
         if (this.ownersIDs.contains(ownerId)) {
             inventory.addProduct(productName, category, price);
             return "The product added";
@@ -91,14 +92,16 @@ public class Store {
         //return -1;
     }
 
-    public  String addProductToInventory(Integer ownerId, Integer productId, Integer quantity){
+    public  String addProductToInventory(Integer ownerId, Integer productId, Integer quantity)
+    {
         if (this.ownersIDs.contains(ownerId)) {
             return inventory.addQuantityProduct(productId, quantity);
         }
         return "Only a store owner is allowed to add products to the Inventory";
     }
 
-    public  String deleteProduct(Integer ownerId, Integer productId){
+    public  String deleteProduct(Integer ownerId, Integer productId)
+    {
         if (this.ownersIDs.contains(ownerId)) {
             return inventory.deleteProduct(productId, this.id);
         }
@@ -106,14 +109,16 @@ public class Store {
         //return -1;
     }
 
-    public String editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category) {
+    public String editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category)
+    {
         if (this.ownersIDs.contains(ownerId)) {
            return inventory.editProductDetails(productId,productName,price,category);
         }
         return "Only a store owner is allowed to edit the products details";
     }
 
-    public boolean reduceProduct(Collection<Integer> productsId, Integer quantityToReduce){
+    public boolean reduceProduct(Collection<Integer> productsId, Integer quantityToReduce)
+    {
         for (Integer i:productsId
              ) {
             if(!inventory.reduceProduct(i,quantityToReduce))
@@ -125,7 +130,8 @@ public class Store {
     }
 
     //todo - ensure that the owner/manager is subscriber!
-    public String addNewOwner(Integer userId, Integer newOwnerId){
+    public String addNewOwner(Integer userId, Integer newOwnerId)
+    {
          if (this.ownersIDs.contains(userId)){
              if(!this.ownersIDs.contains(newOwnerId)) {
                  this.ownersIDs.add(newOwnerId);
@@ -140,7 +146,8 @@ public class Store {
     }
 
     //todo - ensure that the owner/manager is subscriber!
-    public String addNewManager(Integer userId, Integer newManagerId) {
+    public String addNewManager(Integer userId, Integer newManagerId)
+    {
         if (this.ownersIDs.contains(userId)){
             if(!this.ownersIDs.contains(newManagerId)) {
                 this.managersIDs.add(newManagerId);
@@ -154,7 +161,8 @@ public class Store {
         //return -1;
     }
 
-    public String removeManager(Integer userId, Integer managerId){
+    public String removeManager(Integer userId, Integer managerId)
+    {
         if (this.ownersIDs.contains(userId)){
             if(this.managersIDs.contains(managerId) && managersAppointee.get(managerId)!=null) {
                 if(this.managersAppointee.get(managerId)==userId) {
@@ -182,20 +190,24 @@ public class Store {
     }
 
     //todo - ensure that only the Trading Administrator can access this function.
-    public List<Integer> GetShoppingHistory(){
+    public List<Integer> GetShoppingHistory()
+    {
         return this.shoppingHistory;
     }
 
-    public Integer getProductID(String computer) {
+    public Integer getProductID(String computer)
+    {
         return inventory.getProductID(this.id,computer);
     }
 
-    public void addRatingToStore(Integer userID, Double Rating){
+    public void addRatingToStore(Integer userID, Double Rating)
+    {
         this.Ratings.put(userID,Rating);
         this.rate=CalculateRate();
     }
 
-    public void removeRatingFromStore(Integer userID){
+    public void removeRatingFromStore(Integer userID)
+    {
         this.Ratings.remove(userID);
         this.rate=CalculateRate();
     }
@@ -229,7 +241,8 @@ public class Store {
         return inventory.CalculateRateForProduct(productID);
     }
 
-    public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank) {
+    public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank)
+    {
        LinkedList<Integer> FinalID=new LinkedList<>();
        if(name!=null){
            FinalID=inventory.getDummySearchByName(FinalID,name);
@@ -243,7 +256,8 @@ public class Store {
         return  inventory.getDummySearchForList(FinalID);
     }
 
-    public List<DummyProduct> SearchByCategory(String category, int minprice, int maxprice, int prank) {
+    public List<DummyProduct> SearchByCategory(String category, int minprice, int maxprice, int prank)
+    {
         LinkedList<Integer> FinalID = new LinkedList<>();
         if (category != null) {
             FinalID = inventory.getDummySearchByCategory(FinalID, category);
@@ -261,7 +275,8 @@ public class Store {
         return rate;
     }
 
-    public boolean checkProductsExistInTheStore(Integer productID, Integer quantity){
+    public boolean checkProductsExistInTheStore(Integer productID, Integer quantity)
+    {
     return  true;
     }
 
@@ -269,16 +284,20 @@ public class Store {
         return true;
     }
 
-    public boolean calculateBugPrice(Integer productID, Integer quantity,ConcurrentHashMap<Integer,Integer> productsInTheBug){
-        return true;
+    public Double calculateBugPrice(Integer productID, Integer quantity,ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        return 1.0;
     }
 
     public boolean productIsLock(Integer productID){
-        return true;
+        return inventory.productIsLock(productID);
     }
 
-    public boolean lockProduct(Integer productID){
-        return true;
+    public void lockProduct(Integer productID){
+        this.inventory.lockProduct(productID);
+    }
+
+    public void  unLockProducts(Collection<Integer> productID){
+        this.inventory.unlockProduct(productID);
     }
 
     public String getName() {
@@ -286,10 +305,25 @@ public class Store {
     }
 
     public String getProductName(Integer productID){
-        return "";
+        return this.inventory.getProduct(productID).getProductName();
     }
 
-    public void  unLockProducts(Collection<Integer> productID){
+    public Product getProduct(Integer productID)
+    {
+        return this.inventory.getProduct(productID);
+    }
 
+
+    public boolean reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
+        Iterator it = products_quantity.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            int PID = (int) pair.getKey();
+            int quantity =  (int) pair.getValue();
+            if(!this.inventory.reduceProduct(PID,quantity)){
+                return false;
+            }
+        }
+        return true;
     }
 }
