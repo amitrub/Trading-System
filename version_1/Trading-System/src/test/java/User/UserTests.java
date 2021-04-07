@@ -19,56 +19,62 @@ public class UserTests {
     @Test
     void registerHappy() {
         int respondID1 = client.Register("Roee", "1234");
-        assertEquals(respondID1, 1);
+        assertTrue(respondID1 != -1);
+
         int respondID2 = client.Register("Dani", "qwerty");
-        assertEquals(respondID2, 2);
+        assertTrue(respondID2 != -1);
+        //connID is empty??
     }
 
     @Test
     void registerDuplicateUserName() {   //duplicate userName
-        int respondID1 = client.Register("Dani", "qwerty");
-        assertEquals(respondID1, 1);
-        int respondID2 = client.Register("Dani", "qqq");
-        assertEquals(respondID2, -1);
+        int respondID1 = client.Register("Avi", "qwerty");
+        assertTrue(respondID1 != -1);
+        int respondID2 = client.Register("Avi", "qqq");
+        assertTrue(respondID2 == -1);
     }
 
+    /*
     @Test
     void registerPassword() {    //password is too short
-        int respondID1 = client.Register("Dani", "1");
-        assertEquals(respondID1, -1);
+        int respondID = client.Register("Lior", "1");
+        assertTrue(respondID == -1);
     }
+     */
 
     @Test
     void loginHappy(){
-        client.Register("Dani", "qwerty");
+        int respondID1 = client.Register("Yossi", "qwerty");
+        int respondID2 = client.Login("Yossi", "qwerty");
+        assertEquals(respondID1, respondID2);
         assertTrue(client.isLogin());
-        client.Logout();
-        int respondID = client.Login("Dani", "qwerty");
-        assertEquals(respondID, 1);
     }
 
     @Test
     void loginIncorrectPassword(){
-        client.Register("Dani", "qwerty");
-        client.Logout();
-        int respondID = client.Login("Dani", "qwe");
+        client.Register("Shai", "qwerty");
+        int respondID = client.Login("Shai", "qwe");
         assertEquals(respondID, -1);
     }
 
     @Test
     void loginIncorrectUserName(){
-        client.Register("Dani", "qwerty");
-        client.Logout();
-        int respondID = client.Login("Roee", "qwerty");
+        client.Register("Elinor", "qwerty");
+        int respondID = client.Login("Eli", "qwerty");
         assertEquals(respondID, -1);
     }
 
     @Test
     void logoutHappy(){
-        client.Register("Dani", "qwerty");
-        client.Logout();
+        client.Register("Shir", "qwerty");
+        int respondID = client.Logout();
+        assertEquals(respondID, -1);
         assertFalse(client.isLogin());
     }
 
+    @Test
+    void searchTest(){
+
+    }
 
 }
