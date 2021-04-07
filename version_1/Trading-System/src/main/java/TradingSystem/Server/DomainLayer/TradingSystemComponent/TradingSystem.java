@@ -59,7 +59,7 @@ public class TradingSystem {
     //If there is no new user creator adds it to users in the hashmap and returns an ID number
     public Response Register(DummyUser dummyUser){
         if(IsUserNameExist(dummyUser.getUserName()))
-            return new Response(true, "Error user name is taken");
+            return new Response(true, errMsgGenerator("Server", "TradingSystem","62","Error user name is taken"));
         User newUser = new User(dummyUser.getUserName(), dummyUser.getPassword());
         users.put(newUser.getId(), newUser);
         printUsers();
@@ -119,10 +119,10 @@ public class TradingSystem {
                 if(password.equals(user.getPassword()))
                     return new Response(id,"", false,"");
                 else
-                    return new Response(true,"Incorrect password");
+                    return new Response(true,errMsgGenerator("Server", "TradingSystem","122","Incorrect password"));
             }
         }
-        return new Response(true,"User not found");
+        return new Response(true,errMsgGenerator("Server", "TradingSystem","125","User not found"));
     }
 
     public Response Logout(String connID){
@@ -133,5 +133,9 @@ public class TradingSystem {
         else{
             return new Response(true, "User not login");
         }
+    }
+
+    public String errMsgGenerator(String side, String className, String line, String msg) {
+        return side + " : <" + className + " in line >" + line + " ; \"" + msg + "\"";
     }
 }
