@@ -2,6 +2,8 @@ package TradingSystem.Server.Service_Layer;
 
 import org.json.JSONObject;
 
+import static TradingSystem.Server.Service_Layer.Configuration.errMsgGenerator;
+
 public class Response {
     private Integer userID = -1;
     private String connID = "";
@@ -47,6 +49,20 @@ public class Response {
     public Response(boolean isErr, String message) {
         this.isErr = isErr;
         this.message = message;
+    }
+
+    public static Response makeResponseFromJSON(JSONObject jsonResponse) {
+        try{
+            int userID = jsonResponse.getInt("userID");
+            String connID = jsonResponse.getString("connID");
+            boolean isErr = jsonResponse.getBoolean("err");
+            String message = jsonResponse.getString("message");
+            Response response = new Response(userID, connID, isErr, message);
+            return response;
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Service", "Response", "60", "error in making response from JSON object"));
+        }
+        return new Response();
     }
 
     public Integer getUserID() {
