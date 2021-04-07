@@ -2,12 +2,13 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 
@@ -151,4 +152,18 @@ public class TradingSystem {
     public ConcurrentHashMap<Integer, Store> getStores() {
         return stores;
     }
+
+    public List<DummyStore> getAllstores(){
+        List<DummyStore> list=new LinkedList<>();
+        for(Map.Entry<Integer,Store> storecurr:stores.entrySet()){
+            list.add(new DummyStore(storecurr.getKey(),storecurr.getValue().getName(),storecurr.getValue().getRate()));
+        }
+        return list;
+    }
+
+
+    public List<DummySearch> getAllPoductsByStore(DummyStore store){
+        return stores.get(store.getId()).getAllProducts();
+    }
+
 }

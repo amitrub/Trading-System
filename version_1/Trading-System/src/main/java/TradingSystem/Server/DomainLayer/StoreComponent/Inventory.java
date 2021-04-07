@@ -291,4 +291,16 @@ public class Inventory {
         }
         return DummyProducts;
     }
+
+    public LinkedList<DummySearch> getAllProducts(){
+        LinkedList<DummySearch> products= new LinkedList<>();
+        for(Map.Entry<Integer,Product> productEntry:this.products.entrySet()){
+            products.add(new DummySearch(this.storeID,this.storeName,productEntry.getKey(),productEntry.getValue().getProductName(),productEntry.getValue().getPrice(),productEntry.getValue().getCategory()));
+        }
+        return products;
+    }
+
+    public Product getProductById(int id){
+        return products.get(id);
+    }
 }

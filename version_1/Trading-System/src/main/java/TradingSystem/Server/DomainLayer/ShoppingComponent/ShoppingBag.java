@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShoppingBag {
@@ -70,5 +71,13 @@ public class ShoppingBag {
 
     public void setFinalPrice(Double finalPrice) {
         this.finalPrice = finalPrice;
+    }
+
+    public List<Integer> getProductsList(){
+        List<Integer> products=new LinkedList<>();
+        for(Map.Entry<Integer,Integer> map: this.products.entrySet()){
+            products.add(map.getKey());
+        }
+        return products;
     }
 }
