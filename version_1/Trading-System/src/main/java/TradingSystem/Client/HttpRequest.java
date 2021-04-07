@@ -17,7 +17,7 @@ import static TradingSystem.Server.Service_Layer.Configuration.ANSI_RESET;
 
 public class HttpRequest {
 
-    public static Response sendGetRequest(String urlStr, String connID){
+    public static JSONObject sendGetRequest(String urlStr, String connID){
         try {
             URL url = new URL(urlStr);
             HttpURLConnection httpURLConnection=(HttpURLConnection)url.openConnection();
@@ -36,19 +36,20 @@ public class HttpRequest {
                 response.append(line);
             }
             bufferedReader.close();
+
             JSONObject jsonResponse = new JSONObject(response.toString());
-            Response res = Response.makeResponseFromJSON(jsonResponse);
-            return res;
+            //Response res = Response.makeResponseFromJSON(jsonResponse);
+            return jsonResponse;
         }
         catch (Exception e){
             //e.printStackTrace();
-            Response res = new Response(-1,  "Error in Making GET Request");
-            System.out.println("GET error: " + res);
-            return res;
+            //Response res = new Response(-1,  "Error in Making GET Request");
+            //System.out.println("GET error: " + res);
+            return new JSONObject();
         }
     }
 
-    public static Response sendPOSTGETRequest(String urlStr, String post_data, String connID){
+    public static JSONObject sendPOSTGETRequest(String urlStr, String post_data, String connID){
 
         try {
             URL url = new URL(urlStr);
@@ -80,14 +81,57 @@ public class HttpRequest {
             bufferedReader.close();
 
             JSONObject jsonResponse = new JSONObject(response.toString());
-            Response res = Response.makeResponseFromJSON(jsonResponse);
-            return res;
+            //Response res = Response.makeResponseFromJSON(jsonResponse);
+            return jsonResponse;
         }
         catch (Exception e){
             //e.printStackTrace();
-            Response res = new Response(-1,  "Error in Making POST - GET Request");
-            System.out.println(res);
-            return res;
+            //Response res = new Response(-1,  "Error in Making POST - GET Request");
+            //System.out.println(res);
+            return new JSONObject();
+        }
+    }
+
+    public static JSONArray sendPOSTGETRequestArr(String urlStr, String post_data, String connID){
+
+        try {
+            URL url = new URL(urlStr);
+            HttpURLConnection httpURLConnection=(HttpURLConnection)url.openConnection();
+            httpURLConnection.setRequestMethod("POST");
+
+            //adding header
+            httpURLConnection.setRequestProperty("connID", connID);
+            httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+            httpURLConnection.setRequestProperty("Accept", "application/json");
+            httpURLConnection.setDoOutput(true);
+
+            //Adding Post Data
+            OutputStream outputStream=httpURLConnection.getOutputStream();
+            OutputStreamWriter osw = new OutputStreamWriter(outputStream, "UTF-8");
+            osw.write(post_data);
+            osw.flush();
+            osw.close();
+
+            //System.out.println("Response Code "+httpURLConnection.getResponseCode());
+
+            String line="";
+            InputStreamReader inputStreamReader=new InputStreamReader(httpURLConnection.getInputStream());
+            BufferedReader bufferedReader=new BufferedReader(inputStreamReader);
+            StringBuilder response=new StringBuilder();
+            while ((line=bufferedReader.readLine())!=null){
+                response.append(line);
+            }
+            bufferedReader.close();
+
+            JSONArray jsonArrResponse = new JSONArray(response.toString());
+            //Response res = Response.makeResponseFromJSON(jsonResponse);
+            return jsonArrResponse;
+        }
+        catch (Exception e){
+            //e.printStackTrace();
+            //Response res = new Response(-1,  "Error in Making POST - GET Request");
+            //System.out.println(res);
+            return new JSONArray();
         }
     }
 
