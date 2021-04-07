@@ -215,4 +215,12 @@ public class Store {
     public Double getRate() {
         return rate;
     }
+
+    public String getName() {
+        return name;
+    }
+
+    public List<DummySearch> getAllProducts(){
+        return inventory.getAllProducts();
+    }
 }

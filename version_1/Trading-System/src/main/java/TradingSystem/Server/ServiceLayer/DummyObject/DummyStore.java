@@ -17,5 +17,9 @@ public class DummyStore {
         this.storeRate = storeRate;
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     //TODO make dummay store from json
 }
