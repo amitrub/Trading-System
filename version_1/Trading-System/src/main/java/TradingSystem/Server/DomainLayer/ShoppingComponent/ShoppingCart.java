@@ -81,4 +81,12 @@ public class ShoppingCart {
     public Integer Purchase(Object Payment){
         return 0;
     }
+
+    public List<ShoppingBag> shoppingBags(){
+        List<ShoppingBag> shoppingBags=new LinkedList<>();
+        for(ShoppingBag bag: this.shoppingBags.values()){
+            shoppingBags.add(bag);
+        }
+        return shoppingBags;
+    }
 }
