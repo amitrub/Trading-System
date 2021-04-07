@@ -309,14 +309,14 @@ public class Inventory {
 
     public LinkedList<DummyProduct> getDummySearchForList(LinkedList<Integer> products)
     {
-        LinkedList<DummyProduct> DummyProducts=new LinkedList<DummyProduct>();
+        LinkedList<DummyProduct> dummyProducts =new LinkedList<DummyProduct>();
         for (Integer i:products
              ) {
             Product p=this.products.get(i);
             DummyProduct D=new DummyProduct(this.storeID,storeName,p.getProductID(),p.getProductName(),p.getPrice(),p.getCategory());//productComments.get(i).getRate());
-            DummyProducts.add(D);
+            dummyProducts.add(D);
         }
-        return DummyProducts;
+        return dummyProducts;
     }
 
     public void addRatingToProduct(Integer productID, Integer userID, Double rating)

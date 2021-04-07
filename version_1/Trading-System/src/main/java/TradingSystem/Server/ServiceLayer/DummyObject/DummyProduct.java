@@ -35,6 +35,14 @@ public class DummyProduct {
         this.category = category;
     }
 
+    public int getStoreID() {
+        return storeID;
+    }
+
+    public int getProductID() {
+        return productID;
+    }
+
     public static ArrayList<DummyProduct> makeDummySearchFromJSON(JSONArray jsonArray) {
         ArrayList dummySearchArr = new ArrayList();
             try {
@@ -55,5 +63,17 @@ public class DummyProduct {
                 System.out.println(errMsgGenerator("Service", "DummySearch", "36", "error in making dummySearch from JSON object"));
             }
         return dummySearchArr;
+    }
+
+    @Override
+    public String toString() {
+        return "DummySearch{" +
+                "storeID=" + storeID +
+                ", storeName='" + storeName + '\'' +
+                ", productID=" + productID +
+                ", productName='" + productName + '\'' +
+                ", price=" + price +
+                ", category='" + category + '\'' +
+                '}';
     }
 }
