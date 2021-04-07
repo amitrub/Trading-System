@@ -1,6 +1,7 @@
 package TradingSystem.Client;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -14,7 +15,6 @@ public class ApiClient {
 //        Client client = new Client();
         boolean system_on = true;
         System.out.println("----Welcome to Trading-System!!----");
-        //:TODO = getHttp connid
         client.connectSystem();
 
         while (system_on)
@@ -30,6 +30,7 @@ public class ApiClient {
             {
                 case 0:
                     System.out.println("Exit");
+                    client.exitSystem();
                     system_on = false;
                     break;
                 case 1: {
@@ -44,7 +45,7 @@ public class ApiClient {
                     if(!client.isLogin())
                         login();
                     else {
-                        logout();
+                        client.Logout();
                     }
                     break;
                 }
@@ -52,21 +53,60 @@ public class ApiClient {
                     search();
                     break;
                 case 4:
-                    //show stores
+                    showStores();
                     break;
                 case 5:
-                    //show shopping cart
+                    addProductToCart();
                     break;
+                case 6:
+                    showShoppingCart();
                 default:
                     break;
             }
 //            System.out.println("userChoose: " + userChoose);
-
         }
-
-
     }
 
+    private static int HomePage() {
+        if(!client.isLogin()) {
+            System.out.println("1. Register");
+            System.out.println(ANSI_BLACK + "2. Login" + ANSI_RESET);
+        }
+        else
+            System.out.println(ANSI_BLACK + "2. Logout" + ANSI_RESET);
+        System.out.println("3. Search products");
+        System.out.println("4. Show Stores");
+        System.out.println("5. Add product to Shopping cart");
+        System.out.println("6. Show Shopping Cart");
+        //only subscriber
+        if(client.isLogin()){
+            System.out.println("--- Subscriber options ---");
+            System.out.println("7. Open Store");
+            System.out.println("8. Show history");
+            System.out.println("9. Write comment");
+            System.out.println("10. Show store history");
+        }
+        System.out.println("0. Exit");
+        while (!sc.hasNextInt()) {
+            System.out.println("Invalid input, please try again");
+            sc.next();
+        }
+        return sc.nextInt();
+    }
+    private static void register() {
+        System.out.println("Enter user name:");
+        String userName = sc.nextLine();
+        System.out.println("Enter password:");
+        String pass = sc.nextLine();
+        client.Register(userName, pass);
+    }
+    private static void login() {
+        System.out.println("Enter user name:");
+        String userName = sc.nextLine();
+        System.out.println("Enter password:");
+        String pass = sc.nextLine();
+        client.Login(userName, pass);
+    }
     private static void search() {
         String mode="", minPrice="", maxPrice="", p_rank="", s_rank ="";
         int choose = 0;
@@ -81,7 +121,7 @@ public class ApiClient {
             System.out.println("\t4. Product Rank");
             System.out.println("\t5. Store Rank");
             System.out.println("6. Give me search results...");
-            System.out.println("------------------------------" + ANSI_RESET);
+            System.out.println("------------------------------");
 
             while (!sc.hasNextInt()) {
                 System.out.println("Invalid input, please try again");
@@ -152,61 +192,86 @@ public class ApiClient {
                     break;
                 }
                 case 6: {
-                    System.out.println("searching products for you...");
+                    System.out.println("searching products for you..." + ANSI_RESET);
                     break;
                 }
             }
         }
 
         ArrayList<DummySearch> dummySearches = client.Search(mode, minPrice, maxPrice, p_rank, s_rank);
-//        Todo: print to user and ask him things
 
-    }
-
-    private static void logout() {
-        client.Logout();
-    }
-
-    private static void login() {
-        System.out.println("Enter user name:");
-        String userName = sc.nextLine();
-        System.out.println("Enter password:");
-        String pass = sc.nextLine();
-        client.Login(userName, pass);
-    }
-
-    private static void register() {
-        System.out.println("Enter user name:");
-        String userName = sc.nextLine();
-        System.out.println("Enter password:");
-        String pass = sc.nextLine();
-        client.Register(userName, pass);
-    }
-
-    private static int HomePage() {
-        if(!client.isLogin()) {
-            System.out.println("1. Register");
-            System.out.println(ANSI_BLACK + "2. Login" + ANSI_RESET);
+        System.out.println(ANSI_BLUE + "Search results:");
+        //print to user and ask him things
+        int i = 1;
+        for (DummySearch dummySearch : dummySearches) {
+            System.out.println(i + ") " + dummySearch);
+            i++;
         }
-        else
-            System.out.println(ANSI_BLACK + "2. Logout" + ANSI_RESET);
-        System.out.println("3. Search products");
-        System.out.println("4. Show Stores");
-        System.out.println("5. Show shopping cart");
-
-        //only subscriber
-        if(client.isLogin()){
-            System.out.println("--- Subscriber options ---");
-            System.out.println("6. Open Store");
-            System.out.println("7. Show history");
-            System.out.println("8. Write comment");
-            System.out.println("9. Show store history");
+        System.out.println("choose product to buy or store to enter to..." + ANSI_RESET);
+        //todo: maybe add option to buy or see the whole store
+    }
+    private static void showStores() {
+        ArrayList<DummyStore> dummyStores = client.showAllStores();
+        System.out.println(ANSI_PURPLE + "---------- Store list: ----------");
+        for(DummyStore dummyStore : dummyStores) {
+            System.out.println(dummyStore);
         }
-        System.out.println("0. Exit");
+        System.out.println(ANSI_RESET);
+        int storeID = -1;
+        while(storeID != 0) {
+            System.out.println("------------------------\n Choose the storeID you want to enter to, or (0) to back the home page:");
+            while (!sc.hasNextInt()) {
+                System.out.println("Invalid input, please try again");
+                sc.next();
+            }
+            storeID = sc.nextInt();
+            showStoresProduct(storeID);
+        }
+    }
+    private static void showStoresProduct(int storeID) {
+        ArrayList<DummySearch> dummyProducts = client.showStoreProducts(storeID);
+        System.out.println(ANSI_PURPLE + "---------- Product list in store " + storeID + " ----------");
+        for(DummySearch dummySearch : dummyProducts) {
+            System.out.println(dummySearch);
+        }
+        System.out.println("------------------\n" + ANSI_RESET);
+    }
+    private static void addProductToCart() {
+        System.out.println("Yay you want to buy!");
+
+        //StoreID
+        System.out.println("Enter storeID:");
         while (!sc.hasNextInt()) {
             System.out.println("Invalid input, please try again");
             sc.next();
         }
-        return sc.nextInt();
+        int storeID = sc.nextInt();
+
+        //ProductID
+        System.out.println("Enter productID:");
+        while (!sc.hasNextInt()) {
+            System.out.println("Invalid input, please try again");
+            sc.next();
+        }
+        int productID = sc.nextInt();
+
+        //quantity
+        System.out.println("Enter quantity:");
+        while (!sc.hasNextInt()) {
+            System.out.println("Invalid input, please try again");
+            sc.next();
+        }
+        int quantity = sc.nextInt();
+
+        client.addProductToCart(storeID, productID, quantity);
+    }
+    private static void showShoppingCart() {
+        ArrayList<DummySearch> shoppingCart = client.showShoopingCart();
+        System.out.println(ANSI_PURPLE + "---------- Shopping List: ----------");
+        for(DummySearch dummySearch : shoppingCart) {
+            System.out.println(dummySearch);
+        }
+        System.out.println(ANSI_RESET);
+        System.out.println("TODO: Press here if you want to pay for your shopping cart");
     }
 }
