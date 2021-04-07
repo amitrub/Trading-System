@@ -16,7 +16,7 @@ import java.util.List;
 public class Service {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
-    @GetMapping("try/{userID}")
+    @GetMapping("buy/{userID}")
     public Response try1(@PathVariable int userID, @RequestHeader("connID") String connID){
         System.out.println(userID);
         System.out.println(connID);
@@ -53,6 +53,12 @@ public class Service {
         System.out.println(connID);
         return tradingSystem.Logout(connID);
     }
+
+//    @RequestMapping(path = "searchByName")
+//    @GetMapping
+//    public List<DummyStore> searchByName(@RequestHeader("connID") String connID, @RequestBody String name){
+//        return tradingSystem.Logout(connID);
+//    }
 
     public List<Object> Search(String objectToSearch){
         return null;

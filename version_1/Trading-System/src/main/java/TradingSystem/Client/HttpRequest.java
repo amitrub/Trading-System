@@ -11,6 +11,9 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.OutputStream;
 
+import static TradingSystem.Server.Service_Layer.Configuration.ANSI_BLUE;
+import static TradingSystem.Server.Service_Layer.Configuration.ANSI_RESET;
+
 
 public class HttpRequest {
 
@@ -34,7 +37,7 @@ public class HttpRequest {
             }
             bufferedReader.close();
             JSONObject jsonResponse = new JSONObject(response.toString());
-            Response res = new Response(jsonResponse);
+            Response res = Response.makeResponseFromJSON(jsonResponse);
             return res;
         }
         catch (Exception e){
@@ -77,7 +80,8 @@ public class HttpRequest {
             bufferedReader.close();
 
             JSONObject jsonResponse = new JSONObject(response.toString());
-            return new Response(jsonResponse);
+            Response res = Response.makeResponseFromJSON(jsonResponse);
+            return res;
         }
         catch (Exception e){
             //e.printStackTrace();
