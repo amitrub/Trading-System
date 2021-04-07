@@ -2,13 +2,18 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -46,63 +51,79 @@ public class GuestService {
     //return connID
     @GetMapping("home")
     public Response connectSystem(){
-        return null;
+        Response res = new Response(false, "no implemented");
+//      Response res = this.tradingSystem.connectSystem();
+        return res;
     }
 
     //return connID
     @GetMapping("exit")
     public Response Exit(@RequestHeader("connID") String connID){
-        return null;
+        Response res = new Response(-1, connID, false, "no implemented, TODO shutdown system");
+//      Response res = this.tradingSystem.exit();
+        return res;
     }
 
     @PostMapping("register")
     public Response Register(@RequestBody Map<String, Object> obj){
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
-        return null;
-//        return tradingSystem.Register(dummyUser);
+        Response res = new Response(800, "connID",  false, "register not implemented. userName: " + userName + " password: " + password);
+//      Response res = this.tradingSystem.Register(userName, password);
+        return res;
     }
 
     @PostMapping("login")
     public Response Login(@RequestBody Map<String, Object> obj){
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
-//        return tradingSystem.Login(dummyUser);
-        return null;
+        Response res = new Response(800, "connID",  false, "login not implemented. userName: " + userName + " password: " + password);
+//      Response res = this.tradingSystem.Login(userName, password);
+        return res;
     }
 
     @PostMapping("search")
-    public List<DummyProduct> Search(@RequestBody Map<String, Object> obj){
+    public List<DummySearch> Search(@RequestBody Map<String, Object> obj){
         boolean productNameMode = (boolean) obj.get("Product Name");
         boolean productCategoryMode = (boolean) obj.get("Product Category");
         int minPrice = (int) obj.get("minPrice");
         int maxPrice = (int) obj.get("maxPrice");
         int pRank = (int) obj.get("pRank");
         int sRank = (int) obj.get("sRank");
-        return null;
+//      List<DummySearch> res = this.tradingSystem.Search();
+//      return res;
+        return new ArrayList<DummySearch>();
     }
 
     @GetMapping("stores")
-    public List<DummyStore> ShowAllStores(){
-        return null;
+    public List<DummyStore> ShowAllStores() {
+//        List<DummyStore> res = this.tradingSystem.ShowAllStores();
+//        return res;
+        return new ArrayList<DummyStore>();
     }
 
     @GetMapping("store/{storeID}/products")
-    public List<DummyProduct> ShowStoreProducts(@PathVariable int storeID){
-        return null;
+    public List<DummySearch> ShowStoreProducts(@PathVariable int storeID){
+//        List<DummySearch> res = this.tradingSystem.ShowStoreProducts();
+//        return res;
+        return new ArrayList<DummySearch>();
     }
 
     @PostMapping("shopping_cart/add_product")
     public Response AddProductToCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
-        //TODO : add quantity
-        return null;
+        int quantity = (int) obj.get("quantity");
+        Response res = new Response();
+        return res;
     }
 
     @GetMapping("shopping_cart")
-    public List<DummyProduct> ShowShoppingCart(@RequestHeader("connID") String connID){
-        return null;
+    public List<DummySearch> ShowShoppingCart(@RequestHeader("connID") String connID){
+
+//        List<DummySearch> res = this.tradingSystem.ShowShoppingCart();
+//        return res;
+        return new ArrayList<DummySearch>();
     }
 
     public List<Object> Sort(Integer Category){ //todo getting list?
