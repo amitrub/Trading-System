@@ -147,4 +147,8 @@ public class TradingSystem {
     public String errMsgGenerator(String side, String className, String line, String msg) {
         return side + " : <" + className + " in line >" + line + " ; \"" + msg + "\"";
     }
+
+    public ConcurrentHashMap<Integer, Store> getStores() {
+        return stores;
+    }
 }
