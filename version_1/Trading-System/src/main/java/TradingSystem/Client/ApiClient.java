@@ -1,11 +1,10 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.Service_Layer.DummySearch;
-import TradingSystem.Server.Service_Layer.DummyUser;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
 import java.util.ArrayList;
 import java.util.Scanner;
-import static TradingSystem.Server.Service_Layer.Configuration.*;
+import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class ApiClient {
     private static Scanner sc = new Scanner(System.in);

@@ -1,11 +1,11 @@
-package TradingSystem.Server.Service_Layer;
+package TradingSystem.Server.ServiceLayer.DummyObject;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 
-import static TradingSystem.Server.Service_Layer.Configuration.errMsgGenerator;
+import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
 public class DummySearch {
 

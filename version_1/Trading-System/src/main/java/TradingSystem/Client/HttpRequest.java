@@ -1,6 +1,5 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.Service_Layer.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -10,9 +9,6 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.io.OutputStream;
-
-import static TradingSystem.Server.Service_Layer.Configuration.ANSI_BLUE;
-import static TradingSystem.Server.Service_Layer.Configuration.ANSI_RESET;
 
 
 public class HttpRequest {

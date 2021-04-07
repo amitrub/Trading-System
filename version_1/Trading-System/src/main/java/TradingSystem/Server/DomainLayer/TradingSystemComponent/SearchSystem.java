@@ -1,9 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Inventory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.Service_Layer.DummySearch;
-import TradingSystem.Server.Service_Layer.DummyStore;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
 import java.util.LinkedList;
 import java.util.List;

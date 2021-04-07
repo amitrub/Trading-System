@@ -1,15 +1,14 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.Service_Layer.DummySearch;
-import TradingSystem.Server.Service_Layer.DummyUser;
-import TradingSystem.Server.Service_Layer.Response;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.json.JSONArray;
 import org.json.JSONObject;
-import sun.security.krb5.internal.crypto.RsaMd5CksumType;
 
 import java.util.ArrayList;
 
-import static TradingSystem.Server.Service_Layer.Configuration.*;
+import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class Client {
     private String urlbase = "http://localhost:8080/api/" ;

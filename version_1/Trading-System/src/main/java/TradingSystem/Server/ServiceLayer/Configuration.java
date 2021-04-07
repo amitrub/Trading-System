@@ -1,4 +1,4 @@
-package TradingSystem.Server.Service_Layer;
+package TradingSystem.Server.ServiceLayer;
 
 public class Configuration {
     //Colors

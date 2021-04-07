@@ -1,4 +1,4 @@
-package TradingSystem.Server.Service_Layer;
+package TradingSystem.Server.ServiceLayer.DummyObject;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;

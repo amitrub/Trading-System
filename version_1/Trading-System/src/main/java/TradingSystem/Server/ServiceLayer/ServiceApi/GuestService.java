@@ -1,4 +1,4 @@
-package TradingSystem.Server.Service_Layer;
+package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 
 
@@ -7,16 +7,17 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import org.json.JSONObject;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api")
-public class Service {
+public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @GetMapping("buy/{userID}")

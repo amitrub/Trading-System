@@ -2,8 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
-import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.Service_Layer.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
 import java.util.Iterator;
 import java.util.LinkedList;

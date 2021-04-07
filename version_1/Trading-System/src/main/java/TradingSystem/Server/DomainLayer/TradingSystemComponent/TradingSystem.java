@@ -2,9 +2,9 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.Service_Layer.DummyUser;
-import TradingSystem.Server.Service_Layer.Response;
-import static TradingSystem.Server.Service_Layer.Configuration.*;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import static TradingSystem.Server.ServiceLayer.Configuration.*;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;

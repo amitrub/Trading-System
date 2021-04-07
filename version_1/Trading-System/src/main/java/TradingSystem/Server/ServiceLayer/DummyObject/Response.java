@@ -1,8 +1,8 @@
-package TradingSystem.Server.Service_Layer;
+package TradingSystem.Server.ServiceLayer.DummyObject;
 
 import org.json.JSONObject;
 
-import static TradingSystem.Server.Service_Layer.Configuration.errMsgGenerator;
+import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
 public class Response {
     private Integer userID = -1;
