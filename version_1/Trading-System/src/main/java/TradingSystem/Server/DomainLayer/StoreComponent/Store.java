@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.Service_Layer.DummySearch;
 
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -165,5 +166,13 @@ public class Store {
 
     public Integer getProductID(String computer) {
         return inventory.getProductID(this.id,computer);
+    }
+
+    public List<DummySearch> SearchByName(String name, int minprice, int maxprice, int prank) {return new LinkedList<>();}
+
+    public List<DummySearch> SearchByCategory(String category, int minprice, int maxprice, int prank) {return new LinkedList<>();}
+
+    public Double getRate() {
+        return rate;
     }
 }

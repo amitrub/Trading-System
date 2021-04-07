@@ -1,16 +1,15 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-
-
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.Service_Layer.DummyUser;
 import TradingSystem.Server.Service_Layer.Response;
-
+import static TradingSystem.Server.Service_Layer.Configuration.*;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+
 
 public class TradingSystem {
 
@@ -44,26 +43,34 @@ public class TradingSystem {
         User defaultAdmin = new User("amit","qweasd");
         this.systemAdmins.put(defaultAdmin.getId(),defaultAdmin.getId());
         this.users.put(defaultAdmin.getId(),defaultAdmin);
+        printUsers();
     }
 
     public void printUsers(){
         Iterator it = this.users.entrySet().iterator();
+        System.out.println("-----------------------------------------------");
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
             User user = (User) pair.getValue();
-            System.out.println(user);
+            if(connectedUser.values().contains(user.getId()))
+                System.out.println(ANSI_GREEN + user + "(connected)" + ANSI_RESET);
+            else
+                System.out.println(ANSI_PURPLE + user + "(guest)" + ANSI_RESET);
         }
+        System.out.println("-----------------------------------------------");
     }
 
     //Check if there is a user if the same name then return -1
     //If there is no new user creator adds it to users in the hashmap and returns an ID number
     public Response Register(DummyUser dummyUser){
-        if(IsUserNameExist(dummyUser.getUserName()))
-            return new Response(true, errMsgGenerator("Server", "TradingSystem","62","Error user name is taken"));
+        if(IsUserNameExist(dummyUser.getUserName())) {
+            return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
+        }
         User newUser = new User(dummyUser.getUserName(), dummyUser.getPassword());
         users.put(newUser.getId(), newUser);
         printUsers();
-        return new Response(newUser.getId(), "",false, "Registration was successful");
+        Response res = new Response(newUser.getId(), "",false, "Registration was successful");
+        return res;
     }
 
     //return connID and add user to connection Hash Map
@@ -128,9 +135,11 @@ public class TradingSystem {
     public Response Logout(String connID){
         if(connectedUser.containsKey(connID)){
             connectedUser.remove(connID);
+            printUsers();
             return new Response(false,  "Logout was successful");
         }
         else{
+            printUsers();
             return new Response(true, "User not login");
         }
     }
@@ -139,23 +148,7 @@ public class TradingSystem {
         return side + " : <" + className + " in line >" + line + " ; \"" + msg + "\"";
     }
 
-/*
-    public Response AddProductToShoppingCart(String connID, Integer productID, Integer quantity , Integer storeID ){
-        int userID=this.connectedUser.get(connID);
-        User user=this.users.get(userID);
-        Store store=this.stores.get(storeID);
-        if(store.checkProductExist(productID)) {
-            ConcurrentHashMap<Integer,Integer> products=user.getListProduct(storeID); //todo- return empty, not null
-            if (store.checkAbleToAddProduct(products,productID,quantity)) {
-                products.put(productID,quantity);
-                Double price=store.calculatePrice(products);
-                user.addProduct(productID,quantity,storeID,price);
-            }
-        }
-        return new Response(true, "User not login");
+    public ConcurrentHashMap<Integer, Store> getStores() {
+        return stores;
     }
-}
-
- */
-
 }
