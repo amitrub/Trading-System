@@ -44,7 +44,37 @@ public class HttpRequest {
             return new JSONObject();
         }
     }
+    public static JSONArray sendGetRequestArr(String urlStr, String connID){
+        try {
+            URL url = new URL(urlStr);
+            HttpURLConnection httpURLConnection=(HttpURLConnection)url.openConnection();
+            httpURLConnection.setRequestMethod("GET");
 
+            //adding header
+            httpURLConnection.setRequestProperty("connID", connID);
+//            httpURLConnection.setRequestProperty("Content-Type", "application/json; utf-8");
+            httpURLConnection.setRequestProperty("Accept", "application/json");
+
+            String line="";
+            InputStreamReader inputStreamReader=new InputStreamReader(httpURLConnection.getInputStream());
+            BufferedReader bufferedReader=new BufferedReader(inputStreamReader);
+            StringBuilder response=new StringBuilder();
+            while ((line=bufferedReader.readLine())!=null){
+                response.append(line);
+            }
+            bufferedReader.close();
+
+            JSONArray jsonResponseArr = new JSONArray(response.toString());
+            //Response res = Response.makeResponseFromJSON(jsonResponse);
+            return jsonResponseArr;
+        }
+        catch (Exception e){
+            //e.printStackTrace();
+            //Response res = new Response(-1,  "Error in Making GET Request");
+            //System.out.println("GET error: " + res);
+            return new JSONArray();
+        }
+    }
     public static JSONObject sendPOSTGETRequest(String urlStr, String post_data, String connID){
 
         try {
@@ -87,7 +117,6 @@ public class HttpRequest {
             return new JSONObject();
         }
     }
-
     public static JSONArray sendPOSTGETRequestArr(String urlStr, String post_data, String connID){
 
         try {
@@ -130,6 +159,8 @@ public class HttpRequest {
             return new JSONArray();
         }
     }
+
+
 
     public static String sendPOSTRequest(String urlStr, String post_data, String connID){
 
@@ -177,7 +208,6 @@ public class HttpRequest {
         }
         return ";;";
     }
-
     public static void ParseJsonResponse(){
         try {
             URL url = new URL("https://jsonplaceholder.typicode.com/photos");

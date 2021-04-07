@@ -1,8 +1,10 @@
 package TradingSystem.Client;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import ch.qos.logback.core.encoder.EchoEncoder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -28,8 +30,26 @@ public class Client {
     }
 
     //Guest
-    public int connectSystem() { return 0; }
-    public int exitSystem() { return 0; }
+    public void connectSystem() {
+        String path = "home";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        if(response.getUserID() == -1 && !response.isErr()) { //because its guest
+            this.connID = response.getConnID();
+        } else {
+            System.out.println(errMsgGenerator("Client", "Client", "38", "connect system error"));
+        }
+    }
+    public void exitSystem() {
+        String path = "exit";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        if(!response.isErr()) { //todo: shut down system
+            this.connID = "";
+        } else {
+            System.out.println(errMsgGenerator("Client", "Client", "48", "exit system error"));
+        }
+    }
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
@@ -83,10 +103,39 @@ public class Client {
 //        this.connID = response.getConnID();
         return dummySearchResponeArr;
     }
-    public int showAllStores() { return 0; }
-    public int showStoreProducts() { return 0; }
-    public int addProductToCart() { return 0; }
-    public int shopShoopingCart() { return 0; }
+    public ArrayList<DummyStore> showAllStores() {
+        String path = "stores";
+        JSONArray jsonArray = HttpRequest.sendGetRequestArr(urlbaseGuest+path, this.connID);
+        ArrayList<DummyStore> dummySearchResponeArr = DummyStore.makeDummyStoreFromJSON(jsonArray);
+        return dummySearchResponeArr;
+    }
+    public ArrayList<DummySearch> showStoreProducts(int storeID) {
+        String path = String.format("store/{%s}/products", storeID);
+        JSONArray jsonArray = HttpRequest.sendGetRequestArr(urlbaseGuest+path, this.connID);
+        ArrayList<DummySearch> dummySearchResponeArr = DummySearch.makeDummySearchFromJSON(jsonArray);
+        return dummySearchResponeArr;
+    }
+    public void addProductToCart(int storeID, int productID, int quantity) {
+        String path = "shopping_cart/add_product" ;
+        JSONObject post_data = new JSONObject();
+        try {
+            post_data.put("storeID", storeID);
+            post_data.put("productID", productID);
+            post_data.put("quantity", quantity);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "125", "Error: addProductToCart"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbase + path, post_data.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        if(response.isErr())
+            System.out.println(errMsgGenerator("Client", "Client", "130", response.getMessage()));
+    }
+    public ArrayList<DummySearch> showShoopingCart() {
+        String path = "shoppint_cart";
+        JSONArray jsonArray = HttpRequest.sendGetRequestArr(urlbaseGuest+path, this.connID);
+        ArrayList<DummySearch> dummySearchResponeArr = DummySearch.makeDummySearchFromJSON(jsonArray);
+        return dummySearchResponeArr ;
+    }
 
     //Subscriber
     public int Logout(){
@@ -112,12 +161,6 @@ public class Client {
 
     //Admin
     public int showAllUsersHistory() { return 0; }
-
-
-
-
-
-
 
     //        try {
 //            JSONArray out = new JSONArray(response.toString());
