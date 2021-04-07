@@ -1,6 +1,6 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -158,7 +158,7 @@ public class ApiClient {
             }
         }
 
-        ArrayList<DummySearch> dummySearches = client.Search(mode, minPrice, maxPrice, p_rank, s_rank);
+        ArrayList<DummyProduct> dummyProducts = client.Search(mode, minPrice, maxPrice, p_rank, s_rank);
 //        Todo: print to user and ask him things
 
     }

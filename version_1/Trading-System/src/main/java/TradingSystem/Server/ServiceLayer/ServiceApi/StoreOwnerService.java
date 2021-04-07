@@ -1,7 +1,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -36,7 +36,7 @@ public class StoreOwnerService {
     }
 
     @GetMapping("{userID}/store_history/{storeID}")
-    public List<DummySearch> StoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+    public List<DummyProduct> StoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         return null;
     }
 }

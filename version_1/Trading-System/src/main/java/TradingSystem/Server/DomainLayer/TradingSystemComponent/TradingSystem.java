@@ -2,9 +2,8 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
@@ -188,17 +187,53 @@ public class TradingSystem {
         return stores;
     }
 
-    public List<DummyStore> getAllstores(){
+    public List<DummyStore> ShowAllStores(){
         List<DummyStore> list=new LinkedList<>();
-        for(Map.Entry<Integer,Store> storecurr:stores.entrySet()){
-            list.add(new DummyStore(storecurr.getKey(),storecurr.getValue().getName(),storecurr.getValue().getRate()));
+        for(Map.Entry<Integer,Store> currStore:stores.entrySet()){
+            list.add(new DummyStore(currStore.getValue()));
         }
         return list;
     }
 
-
-    public List<DummySearch> getAllPoductsByStore(DummyStore store){
-        return stores.get(store.getId()).getAllProducts();
+    public List<DummyProduct> ShowStoreProducts(int storeID){
+        return stores.get(storeID).ShowStoreProducts();
     }
+
+    public boolean checkProductsExistInTheStore(Integer productID, Integer storeID, Integer quantity) {
+        return true;
+    }
+
+    public boolean checkBuyingPolicy(Integer productID, Integer storeID, Integer quantity, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        return true;
+    }
+
+    public Double calculateBugPrice(Integer productID, Integer storeID, Integer quantity, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        return 1.0;
+    }
+
+    public boolean productIsLock(int productID, int storeID) {
+        return true;
+    }
+
+    public void lockProduct(int productID, int storeID) {
+    }
+
+    public String getStoreName(int storeID) {
+        return "";
+    }
+
+    public String getProductName(int storeID, int productID) {
+        return "";
+    }
+
+    public void unLockProducts(Collection<Integer> values, int storeID) {
+    }
+
+    public boolean reduseProduct(Collection<Integer> values, int storeID) {
+        return true;
+    }
+
+
+
 
 }

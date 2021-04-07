@@ -2,11 +2,8 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
-import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
 
 import java.util.LinkedList;
 import java.util.List;

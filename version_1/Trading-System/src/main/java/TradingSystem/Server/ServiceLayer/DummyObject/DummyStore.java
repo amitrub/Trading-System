@@ -2,6 +2,7 @@ package TradingSystem.Server.ServiceLayer.DummyObject;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 
 import java.util.List;
 
@@ -15,6 +16,12 @@ public class DummyStore {
         this.id = id;
         this.name = name;
         this.storeRate = storeRate;
+    }
+
+    public DummyStore(Store store) {
+        this.id = store.getId();
+        this.name = store.getName();
+        this.storeRate = store.getRate();
     }
 
     public Integer getId() {

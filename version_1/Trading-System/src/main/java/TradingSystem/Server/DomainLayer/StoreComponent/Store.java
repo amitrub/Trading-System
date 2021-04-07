@@ -2,7 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -51,9 +51,17 @@ public class Store {
         this.inventory=new Inventory(this.id,name);
     }
 
+    public Integer getId() {
+        return id;
+    }
+
     private static synchronized int getNextStoreID() {
         nextStoreID++;
         return nextStoreID;
+    }
+
+    public List<DummyProduct> ShowStoreProducts(){
+        return inventory.ShowStoreProducts();
     }
 
     public  String addNewProduct(Integer ownerId, String productName , Double price, String category) {
@@ -204,7 +212,7 @@ public class Store {
         return inventory.CalculateRateForProduct(productID);
     }
 
-    public List<DummySearch> SearchByName(String name, int minprice, int maxprice, int prank) {
+    public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank) {
        LinkedList<Integer> FinalID=new LinkedList<>();
        if(name!=null){
            FinalID=inventory.getDummySearchByName(FinalID,name);
@@ -218,7 +226,7 @@ public class Store {
         return  inventory.getDummySearchForList(FinalID);
     }
 
-    public List<DummySearch> SearchByCategory(String category, int minprice, int maxprice, int prank) {
+    public List<DummyProduct> SearchByCategory(String category, int minprice, int maxprice, int prank) {
         LinkedList<Integer> FinalID = new LinkedList<>();
         if (category != null) {
             FinalID = inventory.getDummySearchByCategory(FinalID, category);
