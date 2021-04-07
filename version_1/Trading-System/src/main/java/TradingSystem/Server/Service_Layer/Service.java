@@ -7,9 +7,12 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import org.json.JSONObject;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api")
@@ -23,52 +26,62 @@ public class Service {
         return new Response(userID, "aaa","good2");
     }
 
-    @PostMapping("try2/{id}")
-    public Response try2(@RequestBody DummyUser dummyUser){
-        System.out.println(dummyUser);
-        return new Response(1,"");
+    @PostMapping("try2")
+    public String try2(@RequestBody Map<String, Object> dummyUser){
+        System.out.println(dummyUser.toString());
+        String name = (String) dummyUser.get("userName");
+//        try {
+//            name = obj.getString("name");
+//        }
+//        catch (Exception e){
+//            name = "Error";
+////        }
+
+        return name;
     }
 
     @GetMapping("try3")
     public Integer try3(){
-        return 7;
+        return 8;
     }
 
-    @RequestMapping(path = "register")
-    @PostMapping
+    @PostMapping("register")
     public Response Register(@RequestBody DummyUser dummyUser){
         return tradingSystem.Register(dummyUser);
     }
 
-    @RequestMapping(path = "login")
-    @PostMapping
+    @PostMapping("login")
     public Response Login(@RequestBody DummyUser dummyUser){
         return tradingSystem.Login(dummyUser);
     }
 
-    //todo- only subscriber
-    @RequestMapping(path = "logout")
-    @GetMapping
+    @GetMapping("logout")
     public Response Logout(@RequestHeader("connID") String connID){
         System.out.println(connID);
         return tradingSystem.Logout(connID);
     }
 
-//    @RequestMapping(path = "searchByName")
-//    @GetMapping
-//    public List<DummyStore> searchByName(@RequestHeader("connID") String connID, @RequestBody String name){
-//        return tradingSystem.Logout(connID);
-//    }
-
-    public List<Object> Search(String objectToSearch){
+    @RequestMapping(path = "search")
+    @GetMapping
+    public List<DummySearch> Search(@RequestBody Map<String, Object> obj){
         return null;
     }
 
+    @RequestMapping(path = "stores")
+    @GetMapping
     public List<Store> ShowAllStores(){
         return null;
     }
 
-    public ShoppingCart ShowShoppingCart(int userId){
+    @RequestMapping(path = "store/{storeID}")
+    @GetMapping
+    public List<Product> ShowAllProducts(){
+        return null;
+    }
+
+    @RequestMapping(path = "cart")
+    @GetMapping
+    public ShoppingCart ShowShoppingCart(@RequestHeader("connID") String connID){
         return null;
     }
 
@@ -76,9 +89,7 @@ public class Service {
         return null;
     }
 
-    public List<Product> ShowAllProducts(){
-        return null;
-    }
+
 
 
 
