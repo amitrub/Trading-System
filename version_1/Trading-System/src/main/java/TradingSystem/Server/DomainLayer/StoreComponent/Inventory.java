@@ -42,6 +42,9 @@ public class Inventory {
     }
 
     public void deleteProduct(Integer productID,Integer storeID){
+        this.products.remove(productID);
+        this.productPerStore.remove(productID);
+        this.productComments.remove(productID);
 
     }
 
@@ -56,7 +59,7 @@ public class Inventory {
             int id = (int)pair.getKey();
             if(id==productId) {
                 Product p= new Product(productId,productName,category,price);
-                this.products.remove(pair);
+                this.products.remove(productId);
                 this.products.put(id, p);
             }
         }
@@ -81,5 +84,41 @@ public class Inventory {
 
     public int getStoreID(Integer productID) {
         return this.productPerStore.get(productID);
+    }
+
+    public Integer getProductID(Integer storeID, String productName) {
+        LinkedList<Integer> storeProducts=getAllTheStoreProductID(storeID);
+        for (Integer i : storeProducts
+             ) {
+            Product p=products.get(i);
+            if(p.getProductName().equals(productName)){
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public LinkedList<Integer> getAllTheStoreProductID(Integer storeID){
+        LinkedList<Integer> storeProducts=new LinkedList<>();
+        Iterator it = this.productPerStore.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry)it.next();
+            int PID = (int)pair.getKey();
+            int SID = (int)pair.getValue();
+            if(storeID==SID) {
+                storeProducts.add(PID);
+            }
+        }
+        return storeProducts;
+    }
+
+    public LinkedList<Product> getAllTheProducs(LinkedList<Integer> productsID){
+        LinkedList<Product> products=new LinkedList<>();
+        for (Integer i : productsID
+        ) {
+            Product p=products.get(i);
+            products.add(p);
+        }
+        return products;
     }
 }

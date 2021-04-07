@@ -38,17 +38,21 @@ public class Store {
 
     public Inventory inventory;
 
-    public Store(String name, Integer founderID, List<Integer> ownersIDs, List<Integer> managersIDs, DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy, Double rate, Integer numberOfRatings, List<Integer> shoppingHistory) {
+    public Store(String name, Integer founderID,  DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy) {
         this.id = getNextStoreID();
         this.name = name;
         this.founderID = founderID;
-        this.ownersIDs = ownersIDs;
-        this.managersIDs = managersIDs;
+        this.ownersIDs = new LinkedList<Integer>();
+        this.ownersIDs.add(founderID);
+        this.managersIDs = new LinkedList<Integer>();
+        this.ownersAppointee=new ConcurrentHashMap<>();
+        this.managersAppointee=new ConcurrentHashMap<>();
         this.discountPolicy = discountPolicy;
         this.buyingPolicy = buyingPolicy;
-        this.rate = rate;
-        this.numberOfRatings = numberOfRatings;
-        this.shoppingHistory = shoppingHistory;
+        this.rate =1.0; //todo- add rating!
+        this.numberOfRatings =0;
+        this.shoppingHistory = new LinkedList<Integer>();
+        this.productQuantity=new ConcurrentHashMap<>();
         this.inventory=Inventory.getInstance();
     }
 
@@ -57,18 +61,19 @@ public class Store {
         return nextStoreID;
     }
 
-    public Integer addNewProduct(Integer ownerId, String productName , Double price, String category) {
+    public  String addNewProduct(Integer ownerId, String productName , Double price, String category) {
         if (this.ownersIDs.contains(ownerId)) {
             Product p = new Product(productName, category, price);
             productQuantity.put(p.getProductID(), 1);
             inventory.addProduct(p, this.id);
-            return 0;
+            return "The product added";
+            //return 0;
         }
-        String err="Only a store owner is allowed to add new products";
-        return -1;
+        return "Only a store owner is allowed to add new products";
+        //return -1;
     }
 
-    public Integer addProductToInventory(Integer ownerId, Integer productId, Integer quantity){
+    public  String addProductToInventory(Integer ownerId, Integer productId, Integer quantity){
         if (this.ownersIDs.contains(ownerId)) {
             Iterator it = this.productQuantity.entrySet().iterator();
             while (it.hasNext()) {
@@ -76,98 +81,98 @@ public class Store {
                 int id = (int)pair.getKey();
                 int newQuantity=(int)pair.getValue()+quantity;
                 if(id==productId) {
-                        this.productQuantity.remove(pair);
+                        this.productQuantity.remove(productId);
                         this.productQuantity.put(id, newQuantity);
-                        return 0;
+                        return "The Inventory update";
+                   //     return 0;
                 }
             }
-            String err="The product does not exist in the system";
-            return -1;
+            return "The product does not exist in the system";
+          //  return -1;
         }
-        String err="Only a store owner is allowed to add products to the Inventory";
-        return -1;
+        return "Only a store owner is allowed to add products to the Inventory";
+        //return -1;
     }
 
-    public Integer deleteProduct(Integer ownerId, Integer productId){
+    public  String deleteProduct(Integer ownerId, Integer productId){
         if (this.ownersIDs.contains(ownerId)) {
             inventory.deleteProduct(productId, this.id);
-            Iterator it = this.productQuantity.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                int id = (int) pair.getKey();
-                if (id == productId)
-                    this.productQuantity.remove(pair);
-                return 0;
+           if(this.productQuantity.containsKey(productId)){
+                this.productQuantity.remove(id);
+                return "The product delete";
+                //return 0;
             }
-            String err="The product does not exist in the system";
-            return -1;
+            return "The product does not exist in the system";
+            //return -1;
         }
-        String err="Only a store owner is allowed to remove a product";
-        return -1;
+        return "Only a store owner is allowed to remove a product";
+        //return -1;
     }
 
-    public Integer editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category) {
+    public String editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category) {
         if (this.ownersIDs.contains(ownerId)) {
             Product p=inventory.getProduct(productId);
             if(p!=null) {
                 inventory.changeDetails(productId, productName, price, category);
-                return 0;
+                return "The product update";
             }
-            String err="The product does not exist in the system";
-            return -1;
+            return "The product does not exist in the system";
         }
-        String err="Only a store owner is allowed to edit the products details";
-        return -1;
+        return "Only a store owner is allowed to edit the products details";
     }
 
-    public Integer reduceProduct(Integer productId, Integer quantityToReduce){
-        Iterator it = this.productQuantity.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            int id = (int)pair.getKey();
-            int newQuantity=(int)pair.getValue()-quantityToReduce;
-            if(id==productId) {
-                if (newQuantity < 0) {
-                    newQuantity = 1;
+    public String reduceProduct(Integer productId, Integer quantityToReduce){
+        if(productQuantity.containsKey(productId)) {
+            Iterator it = this.productQuantity.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                int id = (int) pair.getKey();
+                int newQuantity = (int) pair.getValue() - quantityToReduce;
+                if (id == productId) {
+                    if (newQuantity < 0) {
+                        newQuantity = 1;
+                    }
+                    this.productQuantity.remove(productId);
+                    this.productQuantity.put(id, newQuantity);
+                    return "The quantity update";
                 }
-                this.productQuantity.remove(pair);
-                this.productQuantity.put(id, newQuantity);
-                return 0;
             }
         }
-        String err="The product does not exist in the system";
-        return -1;
+        return "The product does not exist in the system";
+
     }
 
     //todo - ensure that the owner/manager is subscriber!
-    public Integer addNewOwner(Integer userId, Integer newOwnerId){
+    public String addNewOwner(Integer userId, Integer newOwnerId){
          if (this.ownersIDs.contains(userId)){
              if(!this.ownersIDs.contains(newOwnerId)) {
                  this.ownersIDs.add(newOwnerId);
                  this.ownersAppointee.put(newOwnerId,userId);
-                 return 0;
+                 return "The owner added";
+                 //return 0;
              }
-             String err="This user is already the owner of this store";
+             return "This user is already the owner of this store";
          }
-        String err="Only a store owner can appoint another store owner";
-        return -1;
+        return "Only a store owner can appoint another store owner";
+        //return -1;
     }
 
     //todo - ensure that the owner/manager is subscriber!
-    public Integer addNewManager(Integer userId, Integer newManagerId){
+    public String addNewManager(Integer userId, Integer newManagerId) {
         if (this.ownersIDs.contains(userId)){
             if(!this.ownersIDs.contains(newManagerId)) {
                 this.managersIDs.add(newManagerId);
                 this.managersAppointee.put(newManagerId,userId);
-                return 0;
+               return "The manager added";
+               // return 0;
             }
-            String err="This user is already the owner of this store, so he can't be a manager";
+            return "This user is already the owner of this store, so he can't be a manager";
         }
-        String err="Only a store owner is allowed to appoint store's manager";
-        return -1;
+        return "Only a store owner is allowed to appoint store's manager";
+        //return -1;
     }
 
-    public Integer removeManager(Integer userId, Integer managerId){
+    public String removeManager(Integer userId, Integer managerId){
         if (this.ownersIDs.contains(userId)){
             if(this.managersIDs.contains(managerId) && managersAppointee.get(managerId)!=null) {
                 if(this.managersAppointee.get(managerId)==userId) {
@@ -176,21 +181,22 @@ public class Store {
                         Map.Entry pair = (Map.Entry) it.next();
                         int id = (int) pair.getKey();
                         if (id == managerId)
-                            this.managersAppointee.remove(pair);
+                            this.managersAppointee.remove(managerId);
                             this.managersIDs.remove(managerId);
-                            return 0;
+                            return "The Manager removed";
+                            //return 0;
                     }
-                    String err="something ia wrong";
-                    return -1;
+                    return "something ia wrong";
+                    //return -1;
                 }
-                String err="Only the store owner who appointed the store manager can remove him";
-                return -1;
+                return "Only the store owner who appointed the store manager can remove him";
+                //return -1;
             }
-            String err="This user is not the manager of this store, so it impossible to remove him";
-            return -1;
+            return "This user is not the manager of this store, so it impossible to remove him";
+            //return -1;
         }
-        String err="Only a store owner is allowed to remove store's manager";
-        return -1;
+        return "Only a store owner is allowed to remove store's manager";
+        //return -1;
     }
 
     //todo - ensure that only the Trading Administrator can access this function.
@@ -201,5 +207,9 @@ public class Store {
     //todo - here??
     public Integer addProductToShopingBag(Integer userId, Integer productId, Integer quantity ){
         return 0;
+    }
+
+    public Integer getProductID(String computer) {
+        return inventory.getProductID(this.id,computer);
     }
 }
