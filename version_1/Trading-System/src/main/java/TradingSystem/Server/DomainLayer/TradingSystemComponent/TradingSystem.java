@@ -248,7 +248,22 @@ public class TradingSystem {
         }
     }
 
+    public Response AddProductToCart(String connID, int StoreId, int productId, int quantity){
+        if(guests.containsKey(connID)){
+            int userid= guests.get(connID).getId();
+            subscribers.get(userid).AddProductToCart(StoreId,productId,quantity);
+            return new Response(userid, "",false, "Add product to cart Successfully");
 
+        }
+        else if(connectedSubscribers.containsKey(connID)){
+            int val= connectedSubscribers.get(connID);
+            subscribers.get(val).AddProductToCart(StoreId,productId,quantity);
+            return new Response(val, "",false, "Add product to cart Successfully");
 
+        }
+        else {
+            return new Response(true, "User not connect to system");
+        }
+    }
 
 }
