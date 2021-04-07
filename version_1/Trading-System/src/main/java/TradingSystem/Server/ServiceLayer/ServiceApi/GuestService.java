@@ -48,8 +48,14 @@ public class GuestService {
 //    }
 
     //return connID
-    @GetMapping()
+    @GetMapping("home")
     public Response connectSystem(){
+        return null;
+    }
+
+    //return connID
+    @GetMapping("exit")
+    public Response Exit(@RequestHeader("connID") String connID){
         return null;
     }
 
@@ -85,15 +91,20 @@ public class GuestService {
         return null;
     }
 
-    @RequestMapping(path = "store/{storeID}/products")
-    @GetMapping
-    public List<Product> ShowAllProducts(@PathVariable int storeID){
+    @GetMapping("store/{storeID}/products")
+    public List<DummySearch> ShowStoreProducts(@PathVariable int storeID){
         return null;
     }
 
-    @RequestMapping(path = "cart")
-    @GetMapping
-    public ShoppingCart ShowShoppingCart(@RequestHeader("connID") String connID){
+    @PostMapping("shopping_cart/add_product")
+    public Response AddProductToCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int storeID = (int) obj.get("storeID");
+        int productID = (int) obj.get("productID");
+        return null;
+    }
+
+    @GetMapping("shopping_cart")
+    public List<DummySearch> ShowShoppingCart(@RequestHeader("connID") String connID){
         return null;
     }
 
