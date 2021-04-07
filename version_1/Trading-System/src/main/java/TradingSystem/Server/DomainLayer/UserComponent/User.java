@@ -27,6 +27,16 @@ public  class User {
     private ShoppingCart shoppingCart;
     private List<Integer> shoppingHistory;
 
+    public User() {
+        this.id = -1;
+        this.userName = "guest";
+        this.password = "";
+        this.myFoundedStoresIDs = new LinkedList<>();
+        this.myOwnedStoresIDs = new LinkedList<>();
+        this.myManagedStoresIDs = new LinkedList<>();
+        this.shoppingCart = new ShoppingCart(this.id);
+    }
+
     public User(String userName, String password) {
         this.id = getNextUserID();
         this.userName = userName;
