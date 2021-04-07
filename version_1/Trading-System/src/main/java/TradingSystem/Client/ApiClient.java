@@ -1,6 +1,6 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 
 import java.util.ArrayList;
@@ -198,13 +198,13 @@ public class ApiClient {
             }
         }
 
-        ArrayList<DummySearch> dummySearches = client.Search(mode, minPrice, maxPrice, p_rank, s_rank);
+        ArrayList<DummyProduct> dummyProducts = client.Search(mode, minPrice, maxPrice, p_rank, s_rank);
 
         System.out.println(ANSI_BLUE + "Search results:");
         //print to user and ask him things
         int i = 1;
-        for (DummySearch dummySearch : dummySearches) {
-            System.out.println(i + ") " + dummySearch);
+        for (DummyProduct dummyProduct : dummyProducts) {
+            System.out.println(i + ") " + dummyProduct);
             i++;
         }
         System.out.println("choose product to buy or store to enter to..." + ANSI_RESET);
@@ -229,10 +229,10 @@ public class ApiClient {
         }
     }
     private static void showStoresProduct(int storeID) {
-        ArrayList<DummySearch> dummyProducts = client.showStoreProducts(storeID);
+        ArrayList<DummyProduct> dummyProducts = client.showStoreProducts(storeID);
         System.out.println(ANSI_PURPLE + "---------- Product list in store " + storeID + " ----------");
-        for(DummySearch dummySearch : dummyProducts) {
-            System.out.println(dummySearch);
+        for(DummyProduct dummyProduct : dummyProducts) {
+            System.out.println(dummyProduct);
         }
         System.out.println("------------------\n" + ANSI_RESET);
     }
@@ -266,10 +266,10 @@ public class ApiClient {
         client.addProductToCart(storeID, productID, quantity);
     }
     private static void showShoppingCart() {
-        ArrayList<DummySearch> shoppingCart = client.showShoopingCart();
+        ArrayList<DummyProduct> shoppingCart = client.showShoopingCart();
         System.out.println(ANSI_PURPLE + "---------- Shopping List: ----------");
-        for(DummySearch dummySearch : shoppingCart) {
-            System.out.println(dummySearch);
+        for(DummyProduct dummyProduct : shoppingCart) {
+            System.out.println(dummyProduct);
         }
         System.out.println(ANSI_RESET);
         System.out.println("TODO: Press here if you want to pay for your shopping cart");

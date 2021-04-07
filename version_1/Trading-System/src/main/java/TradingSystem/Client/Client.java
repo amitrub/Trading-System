@@ -1,10 +1,9 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import ch.qos.logback.core.encoder.EchoEncoder;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -74,7 +73,7 @@ public class Client {
         this.pass = pass;
         return userID;
     }
-    public ArrayList<DummySearch> Search(String mode, String minPrice, String maxPrice, String p_rank, String s_rank) {
+    public ArrayList<DummyProduct> Search(String mode, String minPrice, String maxPrice, String p_rank, String s_rank) {
         String path = "search";
         int min = Integer.parseInt(minPrice);
         int max = Integer.parseInt(maxPrice);
@@ -97,11 +96,11 @@ public class Client {
             System.out.println(errMsgGenerator("Client", "Client", "72", "Error in making serach JSON"));
         }
         JSONArray jsonArray = HttpRequest.sendPOSTGETRequestArr(urlbase + path, jsonSearch.toString(), this.connID);
-        ArrayList<DummySearch> dummySearchResponeArr = DummySearch.makeDummySearchFromJSON(jsonArray);
-        System.out.println(ANSI_YELLOW + "(Search) response: " + dummySearchResponeArr + ANSI_RESET);
+        ArrayList<DummyProduct> dummyProductResponeArr = DummyProduct.makeDummySearchFromJSON(jsonArray);
+        System.out.println(ANSI_YELLOW + "(Search) response: " + dummyProductResponeArr + ANSI_RESET);
 //        this.userID = response.getUserID();
 //        this.connID = response.getConnID();
-        return dummySearchResponeArr;
+        return dummyProductResponeArr;
     }
     public ArrayList<DummyStore> showAllStores() {
         String path = "stores";
@@ -109,11 +108,11 @@ public class Client {
         ArrayList<DummyStore> dummySearchResponeArr = DummyStore.makeDummyStoreFromJSON(jsonArray);
         return dummySearchResponeArr;
     }
-    public ArrayList<DummySearch> showStoreProducts(int storeID) {
+    public ArrayList<DummyProduct> showStoreProducts(int storeID) {
         String path = String.format("store/{%s}/products", storeID);
         JSONArray jsonArray = HttpRequest.sendGetRequestArr(urlbaseGuest+path, this.connID);
-        ArrayList<DummySearch> dummySearchResponeArr = DummySearch.makeDummySearchFromJSON(jsonArray);
-        return dummySearchResponeArr;
+        ArrayList<DummyProduct> dummyProductResponeArr = DummyProduct.makeDummySearchFromJSON(jsonArray);
+        return dummyProductResponeArr;
     }
     public void addProductToCart(int storeID, int productID, int quantity) {
         String path = "shopping_cart/add_product" ;
@@ -130,11 +129,11 @@ public class Client {
         if(response.isErr())
             System.out.println(errMsgGenerator("Client", "Client", "130", response.getMessage()));
     }
-    public ArrayList<DummySearch> showShoopingCart() {
+    public ArrayList<DummyProduct> showShoopingCart() {
         String path = "shoppint_cart";
         JSONArray jsonArray = HttpRequest.sendGetRequestArr(urlbaseGuest+path, this.connID);
-        ArrayList<DummySearch> dummySearchResponeArr = DummySearch.makeDummySearchFromJSON(jsonArray);
-        return dummySearchResponeArr ;
+        ArrayList<DummyProduct> dummyProductResponeArr = DummyProduct.makeDummySearchFromJSON(jsonArray);
+        return dummyProductResponeArr;
     }
 
     //Subscriber

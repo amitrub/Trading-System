@@ -7,7 +7,7 @@ import java.util.ArrayList;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
-public class DummySearch {
+public class DummyProduct {
 
     private int storeID;
     private String storeName;
@@ -16,7 +16,7 @@ public class DummySearch {
     private double price;
     private String category;
 
-    public DummySearch(){
+    public DummyProduct(){
         this.storeID = -1;
         this.storeName = "";
         this.productID = -1;
@@ -25,7 +25,7 @@ public class DummySearch {
         this.category = "";
     }
 
-    public DummySearch(int storeID, String storeName, int productID, String productName, double price, String category) {
+    public DummyProduct(int storeID, String storeName, int productID, String productName, double price, String category) {
         this.storeID = storeID;
         this.storeName = storeName;
         this.productID = productID;
@@ -42,7 +42,7 @@ public class DummySearch {
         return productID;
     }
 
-    public static ArrayList<DummySearch> makeDummySearchFromJSON(JSONArray jsonArray) {
+    public static ArrayList<DummyProduct> makeDummySearchFromJSON(JSONArray jsonArray) {
         ArrayList dummySearchArr = new ArrayList();
             try {
                 for (int i=0;i<jsonArray.length();i++) {
@@ -53,8 +53,8 @@ public class DummySearch {
                     String productName = jsonResponse.getString("productName");
                     double price = jsonResponse.getDouble("price");
                     String category = jsonResponse.getString("category");
-                    DummySearch dummySearch = new DummySearch(storeID, storeName, productID, productName, price, category);
-                    dummySearchArr.add(dummySearch);
+                    DummyProduct dummyProduct = new DummyProduct(storeID, storeName, productID, productName, price, category);
+                    dummySearchArr.add(dummyProduct);
                 }
 
                 return dummySearchArr;

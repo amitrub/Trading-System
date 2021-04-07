@@ -2,14 +2,10 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 
 
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySearch;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -83,7 +79,7 @@ public class GuestService {
     }
 
     @PostMapping("search")
-    public List<DummySearch> Search(@RequestBody Map<String, Object> obj){
+    public List<DummyProduct> Search(@RequestBody Map<String, Object> obj){
         boolean productNameMode = (boolean) obj.get("Product Name");
         boolean productCategoryMode = (boolean) obj.get("Product Category");
         int minPrice = (int) obj.get("minPrice");
@@ -92,7 +88,7 @@ public class GuestService {
         int sRank = (int) obj.get("sRank");
 //      List<DummySearch> res = this.tradingSystem.Search();
 //      return res;
-        return new ArrayList<DummySearch>();
+        return new ArrayList<DummyProduct>();
     }
 
     @GetMapping("stores")
@@ -103,10 +99,10 @@ public class GuestService {
     }
 
     @GetMapping("store/{storeID}/products")
-    public List<DummySearch> ShowStoreProducts(@PathVariable int storeID){
+    public List<DummyProduct> ShowStoreProducts(@PathVariable int storeID){
 //        List<DummySearch> res = this.tradingSystem.ShowStoreProducts();
 //        return res;
-        return new ArrayList<DummySearch>();
+        return new ArrayList<DummyProduct>();
     }
 
     @PostMapping("shopping_cart/add_product")
@@ -119,11 +115,11 @@ public class GuestService {
     }
 
     @GetMapping("shopping_cart")
-    public List<DummySearch> ShowShoppingCart(@RequestHeader("connID") String connID){
+    public List<DummyProduct> ShowShoppingCart(@RequestHeader("connID") String connID){
 
 //        List<DummySearch> res = this.tradingSystem.ShowShoppingCart();
 //        return res;
-        return new ArrayList<DummySearch>();
+        return new ArrayList<DummyProduct>();
     }
 
     public List<Object> Sort(Integer Category){ //todo getting list?
