@@ -86,6 +86,10 @@ public  class User {
                 '}';
     }
 
+    public void AddProductToCart(int StoreId,int productId, int quantity){
+        shoppingCart.addProductToBag(productId,StoreId,quantity);
+    }
+
 //    public List<DummySearch> getShoppingCart(){
 //        List<DummySearch> shoppingBags=new LinkedList<>();
 //        for(ShoppingBag shoppingBag: shoppingCart.shoppingBags()){
