@@ -29,11 +29,11 @@ public class SubscriberService {
         return null;
     }
 
-    @PostMapping("{userID}/review")
+    @PostMapping("{userID}/writeComment")
     public Response Review(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
-        String review = (String) obj.get("review");
+        String review = (String) obj.get("writeComment");
         double rate = (double) obj.get("rate");
         return null;
     }
