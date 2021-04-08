@@ -117,7 +117,7 @@ public class ShoppingCart {
             Map.Entry pair = (Map.Entry) it.next();
             int storeID = (int) pair.getKey();
             ShoppingBag SB=(ShoppingBag) pair.getValue();
-            ShoppingHistory SH=new ShoppingHistory(SB.getUserID(),storeID,SB.getProducts(),SB.getFinalPrice());
+            ShoppingHistory SH=new ShoppingHistory(SB.getUserID(),storeID,SB.getProducts(),new Date() ,SB.getFinalPrice());
             tradingSystem.addHistoryToStorAnddUser(SH);
         }
     }
