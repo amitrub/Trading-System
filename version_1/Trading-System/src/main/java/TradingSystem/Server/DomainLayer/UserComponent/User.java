@@ -60,6 +60,10 @@ public  class User {
     public void mergeToMyCart(ShoppingCart shoppingCartToMerge){
         this.shoppingCart.mergeToMyCart(shoppingCartToMerge);
     }
+    
+    public void AddShoppingCartTohistory(ShoppingHistory shoppingHistory){
+        this.shoppingHistory.add(shoppingHistory);
+    }
 
     public Integer getId() {
         return id;
