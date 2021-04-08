@@ -27,6 +27,7 @@ public class TradingSystem {
     private TradingSystem() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
+        this.guests = new ConcurrentHashMap<>();
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
     }
@@ -46,6 +47,10 @@ public class TradingSystem {
         printUsers();
     }
 
+    public String errMsgGenerator(String side, String className, String line, String msg) {
+        return side + " : <" + className + " in line >" + line + " ; \"" + msg + "\"";
+    }
+
     public void printUsers() {
         Iterator it = this.subscribers.entrySet().iterator();
         System.out.println("-----------------------------------------------");
@@ -55,7 +60,15 @@ public class TradingSystem {
             if (connectedSubscribers.values().contains(user.getId()))
                 System.out.println(ANSI_GREEN + user + "(connected)" + ANSI_RESET);
             else
-                System.out.println(ANSI_PURPLE + user + "(guest)" + ANSI_RESET);
+                System.out.println(ANSI_PURPLE + user + "(not connected)" + ANSI_RESET);
+        }
+        System.out.println("-----------------------------------------------");
+        it = this.guests.entrySet().iterator();
+        System.out.println("-----------------------------------------------");
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            User user = (User) pair.getValue();
+            System.out.println(ANSI_GREEN + user + "(connected)" + ANSI_RESET);
         }
         System.out.println("-----------------------------------------------");
     }
@@ -63,7 +76,7 @@ public class TradingSystem {
     public Response connectSystem() {
         User newGuest = new User();
         String connID = getConnIDGuest(newGuest);
-        return new Response(false, "Connect system was successful");
+        return new Response(-1,connID,false, "Connect system was successful");
     }
 
     private synchronized String getConnIDGuest(User newGuest) {
@@ -84,23 +97,23 @@ public class TradingSystem {
             connectedSubscribers.remove(connID);
             return new Response(false, "Exit System was successful");
         } else if (guests.containsKey(connID)) {
-            connectedSubscribers.remove(connID);
+            guests.remove(connID);
             return new Response(false, "Exit System was successful");
         } else {
-            printUsers();
             return new Response(true, "User not connect to system");
         }
     }
 
     //Check if there is a user if the same name then return -1
     //If there is no new user creator adds it to users in the hashmap and returns an ID number
-    public Response Register(String userName, String password) {
+    public Response Register(String connID, String userName, String password) {
         if (IsUserNameExist(userName)) {
             return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
         }
-        User newUser = new User(userName, password);
+        User myGuest = guests.get(connID);
+        User newUser = new User(userName, password, myGuest.getShoppingCart());
         subscribers.put(newUser.getId(), newUser);
-        printUsers();
+        guests.remove(connID);
         Response res = new Response(newUser.getId(), "", false, "Registration was successful");
         return res;
     }
@@ -134,12 +147,14 @@ public class TradingSystem {
 
     //Finds if the user exists and if the password is correct, if not returns 1 and error message
     //If the user exists and a correct password returns an ID number returns an ID number
-    public Response Login(String userName, String password) {
+    public Response Login(String guestConnID, String userName, String password) {
         Response response = ValidPassword(userName, password);
         if (response.isErr())
             return response;
+        User myGuest = guests.get(guestConnID);
+        subscribers.get(response.getUserID()).mergeToMyCart(myGuest.getShoppingCart());
         String connID = getConnIDSubscriber(response.getUserID());
-        printUsers();
+        guests.remove(connID);
         return new Response(response.getUserID(), connID, "Login was successful");
     }
 
@@ -164,17 +179,13 @@ public class TradingSystem {
     public Response Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             connectedSubscribers.remove(connID);
-            printUsers();
             return new Response(false, "Logout was successful");
         } else {
-            printUsers();
             return new Response(true, "User not login");
         }
     }
 
-    public String errMsgGenerator(String side, String className, String line, String msg) {
-        return side + " : <" + className + " in line >" + line + " ; \"" + msg + "\"";
-    }
+
 
     public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
         List<DummyProduct> dummyProducts = new LinkedList<>();
@@ -278,5 +289,14 @@ public class TradingSystem {
 
     public boolean reduseProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
        return this.stores.get(storeID).reduceProducts(products);
+    }
+
+    public List<DummyProduct> ShowShoppingCart(int userid){
+        if (subscribers.containsKey(userid)) {
+            return subscribers.get(userid).ShowShoppingCart();
+        }
+        else {
+            return new LinkedList<>();
+        }
     }
 }

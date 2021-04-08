@@ -3,7 +3,9 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.LinkedList;
@@ -17,21 +19,18 @@ public  class User {
     private final Integer id;
     private String userName;
     private String password;
-    private List<Integer> myFoundedStoresIDs;
-    private List<Integer> myOwnedStoresIDs;
-    private List<Integer> myManagedStoresIDs;
+    private List<Integer> myFoundedStoresIDs = new LinkedList<>();;
+    private List<Integer> myOwnedStoresIDs = new LinkedList<>();;
+    private List<Integer> myManagedStoresIDs = new LinkedList<>();;
 
 
     private ShoppingCart shoppingCart;
-    private List<Integer> shoppingHistory;
+    private List<ShoppingHistory> shoppingHistory;
 
     public User() {
         this.id = -1;
         this.userName = "guest";
         this.password = "";
-        this.myFoundedStoresIDs = new LinkedList<>();
-        this.myOwnedStoresIDs = new LinkedList<>();
-        this.myManagedStoresIDs = new LinkedList<>();
         this.shoppingCart = new ShoppingCart(this.id);
     }
 
@@ -39,27 +38,27 @@ public  class User {
         this.id = getNextUserID();
         this.userName = userName;
         this.password = password;
-        this.myFoundedStoresIDs = new LinkedList<>();
-        this.myOwnedStoresIDs = new LinkedList<>();
-        this.myManagedStoresIDs = new LinkedList<>();
+        this.shoppingCart = new ShoppingCart(this.id);
     }
 
-    public User(Integer id, String userName, String password) {
-        this.id = id;
+    public User(String userName, String password, ShoppingCart shoppingCart) {
+        this.id = getNextUserID();
         this.userName = userName;
         this.password = password;
-        this.myFoundedStoresIDs = new LinkedList<>();
-        this.myOwnedStoresIDs = new LinkedList<>();
-        this.myManagedStoresIDs = new LinkedList<>();
+        this.shoppingCart = shoppingCart;
+    }
+
+    private static synchronized int getNextUserID() {
+        nextUserID++;
+        return nextUserID;
     }
 
     public void AddStore(int storeID){
         this.myFoundedStoresIDs.add(storeID);
     }
 
-    private static synchronized int getNextUserID() {
-        nextUserID++;
-        return nextUserID;
+    public void mergeToMyCart(ShoppingCart shoppingCartToMerge){
+        this.shoppingCart.mergeToMyCart(shoppingCartToMerge);
     }
 
     public Integer getId() {
@@ -82,6 +81,10 @@ public  class User {
         this.password = password;
     }
 
+    public ShoppingCart getShoppingCart() {
+        return shoppingCart;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -93,6 +96,10 @@ public  class User {
 
     public void AddProductToCart(int StoreId,int productId, int quantity){
         shoppingCart.addProductToBag(productId,StoreId,quantity);
+    }
+
+    public List<DummyProduct> ShowShoppingCart(){
+        return shoppingCart.ShowShoppingCart();
     }
 
 //    public List<DummySearch> getShoppingCart(){

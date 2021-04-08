@@ -7,6 +7,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShoppingBag {
@@ -37,6 +38,21 @@ public class ShoppingBag {
 
     public int getNextShoppingBagID() {
         return nextShoppingBagID;
+    }
+
+    public void mergeToMyBag(ShoppingBag shoppingBagToMerge){
+        Set<Integer> productsToMerge = shoppingBagToMerge.products.keySet();
+        for (int productID : productsToMerge){
+            Integer newProductQuantity = shoppingBagToMerge.products.get(productID);
+            if(!this.products.containsKey(productID)){
+                this.products.put(productID, newProductQuantity);
+            }
+            else {
+                Integer oldQuantity = this.products.get(productID);
+                this.products.put(productID,oldQuantity+newProductQuantity);
+            }
+        }
+
     }
 
     public void addProduct(Integer productID, Integer quantity) {
