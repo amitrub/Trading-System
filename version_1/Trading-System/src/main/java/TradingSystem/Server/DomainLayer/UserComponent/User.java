@@ -102,6 +102,10 @@ public  class User {
         return shoppingCart.ShowShoppingCart();
     }
 
+    public void addHistory(ShoppingHistory sh) {
+        this.shoppingHistory.add(sh);
+    }
+
 //    public List<DummySearch> getShoppingCart(){
 //        List<DummySearch> shoppingBags=new LinkedList<>();
 //        for(ShoppingBag shoppingBag: shoppingCart.shoppingBags()){

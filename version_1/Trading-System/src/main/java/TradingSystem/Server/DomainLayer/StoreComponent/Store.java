@@ -327,4 +327,13 @@ public class Store {
         }
         return true;
     }
+
+    public void WriteComment(int userId, int productId, String comment) {
+        this.inventory.addCommentToProduct(productId,userId,comment);
+    }
+
+    public void addHistory(ShoppingHistory sh) {
+        this.shoppingHistory.add(sh);
+    }
+
 }
