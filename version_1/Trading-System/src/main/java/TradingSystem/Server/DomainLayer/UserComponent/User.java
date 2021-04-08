@@ -102,7 +102,7 @@ public  class User {
         return shoppingCart.ShowShoppingCart();
     }
 
-    public List<DummyShoppingHistory> ShowHistory(){
+    public List<DummyShoppingHistory> ShowStoreHistory(){
         List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
         for(ShoppingHistory shoppingHistory:shoppingHistory){
             shoppingHistories.add(shoppingHistory.createDummy());
