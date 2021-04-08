@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import java.util.*;
@@ -30,7 +31,7 @@ public class Store {
     //userID_rating
     private ConcurrentHashMap<Integer, Double> Ratings;
 
-    private List<Integer> shoppingHistory;
+    private List<ShoppingHistory> shoppingHistory;
 
     private Inventory inventory;
 
@@ -47,7 +48,7 @@ public class Store {
         this.buyingPolicy = buyingPolicy;
         this.rate =5.0; //todo- add rating!
         this.Ratings=new ConcurrentHashMap<>();
-        this.shoppingHistory = new LinkedList<Integer>();
+        this.shoppingHistory = new LinkedList<ShoppingHistory>();
         this.inventory=new Inventory(this.id,name);
     }
 
@@ -64,7 +65,7 @@ public class Store {
         this.buyingPolicy = buyingPolicy;
         this.rate =5.0; //todo- add rating!
         this.Ratings=new ConcurrentHashMap<>();
-        this.shoppingHistory = new LinkedList<Integer>();
+        this.shoppingHistory = new LinkedList<ShoppingHistory>();
         this.inventory=new Inventory(this.id,name);
     }
 
@@ -190,7 +191,7 @@ public class Store {
     }
 
     //todo - ensure that only the Trading Administrator can access this function.
-    public List<Integer> GetShoppingHistory()
+    public List<ShoppingHistory> GetShoppingHistory()
     {
         return this.shoppingHistory;
     }

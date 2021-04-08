@@ -1,14 +1,10 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Inventory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShoppingCart {
@@ -31,6 +27,19 @@ public class ShoppingCart {
         this.userID = userID;
         this.shoppingBags = new ConcurrentHashMap<Integer, ShoppingBag>();
         this.pricePerShoppingBag = new ConcurrentHashMap<Integer, Double>();
+    }
+
+    public void mergeToMyCart(ShoppingCart shoppingCartToMerge){
+        Set<Integer> keySetToMerge = shoppingCartToMerge.shoppingBags.keySet();
+        for (int key : keySetToMerge){
+            ShoppingBag newShoppingBag = shoppingCartToMerge.shoppingBags.get(key);
+            if(!this.shoppingBags.containsKey(key)){
+                this.shoppingBags.put(key, newShoppingBag);
+            }
+            else {
+                this.shoppingBags.get(key).mergeToMyBag(newShoppingBag);
+            }
+        }
     }
 
     public String addProductToBag(Integer productID, Integer storeID, Integer quantity) {
