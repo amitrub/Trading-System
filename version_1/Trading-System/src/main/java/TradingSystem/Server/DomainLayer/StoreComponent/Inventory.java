@@ -342,7 +342,8 @@ public class Inventory {
         this.productLock.get(productID).lock();
     }
 
-    public void unlockProduct(Collection<Integer> productID) {
+    public void unlockProduct(Collection<Integer> productID)
+    {
         this.productLock.get(productID).unlock();
         this.productLock.get(productID).notifyAll();
     }

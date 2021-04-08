@@ -60,7 +60,7 @@ public  class User {
     public void mergeToMyCart(ShoppingCart shoppingCartToMerge){
         this.shoppingCart.mergeToMyCart(shoppingCartToMerge);
     }
-    
+
     public void AddShoppingCartTohistory(ShoppingHistory shoppingHistory){
         this.shoppingHistory.add(shoppingHistory);
     }
@@ -110,6 +110,10 @@ public  class User {
 
     public List<DummyProduct> ShowShoppingCart(){
         return shoppingCart.ShowShoppingCart();
+    }
+
+    public void addHistory(ShoppingHistory sh) {
+        this.shoppingHistory.add(sh);
     }
 
     public List<DummyShoppingHistory> ShowStoreHistory(){

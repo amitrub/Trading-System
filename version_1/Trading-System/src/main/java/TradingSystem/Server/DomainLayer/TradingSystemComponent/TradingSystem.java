@@ -319,4 +319,19 @@ public class TradingSystem {
         return stores.get(storeId).getHistory();
     }
 
+
+    public Response  WriteComment(int userId,int storeId, int productId, String comment) {
+      //  if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
+           //todo-add checking the user buy the product before?
+           this.stores.get(storeId).WriteComment(userId,productId,comment);
+           return new Response(false,  "Add Comment was successful");
+      //  }
+        //else{
+          //  return new Response(true, "Error in User details");
+        }
+
+    public void addHistoryToStorAnddUser(ShoppingHistory sh) {
+        this.stores.get(sh.getStoreID()).addHistory(sh);
+        this.subscribers.get(sh.getUserID()).addHistory(sh);
+    }
 }
