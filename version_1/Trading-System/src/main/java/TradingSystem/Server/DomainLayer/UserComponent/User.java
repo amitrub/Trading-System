@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -50,6 +51,10 @@ public  class User {
         this.myFoundedStoresIDs = new LinkedList<>();
         this.myOwnedStoresIDs = new LinkedList<>();
         this.myManagedStoresIDs = new LinkedList<>();
+    }
+
+    public void AddStore(int storeID){
+        this.myFoundedStoresIDs.add(storeID);
     }
 
     private static synchronized int getNextUserID() {

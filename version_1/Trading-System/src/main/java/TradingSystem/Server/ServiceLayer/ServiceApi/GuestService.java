@@ -48,7 +48,7 @@ public class GuestService {
     @GetMapping("home")
     public Response connectSystem(){
         Response res = new Response(false, "no implemented");
-//      Response res = this.tradingSystem.connectSystem();
+//        Response res = this.tradingSystem.connectSystem();
         return res;
     }
 
@@ -56,7 +56,7 @@ public class GuestService {
     @GetMapping("exit")
     public Response Exit(@RequestHeader("connID") String connID){
         Response res = new Response(-1, connID, false, "no implemented, TODO shutdown system");
-//      Response res = this.tradingSystem.exit();
+//        Response res = this.tradingSystem.Exit(connID);
         return res;
     }
 
@@ -65,7 +65,7 @@ public class GuestService {
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
         Response res = new Response(800, "connID",  false, "register not implemented. userName: " + userName + " password: " + password);
-//      Response res = this.tradingSystem.Register(userName, password);
+//        Response res = this.tradingSystem.Register(userName, password);
         return res;
     }
 
@@ -74,21 +74,26 @@ public class GuestService {
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
         Response res = new Response(800, "connID",  false, "login not implemented. userName: " + userName + " password: " + password);
-//      Response res = this.tradingSystem.Login(userName, password);
+//        Response res = this.tradingSystem.Login(userName, password);
         return res;
     }
 
     @PostMapping("search")
     public List<DummyProduct> Search(@RequestBody Map<String, Object> obj){
+        //TODO = name
+        String name = "";
         boolean productNameMode = (boolean) obj.get("Product Name");
         boolean productCategoryMode = (boolean) obj.get("Product Category");
         int minPrice = (int) obj.get("minPrice");
         int maxPrice = (int) obj.get("maxPrice");
         int pRank = (int) obj.get("pRank");
         int sRank = (int) obj.get("sRank");
-//      List<DummySearch> res = this.tradingSystem.Search();
-//      return res;
-        return new ArrayList<DummyProduct>();
+//        if(productNameMode & !productCategoryMode)
+//            return tradingSystem.SearchProductByName(name, minPrice, maxPrice, pRank, sRank);
+//        else if(!productNameMode & productCategoryMode)
+//            return tradingSystem.SearchProductByCategory(name, minPrice, maxPrice, pRank, sRank);
+//        else
+            return new ArrayList<DummyProduct>();
     }
 
     @GetMapping("stores")
@@ -100,7 +105,7 @@ public class GuestService {
 
     @GetMapping("store/{storeID}/products")
     public List<DummyProduct> ShowStoreProducts(@PathVariable int storeID){
-//        List<DummySearch> res = this.tradingSystem.ShowStoreProducts();
+//        List<DummyProduct> res = this.tradingSystem.ShowStoreProducts(storeID);
 //        return res;
         return new ArrayList<DummyProduct>();
     }
@@ -110,14 +115,14 @@ public class GuestService {
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
-        Response res = new Response();
-        return res;
+//        Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
+//        return res;
+        return new Response();
     }
 
     @GetMapping("shopping_cart")
     public List<DummyProduct> ShowShoppingCart(@RequestHeader("connID") String connID){
-
-//        List<DummySearch> res = this.tradingSystem.ShowShoppingCart();
+//        List<DummyProduct> res = this.tradingSystem.ShowShoppingCart();
 //        return res;
         return new ArrayList<DummyProduct>();
     }
