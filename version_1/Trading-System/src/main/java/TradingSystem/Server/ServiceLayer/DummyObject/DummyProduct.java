@@ -43,6 +43,22 @@ public class DummyProduct {
         return productID;
     }
 
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public String getProductName() {
+        return productName;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
     public static ArrayList<DummyProduct> makeDummySearchFromJSON(JSONArray jsonArray) {
         ArrayList dummySearchArr = new ArrayList();
             try {

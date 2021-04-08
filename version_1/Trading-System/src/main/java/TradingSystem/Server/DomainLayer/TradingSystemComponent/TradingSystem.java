@@ -1,9 +1,11 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
@@ -52,23 +54,29 @@ public class TradingSystem {
     }
 
     public void printUsers() {
-        Iterator it = this.subscribers.entrySet().iterator();
-        System.out.println("-----------------------------------------------");
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            User user = (User) pair.getValue();
+        Set<Integer> userSet = this.subscribers.keySet();
+        for (Integer id : userSet){
+            User user = this.subscribers.get(id);
             if (connectedSubscribers.values().contains(user.getId()))
-                System.out.println(ANSI_GREEN + user + "(connected)" + ANSI_RESET);
+                System.out.println(ANSI_GREEN + "Users" + "\n" + user + "(connected)" + ANSI_RESET);
             else
-                System.out.println(ANSI_PURPLE + user + "(not connected)" + ANSI_RESET);
+                System.out.println(ANSI_PURPLE + "Users" + "\n" + user + "(not connected)" + ANSI_RESET);
         }
         System.out.println("-----------------------------------------------");
-        it = this.guests.entrySet().iterator();
+        Set<String> guestSet = this.guests.keySet();
+        for (String id : guestSet){
+            User user = this.guests.get(id);
+            System.out.println(ANSI_GREEN + "Guests" + "\n" + user + "(connected)" + ANSI_RESET);
+        }
         System.out.println("-----------------------------------------------");
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            User user = (User) pair.getValue();
-            System.out.println(ANSI_GREEN + user + "(connected)" + ANSI_RESET);
+    }
+
+    public void printStores() {
+        Set<Integer> storeSet = this.stores.keySet();
+        System.out.println("-----------------------------------------------");
+        for (Integer id : storeSet){
+            Store store = this.stores.get(id);
+            System.out.println(ANSI_RED + "Stores" + "\n" + store  + ANSI_RED);
         }
         System.out.println("-----------------------------------------------");
     }
@@ -134,11 +142,9 @@ public class TradingSystem {
 
     //return true if user name is exist in the system
     public boolean IsUserNameExist(String userName) {
-        Iterator it = this.subscribers.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            int id = (int) pair.getKey();
-            User user = (User) pair.getValue();
+        Set<Integer> userSet = this.subscribers.keySet();
+        for (Integer id : userSet) {
+            User user = this.subscribers.get(id);
             if (userName.equals(user.getUserName()))
                 return true;
         }
@@ -154,18 +160,16 @@ public class TradingSystem {
         User myGuest = guests.get(guestConnID);
         subscribers.get(response.getUserID()).mergeToMyCart(myGuest.getShoppingCart());
         String connID = getConnIDSubscriber(response.getUserID());
-        guests.remove(connID);
+        guests.remove(guestConnID);
         return new Response(response.getUserID(), connID, "Login was successful");
     }
 
     //if valid return Response(userId, "", false, "")
     //if not valid return Response(isErr: true, "Error Message")
     public Response ValidPassword(String userName, String password) {
-        Iterator it = this.subscribers.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            int id = (int) pair.getKey();
-            User user = (User) pair.getValue();
+        Set<Integer> userSet = this.subscribers.keySet();
+        for (Integer id : userSet) {
+            User user = this.subscribers.get(id);
             if (userName.equals(user.getUserName())) {
                 if (password.equals(user.getPassword()))
                     return new Response(id, "", false, "");
@@ -178,8 +182,13 @@ public class TradingSystem {
 
     public Response Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
+            User myUser = subscribers.get(connectedSubscribers.get(connID));
             connectedSubscribers.remove(connID);
-            return new Response(false, "Logout was successful");
+            User newGuest = new User();
+            //TODO: mybe do deep copy
+            newGuest.setShoppingCart(myUser.getShoppingCart());
+            String guestConnID = getConnIDGuest(newGuest);
+            return new Response(-1, guestConnID,false, "Logout was successful");
         } else {
             return new Response(true, "User not login");
         }
@@ -298,5 +307,31 @@ public class TradingSystem {
         else {
             return new LinkedList<>();
         }
+    }
+
+    //show the history for some user
+    public List<DummyShoppingHistory> ShowStoreHistory(int userId){
+        return subscribers.get(userId).ShowStoreHistory();
+    }
+
+    //show the history for some store
+    public List<DummyShoppingHistory> ShowHistory(int storeId){
+        return stores.get(storeId).getHistory();
+    }
+
+
+    public Response  WriteComment(int userId,int storeId, int productId, String comment) {
+      //  if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
+           //todo-add checking the user buy the product before?
+           this.stores.get(storeId).WriteComment(userId,productId,comment);
+           return new Response(false,  "Add Comment was successful");
+      //  }
+        //else{
+          //  return new Response(true, "Error in User details");
+        }
+
+    public void addHistoryToStorAnddUser(ShoppingHistory sh) {
+        this.stores.get(sh.getStoreID()).addHistory(sh);
+        this.subscribers.get(sh.getUserID()).addHistory(sh);
     }
 }

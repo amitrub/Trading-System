@@ -16,12 +16,17 @@ public class SubscriberService {
 
     @GetMapping("{userID}/logout")
     public Response Logout(@PathVariable int userID, @RequestHeader("connID") String connID){
-        return tradingSystem.Logout(connID);
+        Response res = tradingSystem.Logout(connID);
+        tradingSystem.printUsers();
+        return res;
     }
 
     @PostMapping("{userID}/add_store")
     public Response AddStore(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody String storeName){
-        return null;
+        Response res = tradingSystem.AddStore(userID, connID, storeName);
+        tradingSystem.printUsers();
+        tradingSystem.printStores();
+        return res;
     }
 
     @GetMapping("{userID}/user_history")

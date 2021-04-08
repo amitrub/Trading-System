@@ -6,7 +6,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -61,6 +61,10 @@ public  class User {
         this.shoppingCart.mergeToMyCart(shoppingCartToMerge);
     }
 
+    public void AddShoppingCartTohistory(ShoppingHistory shoppingHistory){
+        this.shoppingHistory.add(shoppingHistory);
+    }
+
     public Integer getId() {
         return id;
     }
@@ -85,12 +89,18 @@ public  class User {
         return shoppingCart;
     }
 
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
+                ", myFoundedStoresIDs=" + myFoundedStoresIDs +
+                ", myOwnedStoresIDs=" + myOwnedStoresIDs +
                 '}';
     }
 
@@ -100,6 +110,18 @@ public  class User {
 
     public List<DummyProduct> ShowShoppingCart(){
         return shoppingCart.ShowShoppingCart();
+    }
+
+    public void addHistory(ShoppingHistory sh) {
+        this.shoppingHistory.add(sh);
+    }
+
+    public List<DummyShoppingHistory> ShowStoreHistory(){
+        List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
+        for(ShoppingHistory shoppingHistory:shoppingHistory){
+            shoppingHistories.add(shoppingHistory.createDummy());
+        }
+        return shoppingHistories;
     }
 
 //    public List<DummySearch> getShoppingCart(){

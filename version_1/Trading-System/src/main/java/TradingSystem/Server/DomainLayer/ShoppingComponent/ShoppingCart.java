@@ -16,20 +16,16 @@ public class ShoppingCart {
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags;
 
-    //ShoppingBagID_price
-    private ConcurrentHashMap<Integer, Double> pricePerShoppingBag;
-
-    private Double finalPrice;
-
     private Object payment;//?
 
-    public ShoppingCart(Integer userID) {
+    public ShoppingCart(Integer userID)
+    {
         this.userID = userID;
         this.shoppingBags = new ConcurrentHashMap<Integer, ShoppingBag>();
-        this.pricePerShoppingBag = new ConcurrentHashMap<Integer, Double>();
     }
 
-    public void mergeToMyCart(ShoppingCart shoppingCartToMerge){
+    public void mergeToMyCart(ShoppingCart shoppingCartToMerge)
+    {
         Set<Integer> keySetToMerge = shoppingCartToMerge.shoppingBags.keySet();
         for (int key : keySetToMerge){
             ShoppingBag newShoppingBag = shoppingCartToMerge.shoppingBags.get(key);
@@ -42,7 +38,8 @@ public class ShoppingCart {
         }
     }
 
-    public String addProductToBag(Integer productID, Integer storeID, Integer quantity) {
+    public String addProductToBag(Integer productID, Integer storeID, Integer quantity)
+    {
         ConcurrentHashMap<Integer, Integer> productsInTheBug = new ConcurrentHashMap<Integer, Integer>();
         if (this.shoppingBags.get(storeID) != null) {
             productsInTheBug = shoppingBags.get(storeID).getProducts();
@@ -54,8 +51,6 @@ public class ShoppingCart {
                 Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
                 shoppingBags.get(storeID).addProduct(productID, quantity);
                 shoppingBags.get(storeID).setFinalPrice(priceForBug);
-                Double price = this.calculatePrice();
-                this.setFinalPrice(price);
                 return "The product added successfully";
             }
 
@@ -64,26 +59,24 @@ public class ShoppingCart {
         return "The product is not exist in stock";
     }
 
-    private synchronized Double calculatePrice() {
+    private synchronized Double calculatePrice()
+    {
         Double price = 0.0;
-        Iterator it = this.pricePerShoppingBag.entrySet().iterator();
+        Iterator it = this.shoppingBags.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
-            Double p = (Double) pair.getValue();
-            price = price + p;
+            ShoppingBag p = (ShoppingBag) pair.getValue();
+            price = price + p.getFinalPrice();
         }
         return price;
-    }
-
-    public synchronized void setFinalPrice(Double finalPrice) {
-        this.finalPrice = finalPrice;
     }
 
     public ConcurrentHashMap<Integer, ShoppingBag> GetInfo() {
         return this.shoppingBags;
     }
 
-    public String Purchase() throws InterruptedException {
+    public String Purchase() throws InterruptedException
+    {
         Iterator itBug = this.shoppingBags.entrySet().iterator();
         while (itBug.hasNext()) {
             Map.Entry bugPair = (Map.Entry) itBug.next();
@@ -109,17 +102,33 @@ public class ShoppingCart {
         if (paymentAprove()) {
             Buy();
             releaseAllProduct();
+           // PayToTheSellers();
+            addShopingHistory();
             return "The purchase was made successfully ";
         }
         releaseAllProduct();
         return "There is problem with the payment";
     }
 
-    private boolean paymentAprove() {
+    private void addShopingHistory()
+    {
+        Iterator it = this.shoppingBags.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            int storeID = (int) pair.getKey();
+            ShoppingBag SB=(ShoppingBag) pair.getValue();
+            ShoppingHistory SH=new ShoppingHistory(SB.getUserID(),storeID,SB.getProducts(),new Date() ,SB.getFinalPrice());
+            tradingSystem.addHistoryToStorAnddUser(SH);
+        }
+    }
+
+    private boolean paymentAprove()
+    {
         return true;
     }
 
-    private void releaseAllProduct() {
+    private void releaseAllProduct()
+    {
         Iterator itBug = this.shoppingBags.entrySet().iterator();
         while (itBug.hasNext()) {
             Map.Entry bugPair = (Map.Entry) itBug.next();
@@ -139,7 +148,8 @@ public class ShoppingCart {
         }
     }
 
-    private boolean Buy() {
+    private boolean Buy()
+    {
         Iterator itBug = this.shoppingBags.entrySet().iterator();
         while (itBug.hasNext()) {
             Map.Entry bugPair = (Map.Entry) itBug.next();
@@ -157,7 +167,8 @@ public class ShoppingCart {
         return 0;
     }
 
-    public LinkedList<DummyProduct> ShowShoppingCart() {
+    public LinkedList<DummyProduct> ShowShoppingCart()
+    {
         LinkedList<DummyProduct> DummyProducts = new LinkedList<DummyProduct>();
 
         Iterator itBug = this.shoppingBags.entrySet().iterator();

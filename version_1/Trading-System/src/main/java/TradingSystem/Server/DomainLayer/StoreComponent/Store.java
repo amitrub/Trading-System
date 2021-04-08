@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -326,5 +327,31 @@ public class Store {
             }
         }
         return true;
+    }
+
+    public void WriteComment(int userId, int productId, String comment) {
+        this.inventory.addCommentToProduct(productId,userId,comment);
+    }
+
+    public void addHistory(ShoppingHistory sh) {
+        this.shoppingHistory.add(sh);
+    }
+
+
+    public List<DummyShoppingHistory> getHistory(){
+        List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
+        for(ShoppingHistory shoppingHistory:shoppingHistory){
+            shoppingHistories.add(shoppingHistory.createDummy());
+        }
+        return shoppingHistories;
+    }
+
+    @Override
+    public String toString() {
+        return "Store{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", founderID=" + founderID +
+                '}';
     }
 }
