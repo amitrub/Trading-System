@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.LinkedList;
@@ -93,6 +94,10 @@ public  class User {
 
     public void AddProductToCart(int StoreId,int productId, int quantity){
         shoppingCart.addProductToBag(productId,StoreId,quantity);
+    }
+
+    public List<DummyProduct> ShowShoppingCart(){
+        return shoppingCart.ShowShoppingCart();
     }
 
 //    public List<DummySearch> getShoppingCart(){
