@@ -3,7 +3,7 @@ package User;
 import TradingSystem.Client.Client;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+
 import static org.junit.Assert.*;
 
 public class UserTests {
@@ -47,7 +47,7 @@ public class UserTests {
         int respondID1 = client.Register("Yossi", "qwerty");
         int respondID2 = client.Login("Yossi", "qwerty");
         assertEquals(respondID1, respondID2);
-        assertTrue(client.isLogin());
+        assertTrue(client.isSubscriber());
     }
 
     @Test
@@ -69,7 +69,7 @@ public class UserTests {
         client.Register("Shir", "qwerty");
         int respondID = client.Logout();
         assertEquals(respondID, -1);
-        assertFalse(client.isLogin());
+        assertFalse(client.isSubscriber());
     }
 
     @Test
