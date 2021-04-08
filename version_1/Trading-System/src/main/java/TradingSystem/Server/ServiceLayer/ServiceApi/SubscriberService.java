@@ -33,7 +33,7 @@ public class SubscriberService {
     public Response WriteComment(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
-        String review = (String) obj.get("writeComment");
+        String review = (String) obj.get("comment");
         double rate = (double) obj.get("rate");
         return null;
     }

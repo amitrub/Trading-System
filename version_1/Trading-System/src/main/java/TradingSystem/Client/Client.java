@@ -170,7 +170,7 @@ public class Client {
         try {
             jsonPost.put("storeID", storeID);
             jsonPost.put("productID", productID);
-            jsonPost.put("writeComment", review);
+            jsonPost.put("comment", review);
             jsonPost.put("rate", rate);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "172", "Error: writeComment, making post json"));
