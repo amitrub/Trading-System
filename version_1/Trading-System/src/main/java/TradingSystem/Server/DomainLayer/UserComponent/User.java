@@ -6,7 +6,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -100,6 +100,14 @@ public  class User {
 
     public List<DummyProduct> ShowShoppingCart(){
         return shoppingCart.ShowShoppingCart();
+    }
+
+    public List<DummyShoppingHistory> ShowHistory(){
+        List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
+        for(ShoppingHistory shoppingHistory:shoppingHistory){
+            shoppingHistories.add(shoppingHistory.createDummy());
+        }
+        return shoppingHistories;
     }
 
 //    public List<DummySearch> getShoppingCart(){
