@@ -1,9 +1,11 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
@@ -306,4 +308,15 @@ public class TradingSystem {
             return new LinkedList<>();
         }
     }
+
+    //show the history for some user
+    public List<DummyShoppingHistory> ShowStoreHistory(int userId){
+        return subscribers.get(userId).ShowStoreHistory();
+    }
+
+    //show the history for some store
+    public List<DummyShoppingHistory> ShowHistory(int storeId){
+        return stores.get(storeId).getHistory();
+    }
+
 }

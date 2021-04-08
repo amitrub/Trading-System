@@ -5,6 +5,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
@@ -144,6 +145,7 @@ public class GuestService {
     }
 
     //todo- only subscriber
+
     public ShoppingHistory ShowHistory(int userId){ //todo list? id?
         return null;
     }
@@ -153,8 +155,8 @@ public class GuestService {
 
     }
 
-    //todo- only System Manager
-    public List<ShoppingHistory> ShowStoreHistory(int userId){ //todo list? id?
+    // made in trading system List<DummyHistory>
+    public List<DummyShoppingHistory> ShowStoreHistory(int userId){ //todo list? id?
         return null;
     }
 
