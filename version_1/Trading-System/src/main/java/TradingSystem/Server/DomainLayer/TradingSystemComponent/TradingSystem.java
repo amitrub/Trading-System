@@ -279,4 +279,13 @@ public class TradingSystem {
     public boolean reduseProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
        return this.stores.get(storeID).reduceProducts(products);
     }
+
+    public List<DummyProduct> ShowShoppingCart(int userid){
+        if (subscribers.containsKey(userid)) {
+            return subscribers.get(userid).ShowShoppingCart();
+        }
+        else {
+            return new LinkedList<>();
+        }
+    }
 }
