@@ -100,6 +100,7 @@ public class UserTests {
         Integer ans2 = searchProducts1.get(0).getProductID();
         assertEquals(ans1, ans2);
 
+
         //search by product category
         ArrayList<DummyProduct> searchProducts2 = client.Search("Product Category", "Tops", "30.0","150.0","1", "5");
         assertEquals(searchProducts2.size(),2);
@@ -172,5 +173,51 @@ public class UserTests {
     }
      */
 
+    @Test
+    void openStore() {
+        client.Register("Nofet", "qwerty");
+        Boolean b1 = client.openStore("American Eagle");
+        assertFalse(b1);   //maybe true?
+        assertEquals(client.showAllStores().size(), 1);
+        String ans1 = client.showAllStores().get(0).getName();
+        assertEquals(ans1, "American Eagle");
 
+        //Boolean b2 = client.openStore("American Eagle");
+        //assertTrue(b2);    //maybe false
+
+        client.Logout();
+        client.Register("Hadar", "qwerty");
+        //Boolean b3 = client.openStore("American Eagle");
+        //assertTrue(b3);    //maybe false
+    }
+
+    @Test
+    void showUserHistory() {
+        
+    }
+
+    @Test
+    void writeComment() {
+        
+    }
+
+    @Test
+    void addProduct() {
+        
+    }
+
+    @Test
+    void removeProduct() {
+        
+    }
+
+    @Test
+    void editProduct() {
+        
+    }
+
+    @Test
+    void showStoreHistory() {
+
+    }
 }
