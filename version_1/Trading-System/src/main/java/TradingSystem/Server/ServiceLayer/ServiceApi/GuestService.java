@@ -48,7 +48,6 @@ public class GuestService {
     @GetMapping("home")
     public Response connectSystem(){
 //        Response res = new Response(false, "no implemented");
-        System.out.println("111111");
         Response res = this.tradingSystem.connectSystem();
         tradingSystem.printUsers();
         return res;
@@ -85,8 +84,7 @@ public class GuestService {
 
     @PostMapping("search")
     public List<DummyProduct> Search(@RequestBody Map<String, Object> obj){
-        //TODO = name
-        String name = "";
+        String name = (String) obj.get("name");;
         boolean productNameMode = (boolean) obj.get("Product Name");
         boolean productCategoryMode = (boolean) obj.get("Product Category");
         int minPrice = (int) obj.get("minPrice");

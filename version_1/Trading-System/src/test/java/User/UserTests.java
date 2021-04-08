@@ -7,6 +7,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
@@ -81,21 +82,6 @@ public class UserTests {
 
     @Test
     void searchTest(){
-        int respondID1 = client.Register("Dana", "qwerty");
-        client.Login("Dana", "qwerty");
-        DiscountPolicy DP = new DiscountPolicy();
-        BuyingPolicy BP = new BuyingPolicy();
-        Store store = new Store("Pull&Beer", respondID1, DP, BP);
-        store.addNewProduct(respondID1, "T-shirt", 150.0, "Basic");
-        store.addNewProduct(respondID1, "skirt", 100.0, "Sport");
-        store.addNewProduct(respondID1, "pants", 140.5, "Sport");
-
-
-        ArrayList<DummyProduct> searchProducts1 = client.Search("Product Category","145", "200", "1", "5");
-        assertEquals(searchProducts1.size(), 1);
-
-        ArrayList<DummyProduct> searchProducts2 = client.Search("Product Name", "0", "150", "1", "5");
-        assertEquals(searchProducts2.size(), 3);
 
     }
 
