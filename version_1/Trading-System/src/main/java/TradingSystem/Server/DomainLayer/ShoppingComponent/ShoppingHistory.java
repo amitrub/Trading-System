@@ -1,6 +1,6 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
-import javax.xml.crypto.Data;
+import java.util.Date;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShoppingHistory {
@@ -11,7 +11,8 @@ public class ShoppingHistory {
     //productID_quantity
     private ConcurrentHashMap<Integer,Integer> products;
 
-    private Data data;
+    private Date date;
+
     private Double finalPrice;
 
 

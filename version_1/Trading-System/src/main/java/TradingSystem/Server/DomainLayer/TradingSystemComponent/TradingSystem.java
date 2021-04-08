@@ -113,8 +113,8 @@ public class TradingSystem {
         User myGuest = guests.get(connID);
         User newUser = new User(userName, password, myGuest.getShoppingCart());
         subscribers.put(newUser.getId(), newUser);
-        guests.remove(connID);
-        Response res = new Response(newUser.getId(), "", false, "Registration was successful");
+//        guests.remove(connID);
+        Response res = new Response(newUser.getId(), connID, false, "Registration was successful");
         return res;
     }
 
