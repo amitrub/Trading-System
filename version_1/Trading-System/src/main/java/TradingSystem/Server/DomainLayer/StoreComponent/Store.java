@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -326,5 +327,13 @@ public class Store {
             }
         }
         return true;
+    }
+
+    public List<DummyShoppingHistory> getHistory(){
+        List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
+        for(ShoppingHistory shoppingHistory:shoppingHistory){
+            shoppingHistories.add(shoppingHistory.createDummy());
+        }
+        return shoppingHistories;
     }
 }
