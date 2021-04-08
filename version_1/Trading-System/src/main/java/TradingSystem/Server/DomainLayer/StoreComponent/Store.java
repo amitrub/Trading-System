@@ -327,4 +327,13 @@ public class Store {
         }
         return true;
     }
+
+    @Override
+    public String toString() {
+        return "Store{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", founderID=" + founderID +
+                '}';
+    }
 }

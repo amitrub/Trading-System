@@ -85,12 +85,18 @@ public  class User {
         return shoppingCart;
     }
 
+    public void setShoppingCart(ShoppingCart shoppingCart) {
+        this.shoppingCart = shoppingCart;
+    }
+
     @Override
     public String toString() {
         return "User{" +
                 "id=" + id +
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
+                ", myFoundedStoresIDs=" + myFoundedStoresIDs +
+                ", myOwnedStoresIDs=" + myOwnedStoresIDs +
                 '}';
     }
 

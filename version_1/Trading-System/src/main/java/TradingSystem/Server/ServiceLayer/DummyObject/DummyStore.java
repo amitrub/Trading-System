@@ -33,6 +33,14 @@ public class DummyStore {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public Double getStoreRate() {
+        return storeRate;
+    }
+
     public static ArrayList<DummyStore> makeDummyStoreFromJSON(JSONArray jsonArray) {
         ArrayList dummyStoreArr = new ArrayList();
         try {
