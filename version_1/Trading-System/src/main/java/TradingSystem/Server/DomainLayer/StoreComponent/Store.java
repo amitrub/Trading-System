@@ -83,40 +83,24 @@ public class Store {
         return inventory.ShowStoreProducts();
     }
 
-    public  String addNewProduct(Integer ownerId, String productName , Double price, String category)
+    public  void AddProductToStore(String productName , Double price, String category)
     {
-        if (this.ownersIDs.contains(ownerId)) {
-            inventory.addProduct(productName, category, price);
-            return "The product added";
-            //return 0;
-        }
-        return "Only a store owner is allowed to add new products";
-        //return -1;
+        inventory.addProduct(productName, category, price);
     }
 
-    public  String addProductToInventory(Integer ownerId, Integer productId, Integer quantity)
+    public  void addProductToInventory(Integer productId, Integer quantity)
     {
-        if (this.ownersIDs.contains(ownerId)) {
-            return inventory.addQuantityProduct(productId, quantity);
-        }
-        return "Only a store owner is allowed to add products to the Inventory";
+        inventory.addQuantityProduct(productId, quantity);
     }
 
-    public  String deleteProduct(Integer ownerId, Integer productId)
+    public  void deleteProduct(Integer ownerId, Integer productId)
     {
-        if (this.ownersIDs.contains(ownerId)) {
-            return inventory.deleteProduct(productId, this.id);
-        }
-        return "Only a store owner is allowed to remove a product";
-        //return -1;
+        inventory.deleteProduct(productId, this.id);
     }
 
-    public String editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category)
+    public void editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category)
     {
-        if (this.ownersIDs.contains(ownerId)) {
-           return inventory.editProductDetails(productId,productName,price,category);
-        }
-        return "Only a store owner is allowed to edit the products details";
+        inventory.editProductDetails(productId,productName,price,category);
     }
 
     public boolean reduceProduct(Collection<Integer> productsId, Integer quantityToReduce)
@@ -353,5 +337,13 @@ public class Store {
                 ", name='" + name + '\'' +
                 ", founderID=" + founderID +
                 '}';
+    }
+
+    public LinkedList<Product> getProducts() {
+        return this.inventory.getProducts();
+    }
+
+    public int getQuantity(Integer productID) {
+       return this.inventory.getQuantity(productID);
     }
 }

@@ -2,14 +2,13 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
-import java.util.Collection;
+import java.util.*;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_RED;
 
 public class Inventory {
 
@@ -351,5 +350,21 @@ public class Inventory {
     //todo check!
     public boolean productIsLock(Integer productID) {
         return this.productLock.get(productID).tryLock();
+    }
+
+    public LinkedList<Product> getProducts() {
+        LinkedList<Product> products=new LinkedList<Product>();
+        Set<Integer> productSet = this.products.keySet();
+        for (Integer id : productSet){
+             products.add(this.products.get(id));
+        }
+        return products;
+    }
+
+    public int getQuantity(Integer productID) {
+      if(this.productQuantity.get(productID)!=null){
+          return this.productQuantity.get(productID);
+      }
+      return 0;
     }
 }

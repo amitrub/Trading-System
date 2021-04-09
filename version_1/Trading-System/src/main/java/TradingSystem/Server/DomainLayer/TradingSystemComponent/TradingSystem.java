@@ -81,6 +81,21 @@ public class TradingSystem {
         System.out.println("-----------------------------------------------");
     }
 
+    public void printProducts() {
+        Set<Integer> storeSet = this.stores.keySet();
+        System.out.println("-----------------------------------------------");
+        for (Integer id : storeSet){
+            System.out.println(ANSI_WHITE + "Products in Store "  + id +":\n" + ANSI_WHITE);
+            LinkedList<Product> Products = this.stores.get(id).getProducts();
+            for (Product p : Products) {
+                int quantity= this.stores.get(id).getQuantity(p.getProductID());
+                System.out.println(ANSI_WHITE + p + " with quantity of- "+ quantity + ":\n" + ANSI_WHITE);
+            }
+            }
+        System.out.println("-----------------------------------------------");
+    }
+
+
     public Response connectSystem() {
         User newGuest = new User();
         String connID = getConnIDGuest(newGuest);
@@ -330,8 +345,90 @@ public class TradingSystem {
           //  return new Response(true, "Error in User details");
         }
 
-    public void addHistoryToStorAnddUser(ShoppingHistory sh) {
+    public void addHistoryToStorAnddUser(ShoppingHistory sh)
+    {
         this.stores.get(sh.getStoreID()).addHistory(sh);
         this.subscribers.get(sh.getUserID()).addHistory(sh);
     }
+
+    public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price)
+    {
+        if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
+           if(allowedToAddProduct(userID,storeID)) {
+                stores.get(storeID).AddProductToStore(productName, price, category);
+                printProducts();
+                return new Response(false, "Add Product was successful");
+            }
+            return new Response(true, "The User is not allowed to add a product");
+        }
+        else{
+            return new Response(true, "Error in User details");
+        }
+    }
+
+    public Response AddQuantityProduct(int userID, String connID, int storeID,int productId, int quantity)
+    {
+        if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
+            if(allowedToAddQuantityProduct(userID,storeID)) {
+                stores.get(storeID).addProductToInventory(productId, quantity);
+                printProducts();
+                return new Response(false, "Add Product to Inventory was successful");
+            }
+            return new Response(true, "The User is not allowed to add products to the inventory");
+        }
+        else{
+            return new Response(true, "Error in User details");
+        }
+    }
+
+    public Response RemoveProduct(int userID, int storeID, int productID, String connID)
+    {
+        if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
+            if(allowedToRemoveProduct(userID,storeID)) {
+                stores.get(storeID).deleteProduct(userID,productID);
+                printProducts();
+                return new Response(false, "Remove Product from the Inventory was successful");
+            }
+            return new Response(true, "The User is not allowed to remove products from the inventory");
+        }
+        else{
+            return new Response(true, "Error in User details");
+        }
+    }
+
+    public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price)
+    {
+        if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
+            if(allowedToEditProduct(userID,storeID)) {
+                stores.get(storeID).editProductDetails(userID,productID,productName,price,category);
+                printProducts();
+                return new Response(false, "Edit Product was successful");
+            }
+            return new Response(true, "The Edit is not allowed to Edit products");
+        }
+        else{
+            return new Response(true, "Error in User details");
+        }
+    }
+
+    public List<DummyShoppingHistory> StoreHistory(int userID, int storeID, String connID)
+    {
+        if (connectedSubscribers.containsKey(connID) && connectedSubscribers.get(connID).equals(userID)) {
+            if (allowedToShowStoreHistory(userID, storeID)) {
+                return stores.get(storeID).getHistory();
+                // printStoreHistory?()
+            }
+        }
+        return null;//todo make response inside?
+    }
+
+    private boolean allowedToAddProduct(int userID, int storeID) { return true; }
+
+    private boolean allowedToAddQuantityProduct(int userID, int storeID) { return true; }
+
+    private boolean allowedToRemoveProduct(int userID, int storeID) { return true; }
+
+    private boolean allowedToEditProduct(int userID, int storeID) { return true; }
+
+    private boolean allowedToShowStoreHistory(int userID, int storeID) { return true; }
 }

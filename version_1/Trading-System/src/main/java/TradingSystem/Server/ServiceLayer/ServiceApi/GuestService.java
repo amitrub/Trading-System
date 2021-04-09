@@ -84,7 +84,8 @@ public class GuestService {
     }
 
     @PostMapping("search")
-    public List<DummyProduct> Search(@RequestBody Map<String, Object> obj){
+    public List<DummyProduct> Search(@RequestBody Map<String, Object> obj)
+    {
         String name = (String) obj.get("name");;
         boolean productNameMode = (boolean) obj.get("Product Name");
         boolean productCategoryMode = (boolean) obj.get("Product Category");
@@ -108,7 +109,8 @@ public class GuestService {
     }
 
     @GetMapping("store/{storeID}/products")
-    public List<DummyProduct> ShowStoreProducts(@PathVariable int storeID){
+    public List<DummyProduct> ShowStoreProducts(@PathVariable int storeID)
+    {
         List<DummyProduct> res = this.tradingSystem.ShowStoreProducts(storeID);
         return res;
 //        return new ArrayList<DummyProduct>();

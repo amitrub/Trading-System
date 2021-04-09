@@ -107,4 +107,14 @@ public class Product {
         }
         return SumOfRating/NumOfUsaers;
     }
+
+    @Override
+    public String toString() {
+        return "Product{" +
+                "id=" + productID +
+                ", name='" + productName + '\'' +
+                ", category=" + category + '\'' +
+                ", price=" + price +
+                '}';
+    }
 }
