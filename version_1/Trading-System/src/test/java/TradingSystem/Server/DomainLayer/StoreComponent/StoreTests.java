@@ -2,13 +2,12 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Client.Client;
 //import org.junit.BeforeClass;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import javafx.beans.binding.IntegerExpression;
 import org.junit.*;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.springframework.test.context.event.annotation.BeforeTestClass;
-import org.springframework.test.context.event.annotation.BeforeTestExecution;
-import org.springframework.test.context.event.annotation.BeforeTestMethod;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -50,49 +49,46 @@ class StoreTests {
 
     @Test
     void addNewProduct() {
-//        String ans1 = store.addNewProduct(ownerID, "Classic Shirt", 129.9, "Tops");
-//        assertEquals(ans1, "The product added");
-        //assertEquals(store.getInventory().getProducts().size(), 1);
-        //String ans2 = store.addNewProduct(ownerID, "Classic Shirt", 99.9, "Tops");
-        //assertEquals(ans2, "A product with the same name was added to this store");
-        //String ans3 = store.addNewProduct(ownerID, "Stripe Shirt", -50.5, "Tops");
+        Response ans1 = store.AddProductToStore("Classic Shirt",129.9,"Tops");
+        assertEquals(ans1.getMessage(), "Add Product was successful");
+        assertEquals(store.getProducts().size(), 1);
+
+        Response ans2 = store.AddProductToStore( "Classic Shirt", 99.9, "Tops");
+        assertEquals(ans2.getMessage(), "Error Product name is taken");
+        assertEquals(store.getProducts().size(), 1);
+
+        Response ans3 = store.AddProductToStore( "Stripe Shirt", -50.5, "Tops");
         //assertEquals(ans3, "A product's price must be positive");
+        assertEquals(store.getProducts().size(), 1);
     }
-
-    /*
-    @Test
-    void addProductToInventory() {
-    }
-
-     */
 
     @Test
     void deleteProduct() {
-//        store.addNewProduct(ownerID, "Jogger Shorts", 75.0, "Pants");
-        //todo how can we know the productID??
-        //String ans1 = store.deleteProduct(ownerID, );
-        //assertEquals(ans1, "The product delete");
-        //String ans2 = store.deleteProduct(ownerID, );
-        //assertEquals(ans2, "The Product is not exist in the store");
-        //client.Login("Lior", "123");
-        //String ans3 = store.deleteProduct(client1ID, );
+        store.AddProductToStore("Jogger Shorts", 75.0, "Pants");
+        Integer productID1 = store.getProductID("Jogger Shorts");
+        Response ans1 = store.deleteProduct(productID1);
+        assertEquals(ans1.getMessage(), "Remove Product from the Inventory was successful");
+
+        Response ans2 = store.deleteProduct(productID1);
+        assertEquals(ans2.getMessage(), "The product does not exist in the system");
+
+        store.AddProductToStore("Jogger Shorts", 75.0, "Pants");
+        Integer productID2 = store.getProductID("Jogger Shorts");
+        client.Login("Lior", "123");
+        Response ans3 = store.deleteProduct(productID2);
         //assertEquals(ans3, "Only a store owner is allowed to remove a product");
     }
 
     @Test
     void editProductDetails() {
-//        store.addNewProduct(ownerID, "Print Legging", 149.9, "Pants");
-        //String ans1 = store.editProductDetails(ownerID, , "Print Legging", 200.0, "Pants");
+        store.AddProductToStore("Print Legging", 149.9, "Pants");
+        Integer productID1 = store.getProductID("Print Legging");
+        //String ans1 = store.editProductDetails(ownerID, productID1, "Print Legging", 200.0, "Pants");
         //assertEquals(ans1,"The product update");
-        //String ans2 = store.editProductDetails(ownerID, , "Jeans Pants", 100.0, "Pants");
+        //String ans2 = store.editProductDetails(ownerID, productID1 , "Jeans Pants", 100.0, "Pants");
         //assertEquals(ans2, "The product does not exist in the system");
     }
 
-    /*
-    @Test
-    void reduceProduct() {
-    }
-     */
 
     @Test
     void addNewOwner() {
@@ -133,7 +129,7 @@ class StoreTests {
         assertEquals(ans4, "Only the store owner who appointed the store manager can remove him");
     }
 
-    /*
+
     @Test
     void addRatingToStore() {
     }
@@ -150,5 +146,5 @@ class StoreTests {
     @Test
     void searchByCategory() {
     }
-     */
+
 }

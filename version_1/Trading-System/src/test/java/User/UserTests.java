@@ -87,11 +87,11 @@ public class UserTests {
     void searchTest(){
         Integer founderID = client.Register("Shani", "qwerty");
         Store store = new Store("H&M", founderID);
-//        store.addNewProduct(founderID, "Simple Dress",120.0 ,"Dress");
-//        store.addNewProduct(founderID, "Evening Dress", 250.0, "Dress");
-//        store.addNewProduct(founderID, "Jeans Dress", 90.0, "Dress");
-//        store.addNewProduct(founderID, "Basic T-shirt", 50.0, "Tops");
-//        store.addNewProduct(founderID, "Stripe Shirt", 130.0, "Tops");
+        store.AddProductToStore( "Simple Dress",120.0 ,"Dress");
+        store.AddProductToStore( "Evening Dress", 250.0, "Dress");
+        store.AddProductToStore( "Jeans Dress", 90.0, "Dress");
+        store.AddProductToStore( "Basic T-shirt", 50.0, "Tops");
+        store.AddProductToStore( "Stripe Shirt", 130.0, "Tops");
 
         //Search by product name
         ArrayList<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans", "50.0","100.0","1","5");
@@ -112,19 +112,23 @@ public class UserTests {
         assertEquals(ans5, ans6);
 
         //search by product category and price
-        ArrayList<DummyProduct> searchProducts23 = client.Search("Product Category", "Tops", "100.0","150.0","1", "5");
+        ArrayList<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100.0","150.0","1", "5");
         assertEquals(searchProducts2.size(),1);
         Integer ans7 = store.getProductID("Stripe Shirt");
-        Integer ans8 = searchProducts2.get(0).getProductID();
+        Integer ans8 = searchProducts3.get(0).getProductID();
         assertEquals(ans7, ans8);
+
+        //sad search - there isn't products that match the search
+        ArrayList<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150.0","200.0","1", "5");
+        assertEquals(searchProducts2.size(),0);
     }
 
     @Test
     void showStoreProducts() {
         Integer founderID = client.Register("Or", "qwerty");
         Store store = new Store("Renuar", founderID);
-//        store.addNewProduct(founderID, "Simple Dress",120.0 ,"Dress");
-//        store.addNewProduct(founderID, "Evening Dress", 250.0, "Dress");
+        store.AddProductToStore( "Simple Dress",120.0 ,"Dress");
+        store.AddProductToStore( "Evening Dress", 250.0, "Dress");
         ArrayList<DummyProduct> products= client.showStoreProducts(store.getId());
         assertEquals(products.size(), 2);
         Integer ans1 = store.getProductID("Simple Dress");
@@ -158,20 +162,36 @@ public class UserTests {
     void addProductToCart() {
         Integer founderID = client.Register("Hadas", "qwerty");
         Store store = new Store("Mania Jeans", founderID);
-//        store.addNewProduct(founderID, "Jeans Pants",120.0 ,"Pants");
-//        store.addProductToInventory(founderID,store.getProductID("Jeans Pants"), 10);
-        client.addProductToCart(store.getId(),store.getProductID("Jeans Pants"), 3);
+
+        //sad add - the quantity of the wanted product doesn't exist
+        store.AddProductToStore("Short Pants",120.0 ,"Pants");
+        store.addProductToInventory(store.getProductID("Short Pants"), 2);
+        client.addProductToCart(store.getId(),store.getProductID("Short Pants"), 3);
+        assertEquals(client.showShoopingCart().size(), 0);
+
+        client.addProductToCart(store.getId(),store.getProductID("Short Pants"), 1);
         assertEquals(client.showShoopingCart().size(), 1);
         Integer ans1 = client.showShoopingCart().get(0).getProductID();
-        Integer ans2 = store.getProductID("Jeans Pants");
+        Integer ans2 = store.getProductID("Short Pants");
         assertEquals(ans1, ans2);
+
+
     }
 
-    /*
+
     @Test
     void showShoopingCart() {
+        Integer founderID = client.Register("Amit", "qwerty");
+        Store store = new Store("Bershka", founderID);
+        store.AddProductToStore("Jeans Pants",100.0 ,"Pants");
+        store.addProductToInventory(store.getProductID("Jeans Pants"), 10);
+        ArrayList<DummyProduct> ans1 = client.showShoopingCart();
+        assertEquals(ans1.size(), 0);
+
+        client.addProductToCart(store.getId(),store.getProductID("Jeans Pants"), 3);
+        assertEquals(client.showShoopingCart().size(), 1);
     }
-     */
+
 
     @Test
     void openStore() {
@@ -192,7 +212,7 @@ public class UserTests {
     }
 
     @Test
-    void showUserHistory() {
+    void showAllUsersHistory() {
         
     }
 
@@ -214,10 +234,5 @@ public class UserTests {
     @Test
     void editProduct() {
         
-    }
-
-    @Test
-    void showStoreHistory() {
-
     }
 }
