@@ -16,6 +16,7 @@ public class DummyProduct {
     private String productName;
     private double price;
     private String category;
+    private int quantity;
 
     public DummyProduct(){
         this.storeID = -1;
@@ -26,13 +27,14 @@ public class DummyProduct {
         this.category = "";
     }
 
-    public DummyProduct(int storeID, String storeName, int productID, String productName, double price, String category) {
+    public DummyProduct(int storeID, String storeName, int productID, String productName, double price, String category, int quantity) {
         this.storeID = storeID;
         this.storeName = storeName;
         this.productID = productID;
         this.productName = productName;
         this.price = price;
         this.category = category;
+        this.quantity = quantity;
     }
 
     public int getStoreID() {
@@ -59,6 +61,10 @@ public class DummyProduct {
         return category;
     }
 
+    public int getQuantity() {
+        return quantity;
+    }
+
     public static ArrayList<DummyProduct> makeDummySearchFromJSON(JSONArray jsonArray) {
         ArrayList dummySearchArr = new ArrayList();
             try {
@@ -70,7 +76,8 @@ public class DummyProduct {
                     String productName = jsonResponse.getString("productName");
                     double price = jsonResponse.getDouble("price");
                     String category = jsonResponse.getString("category");
-                    DummyProduct dummyProduct = new DummyProduct(storeID, storeName, productID, productName, price, category);
+                    int quantity = jsonResponse.getInt("quantity");
+                    DummyProduct dummyProduct = new DummyProduct(storeID, storeName, productID, productName, price, category, quantity);
                     dummySearchArr.add(dummyProduct);
                 }
 

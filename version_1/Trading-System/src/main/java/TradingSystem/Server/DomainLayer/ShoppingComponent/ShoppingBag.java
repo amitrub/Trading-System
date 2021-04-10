@@ -31,6 +31,13 @@ public class ShoppingBag {
         finalPrice=0.0;
     }
 
+    @Override
+    public String toString() {
+        return "ShoppingBag{" +
+                "products=" + products +
+                '}';
+    }
+
     private static synchronized int getnextShoppingBagID() {
         nextShoppingBagID++;
         return nextShoppingBagID;
@@ -56,7 +63,11 @@ public class ShoppingBag {
     }
 
     public void addProduct(Integer productID, Integer quantity) {
-        this.products.put(productID,quantity);
+        if (this.products.containsKey(productID)){
+            this.products.put(productID,this.products.get(productID) + quantity);
+        }
+        else
+            this.products.put(productID,quantity);
     }
 
     public Integer getUserID() {

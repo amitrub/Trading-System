@@ -7,6 +7,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -100,12 +101,12 @@ public  class User {
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", myFoundedStoresIDs=" + myFoundedStoresIDs +
-                ", myOwnedStoresIDs=" + myOwnedStoresIDs +
+                ", shoppingCart=" + shoppingCart +
                 '}';
     }
 
-    public void AddProductToCart(int StoreId,int productId, int quantity){
-        shoppingCart.addProductToBag(productId,StoreId,quantity);
+    public Response AddProductToCart(int StoreId, int productId, int quantity){
+        return shoppingCart.addProductToBag(StoreId, productId, quantity);
     }
 
     public List<DummyProduct> ShowShoppingCart(){

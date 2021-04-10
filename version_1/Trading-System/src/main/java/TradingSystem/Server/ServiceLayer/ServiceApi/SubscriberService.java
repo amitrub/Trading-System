@@ -29,11 +29,13 @@ public class SubscriberService {
         return res;
     }
 
+    //TODO: not check yet
     @GetMapping("{userID}/user_history")
     public List<DummyProduct> History(@PathVariable int userID, @RequestHeader("connID") String connID){
         return null;
     }
 
+    //TODO: not check yet
     @PostMapping("{userID}/write_comment")
     public Response WriteComment(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID = (int) obj.get("storeID");

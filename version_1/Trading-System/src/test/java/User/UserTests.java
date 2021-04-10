@@ -87,11 +87,11 @@ public class UserTests {
     void searchTest(){
         Integer founderID = client.Register("Shani", "qwerty");
         Store store = new Store("H&M", founderID);
-        store.addNewProduct(founderID, "Simple Dress",120.0 ,"Dress");
-        store.addNewProduct(founderID, "Evening Dress", 250.0, "Dress");
-        store.addNewProduct(founderID, "Jeans Dress", 90.0, "Dress");
-        store.addNewProduct(founderID, "Basic T-shirt", 50.0, "Tops");
-        store.addNewProduct(founderID, "Stripe Shirt", 130.0, "Tops");
+//        store.addNewProduct(founderID, "Simple Dress",120.0 ,"Dress");
+//        store.addNewProduct(founderID, "Evening Dress", 250.0, "Dress");
+//        store.addNewProduct(founderID, "Jeans Dress", 90.0, "Dress");
+//        store.addNewProduct(founderID, "Basic T-shirt", 50.0, "Tops");
+//        store.addNewProduct(founderID, "Stripe Shirt", 130.0, "Tops");
 
         //Search by product name
         ArrayList<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans", "50.0","100.0","1","5");
@@ -123,8 +123,8 @@ public class UserTests {
     void showStoreProducts() {
         Integer founderID = client.Register("Or", "qwerty");
         Store store = new Store("Renuar", founderID);
-        store.addNewProduct(founderID, "Simple Dress",120.0 ,"Dress");
-        store.addNewProduct(founderID, "Evening Dress", 250.0, "Dress");
+//        store.addNewProduct(founderID, "Simple Dress",120.0 ,"Dress");
+//        store.addNewProduct(founderID, "Evening Dress", 250.0, "Dress");
         ArrayList<DummyProduct> products= client.showStoreProducts(store.getId());
         assertEquals(products.size(), 2);
         Integer ans1 = store.getProductID("Simple Dress");
@@ -158,8 +158,8 @@ public class UserTests {
     void addProductToCart() {
         Integer founderID = client.Register("Hadas", "qwerty");
         Store store = new Store("Mania Jeans", founderID);
-        store.addNewProduct(founderID, "Jeans Pants",120.0 ,"Pants");
-        store.addProductToInventory(founderID,store.getProductID("Jeans Pants"), 10);
+//        store.addNewProduct(founderID, "Jeans Pants",120.0 ,"Pants");
+//        store.addProductToInventory(founderID,store.getProductID("Jeans Pants"), 10);
         client.addProductToCart(store.getId(),store.getProductID("Jeans Pants"), 3);
         assertEquals(client.showShoopingCart().size(), 1);
         Integer ans1 = client.showShoopingCart().get(0).getProductID();

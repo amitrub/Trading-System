@@ -14,16 +14,7 @@ import java.util.Map;
 public class StoreOwnerService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
-    @PostMapping("{userID}/store/{storeID}/add_product")
-    public Response AddProduct(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String productName = (String) obj.get("productName");
-        String category = (String) obj.get("category");
-        double price = (double) obj.get("price");
-        int quantity  = (int) obj.get("quantity");
-        return null;
-    }
-
-    @PostMapping("{userID}/store/{storeID}/add_product_to_store")
+    @PostMapping("{userID}/store/{storeID}/add_new_product")
     public Response AddProductToStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
@@ -32,16 +23,17 @@ public class StoreOwnerService {
     }
 
     @PostMapping("{userID}/store/{storeID}/add_quantity_product/{productID}")
-    public Response AddQuantityProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productId, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public Response AddQuantityProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int quantity  = (int) obj.get("quantity");
-        return tradingSystem.AddQuantityProduct(userID,connID,storeID,productId,quantity);
+        return tradingSystem.AddQuantityProduct(userID,connID,storeID,productID,quantity);
     }
 
-    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    @DeleteMapping("{userID}/store/{storeID}/remove_product/{productID}")
     public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
         return this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
     }
 
+    //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/edit_product/{productID}")
     public Response EditProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String productName = (String) obj.get("productName");
@@ -51,11 +43,8 @@ public class StoreOwnerService {
         return tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price);
     }
 
-    @GetMapping("{userID}/store_history/{storeID}")
-    public List<DummyProduct> StoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
-        return null;
-    }
 
+    //TODO: not check yet
     @GetMapping("{userID}/store_history/{storeID}")
     public List<DummyShoppingHistory> ShowStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         return tradingSystem.StoreHistory(userID,storeID,connID);

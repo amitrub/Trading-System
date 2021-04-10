@@ -5,6 +5,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,23 +17,23 @@ public class Store {
     private Integer id;
     private String name;
 
-    private Integer founderID;
-    private List<Integer> ownersIDs;
-    private List<Integer> managersIDs;
+    private final Integer founderID;
+    private List<Integer> ownersIDs = new LinkedList<>();
+    private List<Integer> managersIDs = new LinkedList<>();
 
     //ownerID_hisAppointeeID
-    private ConcurrentHashMap<Integer, Integer> ownersAppointee;
+    private ConcurrentHashMap<Integer, Integer> ownersAppointee = new ConcurrentHashMap<>();
     //managersID_hisAppointeeID
-    private ConcurrentHashMap<Integer, Integer> managersAppointee;
+    private ConcurrentHashMap<Integer, Integer> managersAppointee = new ConcurrentHashMap<>();;
 
     private DiscountPolicy discountPolicy;
     private BuyingPolicy buyingPolicy;
 
     private Double rate;
     //userID_rating
-    private ConcurrentHashMap<Integer, Double> Ratings;
+    private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
 
-    private List<ShoppingHistory> shoppingHistory;
+    private List<ShoppingHistory> shoppingHistory = new LinkedList<>();
 
     private Inventory inventory;
 
@@ -40,16 +41,10 @@ public class Store {
         this.id = getNextStoreID();
         this.name = name;
         this.founderID = founderID;
-        this.ownersIDs = new LinkedList<Integer>();
         this.ownersIDs.add(founderID);
-        this.managersIDs = new LinkedList<Integer>();
-        this.ownersAppointee=new ConcurrentHashMap<>();
-        this.managersAppointee=new ConcurrentHashMap<>();
         this.discountPolicy = discountPolicy;
         this.buyingPolicy = buyingPolicy;
         this.rate =5.0; //todo- add rating!
-        this.Ratings=new ConcurrentHashMap<>();
-        this.shoppingHistory = new LinkedList<ShoppingHistory>();
         this.inventory=new Inventory(this.id,name);
     }
 
@@ -57,16 +52,8 @@ public class Store {
         this.id = getNextStoreID();
         this.name = name;
         this.founderID = founderID;
-        this.ownersIDs = new LinkedList<Integer>();
         this.ownersIDs.add(founderID);
-        this.managersIDs = new LinkedList<Integer>();
-        this.ownersAppointee=new ConcurrentHashMap<>();
-        this.managersAppointee=new ConcurrentHashMap<>();
-        this.discountPolicy = discountPolicy;
-        this.buyingPolicy = buyingPolicy;
         this.rate =5.0; //todo- add rating!
-        this.Ratings=new ConcurrentHashMap<>();
-        this.shoppingHistory = new LinkedList<ShoppingHistory>();
         this.inventory=new Inventory(this.id,name);
     }
 
@@ -79,23 +66,28 @@ public class Store {
         return nextStoreID;
     }
 
+    public boolean checkFounder(int userID){
+        return this.founderID == userID;
+    }
+
+    public boolean checkOwner(int userID){
+        return this.ownersIDs.contains(userID);
+    }
+
     public List<DummyProduct> ShowStoreProducts(){
         return inventory.ShowStoreProducts();
     }
 
-    public  void AddProductToStore(String productName , Double price, String category)
-    {
-        inventory.addProduct(productName, category, price);
+    public Response AddProductToStore(String productName , Double price, String category){
+        return inventory.addProduct(productName, category, price);
     }
 
-    public  void addProductToInventory(Integer productId, Integer quantity)
-    {
-        inventory.addQuantityProduct(productId, quantity);
+    public Response addProductToInventory(Integer productId, Integer quantity){
+        return inventory.addQuantityProduct(productId, quantity);
     }
 
-    public  void deleteProduct(Integer ownerId, Integer productId)
-    {
-        inventory.deleteProduct(productId, this.id);
+    public Response deleteProduct(Integer productId){
+        return inventory.deleteProduct(productId);
     }
 
     public void editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category)
@@ -198,8 +190,7 @@ public class Store {
         this.rate=CalculateRate();
     }
 
-    public Double CalculateRate()
-    {
+    public Double CalculateRate(){
         Integer NumOfUsaers=0;
         Double SumOfRating=0.0;
         Iterator it = this.Ratings.entrySet().iterator();
@@ -227,8 +218,7 @@ public class Store {
         return inventory.CalculateRateForProduct(productID);
     }
 
-    public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank)
-    {
+    public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank){
        LinkedList<Integer> FinalID=new LinkedList<>();
        if(name!=null){
            FinalID=inventory.getDummySearchByName(FinalID,name);
@@ -242,8 +232,7 @@ public class Store {
         return  inventory.getDummySearchForList(FinalID);
     }
 
-    public List<DummyProduct> SearchByCategory(String category, int minprice, int maxprice, int prank)
-    {
+    public List<DummyProduct> SearchByCategory(String category, int minprice, int maxprice, int prank){
         LinkedList<Integer> FinalID = new LinkedList<>();
         if (category != null) {
             FinalID = inventory.getDummySearchByCategory(FinalID, category);
@@ -261,9 +250,8 @@ public class Store {
         return rate;
     }
 
-    public boolean checkProductsExistInTheStore(Integer productID, Integer quantity)
-    {
-    return  true;
+    public boolean checkProductsExistInTheStore(Integer productID, Integer quantity){
+        return this.inventory.checkProductsExistInTheStore(productID,quantity);
     }
 
     public boolean checkBuyingPolicy(Integer productID, Integer quantity, ConcurrentHashMap<Integer,Integer> productsInTheBug){
