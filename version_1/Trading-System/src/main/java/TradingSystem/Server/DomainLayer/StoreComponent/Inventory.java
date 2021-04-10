@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import com.fasterxml.jackson.core.PrettyPrinter;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -104,14 +105,22 @@ public class Inventory {
 
 
 
-    public void addCommentToProduct(Integer productId,Integer userID, String comment)
-    {
-    this.products.get(productId).addComment(userID,comment);
+    public Response addCommentToProduct(Integer productId,Integer userID, String comment) {
+        if (this.products.containsKey(productId)){
+            return  this.products.get(productId).addComment(userID, comment);
+        }
+        else
+            return new Response(true, "The product does not exist in the system");
     }
 
-    public void removeCommentFromProduct(Integer productId,Integer userID)
+    public Response removeCommentFromProduct(Integer productId,Integer userID)
     {
-        this.products.get(productId).removeComment(userID);
+        if (this.products.containsKey(productId)){
+            return this.products.get(productId).removeComment(userID);
+        }
+        else
+            return new Response(true, "The product does not exist in the system");
+
     }
 
     public LinkedList<String> getAllCommentsForProduct(Integer productID)
@@ -182,30 +191,6 @@ public class Inventory {
             }
         }
         return "The product does not exist in the system";
-    }
-
-    //todo- syncronize!
-    public boolean reduceProduct(Integer productId, Integer quantityToReduce)
-    {
-        if(productQuantity.containsKey(productId)) {
-            Iterator it = this.productQuantity.entrySet().iterator();
-            while (it.hasNext()) {
-                Map.Entry pair = (Map.Entry) it.next();
-                int id = (int) pair.getKey();
-                int newQuantity = (int) pair.getValue() - quantityToReduce;
-                if (id == productId) {
-                    if (newQuantity > 0) { //todo-check
-                        this.productQuantity.remove(productId);
-                        this.productQuantity.put(id, newQuantity);
-                        return true;
-                    }
-                    return false;
-                            //"There is not enough products in the system";
-                }
-            }
-        }
-        return false;
-        // "The product does not exist in the system";
     }
 
     public LinkedList<Integer> getDummySearchByName( LinkedList<Integer> FinalID,String name)
@@ -384,4 +369,29 @@ public class Inventory {
       }
       return 0;
     }
+
+    public List<String> getCommentsForProduct(int productID) {
+        if(this.products.get(productID)!=null) {
+            return this.products.get(productID).getCommentsForProduct(productID);
+        }
+        return null;
+    }
+    //todo- syncronize!
+    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
+            Set<Integer> PQ = products_quantity.keySet();
+            for (Integer PID : PQ){
+                int quantityToReduce =  products_quantity.get(PID);
+                if(productQuantity.containsKey(PID)) {
+                    int quantity= this.productQuantity.get(PID);
+                    int newQuantity = quantity- quantityToReduce;
+                    if (newQuantity <0) {
+                        return new Response(true, "There are not enough units from a product "+PID +" In store "+storeID);
+                    }
+                        this.productQuantity.remove(PID);
+                        this.productQuantity.put(PID, newQuantity);
+                }
+                return new Response(true, "The product "+PID +" In store "+storeID +" does not exist in the system");
+            }
+            return new Response(false, "Product inventory successfully updated");
+        }
 }

@@ -1,8 +1,8 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.Map;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Product {
@@ -63,14 +63,23 @@ public class Product {
         this.rate = rate;
     }
 
-    public void addComment(Integer userID, String comment)
+    public Response addComment(Integer userID, String comment)
     {
+        if(productComments.containsKey(userID)){
+            return new Response(true, "User can not post more than one comment on a product");
+        }
         this.productComments.put(userID,comment);
+        return new Response(false, "The response writing was performed successfully");
     }
 
-    public void removeComment(Integer userID)
+    public Response removeComment(Integer userID)
     {
-        this.productComments.remove(userID);
+        if(productComments.containsKey(userID)){
+            this.productComments.remove(userID);
+            return new Response(false, "The comment has been successfully deleted");
+        }
+        return new Response(true, "The user has no comment for this product");
+
     }
 
     public LinkedList<String> getComments()
@@ -96,16 +105,15 @@ public class Product {
 
     public Double CalculateRate()
     {
-        Integer NumOfUsaers=0;
-        Double SumOfRating=0.0;
-        Iterator it = this.productRating.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            Double Rate=(Double) pair.getValue();
+        Integer NumOfUsaers = 0;
+        Double SumOfRating = 0.0;
+        Set<Integer> RatingSet = this.productRating.keySet();
+        for (Integer id : RatingSet) {
+            Double Rate = this.productRating.get(id);
             NumOfUsaers++;
-            SumOfRating=SumOfRating+Rate;
+            SumOfRating = SumOfRating + Rate;
         }
-        return SumOfRating/NumOfUsaers;
+        return SumOfRating / NumOfUsaers;
     }
 
     @Override
@@ -117,4 +125,15 @@ public class Product {
                 ", price=" + price +
                 '}';
     }
+
+    public List<String> getCommentsForProduct(int productID) {
+        LinkedList<String> Comments=new LinkedList<String>();
+        Set<Integer> userId = this.productComments.keySet();
+        for (Integer id : userId) {
+            String com=this.productComments.get(id);
+            Comments.add(com);
+        }
+        return Comments;
+    }
+
 }

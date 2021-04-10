@@ -90,17 +90,13 @@ public class ShoppingCart {
         return this.shoppingBags;
     }
 
-    public String Purchase() throws InterruptedException{
-        Iterator itBug = this.shoppingBags.entrySet().iterator();
-        while (itBug.hasNext()) {
-            Map.Entry bugPair = (Map.Entry) itBug.next();
-            int storeID = (int) bugPair.getKey();
-            ShoppingBag SB = (ShoppingBag) bugPair.getValue();
-            Iterator itProd = SB.getProducts().entrySet().iterator();
-            while (itProd.hasNext()) {
-                Map.Entry prodPair = (Map.Entry) itProd.next();
-                int productID = (int) prodPair.getKey();
-                int productQuantity = (int) prodPair.getValue();
+    public Response Purchase() throws InterruptedException{
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet){
+            ShoppingBag SB =shoppingBags.get(storeID);
+            Set<Integer> SBPSet = SB.getProducts().keySet();
+            for (Integer productID : SBPSet){
+                int productQuantity = SB.getProducts().get(productID);
                 while (tradingSystem.productIsLock(productID, storeID)) { //todo check!
                     wait();
                 }
@@ -109,19 +105,23 @@ public class ShoppingCart {
                     releaseAllProduct();
                     String storeName = tradingSystem.getStoreName(storeID);
                     String productName = tradingSystem.getProductName(storeID, productID);
-                    return productName + " in The store" + storeName + " is not exist in the stock";
+                    String err= productName + " in The store" + storeName + " is not exist in the stock";
+                    return new Response(true, err);
                 }
             }
         }
-        if (paymentAprove()) {
-            Buy();
-            releaseAllProduct();
-           // PayToTheSellers();
-            addShopingHistory();
-            return "The purchase was made successfully ";
+        if (paymentApprove()) {
+            Response res=Buy();
+            if(!res.isErr()) {
+                addShopingHistory();
+                releaseAllProduct();
+                return new Response(false, "The purchase was made successfully ");
+            }
+            else
+            return res;
         }
         releaseAllProduct();
-        return "There is problem with the payment";
+        return new Response(true,"The payment is not approve");
     }
 
     private void addShopingHistory()
@@ -136,7 +136,7 @@ public class ShoppingCart {
         }
     }
 
-    private boolean paymentAprove()
+    private boolean paymentApprove()
     {
         return true;
     }
@@ -162,19 +162,28 @@ public class ShoppingCart {
         }
     }
 
-    private boolean Buy()
+    private Response Buy()
     {
-        Iterator itBug = this.shoppingBags.entrySet().iterator();
-        while (itBug.hasNext()) {
-            Map.Entry bugPair = (Map.Entry) itBug.next();
-            int storeID = (int) bugPair.getKey();
-            ShoppingBag SB = (ShoppingBag) bugPair.getValue();
-            if (!tradingSystem.reduseProducts(SB.getProducts(), storeID))//todo- check if work
+        Response res=new Response(false,"The reduction was made successfully ");
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet){
+            ShoppingBag SB = this.shoppingBags.get(storeID);
+            res=tradingSystem.reduseProducts(SB.getProducts(), storeID);
+            if (res.isErr())
             {
-                return false;
+                return res;
             }
+            PayToTheSellers();
         }
-        return true;
+        return res;
+    }
+
+    private void PayToTheSellers() {
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet) {
+            ShoppingBag SB = this.shoppingBags.get(storeID);
+            tradingSystem.PayToTheSellers(SB.getFinalPrice(),storeID);
+        }
     }
 
     public Integer Purchase(Object Payment) {

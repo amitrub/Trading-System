@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -95,18 +96,6 @@ public class Store {
         inventory.editProductDetails(productId,productName,price,category);
     }
 
-    public boolean reduceProduct(Collection<Integer> productsId, Integer quantityToReduce)
-    {
-        for (Integer i:productsId
-             ) {
-            if(!inventory.reduceProduct(i,quantityToReduce))
-            {
-                return false;
-            }
-        }
-        return true;
-    }
-
     //todo - ensure that the owner/manager is subscriber!
     public String addNewOwner(Integer userId, Integer newOwnerId)
     {
@@ -190,17 +179,16 @@ public class Store {
         this.rate=CalculateRate();
     }
 
-    public Double CalculateRate(){
-        Integer NumOfUsaers=0;
-        Double SumOfRating=0.0;
-        Iterator it = this.Ratings.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry)it.next();
-            Double Rate=(Double) pair.getValue();
+    public Double CalculateRate() {
+        Integer NumOfUsaers = 0;
+        Double SumOfRating = 0.0;
+        Set<Integer> RatingSet = this.Ratings.keySet();
+        for (Integer id : RatingSet) {
+            Double Rate = this.Ratings.get(id);
             NumOfUsaers++;
-            SumOfRating=SumOfRating+Rate;
+            SumOfRating = SumOfRating + Rate;
         }
-        return SumOfRating/NumOfUsaers;
+        return SumOfRating / NumOfUsaers;
     }
 
     public void addRatingToProduct(Integer productID, Integer userID, Double Rating)
@@ -287,22 +275,16 @@ public class Store {
         return this.inventory.getProduct(productID);
     }
 
-
-    public boolean reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
-        Iterator it = products_quantity.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            int PID = (int) pair.getKey();
-            int quantity =  (int) pair.getValue();
-            if(!this.inventory.reduceProduct(PID,quantity)){
-                return false;
-            }
-        }
-        return true;
+    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
+        return this.inventory.reduceProducts(products_quantity);
     }
 
-    public void WriteComment(int userId, int productId, String comment) {
-        this.inventory.addCommentToProduct(productId,userId,comment);
+    public Response WriteComment(int userId, int productId, String comment) {
+        if (this.possibleToAddComment(userId, productId)) {
+            return this.inventory.addCommentToProduct(productId, userId, comment);
+        }
+        else
+            return new Response(true, "User may not add a review for product he has not purchased before");
     }
 
     public void addHistory(ShoppingHistory sh) {
@@ -333,5 +315,28 @@ public class Store {
 
     public int getQuantity(Integer productID) {
        return this.inventory.getQuantity(productID);
+    }
+
+    public boolean possibleToAddComment(int userId, int productId) {
+        return true;
+        /*
+        for (ShoppingHistory SH:this.shoppingHistory
+             ) {
+            if(SH.getUserID()==userId){
+                if(SH.getProducts().contains(productId)){
+                    return true;
+                }
+            }
+        }
+        return true;
+    }
+         */
+    }
+
+    public List<String> getCommentsForProduct(Integer productID){
+        return this.inventory.getCommentsForProduct(productID);
+    }
+
+    public void pay(Double finalPrice) {
     }
 }

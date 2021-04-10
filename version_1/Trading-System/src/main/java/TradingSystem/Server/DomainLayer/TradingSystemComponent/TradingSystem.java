@@ -8,6 +8,8 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.expression.spel.ast.Assign;
+
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 import java.util.*;
@@ -401,7 +403,7 @@ public class TradingSystem {
 
 
 
-    public boolean reduseProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
+    public Response reduseProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
@@ -418,15 +420,13 @@ public class TradingSystem {
     }
 
 
-    public Response  WriteComment(int userId,int storeId, int productId, String comment) {
-      //  if(connectedSubscribers.containsKey(connID)&& connectedSubscribers.get(connID).equals(userID)){
-           //todo-add checking the user buy the product before?
-           this.stores.get(storeId).WriteComment(userId,productId,comment);
-           return new Response(false,  "Add Comment was successful");
-      //  }
-        //else{
-          //  return new Response(true, "Error in User details");
+    public Response  WriteComment(int userId, String connID, int storeId, int productId, String comment) {
+        if (ValidConnectedUser(userId, connID)) {
+            return this.stores.get(storeId).WriteComment(userId, productId, comment);
         }
+        else
+            return new Response(true, "Error in User details");
+    }
 
     public void addHistoryToStoreAndUser(ShoppingHistory sh)
     {
@@ -477,4 +477,23 @@ public class TradingSystem {
     private boolean allowedToEditProduct(int userID, int storeID) { return true; }
 
     private boolean allowedToShowStoreHistory(int userID, int storeID) { return true; }
+
+    public void printCommentForProduct(int storeID, int productID) {
+       System.out.println("-----------------------------------------------");
+       List<String> comments= this.stores.get(storeID).getCommentsForProduct(productID);
+       if(comments!=null){
+           System.out.println(ANSI_YELLOW+"The comments for products "+productID+" in store "+storeID+" is:"+ANSI_YELLOW);
+           for (String s:comments) {
+                 System.out.println(ANSI_YELLOW+s+ANSI_YELLOW);
+           }
+       }
+       else {
+           System.out.println(ANSI_YELLOW+"There is no comments for this product " + productID+ANSI_YELLOW);
+       }
+       System.out.println("-----------------------------------------------");
+    }
+
+    public void PayToTheSellers(Double finalPrice, Integer storeID) {
+        this.stores.get(storeID).pay(finalPrice);
+    }
 }

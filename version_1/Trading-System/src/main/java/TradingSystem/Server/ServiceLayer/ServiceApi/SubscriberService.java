@@ -41,7 +41,9 @@ public class SubscriberService {
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         String review = (String) obj.get("comment");
-        double rate = (double) obj.get("rate");
-        return null;
+       // double rate = (double) obj.get("rate");
+        Response res=tradingSystem.WriteComment(userID,connID,storeID,productID,review);
+        tradingSystem.printCommentForProduct(storeID,productID);
+        return res;
     }
 }
