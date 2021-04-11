@@ -60,7 +60,7 @@ public class TradingSystem {
         AddProductToStore(userID,connID,1,"prod1","sport", 7.0 );
         AddQuantityProduct(userID,connID,1,1,7);
 
-        User user1 = new User("roee", "1234");
+        User user1 = new User("hadass", "1234");
         userID = user1.getId();
         this.subscribers.put(userID, user1);
         connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
