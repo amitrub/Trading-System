@@ -30,9 +30,12 @@ public class Client {
 //        Todo: ADD OWNER FIELD
         return true;
     }
+    public String getConnID() {
+        return connID;
+    }
 
     //Guest
-    public void connectSystem() {
+    public String connectSystem() {
         String path = "home";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
@@ -41,8 +44,9 @@ public class Client {
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "38", "connect system error"));
         }
+        return this.connID;
     }
-    public void exitSystem() {
+    public String exitSystem() {
         String path = "exit";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
@@ -51,6 +55,7 @@ public class Client {
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "48", "exit system error"));
         }
+        return this.connID;
     }
     public int Register(String userName, String pass){
         String path = "register" ;
@@ -58,7 +63,8 @@ public class Client {
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Register) response: " + response + ANSI_RESET);
-        this.userID = response.getUserID();
+//        this.userID = response.getUserID();
+        this.userID = -1;
         this.connID = response.getConnID();
         this.userName = userName;
         this.pass = pass;
@@ -233,7 +239,6 @@ public class Client {
     public int showAllUsersHistory() {
         return 0;
     }
-
 
 
     //        try {

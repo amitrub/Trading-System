@@ -69,26 +69,31 @@ public class TradingSystem {
     //prints for debug
     public void printUsers() {
         Set<Integer> userSet = this.subscribers.keySet();
-        System.out.println(ANSI_GREEN + "Users" + ANSI_RESET);
+
+        System.out.println(ANSI_GREEN + "Connected Users" + ANSI_RESET);
         for (Integer id : userSet){
             User user = this.subscribers.get(id);
             if (connectedSubscribers.values().contains(user.getId()))
                 System.out.println(ANSI_GREEN + user + "(connected)" + ANSI_RESET);
         }
-        System.out.println(ANSI_PURPLE + "Users" + ANSI_RESET);
+
+        System.out.println("-----------------------------------------------");
+        System.out.println(ANSI_PURPLE + "Registered Users");
         for (Integer id : userSet){
             User user = this.subscribers.get(id);
             if (!connectedSubscribers.values().contains(user.getId()))
-                System.out.println(ANSI_PURPLE + user + "(not connected)" + ANSI_RESET);
+                System.out.println(ANSI_PURPLE + user + "(not connected)");
         }
-        System.out.println("-----------------------------------------------");
+
+        System.out.println("-----------------------------------------------" + ANSI_RESET);
         Set<String> guestSet = this.guests.keySet();
-        System.out.println(ANSI_GREEN + "Guests"  + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "Guests");
         for (String id : guestSet){
             User user = this.guests.get(id);
-            System.out.println(ANSI_GREEN +  user + "(connected)" + ANSI_RESET);
+            System.out.println(user + "(connected)");
         }
-        System.out.println("-----------------------------------------------");
+        System.out.println("-----------------------------------------------" + ANSI_RESET);
+        System.out.println("---------------------------------------------\n");
     }
     public void printStores() {
         Set<Integer> storeSet = this.stores.keySet();
