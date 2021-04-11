@@ -13,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class StoreTests {
 
-    Client client;
+    Client client =  new Client();
     Integer ownerID = client.Register("Gal", "1234");
     DiscountPolicy DC = new DiscountPolicy();
     BuyingPolicy BC = new BuyingPolicy();
@@ -29,7 +29,7 @@ class StoreTests {
 
     @BeforeEach
     void setUp() {
-        client = new Client();
+        //client = new Client();
         //client.Login("Gal", "1234");
         //ownerID = client.Register("Gal", "1234");
 
@@ -74,8 +74,8 @@ class StoreTests {
 
         store.AddProductToStore("Jogger Shorts", 75.0, "Pants");
         Integer productID2 = store.getProductID("Jogger Shorts");
-        client.Login("Lior", "123");
-        Response ans3 = store.deleteProduct(productID2);
+        //client.Login("Lior", "123");
+        //Response ans3 = store.deleteProduct(productID2);
         //assertEquals(ans3, "Only a store owner is allowed to remove a product");
     }
 
@@ -88,7 +88,6 @@ class StoreTests {
         //String ans2 = store.editProductDetails(ownerID, productID1 , "Jeans Pants", 100.0, "Pants");
         //assertEquals(ans2, "The product does not exist in the system");
     }
-
 
     @Test
     void addNewOwner() {
