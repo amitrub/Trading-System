@@ -8,6 +8,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.expression.spel.ast.Assign;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
@@ -29,6 +30,7 @@ public class TradingSystem {
 
     //    Singleton
     private static TradingSystem tradingSystem = null;
+    private static LoggerController loggerController=LoggerController.getInstance();
 
     private TradingSystem() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
@@ -145,11 +147,13 @@ public class TradingSystem {
     public Response Register(String connID, String userName, String password) {
         if (guests.containsKey(connID) || connectedSubscribers.containsKey(connID)){
             if (validation.IsUserNameExist(userName)) {
+                loggerController.WriteErrorMsg("User "+userName+" try to register to the system and failed");
                 return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
             }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
 //        guests.remove(connID);
+            loggerController.WriteErrorMsg("User "+userName+" register to the system successfully");
             Response res = new Response(newUser.getId(), connID, false, "Registration was successful");
             return res;
         }
@@ -199,6 +203,7 @@ public class TradingSystem {
     public Response AddStore(int userID, String connID, String storeName){
         if(ValidConnectedUser(userID, connID)){
             if (validation.IsStoreNameExist(storeName)){
+                loggerController.WriteErrorMsg("User "+userID+" try to add store to the system and failed");
                 return new Response(true, "Error Store name is taken");
             }
             else {
@@ -206,6 +211,7 @@ public class TradingSystem {
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
+                loggerController.WriteErrorMsg("User "+userID+" add store to the system "+ storeName+" successfully");
                 return new Response(false,  "Add Store was successful");
             }
         }
@@ -227,11 +233,14 @@ public class TradingSystem {
             if(allowedToAddProduct(userID,storeID)) {
                 Response res = stores.get(storeID).AddProductToStore(productName, price, category);
                 printProducts();
+                loggerController.WriteLogMsg("User "+userID+" add product "+ productName+" to store "+storeID+" successfully");
                 return res;
             }
+            loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
             return new Response(true, "The User is not allowed to add a product");
         }
         else{
+            loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
@@ -240,11 +249,14 @@ public class TradingSystem {
             if(allowedToAddQuantityProduct(userID,storeID)) {
                 Response res = stores.get(storeID).addProductToInventory(productId, quantity);
                 printProducts();
+                loggerController.WriteLogMsg("User "+userID+" add "+ quantity+" products of "+productId+" to store "+storeID+" successfully");
                 return res;
             }
+            loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
             return new Response(true, "The User is not allowed to add products to the inventory");
         }
         else{
+            loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
@@ -253,11 +265,14 @@ public class TradingSystem {
             if(allowedToRemoveProduct(userID,storeID)) {
                 Response res = stores.get(storeID).deleteProduct(productID);
                 printProducts();
+                loggerController.WriteLogMsg("User "+userID+" remove product"+ productID+" from store "+storeID+" successfully");
                 return res;
             }
+            loggerController.WriteErrorMsg("User "+userID+" try to remove product"+ productID+" from store "+storeID+" and failed");
             return new Response(true, "The User is not allowed to remove products from the inventory");
         }
         else{
+            loggerController.WriteErrorMsg("User "+userID+" try to remove product"+ productID+" from store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
@@ -377,6 +392,7 @@ public class TradingSystem {
 
     public Response WriteComment(int userId, String connID, int storeId, int productId, String comment) {
         if (ValidConnectedUser(userId, connID)) {
+            loggerController.WriteLogMsg("User "+userId+" add new comment to store "+ storeId+" successfully");
             return this.stores.get(storeId).WriteComment(userId, productId, comment);
         }
         else
@@ -397,11 +413,14 @@ public class TradingSystem {
             if(allowedToEditProduct(userID,storeID)) {
                 stores.get(storeID).editProductDetails(userID,productID,productName,price,category);
                 printProducts();
+                loggerController.WriteLogMsg("User "+userID+" edit product "+ productID+" successfully");
                 return new Response(false, "Edit Product was successful");
             }
+            loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
             return new Response(true, "The Edit is not allowed to Edit products");
         }
         else{
+            loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
