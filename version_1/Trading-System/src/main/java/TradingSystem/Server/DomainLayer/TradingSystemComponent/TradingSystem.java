@@ -18,12 +18,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class TradingSystem {
 
+    public Validation validation;
+
     private ConcurrentHashMap<Integer, Integer> systemAdmins;
     private ConcurrentHashMap<String, Integer> connectedSubscribers;
 
     public ConcurrentHashMap<Integer, User> subscribers;
     public ConcurrentHashMap<String, User> guests;
-    private ConcurrentHashMap<Integer, Store> stores;
+    public ConcurrentHashMap<Integer, Store> stores;
 
     //    Singleton
     private static TradingSystem tradingSystem = null;
@@ -39,6 +41,7 @@ public class TradingSystem {
     public static TradingSystem getInstance() {
         if (tradingSystem == null) {
             tradingSystem = new TradingSystem();
+            tradingSystem.validation = new Validation();
             tradingSystem.Initialization();
         }
         return tradingSystem;
@@ -141,7 +144,7 @@ public class TradingSystem {
     //If there is no new user creator adds it to users in the hashmap and returns an ID number
     public Response Register(String connID, String userName, String password) {
         if (guests.containsKey(connID) || connectedSubscribers.containsKey(connID)){
-            if (IsUserNameExist(userName)) {
+            if (validation.IsUserNameExist(userName)) {
                 return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
             }
             User newUser = new User(userName, password);
@@ -166,20 +169,10 @@ public class TradingSystem {
         }
         return uniqueID;
     }
-    //return true if user name is exist in the system
-    public boolean IsUserNameExist(String userName) {
-        Set<Integer> userSet = this.subscribers.keySet();
-        for (Integer id : userSet) {
-            User user = this.subscribers.get(id);
-            if (userName.equals(user.getUserName()))
-                return true;
-        }
-        return false;
-    }
     //Finds if the user exists and if the password is correct, if not returns 1 and error message
     //If the user exists and a correct password returns an ID number returns an ID number
     public Response Login(String guestConnID, String userName, String password) {
-        Response response = ValidPassword(userName, password);
+        Response response = validation.ValidPassword(userName, password);
         if (response.isErr())
             return response;
         User myGuest = guests.get(guestConnID);
@@ -187,21 +180,6 @@ public class TradingSystem {
         String connID = connectSubscriberToSystemConnID(response.getUserID());
         guests.remove(guestConnID);
         return new Response(response.getUserID(), connID, "Login was successful");
-    }
-    //if valid return Response(userId, "", false, "")
-    //if not valid return Response(isErr: true, "Error Message")
-    public Response ValidPassword(String userName, String password) {
-        Set<Integer> userSet = this.subscribers.keySet();
-        for (Integer id : userSet) {
-            User user = this.subscribers.get(id);
-            if (userName.equals(user.getUserName())) {
-                if (password.equals(user.getPassword()))
-                    return new Response(id, "", false, "");
-                else
-                    return new Response(true, errMsgGenerator("Server", "TradingSystem", "122", "Incorrect password"));
-            }
-        }
-        return new Response(true, errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
     }
     public Response Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
@@ -220,7 +198,7 @@ public class TradingSystem {
     //Store functions
     public Response AddStore(int userID, String connID, String storeName){
         if(ValidConnectedUser(userID, connID)){
-            if (IsStoreNameExist(storeName)){
+            if (validation.IsStoreNameExist(storeName)){
                 return new Response(true, "Error Store name is taken");
             }
             else {
@@ -234,15 +212,6 @@ public class TradingSystem {
         else{
             return new Response(true, "Error in User details");
         }
-    }
-    public boolean IsStoreNameExist(String storeName) {
-        Set<Integer> storeSet = this.stores.keySet();
-        for (Integer id : storeSet) {
-            Store store = this.stores.get(id);
-            if (storeName.equals(store.getName()))
-                return true;
-        }
-        return false;
     }
     public List<DummyStore> ShowAllStores() {
         List<DummyStore> list = new LinkedList<>();
@@ -313,15 +282,6 @@ public class TradingSystem {
                 return new Response(true, "User not connect to system");
             }
     }
-    public boolean checkBuyingPolicy(Integer productID, Integer storeID, Integer quantity, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        return this.stores.get(storeID).checkBuyingPolicy(productID,quantity,productsInTheBug);
-    }
-    public boolean checkProductsExistInTheStore(Integer storeID, Integer productID,  Integer quantity) {
-        if (this.stores.containsKey(storeID))
-            return this.stores.get(storeID).checkProductsExistInTheStore(productID,quantity);
-        else
-            return false;
-    }
     public List<DummyProduct> ShowShoppingCart(String connID){
         if(guests.containsKey(connID)) {
             return guests.get(connID).ShowShoppingCart();
@@ -335,6 +295,7 @@ public class TradingSystem {
         }
     }
 
+
     //TODO: to check
     public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
         List<DummyProduct> dummyProducts = new LinkedList<>();
@@ -345,7 +306,6 @@ public class TradingSystem {
         }
         return dummyProducts;
     }
-
     //TODO: to check
     public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
         List<DummyProduct> dummyProducts = new LinkedList<>();
@@ -398,16 +358,11 @@ public class TradingSystem {
 
     public boolean ValidConnectedUser(int userID, String connID){
         return connectedSubscribers.containsKey(connID) && connectedSubscribers.get(connID).equals(userID);
-
     }
-
-
 
     public Response reduseProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
        return this.stores.get(storeID).reduceProducts(products);
     }
-
-
 
     //show the history for some user
     public List<DummyShoppingHistory> ShowStoreHistory(int userId){
@@ -420,7 +375,7 @@ public class TradingSystem {
     }
 
 
-    public Response  WriteComment(int userId, String connID, int storeId, int productId, String comment) {
+    public Response WriteComment(int userId, String connID, int storeId, int productId, String comment) {
         if (ValidConnectedUser(userId, connID)) {
             return this.stores.get(storeId).WriteComment(userId, productId, comment);
         }

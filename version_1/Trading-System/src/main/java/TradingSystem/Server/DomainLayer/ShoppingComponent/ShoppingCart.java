@@ -58,8 +58,8 @@ public class ShoppingCart {
                     productsInTheBug.put(key, shoppingBag.getProducts().get(key));
             }
         }
-        if (tradingSystem.checkProductsExistInTheStore(storeID, productID, productsInTheBug.get(productID))) {
-            if (tradingSystem.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
+        if (tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productsInTheBug.get(productID))) {
+            if (tradingSystem.validation.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
                 if(!this.shoppingBags.containsKey(storeID)){
                     this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
                 }
@@ -101,7 +101,7 @@ public class ShoppingCart {
                     wait();
                 }
                 tradingSystem.lockProduct(productID, storeID);
-                if (!tradingSystem.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
+                if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
                     releaseAllProduct();
                     String storeName = tradingSystem.getStoreName(storeID);
                     String productName = tradingSystem.getProductName(storeID, productID);
