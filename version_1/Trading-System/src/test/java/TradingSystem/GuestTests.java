@@ -28,6 +28,7 @@ public class GuestTests {
         client.exitSystem();
     }
 
+    //Checked
     //region system Tests
     @Test
     void connectionTest() {
@@ -93,6 +94,8 @@ public class GuestTests {
         assertTrue(respondID == -1 && this.client.getConnID().equals(""));
     }
     //endregion
+
+    //Not Checked
     //region Search Tests
     @Test
     void searchTest(){
