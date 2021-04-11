@@ -27,6 +27,16 @@ public class Product {
         this.productRating=new ConcurrentHashMap<Integer, Double>();
     }
 
+    public Product(Product toCopyProduct) {
+        this.productID=toCopyProduct.productID;
+        this.productName = toCopyProduct.productName;
+        this.category = toCopyProduct.category;
+        this.price = toCopyProduct.price;
+        this.rate = toCopyProduct.rate;
+        this.productComments=new ConcurrentHashMap<Integer, String>();
+        this.productRating=new ConcurrentHashMap<Integer, Double>();
+    }
+
     public Integer getProductID() {
         return productID;
     }

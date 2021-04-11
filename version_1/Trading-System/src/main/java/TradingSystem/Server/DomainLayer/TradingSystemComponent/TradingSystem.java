@@ -9,7 +9,6 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
-import org.springframework.expression.spel.ast.Assign;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
@@ -56,9 +55,16 @@ public class TradingSystem {
         this.subscribers.put(userID, defaultAdmin);
         //TODO: to delete after
         String connID = "479f239c-797c-4bdb-8175-980acaabf070";
-        this.connectedSubscribers.put("479f239c-797c-4bdb-8175-980acaabf070", userID);
+        this.connectedSubscribers.put(connID, userID);
         AddStore(userID, connID, "store1");
         AddProductToStore(userID,connID,1,"prod1","sport", 7.0 );
+        AddQuantityProduct(userID,connID,1,1,7);
+
+        User user1 = new User("hadass", "1234");
+        userID = user1.getId();
+        this.subscribers.put(userID, user1);
+        connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
+        this.connectedSubscribers.put(connID, userID);
         printUsers();
     }
 
@@ -314,7 +320,31 @@ public class TradingSystem {
             return new LinkedList<>();
         }
     }
+    public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address){
+        if(guests.containsKey(connID)){
+            User myGuest= guests.get(connID);
+            return myGuest.guestPurchase(name, credit_number, phone_number, address);
+        }
+        else {
+            return new Response(true, "User not connect to system");
+        }
+    }
+    public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
+        if(ValidConnectedUser(userID, connID)){
+            User user = subscribers.get(userID);
+            return user.subscriberPurchase(credit_number, phone_number, address);
+        }
+        else {
+            return new Response(true, "User not connect to system");
+        }
+    }
 
+    //History Cart functions
+    public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
+        this.stores.get(sh.getStoreID()).addHistory(sh);
+        if (!isGuest)
+            this.subscribers.get(sh.getUserID()).addHistory(sh);
+    }
 
     //TODO: to check
     public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
@@ -385,13 +415,20 @@ public class TradingSystem {
     }
 
     //show the history for some user
-    public List<DummyShoppingHistory> ShowStoreHistory(int userId){
-        return subscribers.get(userId).ShowStoreHistory();
+    public List<DummyShoppingHistory> ShowSubscriberHistory(int userID, String connID){
+        if (ValidConnectedUser(userID,connID)){
+            System.out.println("++++++++++++++++++++++");
+            return subscribers.get(userID).ShowUserHistory();
+        }
+        else{
+            System.out.println("--------------------------");
+            return new LinkedList<>();
+        }
     }
 
     //show the history for some store
-    public List<DummyShoppingHistory> ShowHistory(int storeId){
-        return stores.get(storeId).getHistory();
+    public List<DummyShoppingHistory> ShowStoreHistory(int storeId){
+        return stores.get(storeId).ShowStoreHistory();
     }
 
 
@@ -404,11 +441,7 @@ public class TradingSystem {
             return new Response(true, "Error in User details");
     }
 
-    public void addHistoryToStoreAndUser(ShoppingHistory sh)
-    {
-        this.stores.get(sh.getStoreID()).addHistory(sh);
-        this.subscribers.get(sh.getUserID()).addHistory(sh);
-    }
+
 
 
 
@@ -430,11 +463,10 @@ public class TradingSystem {
         }
     }
 
-    public List<DummyShoppingHistory> StoreHistory(int userID, int storeID, String connID)
-    {
+    public List<DummyShoppingHistory> StoreHistory(int userID, int storeID, String connID){
         if (ValidConnectedUser(userID, connID)) {
             if (allowedToShowStoreHistory(userID, storeID)) {
-                return stores.get(storeID).getHistory();
+                return stores.get(storeID).ShowStoreHistory();
                 // printStoreHistory?()
             }
         }
