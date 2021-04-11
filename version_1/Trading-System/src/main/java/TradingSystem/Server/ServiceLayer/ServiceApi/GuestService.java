@@ -32,6 +32,7 @@ public class GuestService {
     //return connID
     @GetMapping("home")
     public Response connectSystem(){
+        System.out.println("//////////////////////////////////////////");
         Response res = this.tradingSystem.connectSystem();
         tradingSystem.printUsers();
         return res;
