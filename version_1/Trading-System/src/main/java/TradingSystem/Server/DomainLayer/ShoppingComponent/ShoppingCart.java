@@ -93,7 +93,7 @@ public class ShoppingCart {
     public Response Purchase() throws InterruptedException{
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet){
-            ShoppingBag SB =shoppingBags.get(storeID);
+            ShoppingBag SB = shoppingBags.get(storeID);
             Set<Integer> SBPSet = SB.getProducts().keySet();
             for (Integer productID : SBPSet){
                 int productQuantity = SB.getProducts().get(productID);
