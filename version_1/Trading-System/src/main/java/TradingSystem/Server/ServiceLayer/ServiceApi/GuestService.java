@@ -109,6 +109,17 @@ public class GuestService {
         return res;
     }
 
+    @PostMapping("shopping_cart/purchase")
+    public Response guestPurchase(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        String name = (String) obj.get("name");
+        String credit_number = (String) obj.get("credit_number");
+        String phone_number = (String) obj.get("phone_number");
+        String address = (String) obj.get("address");
+        Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
+        return res;
+    }
+
+
     public List<Object> Sort(Integer Category){ //todo getting list?
         return null;
     }

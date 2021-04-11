@@ -26,7 +26,7 @@ public  class User {
 
 
     private ShoppingCart shoppingCart;
-    private List<ShoppingHistory> shoppingHistory;
+    private List<ShoppingHistory> shoppingHistory = new LinkedList<>();
 
     public User() {
         this.id = -1;
@@ -113,14 +113,23 @@ public  class User {
         return shoppingCart.ShowShoppingCart();
     }
 
+    public Response guestPurchase(String name, String credit_number, String phone_number, String address){
+        return shoppingCart.Purchase(true, name, credit_number, phone_number, address);
+    }
+
+    public Response subscriberPurchase(String credit_number, String phone_number, String address){
+        return shoppingCart.Purchase(false, this.userName, credit_number, phone_number, address);
+
+    }
+
     public void addHistory(ShoppingHistory sh) {
         this.shoppingHistory.add(sh);
     }
 
-    public List<DummyShoppingHistory> ShowStoreHistory(){
+    public List<DummyShoppingHistory> ShowUserHistory(){
         List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
-        for(ShoppingHistory shoppingHistory:shoppingHistory){
-            shoppingHistories.add(shoppingHistory.createDummy());
+        for(ShoppingHistory shoppingHistory : shoppingHistory){
+            shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
         }
         return shoppingHistories;
     }

@@ -2,6 +2,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,10 +30,9 @@ public class SubscriberService {
         return res;
     }
 
-    //TODO: not check yet
     @GetMapping("{userID}/user_history")
-    public List<DummyProduct> History(@PathVariable int userID, @RequestHeader("connID") String connID){
-        return null;
+    public List<DummyShoppingHistory> ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
+        return tradingSystem.ShowSubscriberHistory(userID, connID);
     }
 
     //TODO: not check yet
@@ -44,6 +44,15 @@ public class SubscriberService {
        // double rate = (double) obj.get("rate");
         Response res=tradingSystem.WriteComment(userID,connID,storeID,productID,review);
         tradingSystem.printCommentForProduct(storeID,productID);
+        return res;
+    }
+
+    @PostMapping("{userID}/shopping_cart/purchase")
+    public Response subscriberPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        String credit_number = (String) obj.get("credit_number");
+        String phone_number = (String) obj.get("phone_number");
+        String address = (String) obj.get("address");
+        Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
         return res;
     }
 }

@@ -292,10 +292,10 @@ public class Store {
     }
 
 
-    public List<DummyShoppingHistory> getHistory(){
+    public List<DummyShoppingHistory> ShowStoreHistory(){
         List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
         for(ShoppingHistory shoppingHistory:shoppingHistory){
-            shoppingHistories.add(shoppingHistory.createDummy());
+            shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
         }
         return shoppingHistories;
     }
