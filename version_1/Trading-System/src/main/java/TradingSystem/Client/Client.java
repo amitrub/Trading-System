@@ -140,13 +140,13 @@ public class Client {
             System.out.println(errMsgGenerator("Client", "Client", "130", response.getMessage()));
     }
     public ArrayList<DummyProduct> showShoopingCart() {
-        String path = "shoppint_cart";
+        String path = "shopping_cart";
         JSONArray jsonArray = HttpRequest.sendGetRequestArr(urlbaseGuest+path, this.connID);
         ArrayList<DummyProduct> dummyProductResponeArr = DummyProduct.makeDummySearchFromJSON(jsonArray);
         return dummyProductResponeArr;
     }
     public boolean guestPurchase(String name, String credit_number, String phone_number, String address) {
-        String path = String.format("shopping_cart/purchase", this.userID);
+        String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("name", name);
@@ -156,7 +156,7 @@ public class Client {
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "157", "Error: guestPurchase, making post json"));
         }
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(guestPurchase) response: " + response + ANSI_RESET);
         return response.isErr();
@@ -164,7 +164,7 @@ public class Client {
 
     //Subscriber
     public int Logout(){
-        String path = "logout";
+        String path = String.format("%s/logout",this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Logout) response: " + response + ANSI_RESET);
@@ -220,7 +220,7 @@ public class Client {
 
     //Store Owner Service
     public boolean addProduct(int storeID, String productName, String category, double price, int quantity) {
-        String path = String.format("%s/store/%s/add_product", this.userID, storeID);
+        String path = String.format("%s/store/%s/add_new_product", this.userID, storeID);
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("productName", productName);
@@ -230,14 +230,14 @@ public class Client {
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addProduct, making post json"));
         }
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addProduct) response: " + response + ANSI_RESET);
         return response.isErr();
     }
     public boolean removeProduct(int storeID, int productID) {
         String path = String.format("%s/store/%s/remove_product/%s", this.userID, storeID, productID);
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(removeProduce) response: " + response + ANSI_RESET);
         return response.isErr();
@@ -253,14 +253,14 @@ public class Client {
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "216", "Error: editProduct, making post json"));
         }
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addProduct) response: " + response + ANSI_RESET);
         return response.isErr();
     }
     public ArrayList<DummyProduct> showStoreHistory(int storeID) {
         String path = String.format("%s/store_history/%s", this.userID, storeID);
-        JSONArray jsonResponseArr = HttpRequest.sendGetRequestArr(urlbaseSubscriber + path, this.connID);
+        JSONArray jsonResponseArr = HttpRequest.sendGetRequestArr(urlbaseOwner + path, this.connID);
         ArrayList<DummyProduct> dummyProducts = DummyProduct.makeDummySearchFromJSON(jsonResponseArr);
         System.out.println(ANSI_YELLOW + "(removeProduce) response: " + dummyProducts + ANSI_RESET);
         return dummyProducts;

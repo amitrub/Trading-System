@@ -18,9 +18,17 @@ public class StoreOwnerService {
     public Response AddProductToStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
-        double price = (double) obj.get("price");
         int quantity  = (int) obj.get("quantity");
-        return tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
+        int price_int;
+        Double price;
+        try {
+            price = (Double) obj.get("price");
+        } catch (Exception e) {
+            price_int = (int) obj.get("price");
+            price = new Double(price_int);
+        }
+        Response res = tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
+        return res;
     }
 
     @PostMapping("{userID}/store/{storeID}/add_quantity_product/{productID}")
