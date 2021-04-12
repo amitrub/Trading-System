@@ -13,17 +13,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Inventory {
 
-    private final Lock lock = new ReentrantLock();
-
     private final Integer storeID;
     private final String storeName;
     private int nextProductID=0;
     //productID_product
     private ConcurrentHashMap<Integer, Product> products;
     //productID_quantity
-    private ConcurrentHashMap<Integer, Integer> productQuantity;
-    //productID_quantity
-    private ConcurrentHashMap<Integer, Lock> productLock;
+//    private ConcurrentHashMap<Integer, Integer> productQuantity;
+    //productID_Lock
+//    private ConcurrentHashMap<Integer, Lock> productLock;
 
 
     public Inventory(Integer storeID, String storeName)
@@ -31,8 +29,8 @@ public class Inventory {
         this.storeID=storeID;
         this.storeName=storeName;
         this.products= new ConcurrentHashMap<Integer, Product>();
-        this.productQuantity=new ConcurrentHashMap<Integer, Integer>();
-        this.productLock=new ConcurrentHashMap<Integer, Lock>();
+//        this.productQuantity=new ConcurrentHashMap<Integer, Integer>();
+//        this.productLock=new ConcurrentHashMap<Integer, Lock>();
     }
 
     private synchronized int getNextProductID(){
@@ -45,7 +43,7 @@ public class Inventory {
         Set<Integer> productSet = this.products.keySet();
         for (Integer key : productSet){
             Product product = this.products.get(key);
-            products.add(new DummyProduct(this.storeID,this.storeName,key,product.getProductName(),product.getPrice(),product.getCategory(), this.productQuantity.get(key)));
+            products.add(new DummyProduct(this.storeID,this.storeName,key,product.getProductName(),product.getPrice(),product.getCategory(), product.getQuantity()));
         }
         return products;
     }
@@ -55,8 +53,8 @@ public class Inventory {
             Integer productID=getNextProductID();
             Product p=new Product(productID, productName, category, price);
             this.products.put(productID,p);
-            this.productQuantity.put(productID,0);
-            this.productLock.put(productID,new ReentrantLock());
+//            this.productQuantity.put(productID,0);
+//            this.productLock.put(productID,new ReentrantLock());
             return new Response(false,  "Add Product was successful");
         }
         else
@@ -75,13 +73,14 @@ public class Inventory {
     }
 
     public boolean checkProductsExistInTheStore(Integer productID, Integer quantity){
-        return this.products.containsKey(productID) && this.productQuantity.containsKey(productID) && this.productQuantity.get(productID) >= quantity;
+        return this.products.containsKey(productID) &&  this.products.get(productID).getQuantity() >= quantity;
     }
 
     public Response addQuantityProduct(Integer productId, Integer quantity){
-        if(this.productQuantity.containsKey(productId)){
-            Integer oldQuantity = this.productQuantity.get(productId);
-            this.productQuantity.put(productId,quantity+oldQuantity);
+        if(this.products.containsKey(productId)){
+            Product product = this.products.get(productId);
+            Integer oldQuantity = product.getQuantity();
+            product.setQuantity(quantity+oldQuantity);
             return new Response(false,  "Add Product to Inventory was successful");
         }
         else
@@ -89,10 +88,10 @@ public class Inventory {
     }
 
     public Response deleteProduct(Integer productID){
-        if(this.productQuantity.containsKey(productID)) {
-            this.productQuantity.remove(productID);
+        if(this.products.containsKey(productID)) {
+//            this.productQuantity.remove(productID);
             this.products.remove(productID);
-            this.productLock.remove(productID);
+//            this.productLock.remove(productID);
             return new Response(false, "Remove Product from the Inventory was successful");
         }
         else
@@ -111,14 +110,16 @@ public class Inventory {
         for (Integer PID : PQ){
             int quantityToReduce =  products_quantity.get(PID);
             System.out.println("quantityToReduce = "+ quantityToReduce);
-            if(productQuantity.containsKey(PID)) {
-                int quantity= this.productQuantity.get(PID);
-                int newQuantity = quantity- quantityToReduce;
+            if(products.containsKey(PID)) {
+                Product product = this.products.get(PID);
+                int quantity= product.getQuantity();
+                int newQuantity = quantity - quantityToReduce;
                 if (newQuantity <0) {
                     return new Response(true, "There are not enough units from a product "+PID +" In store "+storeID);
                 }
-                this.productQuantity.remove(PID);
-                this.productQuantity.put(PID, newQuantity);
+                product.setQuantity(newQuantity);
+//                this.productQuantity.remove(PID);
+//                this.productQuantity.put(PID, newQuantity);
             }
             else {
                 return new Response(true, "The product "+PID +" In store "+storeID +" does not exist in the system");
@@ -334,7 +335,7 @@ public class Inventory {
         LinkedList<DummyProduct> dummyProducts =new LinkedList<DummyProduct>();
         for (Integer i : products) {
             Product p=this.products.get(i);
-            DummyProduct D=new DummyProduct(this.storeID,storeName,p.getProductID(),p.getProductName(),p.getPrice(),p.getCategory(),this.productQuantity.get(i));//productComments.get(i).getRate());
+            DummyProduct D=new DummyProduct(this.storeID,storeName,p.getProductID(),p.getProductName(),p.getPrice(),p.getCategory(),p.getQuantity());//productComments.get(i).getRate());
             dummyProducts.add(D);
         }
         return dummyProducts;
@@ -359,19 +360,16 @@ public class Inventory {
         return this.products.get(productID).CalculateRate();
     }
 
-    public void lockProduct(Integer productID) {
-        this.productLock.get(productID).lock();
+    public void lockProduct(Integer productID){
+        this.products.get(productID).lockProduct();
     }
 
-    public void unlockProduct(Collection<Integer> productID)
-    {
-        this.productLock.get(productID).unlock();
-        this.productLock.get(productID).notifyAll();
+    public void unlockProduct(Collection<Integer> productID){
+        this.products.get(productID).unlockProduct();
     }
 
-    //todo check!
     public boolean productIsLock(Integer productID) {
-        return this.productLock.get(productID).tryLock();
+        return  this.products.get(productID).productIsLock();
     }
 
     public LinkedList<Product> getProducts() {
@@ -384,8 +382,8 @@ public class Inventory {
     }
 
     public int getQuantity(Integer productID) {
-      if(this.productQuantity.get(productID)!=null){
-          return this.productQuantity.get(productID);
+      if(this.products.containsKey(productID)){
+          return this.products.get(productID).getQuantity();
       }
       return 0;
     }

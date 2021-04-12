@@ -76,8 +76,7 @@ public class ShoppingCart {
         return new Response(true, "The product or quantity is not in stock");
     }
 
-    private synchronized Double calculatePrice()
-    {
+    private synchronized Double calculatePrice(){
         double price = 0.0;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer key : shoppingBagsSet){
@@ -116,7 +115,6 @@ public class ShoppingCart {
                 }
             }
         }
-        System.out.println("777777777777777777777777777777777777");
         if (supplySystem.canSupply(address)) {
             if (paymentSystem.checkCredit(name, credit_number, phone_number)){
                 Response res=Buy();

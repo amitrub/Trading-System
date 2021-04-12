@@ -4,6 +4,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TryLock;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 @RestController
 @RequestMapping(path = "api")
@@ -21,12 +23,23 @@ public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
     //return connID
-    @GetMapping("try")
-    public Map<String, Object> try1(){
-        Map<String, Object> map = new HashMap<>();
-        map.put("try", 7);
-        tradingSystem.printUsers();
-        return map;
+    @GetMapping("lock/{input}")
+    public int lock(@PathVariable int input){
+        System.out.println("before lock");
+        Lock lock = TryLock.getInstance().lock(input);
+        System.out.println("start sleep");
+        try {
+                Thread.sleep(15000);
+            }
+            catch (Exception e){
+            }
+        lock.unlock();
+        return 1;
+
+    }
+    @GetMapping("unlock/{input}")
+    public int unlock(@PathVariable int input){
+        return TryLock.getInstance().unlock(input);
     }
 
     //return connID
