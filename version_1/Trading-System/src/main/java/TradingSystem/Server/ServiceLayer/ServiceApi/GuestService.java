@@ -2,8 +2,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TryLock;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TrySync;
+//import TradingSystem.Server.DomainLayer.TradingSystemComponent.TryLock;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -22,6 +21,7 @@ public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
     //return connID
+    /*
     @GetMapping("lock/{input}")
     public int lock(@PathVariable int input){
         System.out.println("before lock");
@@ -44,6 +44,8 @@ public class GuestService {
     public boolean tryLock(@PathVariable int input){
         return TryLock.getInstance().tryLock(input);
     }
+
+     */
 
     //return connID
     @GetMapping("home")

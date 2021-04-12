@@ -125,7 +125,8 @@ public class OwnerTests {
         boolean b2 = client.removeProduct(storeID, productID);
         assertTrue(b2);
     }
-
+    //endregion
+    //region edit Product Tests
     @Test
     void editProductHappy() {
         client.Register("Shani", "123");
@@ -158,6 +159,76 @@ public class OwnerTests {
         boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,25);
         assertTrue(b2);
     }
+    //endregion
+    //region add Policies tests
+    @Test
+    void addBuyingPolicy_Happy() {
+    }
+
+    @Test
+    void addBuyingPolicy_Sad() {
+    }
+
+    @Test
+    void addDiscountPolicy_Happy() {
+    }
+
+    @Test
+    void addddiscountPolicy_Sad() {
+    }
+
+
+    //endregion
+    //region add owner/manager tests
+    @Test
+    void addNewOwner_Happy() {
+        //todo - need to implement in Client Class?
+    }
+
+    @Test
+    void addNewOwner_Sad() {
+        //todo - need to implement in Client Class?
+    }
+
+    @Test
+    void addNewManager_Happy() {
+        //todo - need to implement in Client Class?
+    }
+
+    @Test
+    void addNewManager_Sad() {
+        //todo - need to implement in Client Class?
+    }
+    //endregion
+    //region remove manager tests
+    @Test
+    void removeManager_Happy() {
+        //todo - need to implement in Client Class?
+    }
+
+    @Test
+    void removeManager_Sad() {
+        //todo - need to implement in Client Class?
+    }
+    //endregion
+    //region Information on officials tests
+    @Test
+    void showOfficialsInfo_Happy() {
+    }
+
+    @Test
+    void showOfficialsInfo_Sad() {
+    }
+    //endregion
+    //region Store history tests
+    @Test
+    void showStoreHistory_Happy() {
+    }
+
+    @Test
+    void showStoreHistory_Sad() {
+    }
+    //endregion
 
 
     /*
@@ -199,20 +270,6 @@ public class OwnerTests {
     //region doesnt have service yet
     */
 
-    @Test
-    void addNewOwner() {
-        //todo - need to implement in Client Class?
-    }
-
-    @Test
-    void addNewManager() {
-        //todo - need to implement in Client Class?
-    }
-
-    @Test
-    void removeManager() {
-        //todo - need to implement in Client Class?
-    }
 
 
 

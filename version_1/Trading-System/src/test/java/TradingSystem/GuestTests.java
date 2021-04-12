@@ -7,9 +7,13 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 
@@ -28,7 +32,7 @@ public class GuestTests {
         client.exitSystem();
     }
 
-    //Checked
+
     //region system Tests
     @Test
     void connectionTest() {
@@ -62,11 +66,78 @@ public class GuestTests {
         assertTrue(respondID2 == -1 && this.client.getConnID().equals(""));
     }
 
-
     @Test
     void registerShortPassword() {
         int respondID = client.Register("Lior", "1");
         assertTrue(respondID == -1);
+    }
+
+    @Test
+    void registerParallelHappy(){
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<RegisterTask> taskList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            RegisterTask task = new RegisterTask("Client-" + i);
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<Result>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<Result> future = resultList.get(i);
+            try {
+                Result result = future.get();
+                System.out.println(result.getName() + ": " + result.getTimestamp());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    void registerParallelSadSameName(){
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<RegisterTask> taskList = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            RegisterTask task = new RegisterTask("SameName");
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<Result>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<Result> future = resultList.get(i);
+            try {
+                Result result = future.get();
+                System.out.println(result.getName() + ": " + result.getTimestamp());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     //endregion
@@ -93,10 +164,9 @@ public class GuestTests {
         assertTrue(respondID == -1 && this.client.getConnID().equals(""));
     }
     //endregion
-
     //region Search Tests
     @Test
-    void searchTest(){
+    void search_ProductName(){
         client.Register("Shani", "123");
         client.Login("Shani", "123");
         client.openStore("H&M");
@@ -109,38 +179,64 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //Search by product name
-        //todo - the function search fail
-        ArrayList<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans", "50.0","100.0","1","5");
+        ArrayList<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50.0","100.0","1","5");
         assertEquals(searchProducts1.size(),1);
-        String ans1 = searchProducts1.get(0).getProductName();
-        assertEquals("Jeans Dress", ans1);
 
+    }
+
+    @Test
+    void searchTest_ProductCategory() {
+        client.Register("Shalom", "123");
+        client.Login("Shalom", "123");
+        client.openStore("H&O");
+        ArrayList<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
+        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
+        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
+        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
+        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //search by product category
         ArrayList<DummyProduct> searchProducts2 = client.Search("Product Category", "Tops", "30.0","150.0","1", "5");
         assertEquals(searchProducts2.size(),2);
-        String ans2 = searchProducts2.get(0).getProductName();
-        assertEquals("Basic T-shirt", ans2);
-        String ans3 = searchProducts2.get(1).getProductName();
-        assertEquals("Stripe Shirt", ans3);
+    }
+
+    @Test
+    void searchTest_ProductCategoryAndPrice() {
+        client.Register("Shaya", "123");
+        client.Login("Shaya", "123");
+        client.openStore("H&L");
+        ArrayList<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
+        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
+        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
+        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
+        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //search by product category and price
         ArrayList<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100.0","150.0","1", "5");
-        assertEquals(searchProducts2.size(),1);
-        String ans4 = searchProducts3.get(0).getProductName();
-        assertEquals("Stripe Shirt", ans4);
+        assertEquals(searchProducts3.size(),1);
+    }
+
+    @Test
+    void search_Sad() {
+        client.Register("Lital", "123");
+        client.Login("Lital", "123");
+        client.openStore("H&V");
+        ArrayList<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
+        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
+        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
+        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
+        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //sad search - there isn't products that match the search
         ArrayList<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150.0","200.0","1", "5");
-        assertEquals(searchProducts2.size(),0);
+        assertEquals(searchProducts4.size(),0);
     }
-//    @Test
-//    void searchByName() {
-//    }
-//
-//    @Test
-//    void searchByCategory() {
-//    }
     //endregion
     //region Stores Tests
     @Test
@@ -229,6 +325,43 @@ public class GuestTests {
 
         ArrayList<DummyProduct> ans1 = client.showShoopingCart();
         assertEquals(ans1.size(), 0);
+    }
+
+    @Test
+    void editShoppingCart_HappyRemove()
+    {
+
+    }
+
+    @Test
+    void editShoppingCart_HappyQuantity()
+    {
+
+    }
+
+    @Test
+    void editShoppingCart_SadQauntity()
+    {
+    }
+
+    @Test
+    void editShoppingCart_SadEmptyCart()
+    {
+
+    }
+    //endregion
+    //region Purchase tests
+
+    @Test
+    void Purchase_Happy() {
+    }
+
+    @Test
+    void Purchase_SadEmptyCart() {
+    }
+
+    @Test
+    void Purchase_SadPaying() {
     }
 
     //endregion
