@@ -145,6 +145,22 @@ public class Client {
         ArrayList<DummyProduct> dummyProductResponeArr = DummyProduct.makeDummySearchFromJSON(jsonArray);
         return dummyProductResponeArr;
     }
+    public boolean guestPurchase(String name, String credit_number, String phone_number, String address) {
+        String path = String.format("shopping_cart/purchase", this.userID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("name", name);
+            jsonPost.put("credit_number", credit_number);
+            jsonPost.put("phone_number", phone_number);
+            jsonPost.put("address", address);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "157", "Error: guestPurchase, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(guestPurchase) response: " + response + ANSI_RESET);
+        return response.isErr();
+    }
 
     //Subscriber
     public int Logout(){
@@ -183,7 +199,22 @@ public class Client {
         }
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(openStore) response: " + response + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(writeComment) response: " + response + ANSI_RESET);
+        return response.isErr();
+    }
+    public boolean subscriberPurchase(String credit_number, String phone_number, String address) {
+        String path = String.format("%s/shopping_cart/purchase", this.userID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("credit_number", credit_number);
+            jsonPost.put("phone_number", phone_number);
+            jsonPost.put("address", address);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "197", "Error: subscriberPurchase, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(subscriberPurchase) response: " + response + ANSI_RESET);
         return response.isErr();
     }
 

@@ -371,6 +371,14 @@ public class GuestTests {
         assertEquals(client.showShoopingCart().size(), 1);
         String ans1 = client.showShoopingCart().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
+
+        boolean purchaseSucceed = client.guestPurchase("Roee", "1234-5678",
+                                            "0528-97878787", "sioot st. 5");
+        if(purchaseSucceed)
+            System.out.println("purchase Succeed");
+        assertTrue(purchaseSucceed);
+
+
     }
 
     @Test
