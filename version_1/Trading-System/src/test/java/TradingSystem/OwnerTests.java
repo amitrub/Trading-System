@@ -203,29 +203,28 @@ public class OwnerTests {
         assertEquals(storeProducts2.size(), 0);
     }
     //endregion
-    //region add Policies tests
-    @Test
-    void addBuyingPolicy_Happy() {
-    }
-
-    @Test
-    void addBuyingPolicy_Sad() {
-    }
-
-    @Test
-    void addDiscountPolicy_Happy() {
-    }
-
-    @Test
-    void addddiscountPolicy_Sad() {
-    }
-
-
-    //endregion
     //region add owner/manager tests
     @Test
     void addNewOwner_Happy() {
-        //todo - need to implement in Client Class?
+        /*
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        tradingSystem.Register(gust1, "nofet", "123");
+        String NconnID = tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(, NconnID, "NofetStore");
+
+        //t.AddQuantityProduct(3, NconnID, 2, 1, 100);
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        tradingSystem.Register(gust2, "elinor", "123");
+        String EconnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+        //String gust3=tradingSystem.connectSystem().getConnID();
+        //tradingSystem.Register(gust3, "roee", "123");
+        //String RconnID = tradingSystem.Login(gust3, "roee", "123").getConnID();
+        Response r1=tradingSystem.AddNewOwner(3,NconnID,2,4);
+
+        Response r2=tradingSystem.AddNewManager(3,NconnID,2,5);
+
+         */
+
     }
 
     @Test
@@ -273,7 +272,26 @@ public class OwnerTests {
     }
     //endregion
 
+    /*
+    //region add Policies tests
+    @Test
+    void addBuyingPolicy_Happy() {
+    }
 
+    @Test
+    void addBuyingPolicy_Sad() {
+    }
+
+    @Test
+    void addDiscountPolicy_Happy() {
+    }
+
+    @Test
+    void addddiscountPolicy_Sad() {
+    }
+*/
+
+    //endregion
     /*
     @Test
     void deleteProduct() {
