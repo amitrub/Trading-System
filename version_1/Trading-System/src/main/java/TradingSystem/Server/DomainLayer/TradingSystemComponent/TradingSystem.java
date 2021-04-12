@@ -56,7 +56,7 @@ public class TradingSystem {
         return tradingSystem;
     }
 
-    private void Initialization() {
+    public void Initialization() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
         this.guests = new ConcurrentHashMap<>();
