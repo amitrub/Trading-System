@@ -37,7 +37,7 @@ public class StoreOwnerService {
         return tradingSystem.AddQuantityProduct(userID,connID,storeID,productID,quantity);
     }
 
-    @DeleteMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
     public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
         return this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
     }
@@ -45,6 +45,7 @@ public class StoreOwnerService {
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/edit_product/{productID}")
     public Response EditProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        System.out.println("----------------------> EditProduct");
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
         double price = (double) obj.get("price");
