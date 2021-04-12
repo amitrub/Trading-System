@@ -266,6 +266,7 @@ public class Client {
         return dummyProducts;
     }
 
+
     //Admin
     public int showAllUsersHistory() {
         return 0;
