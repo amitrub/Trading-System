@@ -53,16 +53,23 @@ public class SubscriberTests {
     }
     //endregion
     //region User History Tests
-
-
+    
     //todo after implement purchase
     @Test
-    void showAllUsersHistory() {
+    void showUsersHistory_Happy() {
 
     }
+
+    @Test
+    void showUserHistory_Sad() {
+    }
+
     //endregion
     //region Write Comment
 
+    //endregion
+    
+    
 
     /*
     //todo there isn't access to the comments
