@@ -651,7 +651,7 @@ public class TradingSystem {
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price)
     {
         if(ValidConnectedUser(userID, connID)){
-            if(allowedToEditProduct(userID,storeID)) {
+            if(hasPermission(userID,storeID, User.Permission.AddProduct)) {
                 stores.get(storeID).editProductDetails(userID,productID,productName,price,category);
                 printProducts();
                 loggerController.WriteLogMsg("User "+userID+" edit product "+ productID+" successfully");
@@ -668,7 +668,7 @@ public class TradingSystem {
 
     public List<DummyShoppingHistory> StoreHistory(int userID, int storeID, String connID){
         if (ValidConnectedUser(userID, connID)) {
-            if (allowedToShowStoreHistory(userID, storeID)) {
+            if (hasPermission(userID, storeID, User.Permission.GetHistoryPurchasing)) {
                 return stores.get(storeID).ShowStoreHistory();
                 // printStoreHistory?()
             }
