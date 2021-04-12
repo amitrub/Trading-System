@@ -1,3 +1,4 @@
+/*
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -138,3 +139,4 @@ public class GuestService {
 
 
 }
+*/

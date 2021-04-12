@@ -165,6 +165,25 @@ public class Store {
         return inventory.CalculateRateForProduct(productID);
     }
 
+    public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
+        LinkedList<Integer> FinalID=inventory.SearchProduct(name, category,minprice, maxprice);
+        return inventory.getDummySearchForList(FinalID);
+    }
+    /*
+    public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
+        LinkedList<Integer> FinalID = new LinkedList<>();
+        if (name != null) {
+            FinalID = inventory.getDummySearchByName(FinalID, name);
+        }
+        if (category != null) {
+            FinalID = inventory.getDummySearchByCategory(FinalID, category);
+        }
+        if (minprice != -1 && maxprice != -1) {
+            FinalID = inventory.getDummySearchByPrice(FinalID, minprice, maxprice);
+        }
+        return inventory.getDummySearchForList(FinalID);
+    }
+*/
     public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank){
        LinkedList<Integer> FinalID=new LinkedList<>();
        if(name!=null){
@@ -302,4 +321,6 @@ public class Store {
     public boolean checkManager(int newOwner) {
         return this.managersIDs.contains(newOwner);
     }
+
+
 }

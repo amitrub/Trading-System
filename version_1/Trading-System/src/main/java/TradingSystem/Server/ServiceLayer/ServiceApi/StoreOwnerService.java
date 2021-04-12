@@ -63,7 +63,7 @@ public class StoreOwnerService {
 
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/edit_product/{ManagerToRemove}")
-    public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int ManagerToRemove, @RequestHeader("connID") String connID) {
+    public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int ManagerToRemove, @RequestHeader("connID") String connID)  {
         return tradingSystem.RemoveManager(userID, connID, storeID,ManagerToRemove);
     }
     
