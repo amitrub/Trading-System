@@ -1,6 +1,8 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 import java.util.Date;
+
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 
 
@@ -13,12 +15,10 @@ public class ShoppingHistory {
     private Integer userID;
     private Integer storeID;
 
-    //productID_quantity
-    private ConcurrentHashMap<Integer,Integer> products;
+    //product_quantity
+    private final ConcurrentHashMap<Product, Integer> products;
 
     private Date date;
-
-    SimpleDateFormat formatter;
 
     private Double finalPrice;
 
@@ -35,30 +35,27 @@ public class ShoppingHistory {
         return userID;
     }
 
-    public ShoppingHistory(Integer userID, Integer storeID, ConcurrentHashMap<Integer, Integer> products, Date date, Double finalPrice) {
-        this.userID = userID;
-        this.storeID = storeID;
+    public ShoppingHistory(ShoppingBag toCopyShoppingBag, ConcurrentHashMap<Product, Integer> products) {
+        this.userID = toCopyShoppingBag.getUserID();
+        this.storeID = toCopyShoppingBag.getStoreID();
         this.products = products;
-        this.date = date;
-        this.finalPrice = finalPrice;
+        this.date = new Date(System.currentTimeMillis());
+        this.finalPrice = toCopyShoppingBag.getFinalPrice();
+
     }
 
-    public DummyShoppingHistory createDummy(){
-        return new DummyShoppingHistory(userID,storeID,products,date,finalPrice);
-    }
+
     public Integer getStoreID() {
         return storeID;
     }
 
-    public ConcurrentHashMap<Integer, Integer> getProducts() {
+    public ConcurrentHashMap<Product, Integer> getProducts() {
         return products;
     }
 
-//    public SimpleDateFormat getFormatter() {
-//        return formatter;
-//    }
-
-
+    public Date getDate() {
+        return date;
+    }
 
     public Double getFinalPrice() {
         return finalPrice;

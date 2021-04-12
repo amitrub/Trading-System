@@ -4,12 +4,15 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 
 public class Store {
 
@@ -22,10 +25,10 @@ public class Store {
     private List<Integer> ownersIDs = new LinkedList<>();
     private List<Integer> managersIDs = new LinkedList<>();
 
-    //ownerID_hisAppointeeID
-    private ConcurrentHashMap<Integer, Integer> ownersAppointee = new ConcurrentHashMap<>();
-    //managersID_hisAppointeeID
-    private ConcurrentHashMap<Integer, Integer> managersAppointee = new ConcurrentHashMap<>();;
+    //ownerID_Permission
+   // private ConcurrentHashMap<Integer, OwnerPermission> ownersPermission = new ConcurrentHashMap<>();
+    //managersID_Permission
+    //private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
 
     private DiscountPolicy discountPolicy;
     private BuyingPolicy buyingPolicy;
@@ -79,8 +82,8 @@ public class Store {
         return inventory.ShowStoreProducts();
     }
 
-    public Response AddProductToStore(String productName , Double price, String category){
-        return inventory.addProduct(productName, category, price);
+    public Response AddProductToStore(String productName , Double price, String category, int quantity){
+        return inventory.addProduct(productName, category, price, quantity);
     }
 
     public Response addProductToInventory(Integer productId, Integer quantity){
@@ -96,66 +99,23 @@ public class Store {
         inventory.editProductDetails(productId,productName,price,category);
     }
 
-    //todo - ensure that the owner/manager is subscriber!
-    public String addNewOwner(Integer userId, Integer newOwnerId)
-    {
-         if (this.ownersIDs.contains(userId)){
-             if(!this.ownersIDs.contains(newOwnerId)) {
-                 this.ownersIDs.add(newOwnerId);
-                 this.ownersAppointee.put(newOwnerId,userId);
-                 return "The owner added";
-                 //return 0;
-             }
-             return "This user is already the owner of this store";
-         }
-        return "Only a store owner can appoint another store owner";
-        //return -1;
+    public String addNewOwner(Integer userId, Integer newOwnerId) {
+        this.ownersIDs.add(newOwnerId);
+       // this.ownersPermission.put(newOwnerId, OP);
+        return "";
     }
 
-    //todo - ensure that the owner/manager is subscriber!
     public String addNewManager(Integer userId, Integer newManagerId)
     {
-        if (this.ownersIDs.contains(userId)){
-            if(!this.ownersIDs.contains(newManagerId)) {
                 this.managersIDs.add(newManagerId);
-                this.managersAppointee.put(newManagerId,userId);
-               return "The manager added";
-               // return 0;
-            }
-            return "This user is already the owner of this store, so he can't be a manager";
-        }
-        return "Only a store owner is allowed to appoint store's manager";
-        //return -1;
+                //this.managersPermission.put(newManagerId,om);
+        return "";
     }
 
-    public String removeManager(Integer userId, Integer managerId)
-    {
-        if (this.ownersIDs.contains(userId)){
-            if(this.managersIDs.contains(managerId) && managersAppointee.get(managerId)!=null) {
-                if(this.managersAppointee.get(managerId)==userId) {
-                    Iterator it = this.managersAppointee.entrySet().iterator();
-                    while (it.hasNext()) {
-                        Map.Entry pair = (Map.Entry) it.next();
-                        int id = (int) pair.getKey();
-                        if (id == managerId)
-                            this.managersAppointee.remove(managerId);
-                            this.managersIDs.remove(managerId);
-                            return "The Manager removed";
-                            //return 0;
-                    }
-                    return "something ia wrong";
-                    //return -1;
-                }
-                return "Only the store owner who appointed the store manager can remove him";
-                //return -1;
-            }
-            return "This user is not the manager of this store, so it impossible to remove him";
-            //return -1;
-        }
-        return "Only a store owner is allowed to remove store's manager";
-        //return -1;
+    public String removeManager(Integer userId, Integer managerId) {
+        this.managersIDs.remove(managerId);
+        return "The Manager removed";
     }
-
     //todo - ensure that only the Trading Administrator can access this function.
     public List<ShoppingHistory> GetShoppingHistory()
     {
@@ -206,6 +166,25 @@ public class Store {
         return inventory.CalculateRateForProduct(productID);
     }
 
+    public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
+        LinkedList<Integer> FinalID=inventory.SearchProduct(name, category,minprice, maxprice);
+        return inventory.getDummySearchForList(FinalID);
+    }
+    /*
+    public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
+        LinkedList<Integer> FinalID = new LinkedList<>();
+        if (name != null) {
+            FinalID = inventory.getDummySearchByName(FinalID, name);
+        }
+        if (category != null) {
+            FinalID = inventory.getDummySearchByCategory(FinalID, category);
+        }
+        if (minprice != -1 && maxprice != -1) {
+            FinalID = inventory.getDummySearchByPrice(FinalID, minprice, maxprice);
+        }
+        return inventory.getDummySearchForList(FinalID);
+    }
+*/
     public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank){
        LinkedList<Integer> FinalID=new LinkedList<>();
        if(name!=null){
@@ -258,6 +237,10 @@ public class Store {
         this.inventory.lockProduct(productID);
     }
 
+    public Lock getProductLock(int productID) {
+        return this.inventory.getProductLock(productID);
+    }
+
     public void  unLockProducts(Collection<Integer> productID){
         this.inventory.unlockProduct(productID);
     }
@@ -292,10 +275,10 @@ public class Store {
     }
 
 
-    public List<DummyShoppingHistory> getHistory(){
+    public List<DummyShoppingHistory> ShowStoreHistory(){
         List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
         for(ShoppingHistory shoppingHistory:shoppingHistory){
-            shoppingHistories.add(shoppingHistory.createDummy());
+            shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
         }
         return shoppingHistories;
     }
@@ -339,4 +322,10 @@ public class Store {
 
     public void pay(Double finalPrice) {
     }
+
+    public boolean checkManager(int newOwner) {
+        return this.managersIDs.contains(newOwner);
+    }
+
+
 }

@@ -1,5 +1,7 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
+import TradingSystem.Server.DomainLayer.ExternalServices.PaymentSystem;
+import TradingSystem.Server.DomainLayer.ExternalServices.SupplySystem;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -7,6 +9,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 
 public class ShoppingCart {
 
@@ -16,12 +19,13 @@ public class ShoppingCart {
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags;
 
+    private PaymentSystem paymentSystem = PaymentSystem.getInstance();
+    private SupplySystem supplySystem = SupplySystem.getInstance();
     private Object payment;//?
 
-    public ShoppingCart(Integer userID)
-    {
+    public ShoppingCart(Integer userID){
         this.userID = userID;
-        this.shoppingBags = new ConcurrentHashMap<Integer, ShoppingBag>();
+        this.shoppingBags = new ConcurrentHashMap<>();
     }
 
     @Override
@@ -31,8 +35,7 @@ public class ShoppingCart {
                 '}';
     }
 
-    public void mergeToMyCart(ShoppingCart shoppingCartToMerge)
-    {
+    public void mergeToMyCart(ShoppingCart shoppingCartToMerge){
         Set<Integer> keySetToMerge = shoppingCartToMerge.shoppingBags.keySet();
         for (int storeID : keySetToMerge){
             ShoppingBag newShoppingBag = shoppingCartToMerge.shoppingBags.get(storeID);
@@ -74,8 +77,7 @@ public class ShoppingCart {
         return new Response(true, "The product or quantity is not in stock");
     }
 
-    private synchronized Double calculatePrice()
-    {
+    private synchronized Double calculatePrice(){
         double price = 0.0;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer key : shoppingBagsSet){
@@ -90,59 +92,134 @@ public class ShoppingCart {
         return this.shoppingBags;
     }
 
-    public Response Purchase() throws InterruptedException{
+    public Response Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
+        List<Lock> lockList = this.getLockList();
+        Response canBuy = this.checkInventoryAndLockProduct(lockList);
+        if (canBuy.isErr()){
+            return canBuy;
+        }
+        else {
+            Response output = new Response();
+            if (supplySystem.canSupply(address)) {
+                if (paymentSystem.checkCredit(name, credit_number, phone_number)){
+                    Response res = Buy();
+                    if(!res.isErr()) {
+                        addShoppingHistory(isGuest);
+                        this.shoppingBags = new ConcurrentHashMap<>();
+                        output = new  Response(false, "The purchase was made successfully ");
+                    }
+                    else
+                        output = res;
+                }
+                else {
+                    output = new Response(true,"The payment is not approve");
+                }
+            }
+            else {
+                output = new Response(true,"The Supply is not approve");
+            }
+            this.releaseLocks(lockList);
+            return output;
+        }
+    }
+
+    public Response checkInventoryAndLockProduct(List<Lock> lockList){
+        boolean succeededToLock = false;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer storeID : shoppingBagsSet){
-            ShoppingBag SB =shoppingBags.get(storeID);
-            Set<Integer> SBPSet = SB.getProducts().keySet();
-            for (Integer productID : SBPSet){
-                int productQuantity = SB.getProducts().get(productID);
-                while (tradingSystem.productIsLock(productID, storeID)) { //todo check!
-                    wait();
+        while (!succeededToLock){
+            synchronized (this){
+                for (Integer storeID : shoppingBagsSet){
+                    ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
+                    Set<Integer> productsSet = shoppingBag.getProducts().keySet();
+                    for (Integer productID : productsSet){
+                        int productQuantity = shoppingBag.getProducts().get(productID);
+                        if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
+                            String storeName = tradingSystem.getStoreName(storeID);
+                            String productName = tradingSystem.getProductName(storeID, productID);
+                            String err = productName + " in The store" + storeName + " is not exist in the stock";
+                            return new Response(true, err);
+                        }
+                    }
                 }
-                tradingSystem.lockProduct(productID, storeID);
-                if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
-                    releaseAllProduct();
-                    String storeName = tradingSystem.getStoreName(storeID);
-                    String productName = tradingSystem.getProductName(storeID, productID);
-                    String err= productName + " in The store" + storeName + " is not exist in the stock";
-                    return new Response(true, err);
-                }
+                succeededToLock = this.tryLockList(lockList);
             }
         }
-        if (paymentApprove()) {
-            Response res=Buy();
-            if(!res.isErr()) {
-                addShopingHistory();
-                releaseAllProduct();
-                return new Response(false, "The purchase was made successfully ");
+        return new Response(false,"");
+    }
+    private List<Lock> getLockList(){
+        List<Lock> output = new LinkedList<>();
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet) {
+            ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
+            Set<Integer> productsSet = shoppingBag.getProducts().keySet();
+            for (Integer productID : productsSet){
+                Lock lock = tradingSystem.getProductLock(storeID, productID);
+                output.add(lock);
             }
-            else
-            return res;
         }
-        releaseAllProduct();
-        return new Response(true,"The payment is not approve");
+        return output;
     }
-
-    private void addShopingHistory()
-    {
-        Iterator it = this.shoppingBags.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            int storeID = (int) pair.getKey();
-            ShoppingBag SB=(ShoppingBag) pair.getValue();
-            ShoppingHistory SH=new ShoppingHistory(SB.getUserID(),storeID,SB.getProducts(),new Date() ,SB.getFinalPrice());
-            tradingSystem.addHistoryToStoreAndUser(SH);
+    private boolean tryLockList(List<Lock> lockList){
+        List<Lock> succeededToLock = new LinkedList<>();
+        for (Lock lock : lockList){
+            if (lock.tryLock()){
+                succeededToLock.add(lock);
+            }
+            else {
+                for (Lock lockedLock : succeededToLock){
+                    lock.unlock();
+                }
+                return false;
+            }
         }
-    }
-
-    private boolean paymentApprove()
-    {
         return true;
     }
+    private void releaseLocks(List<Lock> lockList){
+        for (Lock lock : lockList){
+            lock.unlock();
+        }
+    }
 
-    private void releaseAllProduct()
-    {
+    private Response Buy(){
+        Response res=new Response(false,"The reduction was made successfully ");
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet){
+            ShoppingBag SB = this.shoppingBags.get(storeID);
+            res = tradingSystem.reduseProducts(SB.getProducts(), storeID);
+            if (res.isErr()){
+                return res;
+            }
+            PayToTheSellers();
+        }
+        return res;
+    }
+
+    private void PayToTheSellers() {
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet) {
+            ShoppingBag SB = this.shoppingBags.get(storeID);
+            tradingSystem.PayToTheSellers(SB.getFinalPrice(),storeID);
+        }
+    }
+
+    private void addShoppingHistory(boolean isGuest){
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet){
+            ShoppingBag SB= this.shoppingBags.get(storeID);
+            ConcurrentHashMap<Product, Integer> productsToHistory = new ConcurrentHashMap<>();
+            Set<Integer> productQuantitySet = SB.getProducts().keySet();
+            for (Integer productID: productQuantitySet){
+                Integer quantity = SB.getProducts().get(productID);
+                Product p = tradingSystem.getProduct(storeID,productID);
+                Product newProduct = new Product(p);
+                productsToHistory.put(newProduct, quantity);
+            }
+            ShoppingHistory shoppingHistory = new ShoppingHistory(SB,productsToHistory);
+            tradingSystem.addHistoryToStoreAndUser(shoppingHistory, isGuest);
+        }
+    }
+
+    private void releaseAllProduct() {
         Iterator itBug = this.shoppingBags.entrySet().iterator();
         while (itBug.hasNext()) {
             Map.Entry bugPair = (Map.Entry) itBug.next();
@@ -160,34 +237,6 @@ public class ShoppingCart {
             }
             */
         }
-    }
-
-    private Response Buy()
-    {
-        Response res=new Response(false,"The reduction was made successfully ");
-        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer storeID : shoppingBagsSet){
-            ShoppingBag SB = this.shoppingBags.get(storeID);
-            res=tradingSystem.reduseProducts(SB.getProducts(), storeID);
-            if (res.isErr())
-            {
-                return res;
-            }
-            PayToTheSellers();
-        }
-        return res;
-    }
-
-    private void PayToTheSellers() {
-        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer storeID : shoppingBagsSet) {
-            ShoppingBag SB = this.shoppingBags.get(storeID);
-            tradingSystem.PayToTheSellers(SB.getFinalPrice(),storeID);
-        }
-    }
-
-    public Integer Purchase(Object Payment) {
-        return 0;
     }
 
     public List<DummyProduct> ShowShoppingCart(){

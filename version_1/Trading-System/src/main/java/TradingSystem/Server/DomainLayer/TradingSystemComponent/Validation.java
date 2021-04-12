@@ -41,7 +41,7 @@ public class Validation {
     }
 
     //Store functions
-    public boolean IsStoreNameExist(String storeName) {
+    public synchronized boolean IsStoreNameExist(String storeName) {
         Set<Integer> storeSet = tradingSystem.stores.keySet();
         for (Integer id : storeSet) {
             Store store = tradingSystem.stores.get(id);
@@ -61,4 +61,6 @@ public class Validation {
         else
             return false;
     }
+
+
 }

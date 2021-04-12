@@ -1,9 +1,9 @@
+
 package TradingSystem.Server.ServiceLayer.ServiceApi;
-
-
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+//import TradingSystem.Server.DomainLayer.TradingSystemComponent.TryLock;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.locks.Lock;
 
 @RestController
 @RequestMapping(path = "api")
@@ -21,13 +22,31 @@ public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
     //return connID
-    @GetMapping("try")
-    public Map<String, Object> try1(){
-        Map<String, Object> map = new HashMap<>();
-        map.put("try", 7);
-        tradingSystem.printUsers();
-        return map;
+    /*
+    @GetMapping("lock/{input}")
+    public int lock(@PathVariable int input){
+        System.out.println("before lock");
+        Lock lock = TryLock.getInstance().lock(input);
+        System.out.println("start sleep");
+        try {
+                Thread.sleep(15000);
+            }
+            catch (Exception e){
+            }
+        lock.unlock();
+        return 1;
     }
+    @GetMapping("sync")
+    public int sync(){
+        return new TrySync().trySync();
+    }
+
+    @GetMapping("tryLock/{input}")
+    public boolean tryLock(@PathVariable int input){
+        return TryLock.getInstance().tryLock(input);
+    }
+
+     */
 
     //return connID
     @GetMapping("home")
@@ -63,6 +82,7 @@ public class GuestService {
         return res;
     }
 
+
     //TODO: not check yet
     @PostMapping("search")
     public List<DummyProduct> Search(@RequestBody Map<String, Object> obj){
@@ -74,9 +94,9 @@ public class GuestService {
         int pRank = (int) obj.get("pRank");
         int sRank = (int) obj.get("sRank");
         if(productNameMode & !productCategoryMode)
-            return tradingSystem.SearchProductByName(name, minPrice, maxPrice, pRank, sRank);
+            return tradingSystem.SearchProduct(name, null, minPrice, maxPrice);
         else if(!productNameMode & productCategoryMode)
-            return tradingSystem.SearchProductByCategory(name, minPrice, maxPrice, pRank, sRank);
+            return tradingSystem.SearchProduct(null, name, minPrice, maxPrice);
         else
             return new ArrayList<>();
     }
@@ -90,6 +110,7 @@ public class GuestService {
     @GetMapping("store/{storeID}/products")
     public List<DummyProduct> ShowStoreProducts(@PathVariable int storeID)
     {
+        System.out.println("inside ShowStoreProducts");
         List<DummyProduct> res = this.tradingSystem.ShowStoreProducts(storeID);
         return res;
     }
@@ -100,6 +121,7 @@ public class GuestService {
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
+        tradingSystem.printUsers();
         return res;
     }
 
@@ -108,6 +130,18 @@ public class GuestService {
         List<DummyProduct> res = this.tradingSystem.ShowShoppingCart(connID);
         return res;
     }
+
+    @PostMapping("shopping_cart/purchase")
+    public Response guestPurchase(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        System.out.println("guestPurchase ATA PO? ATA PO?");
+        String name = (String) obj.get("name");
+        String credit_number = (String) obj.get("credit_number");
+        String phone_number = (String) obj.get("phone_number");
+        String address = (String) obj.get("address");
+        Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
+        return res;
+    }
+
 
     public List<Object> Sort(Integer Category){ //todo getting list?
         return null;

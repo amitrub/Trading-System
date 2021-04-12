@@ -10,12 +10,12 @@ import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
 public class DummyProduct {
 
-    private int storeID;
-    private String storeName;
-    private int productID;
-    private String productName;
-    private double price;
-    private String category;
+    private final int storeID;
+    private final String storeName;
+    private final int productID;
+    private final String productName;
+    private final double price;
+    private final String category;
     private int quantity;
 
     public DummyProduct(){
@@ -27,6 +27,15 @@ public class DummyProduct {
         this.category = "";
     }
 
+    public DummyProduct(Product product){
+        this.storeID = -1;
+        this.storeName = "";
+        this.productID = product.getProductID();
+        this.productName = product.getProductName();
+        this.price = product.getPrice();
+        this.category = product.getCategory();
+    }
+
     public DummyProduct(int storeID, String storeName, int productID, String productName, double price, String category, int quantity) {
         this.storeID = storeID;
         this.storeName = storeName;
@@ -36,6 +45,8 @@ public class DummyProduct {
         this.category = category;
         this.quantity = quantity;
     }
+
+
 
     public int getStoreID() {
         return storeID;
