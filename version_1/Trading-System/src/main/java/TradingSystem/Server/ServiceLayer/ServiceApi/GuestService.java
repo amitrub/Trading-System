@@ -1,3 +1,4 @@
+
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -93,9 +94,9 @@ public class GuestService {
         int pRank = (int) obj.get("pRank");
         int sRank = (int) obj.get("sRank");
         if(productNameMode & !productCategoryMode)
-            return tradingSystem.SearchProductByName(name, minPrice, maxPrice, pRank, sRank);
+            return tradingSystem.SearchProduct(name, null, minPrice, maxPrice);
         else if(!productNameMode & productCategoryMode)
-            return tradingSystem.SearchProductByCategory(name, minPrice, maxPrice, pRank, sRank);
+            return tradingSystem.SearchProduct(null, name, minPrice, maxPrice);
         else
             return new ArrayList<>();
     }

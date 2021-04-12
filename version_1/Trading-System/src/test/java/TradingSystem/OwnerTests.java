@@ -4,6 +4,7 @@ import TradingSystem.Client.Client;
 import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -19,6 +20,7 @@ import static org.junit.Assert.assertTrue;
 public class OwnerTests {
 
     Client client;
+    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -30,7 +32,33 @@ public class OwnerTests {
     void tearDown() {
         client.exitSystem();
     }
+    
+    //region open store tests
+    @Test
+    void openStore_Happy() {
+        client.Register("Lee", "123");
+        client.Login("Lee", "123");
+        Integer preSize = client.showAllStores().size();
 
+        boolean b1 = client.openStore("Mania");
+        assertFalse(b1);
+        assertEquals(preSize+1, client.showAllStores().size());
+    }
+
+    @Test
+    void openStore_SadDuplicateName() {
+        client.Register("Lin", "123");
+        client.Login("Lin", "123");
+        Integer preSize = client.showAllStores().size();
+
+        client.openStore("Mania");
+        boolean b1 = client.openStore("Mania");
+        Integer newSize = client.showAllStores().size();
+        assertTrue(b1);
+        assertEquals(preSize, newSize);
+    }
+
+    //endregion
     //region add Product Tests
     @Test
     void addProductHappy() {
@@ -38,6 +66,7 @@ public class OwnerTests {
         client.Login("Gal", "123");
         client.openStore("Scoop");
         ArrayList<DummyStore> stores = client.showAllStores();
+
         Integer storeID = stores.get(0).getId();
 
         //happy add
