@@ -30,7 +30,6 @@ public class TradingSystem {
     public ConcurrentHashMap<Integer, User> subscribers;
     public ConcurrentHashMap<String, User> guests;
     public ConcurrentHashMap<Integer, Store> stores;
-    private ConcurrentHashMap<Integer, Object> userLock;
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
 
@@ -45,7 +44,6 @@ public class TradingSystem {
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.systemManagerPermissions=new ConcurrentHashMap<>();
-        this.userLock= new ConcurrentHashMap<>();
     }
 
     public static TradingSystem getInstance() {
@@ -173,7 +171,6 @@ public class TradingSystem {
             }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
-            userLock.put(newUser.getId(),new Object());
 //        guests.remove(connID);
             loggerController.WriteErrorMsg("User "+userName+" register to the system successfully");
             Response res = new Response(newUser.getId(), connID, false, "Registration was successful");
@@ -396,35 +393,39 @@ public class TradingSystem {
         return dummyProducts;
     }
 
-    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner)
-    {
+    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner)  {
         if (ValidConnectedUser(userID, connID)) {
-            if (this.userLock.get(newOwner) != null) {
-                synchronized (this.userLock.get(newOwner)) {
-                    Response res = this.AbleToAddOwner(userID, storeID, newOwner);
-                    if (!res.isErr()) {
+            if (this.subscribers.get(newOwner) != null) {
+                while (!this.subscribers.get(newOwner).userIsLock()) {
+                    try{
+                        this.wait(3);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                this.subscribers.get(newOwner).lockUser();
+                Response res = this.AbleToAddOwner(userID, storeID, newOwner);
+                if (!res.isErr()) {
                         User NU = this.subscribers.get(newOwner);
                         OwnerPermission OP = new OwnerPermission(newOwner, storeID);
                         OP.setAppointmentId(userID);
                         NU.AddStoreInOwner(storeID, OP);
                         stores.get(storeID).addNewOwner(userID, newOwner);
-                       // stores.get(storeID).addOnerPermission(OP);
+                        // stores.get(storeID).addOnerPermission(OP);
+                        this.subscribers.get(newOwner).unlockUser();
                         loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
                         return new Response(false, "The owner Added successfully");
 
                     }
-                    return res;
+                this.subscribers.get(newOwner).unlockUser();
+                return res;
+
                 }
-            }
-            if (!this.subscribers.containsKey(newOwner)) {
-                loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ newOwner+" is not subscriber");
-                return new Response(true, "The user "+newOwner+" is not subscriber, so he can not be owner for store");
-            }
-            loggerController.WriteErrorMsg("Something wrong with the users locking");
-            return new Response(true, "Something wrong with the users locking");
+            loggerController.WriteErrorMsg("User " + userID + " try to Add " + newOwner + " to be the owner of store " + storeID + " and failed. " + newOwner + " is not subscriber");
+            return new Response(true, "The user " + newOwner + " is not subscriber, so he can not be owner for store");
         }
-            loggerController.WriteErrorMsg("User " + userID + " try to Add owner to store " + storeID + " and failed. The err message: Error in User details");
-            return new Response(true, "Error in User details");
+        loggerController.WriteErrorMsg("User " + userID + " try to Add owner to store " + storeID + " and failed. The err message: Error in User details");
+        return new Response(true, "Error in User details");
     }
 
     private Response AbleToAddOwner(int userID, int storeID, int newOwner)
@@ -459,31 +460,37 @@ public class TradingSystem {
         return new Response(true, "User "+userID+" is not subscriber, so he can not appoint owner for store");
     }
 
-    public Response AddNewManager(int userID, String connID, int storeID, int newManager)
-    {
-        if (ValidConnectedUser(userID, connID)) {
-            if (this.userLock.get(newManager) != null) {
-                synchronized (this.userLock.get(newManager)) {
-                    Response res = this.AbleToAddManager(userID, storeID, newManager);
-                    if (!res.isErr()) {
+    public Response AddNewManager(int userID, String connID, int storeID, int newManager) {
+        if (ValidConnectedUser(userID, connID))
+        {
+            if (this.subscribers.get(newManager) != null) {
+                while (!this.subscribers.get(newManager).userIsLock()) {
+                    try{
+                        this.wait(3);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                this.subscribers.get(newManager).lockUser();
+                Response res = this.AbleToAddManager(userID, storeID, newManager);
+                if (!res.isErr())
+                {
                         User NM = this.subscribers.get(newManager);
                         ManagerPermission MP= new ManagerPermission(newManager, storeID);
                         MP.setAppointmentId(userID);
                         NM.AddStoreInManager(storeID, MP);
                         stores.get(storeID).addNewManager(userID, newManager);
                         //stores.get(storeID).addManagerPermission(OM);
+                        this.subscribers.get(newManager).unlockUser();
                         loggerController.WriteLogMsg("User " + userID + " add manager " + newManager + " to store " + storeID + " successfully");
                         return new Response(false, "The manager Added successfully");
-                    }
-                    return res;
                 }
-            }
-            if (!this.subscribers.containsKey(newManager)) {
-                loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the manager of store "+storeID + " and failed. "+ newManager+" is not subscriber");
-                return new Response(true, "The user "+newManager+" is not subscriber, so he can not be manager for store");
-            }
-            loggerController.WriteErrorMsg("Something wrong with the users locking");
-            return new Response(true, "Something wrong with the users locking");
+                this.subscribers.get(newManager).unlockUser();
+                return res;
+                }
+
+            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the manager of store "+storeID + " and failed. "+ newManager+" is not subscriber");
+            return new Response(true, "The user "+newManager+" is not subscriber, so he can not be manager for store");
         }
         loggerController.WriteErrorMsg("User " + userID + " try to add manager to store " + storeID + " and failed. The err message: Error in User details");
         return new Response(true, "Error in User details");
@@ -521,29 +528,32 @@ public class TradingSystem {
         return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
     }
 
-    public Response RemoveManager(int userID, String connID, int storeID, int ManagerToRemove)
-    {
+    public Response RemoveManager(int userID, String connID, int storeID, int ManagerToRemove)  {
         if (ValidConnectedUser(userID, connID)) {
-            if (this.userLock.get(ManagerToRemove) != null) {
-                synchronized (this.userLock.get(ManagerToRemove)) {
+            if (this.subscribers.get(ManagerToRemove) != null) {
+                while (!this.subscribers.get(ManagerToRemove).userIsLock()) {
+                    try{
+                        this.wait(3);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+                    this.subscribers.get(ManagerToRemove).lockUser();
                     Response res = this.AbleToRemoveManager(userID, storeID, ManagerToRemove);
                     if (!res.isErr()) {
                         User MTR = this.subscribers.get(ManagerToRemove);
                         MTR.removeStore(storeID);
                         stores.get(storeID).removeManager(userID, ManagerToRemove);
+                        this.subscribers.get(ManagerToRemove).unlockUser();
                         loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
                         return new Response(false, "The manager removed successfully");
                     }
+                    this.subscribers.get(ManagerToRemove).unlockUser();
                     return res;
-                }
             }
-            if (!this.subscribers.containsKey(ManagerToRemove)) {
-                loggerController.WriteErrorMsg("User " + userID + " try to Remove "+ManagerToRemove+" from management the store "+storeID + " and failed. "+ ManagerToRemove+" is not subscriber");
-                return new Response(true, "The user "+ManagerToRemove+" is not subscriber, so it impossible to remove him from management the store");
-            }
-            loggerController.WriteErrorMsg("Something wrong with the users locking");
-            return new Response(true, "Something wrong with the users locking");
-        }
+            loggerController.WriteErrorMsg("User " + userID + " try to Remove " + ManagerToRemove + " from management the store " + storeID + " and failed. " + ManagerToRemove + " is not subscriber");
+            return new Response(true, "The user " + ManagerToRemove + " is not subscriber, so it impossible to remove him from management the store");
+         }
         loggerController.WriteErrorMsg("User " + userID + " try to remove manager from store " + storeID + " and failed. The err message: Error in User details");
         return new Response(true, "Error in User details");
     }

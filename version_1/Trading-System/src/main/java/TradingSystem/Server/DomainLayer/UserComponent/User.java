@@ -9,10 +9,11 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public  class User {
 
@@ -51,6 +52,8 @@ public  class User {
 
     private ShoppingCart shoppingCart;
     private List<ShoppingHistory> shoppingHistory = new LinkedList<>();
+
+    private final Lock Lock = new ReentrantLock();;
 
     public User() {
         this.id = -1;
@@ -95,6 +98,18 @@ public  class User {
     private static synchronized int getNextUserID() {
         nextUserID++;
         return nextUserID;
+    }
+
+    public void lockUser() {
+        this.Lock.lock();
+    }
+    public void unlockUser(){
+        this.Lock.unlock();
+      //  this.Lock.notify();
+    }
+
+    public boolean userIsLock() {
+        return this.Lock.tryLock();
     }
 
     public void AddStore(int storeID) {
