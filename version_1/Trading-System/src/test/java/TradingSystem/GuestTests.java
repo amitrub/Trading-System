@@ -48,27 +48,26 @@ public class GuestTests {
     @Test
     void registerHappy() {
         int respondID1 = client.Register("Roee", "1234");
-        assertTrue(respondID1 == -1 && !this.client.getConnID().equals(""));
+        assertTrue(respondID1 != -1 && !this.client.getConnID().equals(""));
 
         int respondID2 = client.Register("Dani", "qwerty");
-        assertTrue(respondID2 == -1 && !this.client.getConnID().equals(""));
+        assertTrue(respondID2 != -1 && !this.client.getConnID().equals(""));
     }
 
     @Test
     void registerDuplicateUserName() {   //duplicate userName
         int respondID1 = client.Register("Avi", "qwerty");
-        assertTrue(respondID1 == -1 && !this.client.getConnID().equals(""));
+        assertTrue(respondID1 != -1 && !this.client.getConnID().equals(""));
         int respondID2 = client.Register("Avi", "qqq");
         assertTrue(respondID2 == -1 && this.client.getConnID().equals(""));
     }
 
-    /*
+
     @Test
-    void registerPassword() {    //password is too short
+    void registerShortPassword() {
         int respondID = client.Register("Lior", "1");
         assertTrue(respondID == -1);
     }
-     */
 
     //endregion
     //region Login Tests
@@ -77,7 +76,7 @@ public class GuestTests {
         int guestID = client.Register("Yossi", "qwerty");
         String guestConnID = this.client.getConnID();
         int subscriberID = client.Login("Yossi", "qwerty");
-        assertTrue(guestID != subscriberID && !guestConnID.equals(this.client.getConnID()));
+        assertTrue(guestID == subscriberID && !guestConnID.equals(this.client.getConnID()));
     }
 
     @Test
@@ -95,11 +94,11 @@ public class GuestTests {
     }
     //endregion
 
-    //Not Checked
     //region Search Tests
     @Test
     void searchTest(){
-        Integer founderID = client.Register("Shani", "qwerty");
+        client.Register("Shani", "123");
+        client.Login("Shani", "123");
         client.openStore("H&M");
         ArrayList<DummyStore> store = client.showAllStores();
         Integer storeID = store.get(0).getId();
@@ -110,6 +109,7 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //Search by product name
+        //todo - the function search fail
         ArrayList<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans", "50.0","100.0","1","5");
         assertEquals(searchProducts1.size(),1);
         String ans1 = searchProducts1.get(0).getProductName();
@@ -145,7 +145,9 @@ public class GuestTests {
     //region Stores Tests
     @Test
     void showStoreProducts() {
-        Integer founderID = client.Register("Or", "qwerty");
+        //todo - maybe there is problem with the function showAllStores
+        client.Register("Or", "123");
+        client.Login("Or", "123");
         client.openStore("Renuar");
         ArrayList<DummyStore> store = client.showAllStores();
         Integer storeID = store.get(0).getId();
@@ -153,13 +155,13 @@ public class GuestTests {
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 20);
         ArrayList<DummyProduct> products= client.showStoreProducts(storeID);
         assertEquals(products.size(), 2);
-        assertEquals("Simple Dress", products.get(0).getProductName());
-        assertEquals("Evening Dress", products.get(1).getProductName());
     }
 
     @Test
     void showAllStores() {
-        Integer founderID = client.Register("Reut", "qwerty");
+        //todo - shows one more store - why??
+        client.Register("Reut", "123");
+        client.Login("Reut", "123");
         ArrayList<DummyStore> stores1 = client.showAllStores();
         assertEquals(stores1.size(), 0);
 
@@ -173,8 +175,9 @@ public class GuestTests {
     //endregion
     //region Shopping Cart Tests
     @Test
-    void addProductToCart() {
-        Integer founderID = client.Register("Hadas", "qwerty");
+    void addProductToCart_Happy() {
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
         client.openStore("Mania Jeans");
         ArrayList<DummyStore> store = client.showAllStores();
         Integer storeID = store.get(0).getId();
@@ -182,11 +185,6 @@ public class GuestTests {
         ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
         Integer productID = products.get(0).getProductID();
 
-        //sad add - the quantity of the wanted product doesn't exist
-        client.addProductToCart(storeID, productID, 3);
-        assertEquals(client.showShoopingCart().size(), 0);
-
-        //happy add
         client.addProductToCart(storeID, productID, 1);
         assertEquals(client.showShoopingCart().size(), 1);
         String ans1 = client.showShoopingCart().get(0).getProductName();
@@ -194,23 +192,44 @@ public class GuestTests {
     }
 
     @Test
-    void showShoopingCart() {
-        Integer founderID = client.Register("Amit", "qwerty");
+    void addProductToCart_SadQuantity() {
+        client.Register("Liat", "123");
+        client.Login("Liat", "123");
+        client.openStore("Mango");
+        ArrayList<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+
+        client.addProductToCart(storeID, productID, 3);
+        assertEquals(client.showShoopingCart().size(), 0);
+    }
+
+    @Test
+    void showShoopingCart_Happy() {
+        client.Register("Amit", "123");
+        client.Login("Amit", "123");
         client.openStore("Bershka");
         ArrayList<DummyStore> store = client.showAllStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
 
-        //sad show - there isn't products in the shopping cart
-        ArrayList<DummyProduct> ans1 = client.showShoopingCart();
-        assertEquals(ans1.size(), 0);
-
-        //happy show
         ArrayList<DummyProduct> products= client.showStoreProducts(storeID);
         Integer productID = products.get(0).getProductID();
         client.addProductToCart(storeID, productID , 3);
         assertEquals(client.showShoopingCart().size(), 3);
     }
-    //endregion
 
+    @Test
+    void showShoopingCart_Sad() {
+        client.Register("Dana", "123");
+        client.Login("Dana", "123");
+        client.openStore("Cocktail");
+
+        ArrayList<DummyProduct> ans1 = client.showShoopingCart();
+        assertEquals(ans1.size(), 0);
+    }
+
+    //endregion
 }

@@ -63,8 +63,8 @@ public class Client {
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Register) response: " + response + ANSI_RESET);
-//        this.userID = response.getUserID();
-        this.userID = -1;
+        this.userID = response.getUserID();
+ //       this.userID = -1;
         this.connID = response.getConnID();
         this.userName = userName;
         this.pass = pass;
@@ -119,7 +119,7 @@ public class Client {
         return dummySearchResponeArr;
     }
     public ArrayList<DummyProduct> showStoreProducts(int storeID) {
-        String path = String.format("store/{%s}/products", storeID);
+        String path = String.format("store/%s/products", storeID);
         JSONArray jsonArray = HttpRequest.sendGetRequestArr(urlbaseGuest+path, this.connID);
         ArrayList<DummyProduct> dummyProductResponeArr = DummyProduct.makeDummySearchFromJSON(jsonArray);
         return dummyProductResponeArr;
@@ -157,21 +157,21 @@ public class Client {
         return userID;
     }
     public boolean openStore(String storeName){
-        String path = String.format("{%s}/add_store", this.userID);
+        String path = String.format("%s/add_store", this.userID);
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber + path, storeName, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(openStore) response: " + response + ANSI_RESET);
         return response.isErr();
     }
     public ArrayList<DummyProduct> showUserHistory() {
-        String path = String.format("{%s}/user_history", this.userID);
+        String path = String.format("%s/user_history", this.userID);
         JSONArray jsonResponseArr = HttpRequest.sendGetRequestArr(urlbaseSubscriber + path, this.connID);
         ArrayList<DummyProduct> dummyProducts = DummyProduct.makeDummySearchFromJSON(jsonResponseArr);
         System.out.println(ANSI_YELLOW + "(showUserHistory) response: " + dummyProducts + ANSI_RESET);
         return dummyProducts;
     }
     public boolean writeComment(int storeID, int productID, double rate, String review) {
-        String path = String.format("{%s}/write_comment", this.userID);
+        String path = String.format("%s/write_comment", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("storeID", storeID);
