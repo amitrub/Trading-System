@@ -33,6 +33,16 @@ public class Product {
         this.quantity = 0;
     }
 
+    public Product(Integer productID, String productName, String category, Double price, int quantity) {
+        this.productID = productID;
+        this.productName = productName;
+        this.category = category;
+        this.price = price;
+        this.productComments = new ConcurrentHashMap<Integer, String>();
+        this.productRating = new ConcurrentHashMap<Integer, Double>();
+        this.quantity = quantity;
+    }
+
     public Product(Product toCopyProduct) {
         this.productID = toCopyProduct.productID;
         this.productName = toCopyProduct.productName;
@@ -175,5 +185,6 @@ public class Product {
         }
         return Comments;
     }
+
 
 }
