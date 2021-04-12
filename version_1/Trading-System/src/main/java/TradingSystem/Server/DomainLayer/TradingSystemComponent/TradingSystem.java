@@ -643,11 +643,9 @@ public class TradingSystem {
     //show the history for some user
     public List<DummyShoppingHistory> ShowSubscriberHistory(int userID, String connID){
         if (ValidConnectedUser(userID,connID)){
-            System.out.println("++++++++++++++++++++++");
             return subscribers.get(userID).ShowUserHistory();
         }
         else{
-            System.out.println("--------------------------");
             return new LinkedList<>();
         }
     }

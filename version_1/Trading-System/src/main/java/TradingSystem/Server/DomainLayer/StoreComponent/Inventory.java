@@ -100,11 +100,9 @@ public class Inventory {
 
     //todo- syncronize!
     public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
-        System.out.println("storeID = " + storeID);
         Set<Integer> PQ = products_quantity.keySet();
         for (Integer PID : PQ) {
             int quantityToReduce = products_quantity.get(PID);
-            System.out.println("quantityToReduce = " + quantityToReduce);
             if (products.containsKey(PID)) {
                 Product product = this.products.get(PID);
                 int quantity = product.getQuantity();

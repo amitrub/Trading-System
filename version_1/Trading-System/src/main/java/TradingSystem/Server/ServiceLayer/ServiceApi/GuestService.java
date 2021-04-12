@@ -83,7 +83,6 @@ public class GuestService {
     @GetMapping("store/{storeID}/products")
     public List<DummyProduct> ShowStoreProducts(@PathVariable int storeID)
     {
-        System.out.println("inside ShowStoreProducts");
         List<DummyProduct> res = this.tradingSystem.ShowStoreProducts(storeID);
         return res;
     }
@@ -106,7 +105,6 @@ public class GuestService {
 
     @PostMapping("shopping_cart/purchase")
     public Response guestPurchase(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        System.out.println("guestPurchase ATA PO? ATA PO?");
         String name = (String) obj.get("name");
         String credit_number = (String) obj.get("credit_number");
         String phone_number = (String) obj.get("phone_number");

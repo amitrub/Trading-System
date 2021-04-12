@@ -22,14 +22,6 @@ public class ShoppingHistory {
 
     private Double finalPrice;
 
-//    public ShoppingHistory(Integer userID, Integer storeID, ConcurrentHashMap<Integer, Integer> products, Double finalPrice) {
-//        this.userID = userID;
-//        this.storeID = storeID;
-//        this.products = products;
-//        this.finalPrice = finalPrice;
-//        this.formatter= new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss z");
-//        this.data= (Data) new Date(System.currentTimeMillis());
-//    }
 
     public Integer getUserID() {
         return userID;
