@@ -265,6 +265,28 @@ public class Client {
         System.out.println(ANSI_YELLOW + "(removeProduce) response: " + dummyProducts + ANSI_RESET);
         return dummyProducts;
     }
+    public boolean addOwner(int storeID, int newOwnerID) {
+        String path = String.format("%s/store/%s/add_new_owner/%s", this.userID, storeID, newOwnerID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(addOwner) response: " + response + ANSI_RESET);
+        return response.isErr();
+    }
+    public boolean addManager(int storeID, int newManagerID){
+        String path = String.format("%s/store/%s/add_new_manager/%s", this.userID, storeID, newManagerID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(addManager) response: " + response + ANSI_RESET);
+        return response.isErr();
+    }
+    public boolean removeManager(int storeID, int managerToRemoveID){
+        String path = String.format("%s/store/%s/remove_manager/%s", this.userID, storeID, managerToRemoveID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(removeManager) response: " + response + ANSI_RESET);
+        return response.isErr();
+    }
+
 
 
     //Admin
