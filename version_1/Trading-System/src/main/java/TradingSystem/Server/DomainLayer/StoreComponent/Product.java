@@ -44,6 +44,10 @@ public class Product {
         this.quantity = toCopyProduct.quantity;
     }
 
+    public Lock getLock() {
+        return lock;
+    }
+
     public void lockProduct() {
         this.lock.lock();
     }

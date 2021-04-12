@@ -9,6 +9,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 
 public class ShoppingCart {
 
@@ -92,49 +93,90 @@ public class ShoppingCart {
     }
 
     public Response Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
-        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        System.out.println("shoppingBagsSet Size = " + shoppingBagsSet.size());
-        for (Integer storeID : shoppingBagsSet){
-            ShoppingBag SB = this.shoppingBags.get(storeID);
-            Set<Integer> SBPSet = SB.getProducts().keySet();
-            System.out.println("num of Products = " + SBPSet.size());
-            for (Integer productID : SBPSet){
-                int productQuantity = SB.getProducts().get(productID);
-                System.out.println("productID ="+productID);
-                System.out.println("productQuantity ="+productQuantity);
-//                while (tradingSystem.productIsLock(productID, storeID)) { //todo check!
-//                    wait();
-//                }
-//                tradingSystem.lockProduct(productID, storeID);
-                if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
-//                    releaseAllProduct();
-                    String storeName = tradingSystem.getStoreName(storeID);
-                    String productName = tradingSystem.getProductName(storeID, productID);
-                    String err = productName + " in The store" + storeName + " is not exist in the stock";
-                    return new Response(true, err);
-                }
-            }
-        }
-        if (supplySystem.canSupply(address)) {
-            if (paymentSystem.checkCredit(name, credit_number, phone_number)){
-                Response res=Buy();
-                if(!res.isErr()) {
-                    addShoppingHistory(isGuest);
-//                    releaseAllProduct();
-                    this.shoppingBags = new ConcurrentHashMap<>();
-                    return new Response(false, "The purchase was made successfully ");
-                }
-                else
-                    return res;
-            }
-            else {
-                //        releaseAllProduct();
-                return new Response(true,"The payment is not approve");
-            }
+        List<Lock> lockList = this.getLockList();
+        Response canBuy = this.checkInventoryAndLockProduct(lockList);
+        if (canBuy.isErr()){
+            return canBuy;
         }
         else {
-            //        releaseAllProduct();
-            return new Response(true,"The Supply is not approve");
+            Response output = new Response();
+            if (supplySystem.canSupply(address)) {
+                if (paymentSystem.checkCredit(name, credit_number, phone_number)){
+                    Response res = Buy();
+                    if(!res.isErr()) {
+                        addShoppingHistory(isGuest);
+                        this.shoppingBags = new ConcurrentHashMap<>();
+                        output = new  Response(false, "The purchase was made successfully ");
+                    }
+                    else
+                        output = res;
+                }
+                else {
+                    output = new Response(true,"The payment is not approve");
+                }
+            }
+            else {
+                output = new Response(true,"The Supply is not approve");
+            }
+            this.releaseLocks(lockList);
+            return output;
+        }
+    }
+
+    public Response checkInventoryAndLockProduct(List<Lock> lockList){
+        boolean succeededToLock = false;
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        while (!succeededToLock){
+            synchronized (this){
+                for (Integer storeID : shoppingBagsSet){
+                    ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
+                    Set<Integer> productsSet = shoppingBag.getProducts().keySet();
+                    for (Integer productID : productsSet){
+                        int productQuantity = shoppingBag.getProducts().get(productID);
+                        if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
+                            String storeName = tradingSystem.getStoreName(storeID);
+                            String productName = tradingSystem.getProductName(storeID, productID);
+                            String err = productName + " in The store" + storeName + " is not exist in the stock";
+                            return new Response(true, err);
+                        }
+                    }
+                }
+                succeededToLock = this.tryLockList(lockList);
+            }
+        }
+        return new Response(false,"");
+    }
+    private List<Lock> getLockList(){
+        List<Lock> output = new LinkedList<>();
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet) {
+            ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
+            Set<Integer> productsSet = shoppingBag.getProducts().keySet();
+            for (Integer productID : productsSet){
+                Lock lock = tradingSystem.getProductLock(storeID, productID);
+                output.add(lock);
+            }
+        }
+        return output;
+    }
+    private boolean tryLockList(List<Lock> lockList){
+        List<Lock> succeededToLock = new LinkedList<>();
+        for (Lock lock : lockList){
+            if (lock.tryLock()){
+                succeededToLock.add(lock);
+            }
+            else {
+                for (Lock lockedLock : succeededToLock){
+                    lock.unlock();
+                }
+                return false;
+            }
+        }
+        return true;
+    }
+    private void releaseLocks(List<Lock> lockList){
+        for (Lock lock : lockList){
+            lock.unlock();
         }
     }
 
