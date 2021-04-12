@@ -3,7 +3,6 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-//import TradingSystem.Server.DomainLayer.TradingSystemComponent.TryLock;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -21,32 +20,6 @@ import java.util.concurrent.locks.Lock;
 public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
-    //return connID
-    /*
-    @GetMapping("lock/{input}")
-    public int lock(@PathVariable int input){
-        System.out.println("before lock");
-        Lock lock = TryLock.getInstance().lock(input);
-        System.out.println("start sleep");
-        try {
-                Thread.sleep(15000);
-            }
-            catch (Exception e){
-            }
-        lock.unlock();
-        return 1;
-    }
-    @GetMapping("sync")
-    public int sync(){
-        return new TrySync().trySync();
-    }
-
-    @GetMapping("tryLock/{input}")
-    public boolean tryLock(@PathVariable int input){
-        return TryLock.getInstance().tryLock(input);
-    }
-
-     */
 
     //return connID
     @GetMapping("home")
