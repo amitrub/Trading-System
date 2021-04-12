@@ -391,5 +391,8 @@ public class Inventory {
         }
 
 
+    public Lock getProductLock(int productID) {
+        return this.products.get(productID).getLock();
+    }
 }
 
