@@ -43,10 +43,28 @@ public class StoreOwnerService {
         return tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price);
     }
 
-
     //TODO: not check yet
     @GetMapping("{userID}/store_history/{storeID}")
     public List<DummyShoppingHistory> ShowStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         return tradingSystem.StoreHistory(userID,storeID,connID);
     }
+
+    //TODO: not check yet
+    @PostMapping("{userID}/store/{storeID}/edit_product/{newOwner}")
+    public Response AddNewOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newOwner, @RequestHeader("connID") String connID){
+        return tradingSystem.AddNewOwner(userID, connID, storeID,newOwner);
+    }
+
+    //TODO: not check yet
+    @PostMapping("{userID}/store/{storeID}/edit_product/{newManager}")
+    public Response AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManager, @RequestHeader("connID") String connID){
+        return tradingSystem.AddNewOwner(userID, connID, storeID,newManager);
+    }
+
+    //TODO: not check yet
+    @PostMapping("{userID}/store/{storeID}/edit_product/{ManagerToRemove}")
+    public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int ManagerToRemove, @RequestHeader("connID") String connID){
+        return tradingSystem.AddNewOwner(userID, connID, storeID,ManagerToRemove);
+    }
+    
 }
