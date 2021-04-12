@@ -95,7 +95,7 @@ public class OwnerTests {
         assertEquals(storeProducts1.size(), 1);
     }
     @Test
-    void addProduct_Sad() {
+    void addProduct_SadPrice() {
         client.Register("Lior", "123");
         client.Login("Lior", "123");
         client.openStore("Shoes");
@@ -125,13 +125,12 @@ public class OwnerTests {
         client.Register("Sapir", "123");
         client.Login("Sapir", "123");
         client.openStore("To-Go");
-        ArrayList<DummyStore> stores = client.showAllStores();
-        Integer storeID = stores.get(0).getId();
+        Integer storeID = getStoreID(client.showAllStores(),"To-Go");
 
         //sad add - product quantity is illegal
         boolean b4 = client.addProduct(storeID, "Short Heels", "Heels", 60.0, -10);
-        ArrayList<DummyProduct> storeProducts4 = client.showStoreProducts(storeID);
-        assertEquals(storeProducts4.size(), 0);
+        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts1.size(), 0);
         assertTrue(b4);
     }
     //endregion
@@ -185,10 +184,28 @@ public class OwnerTests {
         boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 100.0,25);
         assertFalse(b1);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts2.get(0).getPrice(), 100.0, 0);
         assertEquals(storeProducts2.size(), 1);
     }
+
     @Test
-    void editProductBad() {
+    void editProduct_SadPrice() {
+        client.Register("Shira", "123");
+        client.Login("Shira", "123");
+        client.openStore("Gali");
+        Integer storeID = getStoreID(client.showAllStores(), "Gali");
+        client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
+        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Arma Heels");
+
+        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", -120.0,25);
+        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts2.size(), 1);
+        assertTrue(b2);
+    }
+
+    @Test
+    void editProduct_SadQuantity() {
         client.Register("Shira", "123");
         client.openStore("Gali");
         Integer storeID = getStoreID(client.showAllStores(), "Gali");
@@ -197,11 +214,28 @@ public class OwnerTests {
         Integer productID = getProductID(storeProducts1,"Arma Heels");
 
         client.removeProduct(storeID, productID);
-        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,25);
+        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,-25);
         assertTrue(b2);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
-        assertEquals(storeProducts2.size(), 0);
+        assertEquals(storeProducts2.size(), 1);
     }
+
+    @Test
+    void editProduct_SadNonExistProduct() {
+        client.Register("Shira", "123");
+        client.openStore("Gali");
+        Integer storeID = getStoreID(client.showAllStores(), "Gali");
+        client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
+        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Arma Heels");
+
+        client.removeProduct(storeID, productID);
+        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,-25);
+        assertTrue(b2);
+        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts2.size(), 1);
+    }
+
     //endregion
     //region add owner/manager tests
     @Test

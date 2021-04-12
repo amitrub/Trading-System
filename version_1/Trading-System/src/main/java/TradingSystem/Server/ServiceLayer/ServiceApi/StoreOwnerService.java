@@ -37,9 +37,13 @@ public class StoreOwnerService {
         return tradingSystem.AddQuantityProduct(userID,connID,storeID,productID,quantity);
     }
 
-    @DeleteMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
     public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
-        return this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
+        System.out.println("Test!!!!");
+        Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
+        System.out.println(res);
+        tradingSystem.printProducts();
+        return res;
     }
 
     //TODO: not check yet
@@ -59,21 +63,21 @@ public class StoreOwnerService {
     }
 
     //TODO: not check yet
-    @PostMapping("{userID}/store/{storeID}/edit_product/{newOwner}")
-    public Response AddNewOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newOwner, @RequestHeader("connID") String connID)  {
-        return tradingSystem.AddNewOwner(userID, connID, storeID,newOwner);
+    @GetMapping("{userID}/store/{storeID}/add_new_owner/{newOwnerID}")
+    public Response AddNewOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newOwnerID, @RequestHeader("connID") String connID)  {
+        return tradingSystem.AddNewOwner(userID, connID, storeID, newOwnerID);
     }
 
     //TODO: not check yet
-    @PostMapping("{userID}/store/{storeID}/edit_product/{newManager}")
-    public Response AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManager, @RequestHeader("connID") String connID)  {
-        return tradingSystem.AddNewManager(userID, connID, storeID,newManager);
+    @GetMapping("{userID}/store/{storeID}/add_new_manager/{newManagerID}")
+    public Response AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManagerID, @RequestHeader("connID") String connID)  {
+        return tradingSystem.AddNewManager(userID, connID, storeID,newManagerID);
     }
 
     //TODO: not check yet
-    @PostMapping("{userID}/store/{storeID}/edit_product/{ManagerToRemove}")
-    public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int ManagerToRemove, @RequestHeader("connID") String connID)  {
-        return tradingSystem.RemoveManager(userID, connID, storeID,ManagerToRemove);
+    @GetMapping("{userID}/store/{storeID}/remove_manager/{ManagerToRemoveID}")
+    public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int ManagerToRemoveID, @RequestHeader("connID") String connID)  {
+        return tradingSystem.RemoveManager(userID, connID, storeID,ManagerToRemoveID);
     }
     
 }
