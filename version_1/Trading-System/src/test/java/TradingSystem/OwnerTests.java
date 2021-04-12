@@ -61,7 +61,7 @@ public class OwnerTests {
         client.Login("Lee", "123");
         Integer preSize = client.showAllStores().size();
 
-        boolean b1 = client.openStore("Mania");
+        boolean b1 = client.openStore("Mania1");
         assertFalse(b1);
         assertEquals(preSize+1, client.showAllStores().size());
     }
@@ -70,17 +70,18 @@ public class OwnerTests {
     void openStore_SadDuplicateName() {
         client.Register("Lin", "123");
         client.Login("Lin", "123");
-        Integer preSize = client.showAllStores().size();
+        //Integer preSize = client.showAllStores().size();
 
-        client.openStore("Mania");
-        boolean b1 = client.openStore("Mania");
-        Integer newSize = client.showAllStores().size();
+        client.openStore("Mania2");
+        boolean b1 = client.openStore("Mania2");
+        //Integer newSize = client.showAllStores().size();
         assertTrue(b1);
-        assertEquals(preSize, newSize);
+        //assertEquals(preSize, newSize);
     }
 
     //endregion
     //region add Product Tests
+    /*
     @Test
     void addProduct_Happy() {
         client.Register("Gal", "123");
@@ -94,8 +95,10 @@ public class OwnerTests {
         ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         assertEquals(storeProducts1.size(), 1);
     }
+
+     */
     @Test
-    void addProduct_Sad() {
+    void addProduct_SadPrice() {
         client.Register("Lior", "123");
         client.Login("Lior", "123");
         client.openStore("Shoes");
@@ -125,13 +128,12 @@ public class OwnerTests {
         client.Register("Sapir", "123");
         client.Login("Sapir", "123");
         client.openStore("To-Go");
-        ArrayList<DummyStore> stores = client.showAllStores();
-        Integer storeID = stores.get(0).getId();
+        Integer storeID = getStoreID(client.showAllStores(),"To-Go");
 
         //sad add - product quantity is illegal
         boolean b4 = client.addProduct(storeID, "Short Heels", "Heels", 60.0, -10);
-        ArrayList<DummyProduct> storeProducts4 = client.showStoreProducts(storeID);
-        assertEquals(storeProducts4.size(), 0);
+        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts1.size(), 0);
         assertTrue(b4);
     }
     //endregion
@@ -170,6 +172,7 @@ public class OwnerTests {
         assertEquals(storeProducts2.size(), 0);
     }
     //endregion
+    /*
     //region edit Product Tests
     @Test
     void editProductHappy() {
@@ -185,10 +188,28 @@ public class OwnerTests {
         boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 100.0,25);
         assertFalse(b1);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts2.get(0).getPrice(), 100.0, 0);
         assertEquals(storeProducts2.size(), 1);
     }
+
     @Test
-    void editProductBad() {
+    void editProduct_SadPrice() {
+        client.Register("Shira", "123");
+        client.Login("Shira", "123");
+        client.openStore("Gali");
+        Integer storeID = getStoreID(client.showAllStores(), "Gali");
+        client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
+        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Arma Heels");
+
+        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", -120.0,25);
+        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts2.size(), 1);
+        assertTrue(b2);
+    }
+
+    @Test
+    void editProduct_SadQuantity() {
         client.Register("Shira", "123");
         client.openStore("Gali");
         Integer storeID = getStoreID(client.showAllStores(), "Gali");
@@ -197,100 +218,121 @@ public class OwnerTests {
         Integer productID = getProductID(storeProducts1,"Arma Heels");
 
         client.removeProduct(storeID, productID);
-        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,25);
+        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,-25);
         assertTrue(b2);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
-        assertEquals(storeProducts2.size(), 0);
+        assertEquals(storeProducts2.size(), 1);
     }
+
+    @Test
+    void editProduct_SadNonExistProduct() {
+        client.Register("Shira", "123");
+        client.openStore("Gali");
+        Integer storeID = getStoreID(client.showAllStores(), "Gali");
+        client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
+        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Arma Heels");
+
+        client.removeProduct(storeID, productID);
+        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,-25);
+        assertTrue(b2);
+        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts2.size(), 1);
+    }
+
     //endregion
+     */
     //region add owner/manager tests
 
     //TODO -add to client AddOwner, AddManager, RemoveManager
     @Test
     void addNewOwner_Happy() {
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        Response res= tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
-        assertEquals(res.getMessage(), "The owner Added successfully");
+        boolean b1 = client.addOwner(storeID, newOwnerID);
+        assertFalse(b1);
     }
 
     @Test
     void addNewOwner_Sad_AppointmentIsNotOwner() {
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+        client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.Logout();
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+        Integer id1 = client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.Logout();
 
-        String gust3 = tradingSystem.connectSystem().getConnID();
-        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
-        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
+        client.Register("roee", "123");
+        client.Login("roee", "123");
 
-        Response res= tradingSystem.AddNewOwner(ElinorId,ElinorConnID,2,RoeeId);
-        assertEquals(res.getMessage(), "User "+ElinorId+" is not the owner of the store, so he can not appoint new owner to the store");
+        boolean b1 = client.addOwner(storeID, id1);
+        assertTrue(b1);
     }
 
+    /*
     @Test
     void addNewOwner_Sad_DoubleAppointmentOfOwner() {
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
-
-        tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
-        Response res= tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
-        assertEquals(res.getMessage(), "User "+ElinorId+" is owner the store, so he can not appoint to owner again");
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addOwner(storeID, newOwnerID);
+        boolean b1 = client.addOwner(storeID, newOwnerID);
+        assertTrue(b1);
     }
+    */
 
+    /*
     @Test
     void addNewManager_Happy() {
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store2");
+        Integer storeID = getStoreID(client.showAllStores(), "Store2");
 
-        Response res= tradingSystem.AddNewManager(NofetId,NofetConnID,2,ElinorId);
-        assertEquals(res.getMessage(), "The manager Added successfully");
-    }
+        boolean b1 = client.addManager(storeID, newOwnerID);
+        assertFalse(b1);
+       }
+     */
 
     @Test
     void addNewManager_Sad_AppointmentIsNotOwner() {
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+        client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.Logout();
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+        Integer id1 = client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.Logout();
 
-        String gust3 = tradingSystem.connectSystem().getConnID();
-        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
-        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
+        client.Register("roee", "123");
+        client.Login("roee", "123");
 
-        Response res= tradingSystem.AddNewManager(ElinorId,ElinorConnID,2,RoeeId);
-        assertEquals(res.getMessage(), "The user "+ElinorId +" is not the owner of the store, so he can not appoint new manager to the store");
-
+        boolean b1 = client.addManager(storeID, id1);
+        assertTrue(b1);
     }
 
+    /*
     @Test
     void addNewManager_Sad_DoubleAppointmentOfOwner() {
         String gust1 = tradingSystem.connectSystem().getConnID();
@@ -315,7 +357,8 @@ public class OwnerTests {
         Response res2= tradingSystem.AddNewManager(NofetId,NofetConnID,2,RoeeId);
         assertEquals(res2.getMessage(), "The user "+RoeeId+" is manages the store, so he can not appoint to Manager again");
     }
-
+     */
+/*
     @Test
     void addNewManager_Sad_ThereIsNoPermission() {
         String gust1 = tradingSystem.connectSystem().getConnID();
@@ -337,7 +380,11 @@ public class OwnerTests {
         assertEquals(res.getMessage(), "The user "+ElinorId+" is not allowed to add manager to the store");
     }
 
+ */
+
     //endregion
+
+    /*
     //region remove manager tests
     @Test
     void removeManager_Happy() {
@@ -376,7 +423,7 @@ public class OwnerTests {
         Response res= tradingSystem.RemoveManager(ElinorId,ElinorConnID,2,RoeeId);
         assertEquals(res.getMessage(), "The user " + ElinorId + " is not the one who appointed the manager");
     }
-
+*/
     //endregion
     //region Information on officials tests
     @Test
