@@ -189,7 +189,7 @@ public class Client {
 
     //Store Owner Service
     public boolean addProduct(int storeID, String productName, String category, double price, int quantity) {
-        String path = String.format("{%s}/store/{%s}/add_product", this.userID, storeID);
+        String path = String.format("%s/store/%s/add_product", this.userID, storeID);
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("productName", productName);
@@ -205,14 +205,14 @@ public class Client {
         return response.isErr();
     }
     public boolean removeProduct(int storeID, int productID) {
-        String path = String.format("{%s}/store/{%s}/remove_product/{%s}", this.userID, storeID, productID);
+        String path = String.format("%s/store/%s/remove_product/%s", this.userID, storeID, productID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(removeProduce) response: " + response + ANSI_RESET);
         return response.isErr();
     }
     public boolean editProduct(int storeID, int productID, String productName, String category, double price, int quantity) {
-        String path = String.format("{%s}/store/{%s}/edit_product/{%s}", this.userID, storeID, productID);
+        String path = String.format("%s/store/%s/edit_product/%s", this.userID, storeID, productID);
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("productName", productName);
@@ -228,7 +228,7 @@ public class Client {
         return response.isErr();
     }
     public ArrayList<DummyProduct> showStoreHistory(int storeID) {
-        String path = String.format("{%s}/store_history/{%s}", this.userID, storeID);
+        String path = String.format("%s/store_history/%s", this.userID, storeID);
         JSONArray jsonResponseArr = HttpRequest.sendGetRequestArr(urlbaseSubscriber + path, this.connID);
         ArrayList<DummyProduct> dummyProducts = DummyProduct.makeDummySearchFromJSON(jsonResponseArr);
         System.out.println(ANSI_YELLOW + "(removeProduce) response: " + dummyProducts + ANSI_RESET);

@@ -1,6 +1,7 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +21,7 @@ import static org.junit.Assert.*;
 public class GuestTests {
 
     Client client;
+    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -30,8 +32,8 @@ public class GuestTests {
     @AfterEach
     void tearDown() {
         client.exitSystem();
+        tradingSystem.Initialization();
     }
-
 
     //region system Tests
     @Test
@@ -354,6 +356,21 @@ public class GuestTests {
 
     @Test
     void Purchase_Happy() {
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        client.openStore("Mania Jeans");
+        ArrayList<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+
+        client.Logout();
+
+        client.addProductToCart(storeID, productID, 1);
+        assertEquals(client.showShoopingCart().size(), 1);
+        String ans1 = client.showShoopingCart().get(0).getProductName();
+        assertEquals(ans1, "Short Pants");
     }
 
     @Test
