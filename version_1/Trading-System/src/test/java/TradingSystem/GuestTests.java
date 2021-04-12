@@ -388,9 +388,59 @@ public class GuestTests {
     //TODO: CHECK DEADLOCKS 2 clients 2 products diffrenet order!!!
 
     @Test
-    void Purchase_SadEmptyCart() {
+    void PurchaseSadEmptyCart() {
     }
 
+
+    @Test
+    void PurchaseParallelSadTwoBuyersLastProduct() {
+        //Open store and add one product
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        String store_name = "Mania Jeans";
+        client.openStore(store_name);
+        ArrayList<DummyStore> stores = client.showAllStores();
+        Integer storeID = getStoreID(stores, store_name);
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+
+        client.Logout();
+
+
+        //Create two clients with task to buy this product
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<PurchaseTask> taskList = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            PurchaseTask task = new PurchaseTask("Client-" + i, storeID, productID,
+                                                    "1234-5678", "0528-97878787", "sioot st. 5");
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<Result>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<Result> future = resultList.get(i);
+            try {
+                Result result = future.get();
+                System.out.println(result.getName() + ": " + result.getTimestamp());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
     @Test
     void Purchase_SadPaying() {
     }
