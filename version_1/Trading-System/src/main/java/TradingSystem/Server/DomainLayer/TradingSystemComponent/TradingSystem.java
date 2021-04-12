@@ -18,6 +18,7 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 
 
 public class TradingSystem {
@@ -31,12 +32,12 @@ public class TradingSystem {
     public ConcurrentHashMap<String, User> guests;
     public ConcurrentHashMap<Integer, Store> stores;
     private ConcurrentHashMap<Integer, Object> userLock;
-    //storeID_systemManagerPermission
+    //userID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
 
     //    Singleton
     private static TradingSystem tradingSystem = null;
-    private static LoggerController loggerController=LoggerController.getInstance();
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
     private TradingSystem() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
@@ -58,6 +59,14 @@ public class TradingSystem {
     }
 
     private void Initialization() {
+        this.connectedSubscribers = new ConcurrentHashMap<>();
+        this.subscribers = new ConcurrentHashMap<>();
+        this.guests = new ConcurrentHashMap<>();
+        this.stores = new ConcurrentHashMap<>();
+        this.systemAdmins = new ConcurrentHashMap<>();
+        this.systemManagerPermissions=new ConcurrentHashMap<>();
+        this.userLock= new ConcurrentHashMap<>();
+
         User defaultAdmin = new User("amit", "qweasd");
         int userID = defaultAdmin.getId();
         this.systemAdmins.put(userID, userID);
@@ -299,8 +308,7 @@ public class TradingSystem {
             return new Response(true, "Error in User details");
         }
     }
-    public Response RemoveProduct(int userID, int storeID, int productID, String connID)
-    {
+    public Response RemoveProduct(int userID, int storeID, int productID, String connID) {
         if(ValidConnectedUser(userID, connID)){
             if(hasPermission(userID,storeID,User.Permission.DeleteProduct)) {
                 Response res = stores.get(storeID).deleteProduct(productID);
@@ -396,8 +404,7 @@ public class TradingSystem {
         return dummyProducts;
     }
 
-    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner)
-    {
+    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner){
         if (ValidConnectedUser(userID, connID)) {
             if (this.userLock.get(newOwner) != null) {
                 synchronized (this.userLock.get(newOwner)) {
@@ -427,8 +434,7 @@ public class TradingSystem {
             return new Response(true, "Error in User details");
     }
 
-    private Response AbleToAddOwner(int userID, int storeID, int newOwner)
-    {
+    private Response AbleToAddOwner(int userID, int storeID, int newOwner) {
         if (this.subscribers.containsKey(userID)) {
             if (this.subscribers.containsKey(newOwner)) {
                 if (this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
@@ -459,8 +465,7 @@ public class TradingSystem {
         return new Response(true, "User "+userID+" is not subscriber, so he can not appoint owner for store");
     }
 
-    public Response AddNewManager(int userID, String connID, int storeID, int newManager)
-    {
+    public Response AddNewManager(int userID, String connID, int storeID, int newManager) {
         if (ValidConnectedUser(userID, connID)) {
             if (this.userLock.get(newManager) != null) {
                 synchronized (this.userLock.get(newManager)) {
@@ -488,9 +493,7 @@ public class TradingSystem {
         loggerController.WriteErrorMsg("User " + userID + " try to add manager to store " + storeID + " and failed. The err message: Error in User details");
         return new Response(true, "Error in User details");
     }
-
-    private Response AbleToAddManager(int userID, int storeID, int newManager)
-    {
+    private Response AbleToAddManager(int userID, int storeID, int newManager){
         if (this.subscribers.containsKey(userID)) {
             if (this.subscribers.containsKey(newManager)) {
                 if (this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
@@ -521,8 +524,7 @@ public class TradingSystem {
         return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
     }
 
-    public Response RemoveManager(int userID, String connID, int storeID, int ManagerToRemove)
-    {
+    public Response RemoveManager(int userID, String connID, int storeID, int ManagerToRemove){
         if (ValidConnectedUser(userID, connID)) {
             if (this.userLock.get(ManagerToRemove) != null) {
                 synchronized (this.userLock.get(ManagerToRemove)) {
@@ -547,9 +549,7 @@ public class TradingSystem {
         loggerController.WriteErrorMsg("User " + userID + " try to remove manager from store " + storeID + " and failed. The err message: Error in User details");
         return new Response(true, "Error in User details");
     }
-
-    private Response AbleToRemoveManager(int userID, int storeID, int managerToRemove)
-    {
+    private Response AbleToRemoveManager(int userID, int storeID, int managerToRemove){
         if (this.subscribers.containsKey(userID)) {
             if (this.subscribers.containsKey(managerToRemove)) {
                 if (this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
@@ -586,9 +586,11 @@ public class TradingSystem {
     public boolean productIsLock(int productID, int storeID) {
         return this.stores.get(storeID).productIsLock(productID);
     }
-
-    public void lockProduct(int productID, int storeID) {
+    public void lockProduct(int storeID, int productID) {
         this.stores.get(storeID).lockProduct(productID);
+    }
+    public Lock getProductLock(int storeID, int productID) {
+        return this.stores.get(storeID).getProductLock(productID);
     }
 
     public String getStoreName(int storeID) {
@@ -648,8 +650,7 @@ public class TradingSystem {
 
 
 
-    public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price)
-    {
+    public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price) {
         if(ValidConnectedUser(userID, connID)){
             if(hasPermission(userID,storeID, User.Permission.AddProduct)) {
                 stores.get(storeID).editProductDetails(userID,productID,productName,price,category);

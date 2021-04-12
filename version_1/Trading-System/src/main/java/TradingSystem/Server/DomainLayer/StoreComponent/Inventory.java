@@ -364,6 +364,10 @@ public class Inventory {
         this.products.get(productID).lockProduct();
     }
 
+    public Lock getProductLock(int productID) {
+        return this.products.get(productID).getLock();
+    }
+
     public void unlockProduct(Collection<Integer> productID){
         this.products.get(productID).unlockProduct();
     }
@@ -394,5 +398,6 @@ public class Inventory {
         }
         return null;
     }
+
 
 }

@@ -12,6 +12,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 
 public class Store {
 
@@ -217,6 +218,10 @@ public class Store {
         this.inventory.lockProduct(productID);
     }
 
+    public Lock getProductLock(int productID) {
+        return this.inventory.getProductLock(productID);
+    }
+
     public void  unLockProducts(Collection<Integer> productID){
         this.inventory.unlockProduct(productID);
     }
@@ -302,4 +307,6 @@ public class Store {
     public boolean checkManager(int newOwner) {
         return this.managersIDs.contains(newOwner);
     }
+
+
 }
