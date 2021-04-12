@@ -204,54 +204,179 @@ public class OwnerTests {
     }
     //endregion
     //region add owner/manager tests
+
+    //TODO -add to client AddOwner, AddManager, RemoveManager
     @Test
     void addNewOwner_Happy() {
-        /*
         String gust1 = tradingSystem.connectSystem().getConnID();
-        tradingSystem.Register(gust1, "nofet", "123");
-        String NconnID = tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(, NconnID, "NofetStore");
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
 
-        //t.AddQuantityProduct(3, NconnID, 2, 1, 100);
         String gust2 = tradingSystem.connectSystem().getConnID();
-        tradingSystem.Register(gust2, "elinor", "123");
-        String EconnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
-        //String gust3=tradingSystem.connectSystem().getConnID();
-        //tradingSystem.Register(gust3, "roee", "123");
-        //String RconnID = tradingSystem.Login(gust3, "roee", "123").getConnID();
-        Response r1=tradingSystem.AddNewOwner(3,NconnID,2,4);
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
 
-        Response r2=tradingSystem.AddNewManager(3,NconnID,2,5);
-
-         */
-
+        Response res= tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
+        assertEquals(res.getMessage(), "The owner Added successfully");
     }
 
     @Test
-    void addNewOwner_Sad() {
-        //todo - need to implement in Client Class?
+    void addNewOwner_Sad_AppointmentIsNotOwner() {
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+
+        String gust3 = tradingSystem.connectSystem().getConnID();
+        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
+        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
+
+        Response res= tradingSystem.AddNewOwner(ElinorId,ElinorConnID,2,RoeeId);
+        assertEquals(res.getMessage(), "User "+ElinorId+" is not the owner of the store, so he can not appoint new owner to the store");
+    }
+
+    @Test
+    void addNewOwner_Sad_DoubleAppointmentOfOwner() {
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+
+        tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
+        Response res= tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
+        assertEquals(res.getMessage(), "User "+ElinorId+" is owner the store, so he can not appoint to owner again");
     }
 
     @Test
     void addNewManager_Happy() {
-        //todo - need to implement in Client Class?
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+
+        Response res= tradingSystem.AddNewManager(NofetId,NofetConnID,2,ElinorId);
+        assertEquals(res.getMessage(), "The manager Added successfully");
     }
 
     @Test
-    void addNewManager_Sad() {
-        //todo - need to implement in Client Class?
+    void addNewManager_Sad_AppointmentIsNotOwner() {
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+
+        String gust3 = tradingSystem.connectSystem().getConnID();
+        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
+        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
+
+        Response res= tradingSystem.AddNewManager(ElinorId,ElinorConnID,2,RoeeId);
+        assertEquals(res.getMessage(), "The user "+ElinorId +" is not the owner of the store, so he can not appoint new manager to the store");
+
     }
+
+    @Test
+    void addNewManager_Sad_DoubleAppointmentOfOwner() {
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+
+        String gust3 = tradingSystem.connectSystem().getConnID();
+        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
+        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
+
+        tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
+        tradingSystem.AddNewManager(NofetId,NofetConnID,2,RoeeId);
+
+        Response res1= tradingSystem.AddNewManager(NofetId,NofetConnID,2,ElinorId);
+        assertEquals(res1.getMessage(), "The user "+ElinorId+" is owner the store, so he can not appoint to Manager");
+
+        Response res2= tradingSystem.AddNewManager(NofetId,NofetConnID,2,RoeeId);
+        assertEquals(res2.getMessage(), "The user "+RoeeId+" is manages the store, so he can not appoint to Manager again");
+    }
+
+    @Test
+    void addNewManager_Sad_ThereIsNoPermission() {
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+
+        String gust3 = tradingSystem.connectSystem().getConnID();
+        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
+        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
+
+        tradingSystem.AddNewManager(NofetId,NofetConnID,2,ElinorId);
+
+        Response res= tradingSystem.AddNewManager(ElinorId,ElinorConnID,2,RoeeId);
+        assertEquals(res.getMessage(), "The user "+ElinorId+" is not allowed to add manager to the store");
+    }
+
     //endregion
     //region remove manager tests
     @Test
     void removeManager_Happy() {
-        //todo - need to implement in Client Class?
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+
+        tradingSystem.AddNewManager(NofetId,NofetConnID,2,ElinorId);
+        Response res= tradingSystem.RemoveManager(NofetId,NofetConnID,2,ElinorId);
+        assertEquals(res.getMessage(), "The manager removed successfully");
     }
 
     @Test
-    void removeManager_Sad() {
-        //todo - need to implement in Client Class?
+    void removeManager_Sad_RemovingManagerAppointmentBySomeoneElse() {
+        String gust1 = tradingSystem.connectSystem().getConnID();
+        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
+        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
+        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+
+        String gust2 = tradingSystem.connectSystem().getConnID();
+        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
+        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+
+        String gust3 = tradingSystem.connectSystem().getConnID();
+        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
+        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
+
+        tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
+        tradingSystem.AddNewManager(NofetId,NofetConnID,2,RoeeId);
+
+        Response res= tradingSystem.RemoveManager(ElinorId,ElinorConnID,2,RoeeId);
+        assertEquals(res.getMessage(), "The user " + ElinorId + " is not the one who appointed the manager");
     }
+
     //endregion
     //region Information on officials tests
     @Test

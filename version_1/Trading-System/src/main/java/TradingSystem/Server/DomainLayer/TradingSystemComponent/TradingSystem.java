@@ -526,7 +526,7 @@ public class TradingSystem {
                             }
                         }
                         loggerController.WriteErrorMsg("User " + userID + " try to Add " +newManager+" to be the Manager of store " + storeID + " and failed. "+ newManager+" is already manages the store");
-                        return new Response(true, "The user "+newManager+" is manages the store, so he can not appoint to Manager again ");
+                        return new Response(true, "The user "+newManager+" is manages the store, so he can not appoint to Manager again");
                     }
                     loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the owner of store "+storeID + " and failed. "+ newManager+" is already owner the store");
                     return new Response(true, "The user "+newManager+" is owner the store, so he can not appoint to Manager");
