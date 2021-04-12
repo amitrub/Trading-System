@@ -82,8 +82,8 @@ public class Store {
         return inventory.ShowStoreProducts();
     }
 
-    public Response AddProductToStore(String productName , Double price, String category){
-        return inventory.addProduct(productName, category, price);
+    public Response AddProductToStore(String productName , Double price, String category, int quantity){
+        return inventory.addProduct(productName, category, price, quantity);
     }
 
     public Response addProductToInventory(Integer productId, Integer quantity){

@@ -73,8 +73,7 @@ public class TradingSystem {
         String connID = "479f239c-797c-4bdb-8175-980acaabf070";
         this.connectedSubscribers.put(connID, userID);
         AddStore(userID, connID, "store1");
-        AddProductToStore(userID,connID,1,"prod1","sport", 7.0 );
-        AddQuantityProduct(userID,connID,1,1,7);
+        AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
 
         User user1 = new User("hadass", "1234");
         userID = user1.getId();
@@ -255,10 +254,10 @@ public class TradingSystem {
     }
 
     //Product functions
-    public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price){
+    public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity){
         if(ValidConnectedUser(userID, connID)){
             if(this.hasPermission(userID,storeID,User.Permission.AddProduct)) {
-                Response res = stores.get(storeID).AddProductToStore(productName, price, category);
+                Response res = stores.get(storeID).AddProductToStore(productName, price, category,quantity);
                 printProducts();
                 loggerController.WriteLogMsg("User "+userID+" add product "+ productName+" to store "+storeID+" successfully");
                 return res;

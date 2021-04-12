@@ -19,7 +19,8 @@ public class StoreOwnerService {
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
         double price = (double) obj.get("price");
-        return tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price);
+        int quantity  = (int) obj.get("quantity");
+        return tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
     }
 
     @PostMapping("{userID}/store/{storeID}/add_quantity_product/{productID}")

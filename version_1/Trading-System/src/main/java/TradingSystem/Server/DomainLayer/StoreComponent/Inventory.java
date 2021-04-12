@@ -48,10 +48,10 @@ public class Inventory {
         return products;
     }
 
-    public Response addProduct(String productName, String category, Double price){
+    public Response addProduct(String productName, String category, Double price, int quantity){
         if (!IsProductNameExist(productName)){
             Integer productID=getNextProductID();
-            Product p=new Product(productID, productName, category, price);
+            Product p=new Product(productID, productName, category, price, quantity);
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());

@@ -24,6 +24,7 @@ public class SubscriberService {
 
     @PostMapping("{userID}/add_store")
     public Response AddStore(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody String storeName){
+        System.out.println("33333333333333333333333333333333333333");
         Response res = tradingSystem.AddStore(userID, connID, storeName);
         tradingSystem.printUsers();
         tradingSystem.printStores();
