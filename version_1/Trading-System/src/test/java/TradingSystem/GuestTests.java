@@ -1,6 +1,7 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import org.junit.jupiter.api.AfterEach;
@@ -20,6 +21,7 @@ import static org.junit.Assert.*;
 public class GuestTests {
 
     Client client;
+    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -30,8 +32,8 @@ public class GuestTests {
     @AfterEach
     void tearDown() {
         client.exitSystem();
+        tradingSystem.Initialization();
     }
-
 
     //region system Tests
     @Test
@@ -354,7 +356,36 @@ public class GuestTests {
 
     @Test
     void Purchase_Happy() {
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        String store_name = "Mania Jeans";
+        client.openStore(store_name);
+        ArrayList<DummyStore> stores = client.showAllStores();
+        Integer storeID = getStoreID(stores, store_name);
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+
+        client.Logout();
+
+        client.addProductToCart(storeID, productID, 1);
+        assertEquals(client.showShoopingCart().size(), 1);
+        String ans1 = client.showShoopingCart().get(0).getProductName();
+        assertEquals(ans1, "Short Pants");
+
+        boolean purchaseFailed = client.guestPurchase("Roee", "1234-5678",
+                                            "0528-97878787", "sioot st. 5");
+        if(!purchaseFailed)
+            System.out.println("purchase Succeed");
+        assertFalse(purchaseFailed);
+
     }
+
+    //TODO: AFTER PURCHASE, SHOPPING CART EMPTY, THE QUANTITY IN STORE DECREASE IN THE QUANTITY OF PURCHASE
+    //TODO: not guest purchase need to add to history
+    //Todo: 2 clients wants to buy the same product, that is the last in store, some of them failed
+    //Todo: 2 clients wants to buy different products, sleep 10 seconds, check that they aren't wait for 20 sec
+    //TODO: CHECK DEADLOCKS 2 clients 2 products diffrenet order!!!
 
     @Test
     void Purchase_SadEmptyCart() {
@@ -365,4 +396,14 @@ public class GuestTests {
     }
 
     //endregion
+
+    Integer getStoreID(ArrayList<DummyStore> stores, String storename)
+    {
+        for (int i=0; i<stores.size(); i++)
+        {
+            if(stores.get(i).getName().equals(storename))
+                return stores.get(i).getId();
+        }
+        return -1;
+    }
 }
