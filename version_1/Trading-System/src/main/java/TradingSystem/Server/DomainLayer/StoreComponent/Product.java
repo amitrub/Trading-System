@@ -4,37 +4,55 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Product {
 
-    ;
+
     private Integer productID;
     private String productName;
     private String category;
     private Double price;
     private Double rate;
+    private Integer quantity;
+
+    private final Lock lock = new ReentrantLock();
     //userID_comments
     private ConcurrentHashMap<Integer,String> productComments;
     //userID_Rate
     private ConcurrentHashMap<Integer, Double> productRating;
 
     public Product(Integer productID, String productName, String category, Double price) {
-        this.productID=productID;
+        this.productID = productID;
         this.productName = productName;
         this.category = category;
         this.price = price;
-        this.productComments=new ConcurrentHashMap<Integer, String>();
-        this.productRating=new ConcurrentHashMap<Integer, Double>();
+        this.productComments = new ConcurrentHashMap<Integer, String>();
+        this.productRating = new ConcurrentHashMap<Integer, Double>();
+        this.quantity = 0;
     }
 
     public Product(Product toCopyProduct) {
-        this.productID=toCopyProduct.productID;
+        this.productID = toCopyProduct.productID;
         this.productName = toCopyProduct.productName;
         this.category = toCopyProduct.category;
         this.price = toCopyProduct.price;
         this.rate = toCopyProduct.rate;
         this.productComments=new ConcurrentHashMap<Integer, String>();
         this.productRating=new ConcurrentHashMap<Integer, Double>();
+        this.quantity = toCopyProduct.quantity;
+    }
+
+    public void lockProduct() {
+        this.lock.lock();
+    }
+    public void unlockProduct(){
+        this.lock.unlock();
+    }
+
+    public boolean productIsLock() {
+        return this.lock.tryLock();
     }
 
     public Integer getProductID() {
@@ -71,6 +89,14 @@ public class Product {
 
     public synchronized void setRate(Double rate) {
         this.rate = rate;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public Response addComment(Integer userID, String comment)
