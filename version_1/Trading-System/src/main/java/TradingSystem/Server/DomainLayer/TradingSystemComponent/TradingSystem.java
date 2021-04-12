@@ -379,6 +379,16 @@ public class TradingSystem {
     }
 
     //TODO: to check
+    public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice){
+        List<DummyProduct> dummyProducts = new LinkedList<>();
+        for(Store store: stores.values()){
+           // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
+                dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
+            }
+        return dummyProducts;
+    }
+
+    //TODO: to check
     public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
         List<DummyProduct> dummyProducts = new LinkedList<>();
         for(Store store: stores.values()){
