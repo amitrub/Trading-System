@@ -404,7 +404,6 @@ public class GuestTests {
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
         ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
         Integer productID = products.get(0).getProductID();
-
         client.Logout();
 
 
