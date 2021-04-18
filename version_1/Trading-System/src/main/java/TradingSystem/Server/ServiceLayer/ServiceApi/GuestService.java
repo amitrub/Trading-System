@@ -1,6 +1,8 @@
 
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
+
+
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
