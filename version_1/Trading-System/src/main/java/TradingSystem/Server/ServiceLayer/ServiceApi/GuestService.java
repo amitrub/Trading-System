@@ -15,7 +15,7 @@ import java.util.Map;
 @RequestMapping(path = "api")
 public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
-    // rubin is the king 2.1
+    // 2.1 test
 
     /**
      * @requirement 2.1
