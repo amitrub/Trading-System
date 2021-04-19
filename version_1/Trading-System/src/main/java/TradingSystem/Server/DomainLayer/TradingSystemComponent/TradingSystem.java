@@ -296,7 +296,7 @@ public class TradingSystem {
         return false;
     }
 
-    public Response AddQuantityProduct(int userID, String connID, int storeID,int productId, int quantity){
+    public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity){
         if(ValidConnectedUser(userID, connID)){
             if(hasPermission(userID,storeID,User.Permission.AddProduct)) {
                 if(quantity>0) {

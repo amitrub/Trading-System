@@ -1,13 +1,10 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
