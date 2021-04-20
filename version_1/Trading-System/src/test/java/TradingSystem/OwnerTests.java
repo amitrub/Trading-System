@@ -34,17 +34,20 @@ public class OwnerTests {
         tradingSystem.Initialization();
     }
 
-    Integer getStoreID(List<DummyStore> stores, String storename)
+
+
+    //region other functions
+    Integer getStoreID(List<DummyStore> stores, String storeName)
     {
         for (int i=0; i<stores.size(); i++)
         {
-            if(stores.get(i).getName().equals(storename))
+            if(stores.get(i).getName().equals(storeName))
                 return stores.get(i).getId();
         }
         return -1;
     }
 
-    Integer getProductID(List<DummyProduct> storeProducts, String productName)
+    Integer getProductID(ArrayList<DummyProduct> storeProducts, String productName)
     {
         for (int i=0; i<storeProducts.size(); i++)
         {
@@ -53,34 +56,10 @@ public class OwnerTests {
         }
         return -1;
     }
-    
-    //region open store tests
-    @Test
-    void openStore_Happy() {
-        client.Register("Lee", "123");
-        client.Login("Lee", "123");
-        Integer preSize = client.showAllStores().size();
-
-        boolean b1 = client.openStore("Mania1");
-        assertFalse(b1);
-        assertEquals(preSize+1, client.showAllStores().size());
-    }
-
-    @Test
-    void openStore_SadDuplicateName() {
-        client.Register("Lin", "123");
-        client.Login("Lin", "123");
-        //Integer preSize = client.showAllStores().size();
-
-        client.openStore("Mania2");
-        boolean b1 = client.openStore("Mania2");
-        //Integer newSize = client.showAllStores().size();
-        assertTrue(b1);
-        //assertEquals(preSize, newSize);
-    }
+    //endregion
 
 
-    //region requirement 4.1: add Product Tests
+    //region requirement 4.1: Add Product Tests
     @Test
     void HappyAdd() {
         client.Register("Gal", "123");
@@ -177,7 +156,7 @@ public class OwnerTests {
         assertTrue(b2);
     }
     //endregion
-    //region requirement 4.1: edit Product Tests
+    //region requirement 4.1: Edit Product Tests
     @Test
     void HappyEditPrice() {
         client.Register("Shani", "123");
@@ -474,7 +453,6 @@ public class OwnerTests {
         assertEquals(res.getMessage(), "The user " + ElinorId + " is not the one who appointed the manager");
     }
 */
-    //endregion
     //region Information on officials tests
     @Test
     void showOfficialsInfo_Happy() {
@@ -585,26 +563,5 @@ public class OwnerTests {
 
      */
 
-    //region other functions
-    Integer getStoreID(ArrayList<DummyStore> stores, String storename)
-    {
-        for (int i=0; i<stores.size(); i++)
-        {
-            if(stores.get(i).getName().equals(storename))
-                return stores.get(i).getId();
-        }
-        return -1;
-    }
-
-    Integer getProductID(ArrayList<DummyProduct> storeProducts, String productName)
-    {
-        for (int i=0; i<storeProducts.size(); i++)
-        {
-            if(storeProducts.get(i).getProductName().equals(productName))
-                return storeProducts.get(i).getProductID();
-        }
-        return -1;
-    }
-    //endregion
 
 }
