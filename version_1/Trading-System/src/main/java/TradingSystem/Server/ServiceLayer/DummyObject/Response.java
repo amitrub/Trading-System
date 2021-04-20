@@ -51,19 +51,19 @@ public class Response {
         this.message = message;
     }
 
-    public static Response makeResponseFromJSON(JSONObject jsonResponse) {
-        try{
-            int userID = jsonResponse.getInt("userID");
-            String connID = jsonResponse.getString("connID");
-            boolean isErr = jsonResponse.getBoolean("err");
-            String message = jsonResponse.getString("message");
-            Response response = new Response(userID, connID, isErr, message);
-            return response;
-        } catch (Exception e) {
-            System.out.println(errMsgGenerator("Service", "Response", "60", "error in making response from JSON object"));
-        }
-        return new Response();
-    }
+//    public static Response makeResponseFromJSON(JSONObject jsonResponse) {
+//        try{
+//            int userID = jsonResponse.getInt("userID");
+//            String connID = jsonResponse.getString("connID");
+//            boolean isErr = jsonResponse.getBoolean("err");
+//            String message = jsonResponse.getString("message");
+//            Response response = new Response(userID, connID, isErr, message);
+//            return response;
+//        } catch (Exception e) {
+//            System.out.println(errMsgGenerator("Service", "Response", "60", "error in making response from JSON object"));
+//        }
+//        return new Response();
+//    }
 
     public Integer getUserID() {
         return userID;
