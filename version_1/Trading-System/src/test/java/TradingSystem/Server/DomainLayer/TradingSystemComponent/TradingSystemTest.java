@@ -11,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TradingSystemTest {
 
     TradingSystem tradingSystem=TradingSystem.getInstance();
-  
+  /*
     @BeforeEach
     void setUp() {
     }
@@ -34,6 +34,6 @@ class TradingSystemTest {
         tradingSystem.Exit(connId);
         Response response=tradingSystem.Exit(connId);
         assertTrue(response.isErr());
-
+*/
 
 }

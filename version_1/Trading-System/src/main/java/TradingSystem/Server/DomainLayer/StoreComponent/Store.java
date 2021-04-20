@@ -172,6 +172,7 @@ public class Store {
         return inventory.getDummySearchForList(FinalID);
     }
     /*
+
     public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
         List<Integer> FinalID = new ArrayList<>();
         if (name != null) {
