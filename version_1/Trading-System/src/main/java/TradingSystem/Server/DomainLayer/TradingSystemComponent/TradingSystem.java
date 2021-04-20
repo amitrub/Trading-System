@@ -483,12 +483,12 @@ public class TradingSystem {
         }
     }
     public NewResponse guestPurchase(String connID, String name, String credit_number, String phone_number, String address){
-        if(guests.containsKey(connID)){
-            User myGuest= guests.get(connID);
-            return myGuest.guestPurchase(name, credit_number, phone_number, address);
+        if(!guests.containsKey(connID)){
+            return new NewResponse(true, "User not connect to system");
         }
         else {
-            return new NewResponse(true, "User not connect to system");
+            User myGuest= guests.get(connID);
+            return myGuest.guestPurchase(name, credit_number, phone_number, address);
         }
     }
     public NewResponse subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
