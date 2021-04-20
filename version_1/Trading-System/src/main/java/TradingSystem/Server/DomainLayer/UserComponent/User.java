@@ -226,6 +226,10 @@ public  class User {
         this.myManagedStoresIDs.remove(index);
         this.managerPermission.remove(storeID);
     }
+    public NewResponse RemoveProductFromCart(int storeID, int productID) {
+      return this.shoppingCart.RemoveProductFromCart(storeID, productID);
+    }
+
 }
 
 

@@ -330,4 +330,12 @@ public class Store {
     }
 
 
+    //TODO implement! by the policy
+    public Double calculateBugPrice(boolean userSubscribe, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        if(userSubscribe){
+            return 1.0;
+        }
+        else
+            return 2.0;
+    }
 }

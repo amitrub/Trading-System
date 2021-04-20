@@ -211,11 +211,13 @@ public class GuestService {
      * }
      */
     @PostMapping("shopping_cart/add_product")
-    public NewResponse AddProductToCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public NewResponse AddProductToCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)
+    {
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
         NewResponse res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
+        res.AddConnID(connID);
         tradingSystem.printUsers();
         return res;
     }
@@ -242,6 +244,7 @@ public class GuestService {
     @GetMapping("shopping_cart")
     public NewResponse ShowShoppingCart(@RequestHeader("connID") String connID){
         NewResponse res = this.tradingSystem.ShowShoppingCart(connID);
+        res.AddConnID(connID);
         return res;
     }
 
@@ -253,20 +256,20 @@ public class GuestService {
      *  "storeID": int
      *  "productID": int
      * }
-     * @return Response{
+     * @return NewResponse{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
     @PostMapping("shopping_cart/remove_product")
-    public NewResponse RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        int storeID = (int) obj.get("storeID");
-//        int productID = (int) obj.get("productID");
-        //TODO: not implemented
-//        Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
-        NewResponse res = new NewResponse(true, "not implemented");
-        return res;
+    public NewResponse RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)
+    {
+       int storeID = (int) obj.get("storeID");
+       int productID = (int) obj.get("productID");
+       NewResponse res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
+       res.AddConnID(connID);
+       return res;
     }
 
     /**
