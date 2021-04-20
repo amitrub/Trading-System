@@ -199,8 +199,18 @@ public class TradingSystem {
         }
         return uniqueID;
     }
-    //Finds if the user exists and if the password is correct, if not returns 1 and error message
-    //If the user exists and a correct password returns an ID number returns an ID number
+
+    /**
+     * @param guestConnID
+     * @param userName
+     * @param password
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "userID": int
+     * }
+     */
     public Response Login(String guestConnID, String userName, String password) {
         Response response = validation.ValidPassword(userName, password);
         if (response.isErr())
@@ -211,6 +221,7 @@ public class TradingSystem {
         guests.remove(guestConnID);
         return new Response(response.getUserID(), connID, "Login was successful");
     }
+
     public Response Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
