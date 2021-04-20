@@ -33,6 +33,12 @@ public class Client {
     }
 
     //Guest
+
+    /**
+     * @requirement 2.1
+     *
+     * @return string connID
+     */
     public String connectSystem() {
         String path = "home";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
@@ -44,6 +50,11 @@ public class Client {
         }
         return this.connID;
     }
+
+    /**
+     * @requirement 2.2 exit system
+     * @return string connID
+     */
     public String exitSystem() {
         String path = "exit";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
@@ -55,6 +66,13 @@ public class Client {
         }
         return this.connID;
     }
+
+    /**
+     * @requirement 2.3 register to the system
+     * @param userName
+     * @param pass
+     * @return int if ok
+     */
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
@@ -68,6 +86,13 @@ public class Client {
         this.pass = pass;
         return userID;
     }
+
+    /**
+     * @requirement 2.4 login
+     * @param userName
+     * @param pass
+     * @return int if ok
+     */
     public int Login(String userName, String pass){
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
@@ -163,6 +188,12 @@ public class Client {
     }
 
     //Subscriber
+
+    /**
+     * @requirement 3.1
+     *
+     * @return String userID
+     */
     public int Logout(){
         String path = String.format("%s/logout",this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
@@ -255,7 +286,7 @@ public class Client {
         }
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(addProduct) response: " + response + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(editProduct) response: " + response + ANSI_RESET);
         return response.isErr();
     }
     public ArrayList<DummyProduct> showStoreHistory(int storeID) {

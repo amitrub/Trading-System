@@ -36,6 +36,9 @@ public class GuestTests {
     }
 
     //region system Tests
+    /**
+     * @requirement 2.1
+     */
     @Test
     void connectionTest() {
         // setUp
@@ -51,6 +54,10 @@ public class GuestTests {
     }
     //endregion
     //region Register Tests
+
+    /**
+     * @requirement 2.3 register to the system
+     */
     @Test
     void registerHappy() {
         int respondID1 = client.Register("Roee", "1234");
@@ -75,7 +82,7 @@ public class GuestTests {
 
 //    @Test
 //    void registerShortPassword() {
-//        int respondID = client.Register("Lior", "1");
+//        int respondID = client.Register("Lior", "q");
 //        assertTrue(respondID == -1);
 //    }
 
@@ -149,6 +156,10 @@ public class GuestTests {
 
     //endregion
     //region Login Tests
+
+    /**
+     * @requirement 2.4 login tests
+     */
     @Test
     void loginHappy(){
         int guestID = client.Register("Yossi", "qwerty");
