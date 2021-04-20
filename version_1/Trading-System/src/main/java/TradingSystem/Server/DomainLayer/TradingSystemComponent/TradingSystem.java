@@ -135,7 +135,6 @@ public class TradingSystem {
         System.out.println("-----------------------------------------------");
     }
 
-
     /**
      * @requirement 2.1
      *
@@ -147,6 +146,7 @@ public class TradingSystem {
      */
     //User functions
     public NewResponse ConnectSystem() {
+
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
         NewResponse res = new NewResponse("Connect system was successful");
@@ -165,15 +165,25 @@ public class TradingSystem {
         }
         return uniqueID;
     }
+
+    /**
+     * @requirement 2.2
+     * @param connID
+     * @return Response{
+     *      *  "isErr: boolean
+     *      *  "message": String
+     *      *  "connID": String
+     *      * }
+     */
     public NewResponse Exit(String connID) {
-        if (connectedSubscribers.containsKey(connID)) {
+        if(!connectedSubscribers.containsKey(connID) && !guests.containsKey(connID))
+            return new NewResponse(true, "User not connect to system");
+        else if (connectedSubscribers.containsKey(connID)) {
             connectedSubscribers.remove(connID);
             return new NewResponse("Exit System was successful");
-        } else if (guests.containsKey(connID)) {
+        } else  {
             guests.remove(connID);
             return new NewResponse("Exit System was successful");
-        } else {
-            return new NewResponse(true, "User not connect to system");
         }
     }
     //Check if there is a user if the same name then return -1
@@ -228,6 +238,7 @@ public class TradingSystem {
         return res;
     }
     public NewResponse Logout(String connID) {
+
         if (connectedSubscribers.containsKey(connID)) {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
             connectedSubscribers.remove(connID);
