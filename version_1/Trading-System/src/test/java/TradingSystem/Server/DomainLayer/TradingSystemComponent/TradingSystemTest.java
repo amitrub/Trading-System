@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import java.util.List;
 import TradingSystem.Client.Client;
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,45 +21,45 @@ class TradingSystemTest {
 
     @BeforeEach
     void setUp() {
-        connID= tradingSystem.connectSystem().getConnID();
-        Response response= tradingSystem.Register(connID,"reutlevy","8119");
+        connID= tradingSystem.ConnectSystem().getConnID();
+        NewResponse response= tradingSystem.Register(connID,"reutlevy","8119");
         userID= response.getUserID();
         tradingSystem.Login(connID,"reutlevy","8119");
     }
   
   @Test
     void connectSystem() {
-        Response response= tradingSystem.connectSystem();
-        assertTrue(response.getUserID()==-1 && response.isErr()==false);
+        NewResponse response= tradingSystem.ConnectSystem();
+        assertTrue(response.getConnID()!="" && response.getIsErr()==false);
     }
   
     @Test
     void exitGood() {
-        String connId= tradingSystem.connectSystem().getConnID();
-        Response response=tradingSystem.Exit(connId);
-        assertFalse(response.isErr());
+        String connId= tradingSystem.ConnectSystem().getConnID();
+        NewResponse response=tradingSystem.Exit(connId);
+        assertFalse(response.getIsErr());
     }
 
     @Test
     void exiBad() {
-        String connId= tradingSystem.connectSystem().getConnID();
+        String connId= tradingSystem.ConnectSystem().getConnID();
         tradingSystem.Exit(connId);
-        Response response=tradingSystem.Exit(connId);
-        assertTrue(response.isErr());
+        NewResponse response=tradingSystem.Exit(connId);
+        assertTrue(response.getIsErr());
     }
     
     @Test
     void registerGood() {
-        String connID= tradingSystem.connectSystem().getConnID();
-        Response response= tradingSystem.Register(connID,"reutlevy30","8111996");
-        assertFalse(response.isErr() && response.getUserID()<0);
+        String connID= tradingSystem.ConnectSystem().getConnID();
+        NewResponse response= tradingSystem.Register(connID,"reutlevy30","8111996");
+        assertFalse(response.getIsErr() && response.getUserID()<0);
     }
     @Test
     void registerExistUser() {
-        String connID= tradingSystem.connectSystem().getConnID();
-        Response response= tradingSystem.Register(connID,"reutlevy30","8111996");
+        String connID= tradingSystem.ConnectSystem().getConnID();
+        NewResponse response= tradingSystem.Register(connID,"reutlevy30","8111996");
         response= tradingSystem.Register(connID,"reutlevy30","reut");
-        assertTrue(response.isErr());
+        assertTrue(response.getIsErr());
     }
     //TODO- implement this
     void registerInvalidPassword() {
@@ -67,31 +68,32 @@ class TradingSystemTest {
 
     @Test
     void loginSucess() {
-        String connID= tradingSystem.connectSystem().getConnID();
+        String connID= tradingSystem.ConnectSystem().getConnID();
         tradingSystem.Register(connID,"reutlevy30","811199");
-        Response response=tradingSystem.Login(connID,"reutlevy30","811199");
-        assertFalse(response.isErr() && response.getUserID()<0);
+        NewResponse response=tradingSystem.Login(connID,"reutlevy30","811199");
+        assertFalse(response.getIsErr() && response.getUserID()<0);
     }
     @Test
     void loginWrongUserName() {
-        String connID= tradingSystem.connectSystem().getConnID();
-        Response response=tradingSystem.Login(connID,"reutlevy3","811199");
-        assertTrue(response.isErr());
+        String connID= tradingSystem.ConnectSystem().getConnID();
+        NewResponse response=tradingSystem.Login(connID,"reutlevy3","811199");
+        assertTrue(response.getIsErr());
     }
     @Test
     void loginWrongPassword() {
-        String connID= tradingSystem.connectSystem().getConnID();
+        String connID= tradingSystem.ConnectSystem().getConnID();
         tradingSystem.Register(connID,"reutlevy30","811199");
-        Response response=tradingSystem.Login(connID,"reutlevy30","8111996");
-        assertTrue(response.isErr());
+        NewResponse response=tradingSystem.Login(connID,"reutlevy30","8111996");
+        assertTrue(response.getIsErr());
     }
 
     @Test
     void showAllStoresGood() {
         tradingSystem.AddStore(userID,connID,"Store");
-        List<DummyStore> res= tradingSystem.ShowAllStores();
-        System.out.println(res.size());
-        assertEquals(res.size(),1);
+        NewResponse res = tradingSystem.ShowAllStores();
+        List<DummyStore> list = res.getStoreList();
+        System.out.println(list.size());
+        assertEquals(list.size(),1);
     }
 
     //TODO- figure out how to test

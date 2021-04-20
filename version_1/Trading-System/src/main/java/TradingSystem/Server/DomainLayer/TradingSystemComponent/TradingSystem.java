@@ -208,7 +208,7 @@ public class TradingSystem {
                 return new NewResponse(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
             }
             if(!validation.VerifyPassword(password)){
-                return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error password is invalid"));
+                return new NewResponse(true, errMsgGenerator("Server", "TradingSystem", "62", "Error password is invalid"));
             }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
