@@ -151,6 +151,10 @@ public class GuestTests {
 
     //endregion
     //region Login Tests
+
+    /**
+     * @requirement 2.4 login tests
+     */
     @Test
     void loginHappy(){
         int guestID = client.Register("Yossi", "qwerty");

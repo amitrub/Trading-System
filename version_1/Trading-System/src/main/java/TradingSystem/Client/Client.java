@@ -88,6 +88,13 @@ public class Client {
         this.pass = pass;
         return userID;
     }
+
+    /**
+     * @requirement 2.4 login
+     * @param userName
+     * @param pass
+     * @return int if ok
+     */
     public int Login(String userName, String pass){
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
