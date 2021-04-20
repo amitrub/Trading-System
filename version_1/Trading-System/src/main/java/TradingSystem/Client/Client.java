@@ -34,6 +34,12 @@ public class Client {
 
     //Guest
 
+    public void ClearSystem() {
+        String path = "clear_system";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
+        NewResponse response = NewResponse.makeResponseFromJSON(jsonResponse);
+    }
+
     /**
      * @requirement 2.1
      *

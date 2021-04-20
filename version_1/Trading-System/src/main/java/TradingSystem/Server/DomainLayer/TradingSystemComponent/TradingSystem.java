@@ -47,7 +47,7 @@ public class TradingSystem {
         if (tradingSystem == null) {
             tradingSystem = new TradingSystem();
             tradingSystem.validation = new Validation();
-            tradingSystem.Initialization();
+//            tradingSystem.Initialization();
         }
         return tradingSystem;
     }
