@@ -26,7 +26,6 @@ public class OwnerTests {
     void setUp() {
         this.client = new Client();
         client.connectSystem();
-
     }
     @AfterEach
     void tearDown() {
@@ -34,56 +33,10 @@ public class OwnerTests {
         tradingSystem.Initialization();
     }
 
-    Integer getStoreID(ArrayList<DummyStore> stores, String storename)
-    {
-        for (int i=0; i<stores.size(); i++)
-        {
-            if(stores.get(i).getName().equals(storename))
-                return stores.get(i).getId();
-        }
-        return -1;
-    }
 
-    Integer getProductID(ArrayList<DummyProduct> storeProducts, String productName)
-    {
-        for (int i=0; i<storeProducts.size(); i++)
-        {
-            if(storeProducts.get(i).getProductName().equals(productName))
-                return storeProducts.get(i).getProductID();
-        }
-        return -1;
-    }
-    
-    //region open store tests
+    //region requirement 4.1: add Product Tests
     @Test
-    void openStore_Happy() {
-        client.Register("Lee", "123");
-        client.Login("Lee", "123");
-        Integer preSize = client.showAllStores().size();
-
-        boolean b1 = client.openStore("Mania1");
-        assertFalse(b1);
-        assertEquals(preSize+1, client.showAllStores().size());
-    }
-
-    @Test
-    void openStore_SadDuplicateName() {
-        client.Register("Lin", "123");
-        client.Login("Lin", "123");
-        //Integer preSize = client.showAllStores().size();
-
-        client.openStore("Mania2");
-        boolean b1 = client.openStore("Mania2");
-        //Integer newSize = client.showAllStores().size();
-        assertTrue(b1);
-        //assertEquals(preSize, newSize);
-    }
-
-    //endregion
-    //region add Product Tests
-    /*
-    @Test
-    void addProduct_Happy() {
+    void HappyAdd() {
         client.Register("Gal", "123");
         client.Login("Gal", "123");
         client.openStore("Scoop");
@@ -91,14 +44,13 @@ public class OwnerTests {
 
         //happy add
         boolean b1 = client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        assertFalse(b1);
         ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         assertEquals(storeProducts1.size(), 1);
+        assertFalse(b1);
     }
 
-     */
     @Test
-    void addProduct_SadPrice() {
+    void SadAddPrice() {
         client.Register("Lior", "123");
         client.Login("Lior", "123");
         client.openStore("Shoes");
@@ -106,12 +58,13 @@ public class OwnerTests {
 
         //sad add - product price illegal
         boolean b2 = client.addProduct(storeID, "Classic Heels", "Heels", -50.0, 25);
-        assertTrue(b2);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.size(), 0);
+        assertTrue(b2);
     }
+
     @Test
-    void addProduct_SadNameTaken() {
+    void SadAddNameTaken() {
         client.Register("Ori", "123");
         client.Login("Ori", "123");
         client.openStore("Ice Cube");
@@ -119,12 +72,13 @@ public class OwnerTests {
         client.addProduct(storeID, "Arma Heels", "Heels", 60.0, 25);
 
         boolean b3 = client.addProduct(storeID, "Arma Heels", "Heels", 200.0, 25);
-        assertTrue(b3);
         ArrayList<DummyProduct> storeProducts3 = client.showStoreProducts(storeID);
         assertEquals(storeProducts3.size(), 1);
+        assertTrue(b3);
     }
+
     @Test
-    void addProductSadQuantityIllegal() {
+    void SadAddQuantity() {
         client.Register("Sapir", "123");
         client.Login("Sapir", "123");
         client.openStore("To-Go");
@@ -136,10 +90,11 @@ public class OwnerTests {
         assertEquals(storeProducts1.size(), 0);
         assertTrue(b4);
     }
+
     //endregion
-    //region Remove Product Tests
+    //region requirement 4.1: Remove Product Tests - Not passed!
     @Test
-    void removeProductHappy() {
+    void HappyRemove() {
         client.Register("Oriya", "123");
         client.Login("Oriya", "123");
         client.openStore("Ran Sport");
@@ -147,35 +102,38 @@ public class OwnerTests {
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
         ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
+        Integer preSize = client.showStoreProducts(storeID).size();
 
         //happy remove
         boolean b1 = client.removeProduct(storeID, productID);
-        assertFalse(b1);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
-        assertEquals(storeProducts2.size(), 0);
+        assertEquals(storeProducts2.size(), preSize-1);
+        assertFalse(b1);
     }
+
     @Test
-    void removeProductBad() {
+    void BadRemove() {
         client.Register("Oriyan", "123");
-        client.Login("Oriya", "123");
+        client.Login("Oriyaמ", "123");
         client.openStore("Mega Sport");
         Integer storeID = getStoreID(client.showAllStores(), "Mega Sport");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
         ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
         client.removeProduct(storeID, productID);
+        Integer preSize = client.showStoreProducts(storeID).size();
 
         //bad remove - the product doesn't exist
         boolean b2 = client.removeProduct(storeID, productID);
-        assertTrue(b2);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
-        assertEquals(storeProducts2.size(), 0);
+        Integer newSize = storeProducts2.size();
+        assertEquals(newSize, preSize);
+        assertTrue(b2);
     }
     //endregion
-    /*
-    //region edit Product Tests
+    //region requirement 4.1: edit Product Tests - Not passed!
     @Test
-    void editProductHappy() {
+    void HappyEdit() {
         client.Register("Shani", "123");
         client.Login("Shani", "123");
         client.openStore("WeShoes");
@@ -186,14 +144,14 @@ public class OwnerTests {
 
         //happy edit
         boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 100.0,25);
-        assertFalse(b1);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.get(0).getPrice(), 100.0, 0);
         assertEquals(storeProducts2.size(), 1);
+        assertFalse(b1);
     }
 
     @Test
-    void editProduct_SadPrice() {
+    void SadEditPrice() {
         client.Register("Shira", "123");
         client.Login("Shira", "123");
         client.openStore("Gali");
@@ -202,46 +160,75 @@ public class OwnerTests {
         ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
 
+        //sad edit
         boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", -120.0,25);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts2.get(0).getPrice(), 80.0, 0);
         assertEquals(storeProducts2.size(), 1);
         assertTrue(b2);
     }
 
     @Test
-    void editProduct_SadQuantity() {
-        client.Register("Shira", "123");
+    void SadEditQuantity() {
+        client.Register("Lin", "123");
+        client.Login("Lin", "123");
         client.openStore("Gali");
         Integer storeID = getStoreID(client.showAllStores(), "Gali");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
         ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
+        Integer preSize = client.showStoreProducts(storeID).size();
 
+        //sad edit
         client.removeProduct(storeID, productID);
         boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,-25);
-        assertTrue(b2);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
-        assertEquals(storeProducts2.size(), 1);
+        Integer newSize = storeProducts2.size();
+        assertEquals(storeProducts2.get(0).getQuantity(), 25);
+        assertEquals(newSize, preSize);
+        assertTrue(b2);
     }
 
     @Test
-    void editProduct_SadNonExistProduct() {
-        client.Register("Shira", "123");
+    void SadEditNonExist() {
+        client.Register("Din", "123");
+        client.Login("Din", "123");
         client.openStore("Gali");
         Integer storeID = getStoreID(client.showAllStores(), "Gali");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
         ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
-
         client.removeProduct(storeID, productID);
-        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,-25);
-        assertTrue(b2);
+        Integer preSize = client.showStoreProducts(storeID).size();
+
+        //sad edit
+        boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,25);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
-        assertEquals(storeProducts2.size(), 1);
+        Integer newSize = storeProducts2.size();
+        assertEquals(newSize, preSize);
+        assertTrue(b2);
     }
 
     //endregion
-     */
+
+    //region add Policies tests
+    @Test
+    void HappyAddBuyingPolicy() {
+    }
+
+    @Test
+    void SadAddBuyingPolicy() {
+    }
+
+    @Test
+    void HappyAddDiscountPolicy() {
+    }
+
+    @Test
+    void SadAddDiscountPolicy() {
+    }
+    //endregion
+
     //region add owner/manager tests
 
     //TODO -add to client AddOwner, AddManager, RemoveManager
@@ -444,26 +431,8 @@ public class OwnerTests {
     }
     //endregion
 
-    /*
-    //region add Policies tests
-    @Test
-    void addBuyingPolicy_Happy() {
-    }
 
-    @Test
-    void addBuyingPolicy_Sad() {
-    }
 
-    @Test
-    void addDiscountPolicy_Happy() {
-    }
-
-    @Test
-    void addddiscountPolicy_Sad() {
-    }
-*/
-
-    //endregion
     /*
     @Test
     void deleteProduct() {
@@ -502,12 +471,6 @@ public class OwnerTests {
     //endregion
     //region doesnt have service yet
     */
-
-
-
-
-
-
 
 
     /*
@@ -558,5 +521,27 @@ public class OwnerTests {
     //endregion
 
      */
+
+    //region other functions
+    Integer getStoreID(ArrayList<DummyStore> stores, String storename)
+    {
+        for (int i=0; i<stores.size(); i++)
+        {
+            if(stores.get(i).getName().equals(storename))
+                return stores.get(i).getId();
+        }
+        return -1;
+    }
+
+    Integer getProductID(ArrayList<DummyProduct> storeProducts, String productName)
+    {
+        for (int i=0; i<storeProducts.size(); i++)
+        {
+            if(storeProducts.get(i).getProductName().equals(productName))
+                return storeProducts.get(i).getProductID();
+        }
+        return -1;
+    }
+    //endregion
 
 }
