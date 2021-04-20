@@ -1,5 +1,7 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -36,5 +38,45 @@ class ShoppingCartTest {
     @Test
     void purchase() {
 //        TODO
+    }
+
+    @Test
+    void editProductQuantityFromCart() {
+        TradingSystem t=TradingSystem.getInstance();
+        String gust1=t.ConnectSystem().getConnID();
+        t.Register(gust1, "nofet", "123");
+        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
+
+        t.AddStore(1, NconnID, "Store1");
+
+        t.AddProductToStore(1, NconnID, 1, "computer", "Technology", 3000.0,20);
+        t.AddProductToStore(1, NconnID, 1, "Bag", "Beauty", 100.0,50);
+        t.AddProductToStore(1, NconnID, 1, "Bed", "Fun", 4500.0,30);
+
+
+        ShoppingCart SC1=new ShoppingCart(1);
+        Response res0= SC1.editProductQuantityFromCart(1,1,5);
+        SC1.addProductToBag(1,1,3);
+        SC1.addProductToBag(1,2,2);
+        Response res1= SC1.editProductQuantityFromCart(1,1,5);
+        Response res2= SC1.editProductQuantityFromCart(1,2,60);
+        Response res3= SC1.editProductQuantityFromCart(2,2,60);
+        Response res4= SC1.editProductQuantityFromCart(1,3,60);
+        //Response res5= SC1.editProductQuantityFromCart(1,3,60);
+
+        //happy
+        assertTrue(res1.getMessage().equals("The quantity of the product update successfully"));
+        //sad_shoppingCartEmpty
+        assertTrue(res0.getMessage().equals("The shoppingCart empty, cannot be edited"));
+        //sad_productNotInTheCart
+        assertTrue(res2.getMessage().equals("The product isn't in the stock, so it cannot be edited"));
+        //sad_productNotInTheCart
+        assertTrue(res3.getMessage().equals("The product isn't in the shoppingCart, so it cannot be edited"));
+        //sad_productNotInTheStore
+        assertTrue(res4.getMessage().equals("The product isn't in the shoppingCart, so it cannot be edited"));
+        /*
+        //sad_productAgainstThePolicy
+        assertTrue(res5.getMessage().equals("The quantity of the product is against tha store policy, so it cannot be edited"));
+        */
     }
 }

@@ -141,4 +141,9 @@ public class ShoppingBag {
         }
         return new ShoppingHistory(this,productsToHistory);
     }
+
+    public void editProductQuantity(int productID, int quantity) {
+        this.products.remove(productID);
+        this.products.put(productID,quantity);
+    }
 }

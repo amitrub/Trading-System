@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,6 +21,8 @@ public class ShoppingCart {
     private final Integer userID;
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags = new ConcurrentHashMap<>();
+
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
     public ShoppingCart(Integer userID){
         this.userID = userID;
@@ -223,6 +226,45 @@ public class ShoppingCart {
             }
         }
         return outputList;
+    }
+
+    /**
+     * @requirement 2.8
+     *
+     * @param storeID
+     * @param productID
+     * @param quantity
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  }
+     *
+     */
+    public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
+        if(this.shoppingBags.isEmpty()){
+            loggerController.WriteErrorMsg("user "+userID+" try to edit product quantity but the shoppingCart is empty");
+            return new Response(true,"The shoppingCart empty, cannot be edited");
+        }
+        else if(this.shoppingBags.get(storeID)==null||
+        !this.shoppingBags.get(storeID).getProductsList().contains(productID)){
+            loggerController.WriteErrorMsg("user "+userID+" try to edit product quantity ("+productID+", from store "+storeID+"), but the product isn't in the shoppingCart");
+            return new Response(true,"The product isn't in the shoppingCart, so it cannot be edited");
+        }
+        else if(!tradingSystem.validation.checkProductsExistInTheStore(storeID,productID,quantity)){
+            loggerController.WriteErrorMsg("user "+userID+" try to change product quantity ("+productID+", from store "+storeID+"), to "+quantity+" but the product isn't in the stock");
+            return new Response(true,"The product isn't in the stock, so it cannot be edited");
+        }
+        else if(!tradingSystem.validation.checkBuyingPolicy(productID,storeID,quantity,this.shoppingBags.get(storeID).getProducts())){
+            loggerController.WriteErrorMsg("user "+userID+" try to change product quantity ("+productID+", from store "+storeID+"), to "+quantity+" but it's against the store policy");
+            return new Response(true,"The quantity of the product is against tha store policy, so it cannot be edited");
+        }
+        else{
+            this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
+            tradingSystem.calculateBugPrice(productID,storeID,quantity,this.shoppingBags.get(storeID).getProducts());
+        }
+        loggerController.WriteLogMsg("user "+userID+" change product quantity ("+productID+", from store "+storeID+"), to "+quantity+".");
+        return new Response(false,"The quantity of the product update successfully");
     }
 }
 
