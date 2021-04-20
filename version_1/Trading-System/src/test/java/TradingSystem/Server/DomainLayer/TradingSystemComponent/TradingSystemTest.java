@@ -25,7 +25,7 @@ class TradingSystemTest {
         connID= tradingSystem.ConnectSystem().getConnID();
         NewResponse response= tradingSystem.Register(connID,"reutlevy","8119");
         userID= response.getUserID();
-        tradingSystem.Login(connID,"reutlevy","8119");
+        connID= tradingSystem.Login(connID,"reutlevy","8119").getConnID();
     }
   
   @Test
@@ -101,6 +101,12 @@ class TradingSystemTest {
     @Test
     void showAllStoresBad() {
 
+    }
+
+    @Test
+    void Logout() {
+        NewResponse response= tradingSystem.Logout(connID);
+        assertFalse(response.getIsErr());
     }
 
 }

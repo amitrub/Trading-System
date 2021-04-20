@@ -279,7 +279,15 @@ public class TradingSystem {
     }
 
 
-
+    /**
+     * @param connID
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "userID": int
+     * }
+     */
     public NewResponse Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
