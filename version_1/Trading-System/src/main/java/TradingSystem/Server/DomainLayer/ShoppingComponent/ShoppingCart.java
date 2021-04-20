@@ -163,14 +163,14 @@ public class ShoppingCart {
     }
 
   
-    private NewResponse checkInventoryAndLockProduct(List<Lock> lockList){
+    private Response checkInventoryAndLockProduct(List<Lock> lockList){
         boolean succeededToLock = false;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         while (!succeededToLock){
             synchronized (this){
                 for (Integer storeID : shoppingBagsSet){
                     ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
-                    NewResponse res = shoppingBag.checkInventory();
+                    Response res = shoppingBag.checkInventory();
                     if (res.getIsErr()){
                         return res;
                     }
@@ -178,7 +178,7 @@ public class ShoppingCart {
                 succeededToLock = this.tryLockList(lockList);
             }
         }
-        return new NewResponse();
+        return new Response();
     }
     private Response Buy(){
         Response res=new Response("The reduction was made successfully ");

@@ -36,7 +36,7 @@ public class Client {
     public void ClearSystem() {
         String path = "clear_system";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
-        NewResponse response = NewResponse.makeResponseFromJSON(jsonResponse);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
     }
 
     /**

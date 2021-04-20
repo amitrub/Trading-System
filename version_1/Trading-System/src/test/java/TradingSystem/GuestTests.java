@@ -201,11 +201,11 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.1 Search by product name exist
-        ArrayList<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50.0","100.0","1","5");
+        List<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50.0","100.0","1","5");
         assertEquals(searchProducts1.size(),1);
 
         //2.6.2 Search by product name doesnt exist
-        ArrayList<DummyProduct> searchNoProducts = client.Search("Product Name","blabla", "50.0","100.0","1","5");
+        List<DummyProduct> searchNoProducts = client.Search("Product Name","blabla", "50.0","100.0","1","5");
         assertEquals(searchNoProducts.size(),0);
     }
 
@@ -223,11 +223,11 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.3 search by product category exist
-        ArrayList<DummyProduct> searchProducts2 = client.Search("Product Category", "Tops", "30.0","150.0","1", "5");
+        List<DummyProduct> searchProducts2 = client.Search("Product Category", "Tops", "30.0","150.0","1", "5");
         assertEquals(searchProducts2.size(),2);
 
         //2.6.4 search by product category exist
-        ArrayList<DummyProduct> searchNoProducts = client.Search("Product Category", "blabla", "30.0","150.0","1", "5");
+        List<DummyProduct> searchNoProducts = client.Search("Product Category", "blabla", "30.0","150.0","1", "5");
         assertEquals(searchNoProducts.size(),0);
     }
 
@@ -245,7 +245,7 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.5 search by product category and price
-        ArrayList<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100.0","150.0","1", "5");
+        List<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100.0","150.0","1", "5");
         assertEquals(searchProducts3.size(),1);
     }
 
@@ -263,7 +263,7 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.6 sad search - there isn't products that match the search
-        ArrayList<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150.0","200.0","1", "5");
+        List<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150.0","200.0","1", "5");
         assertEquals(searchProducts4.size(),0);
     }
     //endregion
@@ -435,7 +435,7 @@ public class GuestTests {
         List<DummyStore> stores = client.showAllStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
         Integer productID = products.get(0).getProductID();
         client.Logout();
 

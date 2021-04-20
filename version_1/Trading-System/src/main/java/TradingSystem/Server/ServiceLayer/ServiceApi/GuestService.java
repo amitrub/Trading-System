@@ -19,10 +19,10 @@ public class GuestService {
     }
 
     @GetMapping("clear_system")
-    public NewResponse ClearSystem(){
+    public Response ClearSystem(){
         System.out.println("777777777777777777777777777777");
         this.tradingSystem.ClearSystem();
-        return new NewResponse();
+        return new Response();
     }
 
     /**

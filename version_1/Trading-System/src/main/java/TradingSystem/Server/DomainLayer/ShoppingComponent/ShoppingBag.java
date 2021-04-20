@@ -4,7 +4,8 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,7 +116,7 @@ public class ShoppingBag {
         return output;
     }
 
-    public NewResponse checkInventory(){
+    public Response checkInventory(){
         Set<Integer> productsSet = this.getProducts().keySet();
         for (Integer productID : productsSet){
             int productQuantity = this.getProducts().get(productID);
@@ -123,10 +124,10 @@ public class ShoppingBag {
                 String storeName = tradingSystem.getStoreName(storeID);
                 String productName = tradingSystem.getProductName(storeID, productID);
                 String err = productName + " in The store" + storeName + " is not exist in the stock";
-                return new NewResponse(true, err);
+                return new Response(true, err);
             }
         }
-        return new NewResponse();
+        return new Response();
     }
 
     public ShoppingHistory createShoppingHistory(){
