@@ -53,6 +53,9 @@ public class TradingSystem {
     }
 
     public void ClearSystem() {
+        System.out.println("/////////////////////////////////");
+        User.ClearSystem();
+        Store.ClearSystem();
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
         this.guests = new ConcurrentHashMap<>();
