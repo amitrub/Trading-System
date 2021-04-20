@@ -326,6 +326,13 @@ public class Client {
         System.out.println(ANSI_YELLOW + "(removeManager) response: " + response + ANSI_RESET);
         return response.getIsErr();
     }
+    public List<DummyStore> showOwnerStores() {
+        String path = String.format("%s/stores", this.userID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        List<DummyStore> dummySearchResponeArr = response.getStoreList();
+        return dummySearchResponeArr;
+    }
 
 
     //Admin
