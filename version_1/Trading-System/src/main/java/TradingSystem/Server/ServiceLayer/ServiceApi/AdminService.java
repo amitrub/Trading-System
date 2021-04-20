@@ -9,9 +9,115 @@ import org.springframework.web.bind.annotation.*;
 public class AdminService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
-    //TODO: not check yet
-    @GetMapping("{userID}/users")
-    public Response AllUsers(@PathVariable int userID, @RequestHeader("connID") String connID){
-        return null;
+    /**
+     * @requirement 6.4
+     *
+     * @param adminID: int (Path)
+     * @param connID: String (Header)
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     *  "users": List [{
+     *      "userID": int
+     *      "userName": String
+     *  }]
+     * }
+     */
+    //TODO: not implemented
+    @GetMapping("{adminID}/users")
+    public Response ShowAllUsers(@PathVariable int adminID, @RequestHeader("connID") String connID){
+//        Response res = tradingSystem.ShowAllUsers(adminID, connID);
+        Response res = new Response(true, "not implemented");
+        return res;
+    }
+
+    /**
+     * @requirement 6.4
+     *
+     * @param adminID: int (Path)
+     * @param connID: String (Header)
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     *  "stores": List [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */
+    //TODO: not implemented
+    @GetMapping("{adminID}/stores")
+    public Response ShowAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
+//        Response res = tradingSystem.ShowAllStores(adminID, connID);
+        Response res = new Response(true, "not implemented");
+        return res;
+    }
+
+    /**
+     * @requirement 6.4
+     *
+     * @param adminID: int (Path)
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "history": List [{
+     *      "userID": int
+     *      "storeID": int
+     *      "products": List [{
+     *          "storeID": int
+     *          "storeName": String
+     *          "productID": int
+     *          "productName": String
+     *          "price": double
+     *          "category": String
+     *          "quantity": int
+     *      }]
+     *  }]
+     * }
+     */
+    //TODO: not implemented
+    @GetMapping("{adminID}/user_history/{userID}")
+    public Response ShowUserHistory(@PathVariable int adminID,@PathVariable int userID, @RequestHeader("connID") String connID){
+//        Response res = tradingSystem.ShowAllStores(adminID, connID);
+        Response res = new Response(true, "not implemented");
+        return res;
+    }
+
+    /**
+     * @requirement 6.4
+     *
+     * @param adminID: int (Path)
+     * @param storeID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "history": List [{
+     *      "userID": int
+     *      "storeID": int
+     *      "products": List [{
+     *          "storeID": int
+     *          "storeName": String
+     *          "productID": int
+     *          "productName": String
+     *          "price": double
+     *          "category": String
+     *          "quantity": int
+     *      }]
+     *  }]
+     * }
+     */
+    //TODO: not implemented
+    @GetMapping("{adminID}/store_history/{storeID}")
+    public Response ShowStoreHistory(@PathVariable int adminID,@PathVariable int storeID, @RequestHeader("connID") String connID){
+//        Response res = tradingSystem.ShowStoreHistory(adminID, connID);
+        Response res = new Response(true, "not implemented");
+        return res;
     }
 }

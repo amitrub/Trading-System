@@ -5,6 +5,7 @@ import java.util.Map;
 
 public class NewResponse {
     private boolean isErr = false;
+    private String message = "";
     Map<String, Object> returnObject = new HashMap<>();
 
     public NewResponse() {
@@ -39,6 +40,14 @@ public class NewResponse {
         isErr = err;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public Map<String, Object> getReturnObject() {
         return returnObject;
     }
@@ -51,6 +60,7 @@ public class NewResponse {
     public String toString() {
         return "NewResponse{" +
                 "isErr=" + isErr +
+                ", massege='" + message + '\'' +
                 ", returnObject=" + returnObject +
                 '}';
     }

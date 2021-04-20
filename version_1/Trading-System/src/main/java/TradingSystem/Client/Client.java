@@ -35,6 +35,12 @@ public class Client {
     }
 
     //Guest
+
+    /**
+     * @requirement 2.1
+     *
+     * @return string connID
+     */
     public String connectSystem() {
         String path = "home";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);

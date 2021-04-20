@@ -11,8 +11,8 @@ public class LoggerController {
     private static LoggerController logger = null;
     private final Logger LOGGERinfo = Logger.getLogger("Info");
     private final Logger LOGGERErr = Logger.getLogger("Errors");
-    private FileHandler fhmsg;
-    private FileHandler fherr;
+    private FileHandler fhMsg;
+    private FileHandler fhErr;
     private SimpleFormatter formatter;
 
     public static LoggerController getInstance()
@@ -26,13 +26,13 @@ public class LoggerController {
 
     private void Initialization(){
         try {
-            fhmsg = new FileHandler("Info.log");
-            fherr = new FileHandler("Error.log");
+            fhMsg = new FileHandler("Info.log");
+            fhErr = new FileHandler("Error.log");
             formatter = new SimpleFormatter();
-            LOGGERErr.addHandler(fherr);
-            LOGGERinfo.addHandler(fhmsg);
-            fhmsg.setFormatter(formatter);
-            fherr.setFormatter(formatter);
+            LOGGERErr.addHandler(fhErr);
+            LOGGERinfo.addHandler(fhMsg);
+            fhMsg.setFormatter(formatter);
+            fhErr.setFormatter(formatter);
         }
         catch (IOException e){
             System.out.println("Error msg");

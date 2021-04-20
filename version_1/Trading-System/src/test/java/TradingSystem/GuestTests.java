@@ -36,6 +36,9 @@ public class GuestTests {
     }
 
     //region system Tests
+    /**
+     * @requirement 2.1
+     */
     @Test
     void connectionTest() {
         // setUp
