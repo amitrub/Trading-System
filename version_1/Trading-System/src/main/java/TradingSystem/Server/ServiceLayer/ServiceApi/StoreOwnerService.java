@@ -104,7 +104,7 @@ public class StoreOwnerService {
             price = new Double(price_int);
         }
         int quantity  = (int) obj.get("quantity");
-        return tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price);
+        return tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price,quantity);
     }
 
     /**

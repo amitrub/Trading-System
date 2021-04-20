@@ -133,7 +133,7 @@ public class OwnerTests {
     //endregion
     //region requirement 4.1: edit Product Tests
     @Test
-    void HappyEdit() {
+    void HappyEditPrice() {
         client.Register("Shani", "123");
         client.Login("Shani", "123");
         client.openStore("WeShoes");
@@ -142,10 +142,28 @@ public class OwnerTests {
         ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
 
-        //happy edit
+        //happy edit price
         boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 100.0,25);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.get(0).getPrice(), 100.0, 0);
+        assertEquals(storeProducts2.size(), 1);
+        assertFalse(b1);
+    }
+
+    @Test
+    void HappyEditQuantity() {
+        client.Register("Sha", "123");
+        client.Login("Sha", "123");
+        client.openStore("WeShoes");
+        Integer storeID = getStoreID(client.showAllStores(), "WeShoes");
+        client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
+        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Arma Heels");
+
+        //happy edit quantity
+        boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 100.0,35);
+        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        assertEquals(storeProducts2.get(0).getQuantity(), 35);
         assertEquals(storeProducts2.size(), 1);
         assertFalse(b1);
     }
@@ -180,7 +198,6 @@ public class OwnerTests {
         Integer preSize = client.showStoreProducts(storeID).size();
 
         //sad edit
-        client.removeProduct(storeID, productID);
         boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,-25);
         ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         Integer newSize = storeProducts2.size();
