@@ -489,6 +489,28 @@ public class TradingSystem {
             this.subscribers.get(sh.getUserID()).addHistory(sh);
     }
 
+    /**
+     * @requirement 2.6
+     *
+     * @param name
+     * @param category
+     * @param minprice
+     * @param maxprice
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "products": List [{
+     *      "storeID": int
+     *      "storeName": String
+     *      "productID": int
+     *      "productName": String
+     *      "price": double
+     *      "category": String
+     *      "quantity": int
+     *  }]
+     *
+     */
     //TODO: to check
     public NewResponse SearchProduct(String name, String category, int minprice, int maxprice){
         List<DummyProduct> dummyProducts = new ArrayList<>();
@@ -501,7 +523,7 @@ public class TradingSystem {
         return res;
     }
 
-    //TODO: to check
+    //TODO: to move?
     public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
         List<DummyProduct> dummyProducts = new ArrayList<>();
         for(Store store: stores.values()){
@@ -511,7 +533,7 @@ public class TradingSystem {
         }
         return dummyProducts;
     }
-    //TODO: to check
+    //TODO: to move?
     public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
         List<DummyProduct> dummyProducts = new ArrayList<>();
         for(Store store: stores.values()){

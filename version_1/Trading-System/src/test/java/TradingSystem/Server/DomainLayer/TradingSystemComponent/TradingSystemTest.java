@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TradingSystemTest {
 
     TradingSystem tradingSystem=TradingSystem.getInstance();
+
     String connID;
     int userID;
 
