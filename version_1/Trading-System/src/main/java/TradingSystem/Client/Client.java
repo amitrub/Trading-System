@@ -169,6 +169,12 @@ public class Client {
     }
 
     //Subscriber
+
+    /**
+     * @requirement 3.1
+     *
+     * @return String userID
+     */
     public int Logout(){
         String path = String.format("%s/logout",this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
