@@ -813,13 +813,36 @@ public class TradingSystem {
     }
 
 
+    /**
+     * @param userId
+     * @param connID
+     * @param storeId
+     * @param productId
+     * @param comment
+     * @return Response{
+     *      *  "isErr: boolean
+     *      *  "message": String
+     *      *  "connID": String
+     *      * }
+     */
     public NewResponse WriteComment(int userId, String connID, int storeId, int productId, String comment) {
-        if (ValidConnectedUser(userId, connID)) {
-            loggerController.WriteLogMsg("User "+userId+" add new comment to store "+ storeId+" successfully");
-            return this.stores.get(storeId).WriteComment(userId, productId, comment);
+        if(!stores.containsKey(storeId)){
+            return new NewResponse(true, "Store doesn't exist in the system");
         }
-        else
+        else if(stores.containsKey(storeId)){
+            Store store=stores.get(storeId);
+            if(!store.isProductExist(storeId)){
+                return new NewResponse(true, "The product doesn't exist in the store anymore");
+            }
+        }
+        else if(!ValidConnectedUser(userId, connID)) {
             return new NewResponse(true, "Error in User details");
+        }
+        User user=subscribers.get(userId);
+        if(!user.IsProductExist(productId)){
+            return new NewResponse(true, "User didn't buy this product");
+        }
+        return new NewResponse(false, "the comment added successfully");
     }
 
 
