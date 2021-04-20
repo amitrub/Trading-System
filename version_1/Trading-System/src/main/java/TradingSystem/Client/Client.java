@@ -111,6 +111,17 @@ public class Client {
         this.pass = pass;
         return userID;
     }
+
+    /**
+     * @requirement 2.6 search f
+     * @param mode
+     * @param name
+     * @param minPrice
+     * @param maxPrice
+     * @param p_rank
+     * @param s_rank
+     * @return
+     */
     public ArrayList<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
         String path = "search";
         int min = Integer.parseInt(minPrice);
