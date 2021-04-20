@@ -8,6 +8,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
@@ -22,8 +23,8 @@ public class Store {
     private String name;
 
     private final Integer founderID;
-    private List<Integer> ownersIDs = new LinkedList<>();
-    private List<Integer> managersIDs = new LinkedList<>();
+    private List<Integer> ownersIDs = new ArrayList<>();
+    private List<Integer> managersIDs = new ArrayList<>();
 
     //ownerID_Permission
    // private ConcurrentHashMap<Integer, OwnerPermission> ownersPermission = new ConcurrentHashMap<>();
@@ -37,7 +38,7 @@ public class Store {
     //userID_rating
     private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
 
-    private List<ShoppingHistory> shoppingHistory = new LinkedList<>();
+    private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
     private Inventory inventory;
 
@@ -82,15 +83,15 @@ public class Store {
         return inventory.ShowStoreProducts();
     }
 
-    public Response AddProductToStore(String productName , Double price, String category, int quantity){
+    public NewResponse AddProductToStore(String productName , Double price, String category, int quantity){
         return inventory.addProduct(productName, category, price, quantity);
     }
 
-    public Response addProductToInventory(Integer productId, Integer quantity){
+    public NewResponse addProductToInventory(Integer productId, Integer quantity){
         return inventory.addQuantityProduct(productId, quantity);
     }
 
-    public Response deleteProduct(Integer productId){
+    public NewResponse deleteProduct(Integer productId){
         return inventory.deleteProduct(productId);
     }
 
@@ -167,12 +168,12 @@ public class Store {
     }
 
     public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
-        LinkedList<Integer> FinalID=inventory.SearchProduct(name, category,minprice, maxprice);
+        List<Integer> FinalID=inventory.SearchProduct(name, category,minprice, maxprice);
         return inventory.getDummySearchForList(FinalID);
     }
     /*
     public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
-        LinkedList<Integer> FinalID = new LinkedList<>();
+        List<Integer> FinalID = new ArrayList<>();
         if (name != null) {
             FinalID = inventory.getDummySearchByName(FinalID, name);
         }
@@ -186,7 +187,7 @@ public class Store {
     }
 */
     public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank){
-       LinkedList<Integer> FinalID=new LinkedList<>();
+       List<Integer> FinalID=new ArrayList<>();
        if(name!=null){
            FinalID=inventory.getDummySearchByName(FinalID,name);
        }
@@ -200,7 +201,7 @@ public class Store {
     }
 
     public List<DummyProduct> SearchByCategory(String category, int minprice, int maxprice, int prank){
-        LinkedList<Integer> FinalID = new LinkedList<>();
+        List<Integer> FinalID = new ArrayList<>();
         if (category != null) {
             FinalID = inventory.getDummySearchByCategory(FinalID, category);
         }
@@ -258,16 +259,16 @@ public class Store {
         return this.inventory.getProduct(productID);
     }
 
-    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
+    public NewResponse reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
         return this.inventory.reduceProducts(products_quantity);
     }
 
-    public Response WriteComment(int userId, int productId, String comment) {
+    public NewResponse WriteComment(int userId, int productId, String comment) {
         if (this.possibleToAddComment(userId, productId)) {
             return this.inventory.addCommentToProduct(productId, userId, comment);
         }
         else
-            return new Response(true, "User may not add a review for product he has not purchased before");
+            return new NewResponse(true, "User may not add a review for product he has not purchased before");
     }
 
     public void addHistory(ShoppingHistory sh) {
@@ -276,7 +277,7 @@ public class Store {
 
 
     public List<DummyShoppingHistory> ShowStoreHistory(){
-        List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
+        List<DummyShoppingHistory> shoppingHistories=new ArrayList<>();
         for(ShoppingHistory shoppingHistory:shoppingHistory){
             shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
         }
@@ -292,7 +293,7 @@ public class Store {
                 '}';
     }
 
-    public LinkedList<Product> getProducts() {
+    public List<Product> getProducts() {
         return this.inventory.getProducts();
     }
 

@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.Set;
@@ -26,18 +27,21 @@ public class Validation {
     }
     //if valid return Response(userId, "", false, "")
     //if not valid return Response(isErr: true, "Error Message")
-    public Response ValidPassword(String userName, String password) {
+    public NewResponse ValidPassword(String userName, String password) {
         Set<Integer> userSet = tradingSystem.subscribers.keySet();
         for (Integer id : userSet) {
             User user = tradingSystem.subscribers.get(id);
             if (userName.equals(user.getUserName())) {
-                if (password.equals(user.getPassword()))
-                    return new Response(id, "", false, "");
+                if (password.equals(user.getPassword())){
+                    NewResponse res = new NewResponse();
+                    res.AddUserID(id);
+                    return res;
+                }
                 else
-                    return new Response(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "122", "Incorrect password"));
+                    return new NewResponse(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "122", "Incorrect password"));
             }
         }
-        return new Response(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
+        return new NewResponse(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
     }
 
     //TODO- implement the function
