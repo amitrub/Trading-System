@@ -245,10 +245,27 @@ public class TradingSystem {
             return new Response(true, "Error in User details");
         }
     }
+
+    /**
+     * @requirement 2.5
+     *
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "stores": [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */
     public List<DummyStore> ShowAllStores() {
         List<DummyStore> list = new LinkedList<>();
         for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
             list.add(new DummyStore(currStore.getValue()));
+        }
+        if(list.isEmpty()){
+            System.out.println("There are no stores in the system"); //TODO- change to response
         }
         return list;
     }
