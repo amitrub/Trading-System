@@ -5,7 +5,7 @@ import TradingSystem.Server.DomainLayer.ExternalServices.SupplySystem;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -48,7 +48,7 @@ public class ShoppingCart {
         }
     }
 
-    public NewResponse addProductToBag(Integer storeID, Integer productID, Integer quantity){
+    public Response addProductToBag(Integer storeID, Integer productID, Integer quantity){
         ConcurrentHashMap<Integer, Integer> productsInTheBug = new ConcurrentHashMap<Integer, Integer>();
         productsInTheBug.put(productID, quantity);
         if(this.shoppingBags.containsKey(storeID)){
@@ -69,12 +69,12 @@ public class ShoppingCart {
                 this.shoppingBags.get(storeID).addProduct(productID, quantity);
                 Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
                 shoppingBags.get(storeID).setFinalPrice(priceForBug);
-                return new NewResponse( "The product added successfully");
+                return new Response( "The product added successfully");
             }
 
-            return new NewResponse(true, "Adding the product is against the store policy");
+            return new Response(true, "Adding the product is against the store policy");
         }
-        return new NewResponse(true, "The product or quantity is not in stock");
+        return new Response(true, "The product or quantity is not in stock");
     }
 
     private synchronized Double calculatePrice(){
@@ -92,38 +92,38 @@ public class ShoppingCart {
         return this.shoppingBags;
     }
 
-    public NewResponse Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
+    public Response Purchase(boolean isGuest, String name, String credit_number, String phone_number, String address){
         List<Lock> lockList = this.getLockList();
-        NewResponse canBuy = this.checkInventoryAndLockProduct(lockList);
+        Response canBuy = this.checkInventoryAndLockProduct(lockList);
         if (canBuy.getIsErr()){
             return canBuy;
         }
         else {
-            NewResponse output = new NewResponse();
+            Response output = new Response();
             if (supplySystem.canSupply(address)) {
                 if (paymentSystem.checkCredit(name, credit_number, phone_number)){
-                    NewResponse res = Buy();
+                    Response res = Buy();
                     if(!res.getIsErr()) {
                         addShoppingHistory(isGuest);
                         this.shoppingBags = new ConcurrentHashMap<>();
-                        output = new  NewResponse("The purchase was made successfully ");
+                        output = new Response("The purchase was made successfully ");
                     }
                     else
                         output = res;
                 }
                 else {
-                    output = new NewResponse(true,"The payment is not approve");
+                    output = new Response(true,"The payment is not approve");
                 }
             }
             else {
-                output = new NewResponse(true,"The Supply is not approve");
+                output = new Response(true,"The Supply is not approve");
             }
             this.releaseLocks(lockList);
             return output;
         }
     }
 
-    public NewResponse checkInventoryAndLockProduct(List<Lock> lockList){
+    public Response checkInventoryAndLockProduct(List<Lock> lockList){
         boolean succeededToLock = false;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         while (!succeededToLock){
@@ -137,14 +137,14 @@ public class ShoppingCart {
                             String storeName = tradingSystem.getStoreName(storeID);
                             String productName = tradingSystem.getProductName(storeID, productID);
                             String err = productName + " in The store" + storeName + " is not exist in the stock";
-                            return new NewResponse(true, err);
+                            return new Response(true, err);
                         }
                     }
                 }
                 succeededToLock = this.tryLockList(lockList);
             }
         }
-        return new NewResponse();
+        return new Response();
     }
     private List<Lock> getLockList(){
         List<Lock> output = new ArrayList<>();
@@ -180,8 +180,8 @@ public class ShoppingCart {
         }
     }
 
-    private NewResponse Buy(){
-        NewResponse res=new NewResponse("The reduction was made successfully ");
+    private Response Buy(){
+        Response res=new Response("The reduction was made successfully ");
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet){
             ShoppingBag SB = this.shoppingBags.get(storeID);

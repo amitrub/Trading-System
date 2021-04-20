@@ -1,90 +1,83 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
+
+import java.util.*;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
 public class Response {
-    private Integer userID = -1;
-    private String connID = "";
     private boolean isErr = false;
     private String message = "";
+    Map<String, Object> returnObject = new HashMap<>();
+
 
     public Response() {
     }
-
-    public Response(JSONObject jsonObject){
-        try {
-            this.userID = jsonObject.getInt("userID");
-            this.connID = jsonObject.getString("connID");
-            this.isErr = jsonObject.getBoolean("isErr");
-            this.message = jsonObject.getString("message");
-        }
-        catch (Exception e)
-        {
-            this.isErr = true;
-            this.message = "There is some Error!";
-        }
-
-    }
-
-    public Response(Integer id, String message) {
-        this.userID = id;
+    public Response(String message) {
         this.message = message;
     }
-
-    public Response(Integer userID, String connID, String message) {
-        this.userID = userID;
-        this.connID = connID;
-        this.message = message;
-    }
-
-    public Response(Integer userID, String connID, boolean isErr, String message) {
-        this.userID = userID;
-        this.connID = connID;
-        this.isErr = isErr;
-        this.message = message;
-    }
-
     public Response(boolean isErr, String message) {
         this.isErr = isErr;
         this.message = message;
     }
 
-//    public static Response makeResponseFromJSON(JSONObject jsonResponse) {
-//        try{
-//            int userID = jsonResponse.getInt("userID");
-//            String connID = jsonResponse.getString("connID");
-//            boolean isErr = jsonResponse.getBoolean("err");
-//            String message = jsonResponse.getString("message");
-//            Response response = new Response(userID, connID, isErr, message);
-//            return response;
-//        } catch (Exception e) {
-//            System.out.println(errMsgGenerator("Service", "Response", "60", "error in making response from JSON object"));
-//        }
-//        return new Response();
-//    }
-
-    public Integer getUserID() {
-        return userID;
+    public void AddPair(String key, Object value){
+        this.returnObject.put(key, value);
+    }
+    public void AddConnID(String value){
+        this.returnObject.put("connID", value);
+    }
+    public void AddUserID(int value){
+        this.returnObject.put("userID", value);
     }
 
-    public void setUserID(Integer userID) {
-        this.userID = userID;
+    public Integer getUserID(){
+        if(!this.isErr){
+            Integer userID = (Integer) this.returnObject.get("userID");
+            return userID;
+        }
+        else
+            return -1;
+    }
+    public String getConnID(){
+        if(!this.isErr){
+            String connID = (String) this.returnObject.get("connID");
+            return connID;
+        }
+        else
+            return "";
+    }
+    public ArrayList<DummyStore> getStoreList(){
+        if(!this.isErr){
+            ArrayList<DummyStore> storeList = (ArrayList<DummyStore>) this.returnObject.get("stores");
+            return storeList;
+        }
+        else
+            return new ArrayList<>();
+    }
+    public List<DummyProduct> getProductList(){
+        if(!this.isErr){
+            List<DummyProduct> productList = (List<DummyProduct>) this.returnObject.get("products");
+            return productList;
+        }
+        else
+            return new ArrayList<>();
+    }
+    public List<DummyShoppingHistory> getHistoryList(){
+        if(!this.isErr){
+            List<DummyShoppingHistory> historyList = (List<DummyShoppingHistory>) this.returnObject.get("history");
+            return historyList;
+        }
+        else
+            return new ArrayList<>();
     }
 
-    public String getConnID() {
-        return connID;
-    }
 
-    public void setConnID(String connID) {
-        this.connID = connID;
-    }
-
-    public boolean isErr() {
+    public boolean getIsErr() {
         return isErr;
     }
-
     public void setErr(boolean err) {
         isErr = err;
     }
@@ -92,18 +85,38 @@ public class Response {
     public String getMessage() {
         return message;
     }
-
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    public Map<String, Object> getReturnObject() {
+        return returnObject;
+    }
+    private void setReturnObject(Map<String, Object> returnObject) {
+        this.returnObject = returnObject;
+    }
+
+    public static Response makeResponseFromJSON(JSONObject jsonResponse) {
+        try{
+            boolean isErr = jsonResponse.getBoolean("isErr");
+            String message = jsonResponse.getString("message");
+            JSONObject jsonObject = jsonResponse.getJSONObject("returnObject");
+            HashMap<String,Object> returnObject = new ObjectMapper().readValue(jsonObject.toString(), HashMap.class);
+            Response res = new Response(isErr, message);
+            res.setReturnObject(returnObject);
+            return res;
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Service", "Response", "60", "error in making response from JSON object"));
+        }
+        return new Response(true, "Error in convert json");
     }
 
     @Override
     public String toString() {
         return "Response{" +
-                "userID=" + userID +
-                ", connID='" + connID + '\'' +
-                ", isErr=" + isErr +
-                ", Message='" + message + '\'' +
+                "isErr=" + isErr +
+                ", massege='" + message + '\'' +
+                ", returnObject=" + returnObject +
                 '}';
     }
 }
