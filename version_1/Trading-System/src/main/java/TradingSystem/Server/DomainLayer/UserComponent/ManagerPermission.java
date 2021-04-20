@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.UserComponent;
 
-import java.util.LinkedList;
+
+import java.util.ArrayList;
 import java.util.List;
 
 public class ManagerPermission implements Permission {
@@ -13,7 +14,7 @@ public class ManagerPermission implements Permission {
     public ManagerPermission(Integer userId,Integer storeId) {
         this.userId=userId;
         this.storeId=storeId;
-        this.permissions = new LinkedList<User.Permission>();
+        this.permissions = new ArrayList<User.Permission>();
         this.permissions.add(User.Permission.GetInfoOfficials);
         this.permissions.add(User.Permission.GetInfoRequests);
         this.permissions.add(User.Permission.ResponseRequests);
