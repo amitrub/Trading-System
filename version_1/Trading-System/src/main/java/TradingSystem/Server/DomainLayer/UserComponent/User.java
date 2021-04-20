@@ -101,6 +101,10 @@ public  class User {
         return nextUserID;
     }
 
+    public static void ClearSystem() {
+        nextUserID = 0;
+    }
+
     public void lockUser() {
         this.Lock.lock();
     }

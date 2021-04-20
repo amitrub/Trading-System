@@ -25,18 +25,15 @@ public class GuestTests {
 
     @BeforeEach
     void setUp() {
-//        tradingSystem.ClearSystem();
         this.client = new Client();
-        this.client.ClearSystem();
+        client.ClearSystem();
         client.connectSystem();
     }
 
     @AfterEach
     void tearDown() {
-//        tradingSystem.ClearSystem();
-        this.client.ClearSystem();
         client.exitSystem();
-//        tradingSystem.Initialization();
+        client.ClearSystem();
     }
 
     //region system Tests
