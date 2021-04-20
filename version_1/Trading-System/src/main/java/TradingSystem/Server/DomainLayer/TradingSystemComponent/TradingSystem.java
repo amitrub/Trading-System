@@ -135,6 +135,16 @@ public class TradingSystem {
         System.out.println("-----------------------------------------------");
     }
 
+
+    /**
+     * @requirement 2.1
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
     //User functions
     public NewResponse ConnectSystem() {
         User newGuest = new User();
@@ -188,6 +198,7 @@ public class TradingSystem {
         else
             return new NewResponse(true, "Error in connID");
     }
+
     //return connID and add user to connection Hash Map
     private synchronized String connectSubscriberToSystemConnID(Integer userID) {
         String uniqueID = "";
