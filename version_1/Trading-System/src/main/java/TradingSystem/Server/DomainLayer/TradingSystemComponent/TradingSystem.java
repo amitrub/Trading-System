@@ -728,21 +728,23 @@ public class TradingSystem {
     }
 
 
-
-
-
-    public NewResponse EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price) {
+    public NewResponse EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
         if(ValidConnectedUser(userID, connID)){
             if(hasPermission(userID,storeID, User.Permission.AddProduct)) {
                 if(price>=0) {
-                    stores.get(storeID).editProductDetails(userID, productID, productName, price, category);
-                    printProducts();
-                    loggerController.WriteLogMsg("User " + userID + " edit product " + productID + " successfully");
-                    return new NewResponse( "Edit Product was successful");
+                    if(quantity>0) {
+                        //todo change quantity of product
+                        stores.get(storeID).editProductDetails(userID, productID, productName, price, category);
+                        printProducts();
+                        loggerController.WriteLogMsg("User " + userID + " edit product " + productID + " successfully");
+                        return new NewResponse("Edit Product was successful");
+                    }
+                    loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
+                    return new NewResponse(true, "The product quantity can't be negative");
+
                 }
                 loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
                 return new NewResponse(true, "The product price can't be negative");
-
             }
             loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
             return new NewResponse(true, "The Edit is not allowed to Edit products");
