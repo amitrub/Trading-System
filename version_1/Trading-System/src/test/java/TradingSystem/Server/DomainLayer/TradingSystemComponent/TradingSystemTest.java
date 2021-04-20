@@ -16,6 +16,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TradingSystemTest {
 
     TradingSystem tradingSystem=TradingSystem.getInstance();
+
     String connID;
     int userID;
 
@@ -103,6 +104,7 @@ class TradingSystemTest {
     }
 
     @Test
+
     void AddStoreSuccess() {
         NewResponse response= tradingSystem.AddStore(userID,connID,"Store3");
         assertFalse(response.getIsErr());
@@ -120,6 +122,13 @@ class TradingSystemTest {
         tradingSystem.AddStore(userID,connID,"Store3");
         NewResponse response= tradingSystem.AddStore(userID,connID,"Store3");
         assertTrue(response.getIsErr());
+    }
+
+
+
+    void Logout() {
+        NewResponse response= tradingSystem.Logout(connID);
+        assertFalse(response.getIsErr());
     }
 
 
