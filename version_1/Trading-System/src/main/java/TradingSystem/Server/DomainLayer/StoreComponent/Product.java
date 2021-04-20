@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
@@ -113,13 +114,13 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public Response addComment(Integer userID, String comment)
+    public NewResponse addComment(Integer userID, String comment)
     {
         if(productComments.containsKey(userID)){
-            return new Response(true, "User can not post more than one comment on a product");
+            return new NewResponse(true, "User can not post more than one comment on a product");
         }
         this.productComments.put(userID,comment);
-        return new Response(false, "The response writing was performed successfully");
+        return new NewResponse("The response writing was performed successfully");
     }
 
     public Response removeComment(Integer userID)
@@ -132,9 +133,9 @@ public class Product {
 
     }
 
-    public LinkedList<String> getComments()
+    public List<String> getComments()
     {
-        LinkedList<String> Comments=new LinkedList<>();
+        List<String> Comments=new ArrayList<>();
         Iterator it = this.productComments.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
@@ -177,7 +178,7 @@ public class Product {
     }
 
     public List<String> getCommentsForProduct(int productID) {
-        LinkedList<String> Comments=new LinkedList<String>();
+        List<String> Comments=new ArrayList<String>();
         Set<Integer> userId = this.productComments.keySet();
         for (Integer id : userId) {
             String com=this.productComments.get(id);

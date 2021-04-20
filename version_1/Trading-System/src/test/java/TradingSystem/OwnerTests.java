@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
@@ -31,6 +32,51 @@ public class OwnerTests {
     void tearDown() {
         client.exitSystem();
         tradingSystem.Initialization();
+    }
+
+    Integer getStoreID(List<DummyStore> stores, String storename)
+    {
+        for (int i=0; i<stores.size(); i++)
+        {
+            if(stores.get(i).getName().equals(storename))
+                return stores.get(i).getId();
+        }
+        return -1;
+    }
+
+    Integer getProductID(List<DummyProduct> storeProducts, String productName)
+    {
+        for (int i=0; i<storeProducts.size(); i++)
+        {
+            if(storeProducts.get(i).getProductName().equals(productName))
+                return storeProducts.get(i).getProductID();
+        }
+        return -1;
+    }
+    
+    //region open store tests
+    @Test
+    void openStore_Happy() {
+        client.Register("Lee", "123");
+        client.Login("Lee", "123");
+        Integer preSize = client.showAllStores().size();
+
+        boolean b1 = client.openStore("Mania1");
+        assertFalse(b1);
+        assertEquals(preSize+1, client.showAllStores().size());
+    }
+
+    @Test
+    void openStore_SadDuplicateName() {
+        client.Register("Lin", "123");
+        client.Login("Lin", "123");
+        //Integer preSize = client.showAllStores().size();
+
+        client.openStore("Mania2");
+        boolean b1 = client.openStore("Mania2");
+        //Integer newSize = client.showAllStores().size();
+        assertTrue(b1);
+        //assertEquals(preSize, newSize);
     }
 
 

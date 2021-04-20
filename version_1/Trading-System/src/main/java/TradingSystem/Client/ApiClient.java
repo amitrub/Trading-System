@@ -4,6 +4,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
@@ -263,7 +264,7 @@ public class ApiClient {
         //todo: maybe add option to buy or see the whole store
     }
     private static void showStores() {
-        ArrayList<DummyStore> dummyStores = client.showAllStores();
+        List<DummyStore> dummyStores = client.showAllStores();
         System.out.println(ANSI_PURPLE + "---------- Store list: ----------");
         for(DummyStore dummyStore : dummyStores) {
             System.out.println(dummyStore);

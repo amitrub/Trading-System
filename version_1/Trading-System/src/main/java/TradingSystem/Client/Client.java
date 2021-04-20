@@ -1,13 +1,11 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
-import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
@@ -44,8 +42,8 @@ public class Client {
     public String connectSystem() {
         String path = "home";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
-        Response response = Response.makeResponseFromJSON(jsonResponse);
-        if(response.getUserID() == -1 && !response.getConnID().equals("") && !response.isErr()) { //because its guest
+        NewResponse response = NewResponse.makeResponseFromJSON(jsonResponse);
+        if(!response.getConnID().equals("") && !response.getIsErr()) { //because its guest
             this.connID = response.getConnID();
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "38", "connect system error"));
@@ -60,8 +58,8 @@ public class Client {
     public String exitSystem() {
         String path = "exit";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
-        Response response = Response.makeResponseFromJSON(jsonResponse);
-        if(!response.isErr()) { //todo: shut down system
+        NewResponse response = NewResponse.makeResponseFromJSON(jsonResponse);
+        if(!response.getIsErr()) { //todo: shut down system
             this.connID = "";
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "48", "exit system error"));
@@ -79,7 +77,7 @@ public class Client {
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
-        Response response = Response.makeResponseFromJSON(jsonResponse);
+        NewResponse response = NewResponse.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Register) response: " + response + ANSI_RESET);
         this.userID = response.getUserID();
  //       this.userID = -1;
@@ -99,7 +97,7 @@ public class Client {
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
-        Response response = Response.makeResponseFromJSON(jsonResponse);
+        NewResponse response = NewResponse.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Login) response: " + response + ANSI_RESET);
         this.userID = response.getUserID();
         this.connID = response.getConnID();
@@ -137,10 +135,12 @@ public class Client {
 //        this.connID = response.getConnID();
         return dummyProductResponeArr;
     }
-    public ArrayList<DummyStore> showAllStores() {
+    public List<DummyStore> showAllStores() {
         String path = "stores";
-        JSONArray jsonArray = HttpRequest.sendGetRequestArr(urlbaseGuest+path, this.connID);
-        ArrayList<DummyStore> dummySearchResponeArr = DummyStore.makeDummyStoreFromJSON(jsonArray);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
+        NewResponse response = NewResponse.makeResponseFromJSON(jsonResponse);
+        List<DummyStore> dummySearchResponeArr = response.getStoreList();
+//        ArrayList<DummyStore> dummySearchResponeArr = DummyStore.makeDummyStoreFromJSON(jsonArray);
         return dummySearchResponeArr;
     }
     public ArrayList<DummyProduct> showStoreProducts(int storeID) {
