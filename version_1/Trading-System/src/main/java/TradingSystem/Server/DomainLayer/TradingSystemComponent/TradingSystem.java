@@ -296,9 +296,23 @@ public class TradingSystem {
         }
     }
 
-    //Store functions
+    /**
+     * @requirement 3.2
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @param storeName: String (Body)
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
     public NewResponse AddStore(int userID, String connID, String storeName){
-        if(ValidConnectedUser(userID, connID)){
+        if(!ValidConnectedUser(userID,connID)){
+            return new NewResponse(true, "Error in User details");
+        }
+        else{
             if (validation.IsStoreNameExist(storeName)){
                 loggerController.WriteErrorMsg("User "+userID+" try to add store to the system and failed");
                 return new NewResponse(true, "Error Store name is taken");
@@ -311,9 +325,6 @@ public class TradingSystem {
                 loggerController.WriteErrorMsg("User "+userID+" add store to the system "+ storeName+" successfully");
                 return new NewResponse( "Add Store was successful");
             }
-        }
-        else{
-            return new NewResponse(true, "Error in User details");
         }
     }
 
