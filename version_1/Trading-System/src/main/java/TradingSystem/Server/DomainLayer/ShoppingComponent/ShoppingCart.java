@@ -203,6 +203,11 @@ public class ShoppingCart {
         }
     }
 
+    /**
+     * @requirement 2.8
+     *
+     * @return List<DummyProduct>
+     */
     public List<DummyProduct> ShowShoppingCart(){
         List<DummyProduct> outputList = new ArrayList<>();
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
