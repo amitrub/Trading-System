@@ -52,6 +52,22 @@ public class TradingSystem {
         return tradingSystem;
     }
 
+    public void ClearSystem() {
+        this.connectedSubscribers = new ConcurrentHashMap<>();
+        this.subscribers = new ConcurrentHashMap<>();
+        this.guests = new ConcurrentHashMap<>();
+        this.stores = new ConcurrentHashMap<>();
+        this.systemAdmins = new ConcurrentHashMap<>();
+        this.systemManagerPermissions=new ConcurrentHashMap<>();
+
+        User defaultAdmin = new User("amit", "qweasd");
+        int userID = defaultAdmin.getId();
+        this.systemAdmins.put(userID, userID);
+        this.subscribers.put(userID, defaultAdmin);
+        this.systemManagerPermissions.put(userID,new SystemManagerPermission());
+        printUsers();
+    }
+
     public void Initialization() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
