@@ -52,6 +52,22 @@ public class TradingSystem {
         return tradingSystem;
     }
 
+    public void ClearSystem() {
+        this.connectedSubscribers = new ConcurrentHashMap<>();
+        this.subscribers = new ConcurrentHashMap<>();
+        this.guests = new ConcurrentHashMap<>();
+        this.stores = new ConcurrentHashMap<>();
+        this.systemAdmins = new ConcurrentHashMap<>();
+        this.systemManagerPermissions=new ConcurrentHashMap<>();
+
+        User defaultAdmin = new User("amit", "qweasd");
+        int userID = defaultAdmin.getId();
+        this.systemAdmins.put(userID, userID);
+        this.subscribers.put(userID, defaultAdmin);
+        this.systemManagerPermissions.put(userID,new SystemManagerPermission());
+        printUsers();
+    }
+
     public void Initialization() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
@@ -186,17 +202,32 @@ public class TradingSystem {
             return new NewResponse("Exit System was successful");
         }
     }
-    //Check if there is a user if the same name then return -1
-    //If there is no new user creator adds it to users in the hashmap and returns an ID number
+
+    /**
+     * @param connID
+     * @param userName
+     * @param password
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "userID": int
+     * }
+     */
     public NewResponse Register(String connID, String userName, String password) {
-            if (guests.containsKey(connID) || connectedSubscribers.containsKey(connID)){
+        if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
+            return new NewResponse(true, "Error in connID");
+        }
+        else{    
             if (validation.IsUserNameExist(userName)) {
                 loggerController.WriteErrorMsg("User "+userName+" try to register to the system and failed");
                 return new NewResponse(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
             }
+            if(!validation.VerifyPassword(password)){
+                return new NewResponse(true, errMsgGenerator("Server", "TradingSystem", "62", "Error password is invalid"));
+            }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
-//        guests.remove(connID);
             loggerController.WriteErrorMsg("User "+userName+" register to the system successfully");
 
             NewResponse res = new NewResponse("Registration was successful");
@@ -205,8 +236,6 @@ public class TradingSystem {
 
             return res;
         }
-        else
-            return new NewResponse(true, "Error in connID");
     }
 
     //return connID and add user to connection Hash Map
@@ -222,8 +251,19 @@ public class TradingSystem {
         }
         return uniqueID;
     }
-    //Finds if the user exists and if the password is correct, if not returns 1 and error message
-    //If the user exists and a correct password returns an ID number returns an ID number
+
+
+    /**
+     * @param guestConnID
+     * @param userName
+     * @param password
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "userID": int
+     * }
+     */    
     public NewResponse Login(String guestConnID, String userName, String password) {
         NewResponse response = validation.ValidPassword(userName, password);
         if (response.getIsErr())
@@ -237,8 +277,10 @@ public class TradingSystem {
         res.AddConnID(connID);
         return res;
     }
-    public NewResponse Logout(String connID) {
 
+
+
+    public NewResponse Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
             connectedSubscribers.remove(connID);
@@ -274,15 +316,27 @@ public class TradingSystem {
             return new NewResponse(true, "Error in User details");
         }
     }
+
+    /**
+     * @requirement 2.5
+     *
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "stores": [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */    
     public NewResponse ShowAllStores() {
         List<DummyStore> list = new ArrayList<>();
         for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
             list.add(new DummyStore(currStore.getValue()));
         }
         NewResponse res = new NewResponse("num of stores in the system is " + list.size());
-        res.AddPair("stores", list);
-        System.out.println("777777777777777777777777777777777777777777777");
-        System.out.println(res);
+        res.AddPair("stores", list);        
         return res;
     }
 
