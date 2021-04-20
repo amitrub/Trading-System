@@ -92,7 +92,7 @@ public class OwnerTests {
     }
 
     //endregion
-    //region requirement 4.1: Remove Product Tests - Not passed!
+    //region requirement 4.1: Remove Product Tests
     @Test
     void HappyRemove() {
         client.Register("Oriya", "123");
@@ -131,7 +131,7 @@ public class OwnerTests {
         assertTrue(b2);
     }
     //endregion
-    //region requirement 4.1: edit Product Tests - Not passed!
+    //region requirement 4.1: edit Product Tests
     @Test
     void HappyEdit() {
         client.Register("Shani", "123");
