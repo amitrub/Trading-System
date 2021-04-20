@@ -104,9 +104,32 @@ class TradingSystemTest {
     }
 
     @Test
+
+    void AddStoreSuccess() {
+        NewResponse response= tradingSystem.AddStore(userID,connID,"Store3");
+        assertFalse(response.getIsErr());
+    }
+
+    @Test
+    void AddStoreNotSubscriber() {
+        connID= tradingSystem.ConnectSystem().getConnID();
+        NewResponse response= tradingSystem.AddStore(11,connID,"Store3");
+        assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void AddStoreSameName() {
+        tradingSystem.AddStore(userID,connID,"Store3");
+        NewResponse response= tradingSystem.AddStore(userID,connID,"Store3");
+        assertTrue(response.getIsErr());
+    }
+
+
+
     void Logout() {
         NewResponse response= tradingSystem.Logout(connID);
         assertFalse(response.getIsErr());
     }
+
 
 }
