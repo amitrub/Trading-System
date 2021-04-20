@@ -277,7 +277,7 @@ public class GuestTests {
      */
     @Test
     void showAllStores() {
-        //case: no stores
+        //case: no stores at all
         client.Register("Reut", "123");
         tradingSystem.ClearSystem();
         client.Login("Reut", "123");
