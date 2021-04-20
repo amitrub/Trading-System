@@ -168,13 +168,30 @@ public class TradingSystem {
             return new Response(true, "User not connect to system");
         }
     }
-    //Check if there is a user if the same name then return -1
-    //If there is no new user creator adds it to users in the hashmap and returns an ID number
+
+
+    /**
+     * @param connID
+     * @param userName
+     * @param password
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "userID": int
+     * }
+     */
     public Response Register(String connID, String userName, String password) {
-        if (guests.containsKey(connID) || connectedSubscribers.containsKey(connID)){
+        if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
+            return new Response(true, "Error in connID");
+        }
+        else{
             if (validation.IsUserNameExist(userName)) {
                 loggerController.WriteErrorMsg("User "+userName+" try to register to the system and failed");
                 return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
+            }
+            if(!validation.VerifyPassword(password)){
+                return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error password is invalid"));
             }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
@@ -183,9 +200,8 @@ public class TradingSystem {
             Response res = new Response(newUser.getId(), connID, false, "Registration was successful");
             return res;
         }
-        else
-            return new Response(true, "Error in connID");
     }
+
     //return connID and add user to connection Hash Map
     private synchronized String connectSubscriberToSystemConnID(Integer userID) {
         String uniqueID = "";
