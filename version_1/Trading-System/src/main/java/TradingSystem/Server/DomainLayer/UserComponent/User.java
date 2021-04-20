@@ -7,6 +7,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.LinkedList;
@@ -165,7 +166,7 @@ public  class User {
                 '}';
     }
 
-    public Response AddProductToCart(int StoreId, int productId, int quantity) {
+    public NewResponse AddProductToCart(int StoreId, int productId, int quantity) {
         return shoppingCart.addProductToBag(StoreId, productId, quantity);
     }
 

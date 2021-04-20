@@ -5,6 +5,7 @@ import TradingSystem.Server.DomainLayer.ExternalServices.SupplySystem;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
@@ -48,7 +49,7 @@ public class ShoppingCart {
         }
     }
 
-    public Response addProductToBag(Integer storeID, Integer productID, Integer quantity){
+    public NewResponse addProductToBag(Integer storeID, Integer productID, Integer quantity){
         ConcurrentHashMap<Integer, Integer> productsInTheBug = new ConcurrentHashMap<Integer, Integer>();
         productsInTheBug.put(productID, quantity);
         if(this.shoppingBags.containsKey(storeID)){
@@ -69,12 +70,12 @@ public class ShoppingCart {
                 this.shoppingBags.get(storeID).addProduct(productID, quantity);
                 Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
                 shoppingBags.get(storeID).setFinalPrice(priceForBug);
-                return new Response(false, "The product added successfully");
+                return new NewResponse( "The product added successfully");
             }
 
-            return new Response(true, "Adding the product is against the store policy");
+            return new NewResponse(true, "Adding the product is against the store policy");
         }
-        return new Response(true, "The product or quantity is not in stock");
+        return new NewResponse(true, "The product or quantity is not in stock");
     }
 
     private synchronized Double calculatePrice(){

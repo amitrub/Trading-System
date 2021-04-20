@@ -7,10 +7,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.SystemManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
-import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.expression.spel.ast.Assign;
 
@@ -140,10 +137,12 @@ public class TradingSystem {
     }
 
     //User functions
-    public Response connectSystem() {
+    public NewResponse ConnectSystem() {
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
-        return new Response(-1,connID,false, "Connect system was successful");
+        NewResponse res = new NewResponse("Connect system was successful");
+        res.AddConnID(connID);
+        return res;
     }
     private synchronized String connectGuestToSystemConnID(User newGuest) {
         String uniqueID = "";
@@ -157,34 +156,38 @@ public class TradingSystem {
         }
         return uniqueID;
     }
-    public Response Exit(String connID) {
+    public NewResponse Exit(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             connectedSubscribers.remove(connID);
-            return new Response(false, "Exit System was successful");
+            return new NewResponse("Exit System was successful");
         } else if (guests.containsKey(connID)) {
             guests.remove(connID);
-            return new Response(false, "Exit System was successful");
+            return new NewResponse("Exit System was successful");
         } else {
-            return new Response(true, "User not connect to system");
+            return new NewResponse(true, "User not connect to system");
         }
     }
     //Check if there is a user if the same name then return -1
     //If there is no new user creator adds it to users in the hashmap and returns an ID number
-    public Response Register(String connID, String userName, String password) {
-        if (guests.containsKey(connID) || connectedSubscribers.containsKey(connID)){
+    public NewResponse Register(String connID, String userName, String password) {
+            if (guests.containsKey(connID) || connectedSubscribers.containsKey(connID)){
             if (validation.IsUserNameExist(userName)) {
                 loggerController.WriteErrorMsg("User "+userName+" try to register to the system and failed");
-                return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
+                return new NewResponse(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
             }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
 //        guests.remove(connID);
             loggerController.WriteErrorMsg("User "+userName+" register to the system successfully");
-            Response res = new Response(newUser.getId(), connID, false, "Registration was successful");
+
+            NewResponse res = new NewResponse("Registration was successful");
+            res.AddConnID(connID);
+            res.AddUserID(newUser.getId());
+
             return res;
         }
         else
-            return new Response(true, "Error in connID");
+            return new NewResponse(true, "Error in connID");
     }
     //return connID and add user to connection Hash Map
     private synchronized String connectSubscriberToSystemConnID(Integer userID) {
@@ -201,15 +204,18 @@ public class TradingSystem {
     }
     //Finds if the user exists and if the password is correct, if not returns 1 and error message
     //If the user exists and a correct password returns an ID number returns an ID number
-    public Response Login(String guestConnID, String userName, String password) {
-        Response response = validation.ValidPassword(userName, password);
+    public NewResponse Login(String guestConnID, String userName, String password) {
+        NewResponse response = validation.ValidPassword(userName, password);
         if (response.isErr())
             return response;
         User myGuest = guests.get(guestConnID);
         subscribers.get(response.getUserID()).mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.getUserID());
         guests.remove(guestConnID);
-        return new Response(response.getUserID(), connID, "Login was successful");
+        NewResponse res = new NewResponse("Login was successful");
+        res.AddUserID(response.getUserID());
+        res.AddConnID(connID);
+        return res;
     }
     public Response Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
@@ -245,12 +251,14 @@ public class TradingSystem {
             return new Response(true, "Error in User details");
         }
     }
-    public List<DummyStore> ShowAllStores() {
+    public NewResponse ShowAllStores() {
         List<DummyStore> list = new LinkedList<>();
         for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
             list.add(new DummyStore(currStore.getValue()));
         }
-        return list;
+        NewResponse res = new NewResponse("num of stores in the system is " + list.size());
+        res.AddPair("stores", list);
+        return res;
     }
 
     //Product functions
@@ -333,15 +341,19 @@ public class TradingSystem {
             return new Response(true, "Error in User details");
         }
     }
-    public List<DummyProduct> ShowStoreProducts(int storeID) {
-        if(stores.containsKey(storeID))
-            return stores.get(storeID).ShowStoreProducts();
+    public NewResponse ShowStoreProducts(int storeID) {
+        if(stores.containsKey(storeID)){
+            List<DummyProduct> list = stores.get(storeID).ShowStoreProducts();
+            NewResponse res = new NewResponse("num of products in the store is " + list.size());
+            res.AddPair("products", list);
+            return res;
+        }
         else
-            return new LinkedList<>();
+            return new NewResponse(true, "store not found");
     }
 
     //Shopping Cart functions
-    public Response AddProductToCart(String connID, int StoreId, int productId, int quantity){
+    public NewResponse AddProductToCart(String connID, int StoreId, int productId, int quantity){
             if(guests.containsKey(connID)){
                 User myGuest= guests.get(connID);
                 return myGuest.AddProductToCart(StoreId,productId,quantity);
@@ -351,19 +363,25 @@ public class TradingSystem {
                 return subscribers.get(userID).AddProductToCart(StoreId,productId,quantity);
             }
             else {
-                return new Response(true, "User not connect to system");
+                return new NewResponse(true, "User not connect to system");
             }
     }
-    public List<DummyProduct> ShowShoppingCart(String connID){
+    public NewResponse ShowShoppingCart(String connID){
         if(guests.containsKey(connID)) {
-            return guests.get(connID).ShowShoppingCart();
+            List<DummyProduct> list = guests.get(connID).ShowShoppingCart();
+            NewResponse res = new NewResponse("num of products in my Shopping Cart is " + list.size());
+            res.AddPair("products", list);
+            return res;
         }
         else if(connectedSubscribers.containsKey(connID)) {
             int userID = connectedSubscribers.get(connID);
-            return subscribers.get(userID).ShowShoppingCart();
+            List<DummyProduct> list = subscribers.get(userID).ShowShoppingCart();
+            NewResponse res = new NewResponse("num of products in my Shopping Cart is " + list.size());
+            res.AddPair("products", list);
+            return res;
         }
         else {
-            return new LinkedList<>();
+            return new NewResponse(true, "user not Exist");
         }
     }
     public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address){
@@ -393,13 +411,15 @@ public class TradingSystem {
     }
 
     //TODO: to check
-    public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice){
+    public NewResponse SearchProduct(String name, String category, int minprice, int maxprice){
         List<DummyProduct> dummyProducts = new LinkedList<>();
         for(Store store: stores.values()){
            // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
                 dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
             }
-        return dummyProducts;
+        NewResponse res = new NewResponse("num of products from search is " + dummyProducts.size());
+        res.AddPair("products", dummyProducts);
+        return res;
     }
 
     //TODO: to check
