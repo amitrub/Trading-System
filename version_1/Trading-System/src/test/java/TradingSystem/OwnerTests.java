@@ -387,7 +387,7 @@ public class OwnerTests {
     //region requirement 4.5: Add manager tests
     @Test
     void HappyAddManager() {
-        Integer newOwnerID = client.Register("nofet", "123");
+        Integer newManagerID = client.Register("nofet", "123");
         client.Login("nofet", "123");
         client.Logout();
 
@@ -396,7 +396,7 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        boolean b1 = client.addManager(storeID, newOwnerID);
+        boolean b1 = client.addManager(storeID, newManagerID);
         assertFalse(b1);
        }
 
@@ -453,6 +453,61 @@ public class OwnerTests {
     //endregion
 
     //region requirement 4.7: Remove manager tests
+    @Test
+    void HappyRemoveManager() {
+        Integer newManagerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addManager(storeID, newManagerID);
+
+        boolean b1 = client.removeManager(storeID, newManagerID);
+        assertFalse(b1);
+    }
+
+    @Test
+    void SadRemoveManagerNoPermission() {
+        Integer newManagerID1 = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        Integer newManagerID2 = client.Register("roee", "123");
+        client.Login("roee", "123");
+        client.Logout();
+
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addManager(storeID, newManagerID1);
+        client.addManager(storeID, newManagerID2);
+        client.Logout();
+
+        client.Login("roee", "123");
+        boolean b1 = client.removeManager(storeID, newManagerID1);
+        assertTrue(b1);
+    }
+
+    @Test
+    void SadRemoveManagerNoManager() {
+        Integer newManagerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        boolean b1 = client.removeManager(storeID, newManagerID);
+        assertTrue(b1);
+    }
+
 
     //endregion
 
