@@ -95,7 +95,14 @@ public class StoreOwnerService {
         System.out.println("----------------------> EditProduct");
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
-        double price = (double) obj.get("price");
+        int price_int;
+        Double price;
+        try {
+            price = (Double) obj.get("price");
+        } catch (Exception e) {
+            price_int = (int) obj.get("price");
+            price = new Double(price_int);
+        }
         int quantity  = (int) obj.get("quantity");
         return tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price);
     }
@@ -114,7 +121,7 @@ public class StoreOwnerService {
      * }
      */
     //TODO: not check yet
-    @DeleteMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
     public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
         Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
         System.out.println(res);

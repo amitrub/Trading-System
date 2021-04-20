@@ -255,7 +255,7 @@ public class Client {
         }
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(addProduct) response: " + response + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(editProduct) response: " + response + ANSI_RESET);
         return response.isErr();
     }
     public ArrayList<DummyProduct> showStoreHistory(int storeID) {
