@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,6 +23,7 @@ public class ShoppingCart {
     private PaymentSystem paymentSystem = PaymentSystem.getInstance();
     private SupplySystem supplySystem = SupplySystem.getInstance();
     private Object payment;//?
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
     public ShoppingCart(Integer userID){
         this.userID = userID;
@@ -48,10 +50,26 @@ public class ShoppingCart {
         }
     }
 
+
+    /**
+     /**
+     * @requirement 2.7
+     *
+     * @param storeID
+     * @param productID
+     * @param quantity
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
     public NewResponse addProductToBag(Integer storeID, Integer productID, Integer quantity){
         ConcurrentHashMap<Integer, Integer> productsInTheBug = new ConcurrentHashMap<Integer, Integer>();
         productsInTheBug.put(productID, quantity);
-        if(this.shoppingBags.containsKey(storeID)){
+        if(this.shoppingBags.containsKey(storeID))
+        {
             ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
             Set<Integer> productSet = shoppingBag.getProducts().keySet();
             for (Integer key : productSet){
@@ -61,21 +79,29 @@ public class ShoppingCart {
                     productsInTheBug.put(key, shoppingBag.getProducts().get(key));
             }
         }
-        if (tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productsInTheBug.get(productID))) {
-            if (tradingSystem.validation.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
-                if(!this.shoppingBags.containsKey(storeID)){
-                    this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
-                }
-                this.shoppingBags.get(storeID).addProduct(productID, quantity);
-                Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
-                shoppingBags.get(storeID).setFinalPrice(priceForBug);
-                return new NewResponse( "The product added successfully");
-            }
-
+        if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productsInTheBug.get(productID))) {
+            loggerController.WriteErrorMsg("User "+userID+" try to add product " +productID+ " from store "+storeID+" to cart but failed. the product is not in the stock");
+            return new NewResponse(true, "The product or quantity is not in stock");
+        }
+        if (!tradingSystem.validation.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
+            loggerController.WriteErrorMsg("User "+userID+" try to add product " +productID+ " from store "+storeID+" to cart but failed. Adding the product is against the store policy");
             return new NewResponse(true, "Adding the product is against the store policy");
         }
-        return new NewResponse(true, "The product or quantity is not in stock");
+        if(!this.shoppingBags.containsKey(storeID)){
+            this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
+        }
+        this.shoppingBags.get(storeID).addProduct(productID, quantity);
+        Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
+        shoppingBags.get(storeID).setFinalPrice(priceForBug);
+        loggerController.WriteLogMsg("User "+userID+" added product " +productID+ " from store "+storeID+" to cart successfully");
+        NewResponse res =new NewResponse("The product added successfully");
+
+        return res;
     }
+
+
+
+
 
     private synchronized Double calculatePrice(){
         double price = 0.0;
