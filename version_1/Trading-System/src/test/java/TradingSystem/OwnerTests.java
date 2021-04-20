@@ -312,7 +312,7 @@ public class OwnerTests {
     }
 
     @Test
-    void SadAddIllegalID() {
+    void SadAddIllegalIDOwner() {
         Integer id = client.Register("nofet", "123");
         client.Login("nofet", "123");
         client.openStore("Store");
@@ -393,8 +393,8 @@ public class OwnerTests {
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
-        client.openStore("Store2");
-        Integer storeID = getStoreID(client.showAllStores(), "Store2");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         boolean b1 = client.addManager(storeID, newOwnerID);
         assertFalse(b1);
@@ -420,53 +420,30 @@ public class OwnerTests {
     }
 
     @Test
-    void SadAddDoubleAppointmentManager() {
-        /*
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+    void SadAddIllegalIDManager() {
+        Integer id = client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
-
-        String gust3 = tradingSystem.connectSystem().getConnID();
-        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
-        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
-
-        tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
-        tradingSystem.AddNewManager(NofetId,NofetConnID,2,RoeeId);
-
-        Response res1= tradingSystem.AddNewManager(NofetId,NofetConnID,2,ElinorId);
-        assertEquals(res1.getMessage(), "The user "+ElinorId+" is owner the store, so he can not appoint to Manager");
-
-        Response res2= tradingSystem.AddNewManager(NofetId,NofetConnID,2,RoeeId);
-        assertEquals(res2.getMessage(), "The user "+RoeeId+" is manages the store, so he can not appoint to Manager again");
-         */
+        boolean b1 = client.addManager(storeID, id+1);
+        assertTrue(b1);
     }
 
     @Test
-    void SadAddNoPermission() {
-        /*
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+    void SadAddDoubleAppointmentManager() {
+        Integer id1 = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        String gust3 = tradingSystem.connectSystem().getConnID();
-        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
-        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
-
-        tradingSystem.AddNewManager(NofetId,NofetConnID,2,ElinorId);
-
-        Response res= tradingSystem.AddNewManager(ElinorId,ElinorConnID,2,RoeeId);
-        assertEquals(res.getMessage(), "The user "+ElinorId+" is not allowed to add manager to the store");
-    */
+        client.addManager(storeID, id1);
+        boolean b1 = client.addManager(storeID, id1);
+        assertTrue(b1);
     }
 
     //endregion
