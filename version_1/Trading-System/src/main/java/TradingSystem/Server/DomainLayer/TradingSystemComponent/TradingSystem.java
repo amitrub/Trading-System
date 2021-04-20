@@ -842,6 +842,9 @@ public class TradingSystem {
         if(!user.IsProductExist(productId)){
             return new NewResponse(true, "User didn't buy this product");
         }
+        if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
+            return new NewResponse(true, "The user already wrote comment for this product");
+        }
         return new NewResponse(false, "the comment added successfully");
     }
 
