@@ -1,6 +1,6 @@
 package TradingSystem.Server.DomainLayer.UserComponent;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class SystemManagerPermission implements Permission{
@@ -8,7 +8,7 @@ public class SystemManagerPermission implements Permission{
     List<User.Permission> permissions;
 
     public SystemManagerPermission() {
-        this.permissions=new LinkedList<User.Permission>();
+        this.permissions=new ArrayList<User.Permission>();
         permissions.add(User.Permission.GetHistoryPurchasing);
     }
 

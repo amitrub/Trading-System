@@ -68,6 +68,11 @@ public class GuestTests {
         assertTrue(respondID2 == -1 && this.client.getConnID().equals(""));
     }
 
+    @Test
+    void showAllStores() {   //duplicate userName
+        client.showAllStores();
+    }
+
 //    @Test
 //    void registerShortPassword() {
 //        int respondID = client.Register("Lior", "1");
@@ -399,7 +404,7 @@ public class GuestTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        ArrayList<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
         ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
@@ -446,7 +451,7 @@ public class GuestTests {
 
     //endregion
 
-    Integer getStoreID(ArrayList<DummyStore> stores, String storename)
+    Integer getStoreID(List<DummyStore> stores, String storename)
     {
         for (int i=0; i<stores.size(); i++)
         {

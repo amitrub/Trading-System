@@ -3,8 +3,7 @@ package TradingSystem.Server.ServiceLayer.DummyObject;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.*;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
@@ -50,8 +49,33 @@ public class NewResponse {
         else
             return "";
     }
+    public ArrayList<DummyStore> getStoreList(){
+        if(!this.isErr){
+            ArrayList<DummyStore> storeList = (ArrayList<DummyStore>) this.returnObject.get("stores");
+            return storeList;
+        }
+        else
+            return new ArrayList<>();
+    }
+    public List<DummyProduct> getProductList(){
+        if(!this.isErr){
+            List<DummyProduct> productList = (List<DummyProduct>) this.returnObject.get("products");
+            return productList;
+        }
+        else
+            return new ArrayList<>();
+    }
+    public List<DummyShoppingHistory> getHistoryList(){
+        if(!this.isErr){
+            List<DummyShoppingHistory> historyList = (List<DummyShoppingHistory>) this.returnObject.get("history");
+            return historyList;
+        }
+        else
+            return new ArrayList<>();
+    }
 
-    public boolean isErr() {
+
+    public boolean getIsErr() {
         return isErr;
     }
     public void setErr(boolean err) {

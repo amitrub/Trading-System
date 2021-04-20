@@ -10,7 +10,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -40,11 +40,11 @@ public  class User {
     private final Integer id;
     private String userName;
     private String password;
-    private List<Integer> myFoundedStoresIDs = new LinkedList<>();
+    private List<Integer> myFoundedStoresIDs = new ArrayList<>();
     ;
-    private List<Integer> myOwnedStoresIDs = new LinkedList<>();
+    private List<Integer> myOwnedStoresIDs = new ArrayList<>();
     ;
-    private List<Integer> myManagedStoresIDs = new LinkedList<>();
+    private List<Integer> myManagedStoresIDs = new ArrayList<>();
     ;
     //storeID_OwnerPermission
     private ConcurrentHashMap<Integer, OwnerPermission> ownerPermission;
@@ -52,7 +52,7 @@ public  class User {
     private ConcurrentHashMap<Integer, ManagerPermission> managerPermission;
 
     private ShoppingCart shoppingCart;
-    private List<ShoppingHistory> shoppingHistory = new LinkedList<>();
+    private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
     private final Lock Lock = new ReentrantLock();;
 
@@ -63,9 +63,9 @@ public  class User {
         this.shoppingCart = new ShoppingCart(this.id);
         this.ownerPermission = null;
         this.managerPermission = null;
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myFoundedStoresIDs=new LinkedList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
@@ -77,9 +77,9 @@ public  class User {
         this.shoppingCart = new ShoppingCart(this.id);
         this.ownerPermission = null;
         this.managerPermission = null;
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myFoundedStoresIDs=new LinkedList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
@@ -89,9 +89,9 @@ public  class User {
         this.userName = userName;
         this.password = password;
         this.shoppingCart = shoppingCart;
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myFoundedStoresIDs=new LinkedList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
@@ -174,11 +174,11 @@ public  class User {
         return shoppingCart.ShowShoppingCart();
     }
 
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address){
+    public NewResponse guestPurchase(String name, String credit_number, String phone_number, String address){
         return shoppingCart.Purchase(true, name, credit_number, phone_number, address);
     }
 
-    public Response subscriberPurchase(String credit_number, String phone_number, String address){
+    public NewResponse subscriberPurchase(String credit_number, String phone_number, String address){
         return shoppingCart.Purchase(false, this.userName, credit_number, phone_number, address);
 
     }
@@ -188,7 +188,7 @@ public  class User {
     }
 
     public List<DummyShoppingHistory> ShowUserHistory(){
-        List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
+        List<DummyShoppingHistory> shoppingHistories=new ArrayList<>();
         for(ShoppingHistory shoppingHistory : shoppingHistory){
             shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
         }
@@ -230,7 +230,7 @@ public  class User {
 
 
 //    public List<DummySearch> getShoppingCart(){
-//        List<DummySearch> shoppingBags=new LinkedList<>();
+//        List<DummySearch> shoppingBags=new ArrayList<>();
 //        for(ShoppingBag shoppingBag: shoppingCart.shoppingBags()){
 //            List<Integer> products=shoppingBag.getProductsList();
 //            for(Integer i:products){

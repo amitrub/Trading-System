@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
@@ -34,7 +35,7 @@ public class OwnerTests {
         tradingSystem.Initialization();
     }
 
-    Integer getStoreID(ArrayList<DummyStore> stores, String storename)
+    Integer getStoreID(List<DummyStore> stores, String storename)
     {
         for (int i=0; i<stores.size(); i++)
         {
@@ -44,7 +45,7 @@ public class OwnerTests {
         return -1;
     }
 
-    Integer getProductID(ArrayList<DummyProduct> storeProducts, String productName)
+    Integer getProductID(List<DummyProduct> storeProducts, String productName)
     {
         for (int i=0; i<storeProducts.size(); i++)
         {
