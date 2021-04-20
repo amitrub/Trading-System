@@ -25,14 +25,16 @@ public class GuestTests {
 
     @BeforeEach
     void setUp() {
+        tradingSystem.ClearSystem();
         this.client = new Client();
         client.connectSystem();
     }
 
     @AfterEach
     void tearDown() {
+        tradingSystem.ClearSystem();
         client.exitSystem();
-        tradingSystem.Initialization();
+//        tradingSystem.Initialization();
     }
 
     //region system Tests
@@ -46,6 +48,9 @@ public class GuestTests {
         // client.connectSystem();
         assertNotEquals(this.client.getConnID(), "");
     }
+    /**
+     * @requirement 2.2
+     */
     @Test
     void exitTest() {
         // Will work just without the tearDown!!!
@@ -73,11 +78,6 @@ public class GuestTests {
         assertTrue(respondID1 != -1 && !this.client.getConnID().equals(""));
         int respondID2 = client.Register("Avi", "qqq");
         assertTrue(respondID2 == -1 && this.client.getConnID().equals(""));
-    }
-
-    @Test
-    void showAllStores() {   //duplicate userName
-        client.showAllStores();
     }
 
 //    @Test
@@ -271,20 +271,26 @@ public class GuestTests {
 //        assertEquals(products.size(), 2);
 //    }
 //
-//    @Test
-//    void showAllStores() {
-//        //todo - shows one more store - why??
-//        client.Register("Reut", "123");
-//        client.Login("Reut", "123");
-//        ArrayList<DummyStore> stores1 = client.showAllStores();
-//        assertEquals(stores1.size(), 0);
-//
-//        client.openStore("Castro");
-//        client.openStore("Urbanica");
-//        client.openStore("Zara");
-//        ArrayList<DummyStore> stores2 = client.showAllStores();
-//        assertEquals(stores2.size(), 3);
-//    }
+
+    /**
+     * @requirement 2.5 show all stores
+     */
+    @Test
+    void showAllStores() {
+        //case: no stores at all
+        client.Register("Reut", "123");
+        tradingSystem.ClearSystem();
+        client.Login("Reut", "123");
+        List<DummyStore> stores1 = client.showAllStores();
+        assertEquals(stores1.size(), 0);
+
+        //case: have stores
+        client.openStore("Castro");
+        client.openStore("Urbanica");
+        client.openStore("Zara");
+        List<DummyStore> stores2 = client.showAllStores();
+        assertEquals(stores2.size(), 3);
+    }
 
     //endregion
     //region Shopping Cart Tests

@@ -141,6 +141,11 @@ public class Client {
 //        this.connID = response.getConnID();
         return dummyProductResponeArr;
     }
+
+    /**
+     * @requirement 2.5
+     * @return
+     */
     public List<DummyStore> showAllStores() {
         String path = "stores";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
