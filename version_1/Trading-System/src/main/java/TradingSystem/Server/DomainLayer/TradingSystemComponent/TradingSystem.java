@@ -47,12 +47,15 @@ public class TradingSystem {
         if (tradingSystem == null) {
             tradingSystem = new TradingSystem();
             tradingSystem.validation = new Validation();
-            tradingSystem.Initialization();
+//            tradingSystem.Initialization();
         }
         return tradingSystem;
     }
 
     public void ClearSystem() {
+        System.out.println("/////////////////////////////////");
+        User.ClearSystem();
+        Store.ClearSystem();
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
         this.guests = new ConcurrentHashMap<>();
@@ -482,22 +485,24 @@ public class TradingSystem {
             return new Response(true, "user not Exist");
         }
     }
+
     public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address){
-        if(guests.containsKey(connID)){
+        if(!guests.containsKey(connID)){
+            return new Response(true, "User not connect to system");
+        }
+        else {
             User myGuest= guests.get(connID);
             return myGuest.guestPurchase(name, credit_number, phone_number, address);
         }
-        else {
-            return new Response(true, "User not connect to system");
-        }
     }
     public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
-        if(ValidConnectedUser(userID, connID)){
-            User user = subscribers.get(userID);
-            return user.subscriberPurchase(credit_number, phone_number, address);
+        if(!ValidConnectedUser(userID, connID)){
+            return new Response(true, "User not connect to system");
         }
         else {
-            return new Response(true, "User not connect to system");
+            User user = subscribers.get(userID);
+            return user.subscriberPurchase(credit_number, phone_number, address);
+
         }
     }
 

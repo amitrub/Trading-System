@@ -33,6 +33,12 @@ public class Client {
 
     //Guest
 
+    public void ClearSystem() {
+        String path = "clear_system";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
+        NewResponse response = NewResponse.makeResponseFromJSON(jsonResponse);
+    }
+
     /**
      * @requirement 2.1
      *
@@ -106,6 +112,10 @@ public class Client {
     }
 
 
+     /**
+     * @requirement 2.5
+     * @return
+     */
     public List<DummyStore> showAllStores() {
         String path = "stores";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
@@ -122,7 +132,19 @@ public class Client {
     }
 
 
+    
+    /**
+     * @requirement 2.6 search f
+     * @param mode
+     * @param name
+     * @param minPrice
+     * @param maxPrice
+     * @param p_rank
+     * @param s_rank
+     * @return
+     */
     public List<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
+
         String path = "search";
         int min = Integer.parseInt(minPrice);
         int max = Integer.parseInt(maxPrice);

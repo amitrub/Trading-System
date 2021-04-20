@@ -67,6 +67,10 @@ public class Store {
         return nextStoreID;
     }
 
+    public static void ClearSystem() {
+        nextStoreID = 0;
+    }
+
     public boolean checkFounder(int userID){
         return this.founderID == userID;
     }
