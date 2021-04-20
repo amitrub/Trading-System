@@ -139,7 +139,15 @@ public class TradingSystem {
         System.out.println("-----------------------------------------------");
     }
 
-    //User functions
+    /**
+     * @requirement 2.1
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
     public Response connectSystem() {
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
@@ -157,15 +165,26 @@ public class TradingSystem {
         }
         return uniqueID;
     }
+
+
+    /**
+     * @requirement 2.2
+     * @param connID
+     * @return Response{
+     *      *  "isErr: boolean
+     *      *  "message": String
+     *      *  "connID": String
+     *      * }
+     */
     public Response Exit(String connID) {
-        if (connectedSubscribers.containsKey(connID)) {
+        if(!connectedSubscribers.containsKey(connID) && !guests.containsKey(connID))
+            return new Response(true, "User not connect to system");
+        else if (connectedSubscribers.containsKey(connID)) {
             connectedSubscribers.remove(connID);
             return new Response(false, "Exit System was successful");
-        } else if (guests.containsKey(connID)) {
+        } else  {
             guests.remove(connID);
             return new Response(false, "Exit System was successful");
-        } else {
-            return new Response(true, "User not connect to system");
         }
     }
     //Check if there is a user if the same name then return -1
@@ -186,6 +205,7 @@ public class TradingSystem {
         else
             return new Response(true, "Error in connID");
     }
+
     //return connID and add user to connection Hash Map
     private synchronized String connectSubscriberToSystemConnID(Integer userID) {
         String uniqueID = "";
@@ -211,6 +231,7 @@ public class TradingSystem {
         guests.remove(guestConnID);
         return new Response(response.getUserID(), connID, "Login was successful");
     }
+
     public Response Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
