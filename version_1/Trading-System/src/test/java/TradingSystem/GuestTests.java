@@ -54,6 +54,10 @@ public class GuestTests {
     }
     //endregion
     //region Register Tests
+
+    /**
+     * @requirement 2.3 register to the system
+     */
     @Test
     void registerHappy() {
         int respondID1 = client.Register("Roee", "1234");
@@ -71,9 +75,14 @@ public class GuestTests {
         assertTrue(respondID2 == -1 && this.client.getConnID().equals(""));
     }
 
+    @Test
+    void showAllStores() {   //duplicate userName
+        client.showAllStores();
+    }
+
 //    @Test
 //    void registerShortPassword() {
-//        int respondID = client.Register("Lior", "1");
+//        int respondID = client.Register("Lior", "q");
 //        assertTrue(respondID == -1);
 //    }
 
@@ -147,6 +156,10 @@ public class GuestTests {
 
     //endregion
     //region Login Tests
+
+    /**
+     * @requirement 2.4 login tests
+     */
     @Test
     void loginHappy(){
         int guestID = client.Register("Yossi", "qwerty");
@@ -402,7 +415,7 @@ public class GuestTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        ArrayList<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
         ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
@@ -449,7 +462,7 @@ public class GuestTests {
 
     //endregion
 
-    Integer getStoreID(ArrayList<DummyStore> stores, String storename)
+    Integer getStoreID(List<DummyStore> stores, String storename)
     {
         for (int i=0; i<stores.size(); i++)
         {

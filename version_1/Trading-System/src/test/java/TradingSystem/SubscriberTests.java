@@ -22,17 +22,41 @@ public class SubscriberTests {
         client.exitSystem();
     }
 
-    //region logout Tests
+    //region requirement 3.1: logout Tests
     @Test
     void logoutHappy(){
         client.Register("Gal", "123");
         client.Login("Gal", "123");
         int respondID = client.Logout();
-        assertEquals(respondID, -1);
+        assertEquals(respondID, -1); //-1 means client is a guest in the system now
     }
     //endregion
-    //region Add Store Tests
-//    @Test
+    //region open store tests
+    @Test
+    void openStore_Happy() {
+        client.Register("Lee", "123");
+        client.Login("Lee", "123");
+        Integer preSize = client.showAllStores().size();
+
+        boolean b1 = client.openStore("Mania1");
+        assertFalse(b1);
+        assertEquals(preSize+1, client.showAllStores().size());
+    }
+
+    @Test
+    void openStore_SadDuplicateName() {
+        client.Register("Lin", "123");
+        client.Login("Lin", "123");
+        //Integer preSize = client.showAllStores().size();
+
+        client.openStore("Mania2");
+        boolean b1 = client.openStore("Mania2");
+        //Integer newSize = client.showAllStores().size();
+        assertTrue(b1);
+        //assertEquals(preSize, newSize);
+    }
+
+    //    @Test
 //    void openStore() {
 //        client.Register("Lior", "123");
 //        client.Login("Lior", "123");
@@ -44,6 +68,7 @@ public class SubscriberTests {
 //        assertTrue(b2);
 //    }
     //endregion
+
     /*
     //region User History Tests
     

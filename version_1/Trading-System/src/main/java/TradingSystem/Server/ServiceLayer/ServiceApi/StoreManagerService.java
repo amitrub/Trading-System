@@ -1,6 +1,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,9 +29,9 @@ public class StoreManagerService {
      */
     //TODO: not implemented Think how to implement Management Operations
     @PostMapping("{userID}/store/{storeID}/management_operations")
-    public Response ManagementOperations(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
+    public NewResponse ManagementOperations(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
 //        Response res = tradingSystem.ManagementOperations(userID, connID, storeID);
-        Response res = new Response(true, "not implemented");
+        NewResponse res = new NewResponse(true, "not implemented");
         return res;
     }
 }
