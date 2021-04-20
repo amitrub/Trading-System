@@ -44,6 +44,12 @@ public class Validation {
         return new NewResponse(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
     }
 
+    //TODO- implement the function
+    public boolean VerifyPassword(String password) {
+            return true;
+    }
+
+
     //Store functions
     public synchronized boolean IsStoreNameExist(String storeName) {
         Set<Integer> storeSet = tradingSystem.stores.keySet();
