@@ -300,15 +300,27 @@ public class TradingSystem {
             return new NewResponse(true, "Error in User details");
         }
     }
+
+    /**
+     * @requirement 2.5
+     *
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "stores": [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */    
     public NewResponse ShowAllStores() {
         List<DummyStore> list = new ArrayList<>();
         for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
             list.add(new DummyStore(currStore.getValue()));
         }
         NewResponse res = new NewResponse("num of stores in the system is " + list.size());
-        res.AddPair("stores", list);
-        System.out.println("777777777777777777777777777777777777777777777");
-        System.out.println(res);
+        res.AddPair("stores", list);        
         return res;
     }
 
