@@ -52,6 +52,11 @@ public class Client {
         }
         return this.connID;
     }
+
+    /**
+     * @requirement 2.2 exit system
+     * @return string connID
+     */
     public String exitSystem() {
         String path = "exit";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
@@ -63,6 +68,13 @@ public class Client {
         }
         return this.connID;
     }
+
+    /**
+     * @requirement 2.3 register to the system
+     * @param userName
+     * @param pass
+     * @return int if ok
+     */
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
