@@ -7,7 +7,6 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.ArrayList;
@@ -170,7 +169,7 @@ public  class User {
                 '}';
     }
 
-    public NewResponse AddProductToCart(int StoreId, int productId, int quantity) {
+    public Response AddProductToCart(int StoreId, int productId, int quantity) {
         return shoppingCart.addProductToBag(StoreId, productId, quantity);
     }
 
@@ -178,11 +177,11 @@ public  class User {
         return shoppingCart.ShowShoppingCart();
     }
 
-    public NewResponse guestPurchase(String name, String credit_number, String phone_number, String address){
+    public Response guestPurchase(String name, String credit_number, String phone_number, String address){
         return shoppingCart.Purchase(true, name, credit_number, phone_number, address);
     }
 
-    public NewResponse subscriberPurchase(String credit_number, String phone_number, String address){
+    public Response subscriberPurchase(String credit_number, String phone_number, String address){
         return shoppingCart.Purchase(false, this.userName, credit_number, phone_number, address);
 
     }

@@ -5,7 +5,7 @@ import TradingSystem.Server.DomainLayer.ExternalServices.SupplySystem;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,7 +57,9 @@ public class ShoppingCart {
             }
         }
     }
-    public NewResponse addProductToBag(Integer storeID, Integer productID, Integer quantity){
+
+
+    public Response addProductToBag(Integer storeID, Integer productID, Integer quantity){
         ConcurrentHashMap<Integer, Integer> productsInTheBug = new ConcurrentHashMap<Integer, Integer>();
         productsInTheBug.put(productID, quantity);
         if(this.shoppingBags.containsKey(storeID)){
@@ -78,12 +80,12 @@ public class ShoppingCart {
                 this.shoppingBags.get(storeID).addProduct(productID, quantity);
                 Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
                 shoppingBags.get(storeID).setFinalPrice(priceForBug);
-                return new NewResponse( "The product added successfully");
+                return new Response( "The product added successfully");
             }
 
-            return new NewResponse(true, "Adding the product is against the store policy");
+            return new Response(true, "Adding the product is against the store policy");
         }
-        return new NewResponse(true, "The product or quantity is not in stock");
+        return new Response(true, "The product or quantity is not in stock");
     }
     private synchronized Double calculatePrice(){
         double price = 0.0;
@@ -100,32 +102,34 @@ public class ShoppingCart {
         return this.shoppingBags;
     }
 
-    public NewResponse Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
+
+    public Response Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
         if (shoppingBags.size()==0){
-            return new NewResponse(true, "There is on products in shopping cart");
+            return new Response(true, "There is on products in shopping cart");
         }
         List<Lock> lockList = this.getLockList();
-        NewResponse productInStock = this.checkInventoryAndLockProduct(lockList);
+        Response productInStock = this.checkInventoryAndLockProduct(lockList);
         if (productInStock.getIsErr()){
             return productInStock;
         }
 //        TODO: add BuyingPolicy and DiscountPolicy
         if (!supplySystem.canSupply(address)) {
             this.releaseLocks(lockList);
-            return new NewResponse(true,"The Supply is not approve");
+            return new Response(true,"The Supply is not approve");
         }
         if (!paymentSystem.checkCredit(name, credit_number, phone_number)){
             this.releaseLocks(lockList);
-            return new NewResponse(true,"The payment is not approve");
+            return new Response(true,"The payment is not approve");
         }
-        NewResponse res = Buy();
+        Response res = Buy();
         if(res.getIsErr()) {
             this.releaseLocks(lockList);
             return res;
         }
         addShoppingHistory(isGuest);
         this.shoppingBags = new ConcurrentHashMap<>();
-        return new NewResponse("The purchase was made successfully ");
+        return new Response("The purchase was made successfully ");
+
     }
 
     private List<Lock> getLockList(){
@@ -158,6 +162,7 @@ public class ShoppingCart {
         }
     }
 
+  
     private NewResponse checkInventoryAndLockProduct(List<Lock> lockList){
         boolean succeededToLock = false;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
@@ -175,8 +180,8 @@ public class ShoppingCart {
         }
         return new NewResponse();
     }
-    private NewResponse Buy(){
-        NewResponse res=new NewResponse("The reduction was made successfully ");
+    private Response Buy(){
+        Response res=new Response("The reduction was made successfully ");
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet){
             ShoppingBag SB = this.shoppingBags.get(storeID);
