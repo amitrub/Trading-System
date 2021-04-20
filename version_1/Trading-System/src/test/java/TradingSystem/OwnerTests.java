@@ -277,8 +277,6 @@ public class OwnerTests {
     //endregion
 
     //region requirement 4.3: Add owner tests
-
-    //TODO -add to client AddOwner, AddManager, RemoveManager
     @Test
     void HappyAddOwner() {
         Integer newOwnerID = client.Register("nofet", "123");
@@ -314,6 +312,17 @@ public class OwnerTests {
     }
 
     @Test
+    void SadAddIllegalID() {
+        Integer id = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        boolean b1 = client.addOwner(storeID, id+1);
+        assertTrue(b1);
+    }
+
+    @Test
     void SadAddDoubleAppointmentOwner() {
         Integer newOwnerID = client.Register("nofet", "123");
         client.Login("nofet", "123");
@@ -323,6 +332,7 @@ public class OwnerTests {
         client.Login("elinor", "123");
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
+
         client.addOwner(storeID, newOwnerID);
         boolean b1 = client.addOwner(storeID, newOwnerID);
         assertTrue(b1);
