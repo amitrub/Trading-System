@@ -1,6 +1,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,9 +27,9 @@ public class AdminService {
      */
     //TODO: not implemented
     @GetMapping("{adminID}/users")
-    public Response ShowAllUsers(@PathVariable int adminID, @RequestHeader("connID") String connID){
+    public NewResponse ShowAllUsers(@PathVariable int adminID, @RequestHeader("connID") String connID){
 //        Response res = tradingSystem.ShowAllUsers(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        NewResponse res = new NewResponse(true, "not implemented");
         return res;
     }
 
@@ -49,9 +50,9 @@ public class AdminService {
      */
     //TODO: not implemented
     @GetMapping("{adminID}/stores")
-    public Response ShowAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
+    public NewResponse ShowAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
 //        Response res = tradingSystem.ShowAllStores(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        NewResponse res = new NewResponse(true, "not implemented");
         return res;
     }
 
@@ -82,9 +83,9 @@ public class AdminService {
      */
     //TODO: not implemented
     @GetMapping("{adminID}/user_history/{userID}")
-    public Response ShowUserHistory(@PathVariable int adminID,@PathVariable int userID, @RequestHeader("connID") String connID){
+    public NewResponse ShowUserHistory(@PathVariable int adminID,@PathVariable int userID, @RequestHeader("connID") String connID){
 //        Response res = tradingSystem.ShowAllStores(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        NewResponse res = new NewResponse(true, "not implemented");
         return res;
     }
 
@@ -115,9 +116,9 @@ public class AdminService {
      */
     //TODO: not implemented
     @GetMapping("{adminID}/store_history/{storeID}")
-    public Response ShowStoreHistory(@PathVariable int adminID,@PathVariable int storeID, @RequestHeader("connID") String connID){
+    public NewResponse ShowStoreHistory(@PathVariable int adminID,@PathVariable int storeID, @RequestHeader("connID") String connID){
 //        Response res = tradingSystem.ShowStoreHistory(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        NewResponse res = new NewResponse(true, "not implemented");
         return res;
     }
 }

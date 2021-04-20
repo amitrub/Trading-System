@@ -4,7 +4,7 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -103,7 +103,7 @@ public class ShoppingBag {
     }
 
     public List<Integer> getProductsList(){
-        List<Integer> products=new LinkedList<>();
+        List<Integer> products=new ArrayList<>();
         for(Map.Entry<Integer,Integer> map: this.products.entrySet()){
             products.add(map.getKey());
         }

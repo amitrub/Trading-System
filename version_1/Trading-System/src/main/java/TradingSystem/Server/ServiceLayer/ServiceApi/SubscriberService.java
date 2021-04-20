@@ -2,6 +2,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
+import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +27,8 @@ public class SubscriberService {
      * }
      */
     @GetMapping("{userID}/logout")
-    public Response Logout(@PathVariable int userID, @RequestHeader("connID") String connID){
-        Response res = tradingSystem.Logout(connID);
+    public NewResponse Logout(@PathVariable int userID, @RequestHeader("connID") String connID){
+        NewResponse res = tradingSystem.Logout(connID);
         tradingSystem.printUsers();
         return res;
     }
@@ -45,8 +46,8 @@ public class SubscriberService {
      * }
      */
     @PostMapping("{userID}/add_store")
-    public Response AddStore(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody String storeName){
-        Response res = tradingSystem.AddStore(userID, connID, storeName);
+    public NewResponse AddStore(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody String storeName){
+        NewResponse res = tradingSystem.AddStore(userID, connID, storeName);
         tradingSystem.printUsers();
         tradingSystem.printStores();
         return res;
@@ -70,11 +71,11 @@ public class SubscriberService {
      */
     //TODO: not check yet
     @PostMapping("{userID}/write_comment")
-    public Response WriteComment(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public NewResponse WriteComment(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         String review = (String) obj.get("comment");
-        Response res = tradingSystem.WriteComment(userID,connID,storeID,productID,review);
+        NewResponse res = tradingSystem.WriteComment(userID,connID,storeID,productID,review);
         tradingSystem.printCommentForProduct(storeID,productID);
         return res;
     }
@@ -105,7 +106,7 @@ public class SubscriberService {
      */
     //TODO: fix DummyShoppingHistory
     @GetMapping("{userID}/user_history")
-    public List<DummyShoppingHistory> ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
+    public NewResponse ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
         return tradingSystem.ShowSubscriberHistory(userID, connID);
     }
 
@@ -127,11 +128,11 @@ public class SubscriberService {
      * }
      */
     @PostMapping("{userID}/shopping_cart/purchase")
-    public Response subscriberPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public NewResponse subscriberPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String credit_number = (String) obj.get("credit_number");
         String phone_number = (String) obj.get("phone_number");
         String address = (String) obj.get("address");
-        Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
+        NewResponse res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
         return res;
     }
 }
