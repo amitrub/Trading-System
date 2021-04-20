@@ -18,6 +18,12 @@ public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
     // 2.1 test
 
+    @GetMapping("clear_system")
+    public NewResponse ClearSystem(){
+        this.tradingSystem.ConnectSystem();
+        return new NewResponse();
+    }
+
     /**
      * @requirement 2.1
      *
