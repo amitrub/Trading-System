@@ -109,6 +109,7 @@ public class ShoppingCart {
         if (productInStock.getIsErr()){
             return productInStock;
         }
+//        TODO: add BuyingPolicy and DiscountPolicy
         if (!supplySystem.canSupply(address)) {
             this.releaseLocks(lockList);
             return new NewResponse(true,"The Supply is not approve");

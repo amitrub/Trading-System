@@ -492,12 +492,12 @@ public class TradingSystem {
         }
     }
     public NewResponse subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
-        if(ValidConnectedUser(userID, connID)){
-            User user = subscribers.get(userID);
-            return user.subscriberPurchase(credit_number, phone_number, address);
+        if(!ValidConnectedUser(userID, connID)){
+            return new NewResponse(true, "User not connect to system");
         }
         else {
-            return new NewResponse(true, "User not connect to system");
+            User user = subscribers.get(userID);
+            return user.subscriberPurchase(credit_number, phone_number, address);
         }
     }
 
