@@ -1,7 +1,6 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -19,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 public class OwnerTests {
 
     Client client;
-    //TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
