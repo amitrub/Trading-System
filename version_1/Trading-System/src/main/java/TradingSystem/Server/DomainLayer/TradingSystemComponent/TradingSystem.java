@@ -139,7 +139,15 @@ public class TradingSystem {
         System.out.println("-----------------------------------------------");
     }
 
-    //User functions
+    /**
+     * @requirement 2.1
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
     public Response connectSystem() {
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
@@ -157,6 +165,7 @@ public class TradingSystem {
         }
         return uniqueID;
     }
+
     public Response Exit(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             connectedSubscribers.remove(connID);
@@ -186,6 +195,7 @@ public class TradingSystem {
         else
             return new Response(true, "Error in connID");
     }
+
     //return connID and add user to connection Hash Map
     private synchronized String connectSubscriberToSystemConnID(Integer userID) {
         String uniqueID = "";
@@ -211,6 +221,7 @@ public class TradingSystem {
         guests.remove(guestConnID);
         return new Response(response.getUserID(), connID, "Login was successful");
     }
+
     public Response Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
