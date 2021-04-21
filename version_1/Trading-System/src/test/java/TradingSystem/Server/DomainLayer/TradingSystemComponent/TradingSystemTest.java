@@ -294,7 +294,7 @@ class TradingSystemTest {
         assertTrue(response.getIsErr());
     }
 
-    // requirement 4.1
+    // requirement 4.3
     @Test
     void NewOwnerSuccess() {
         Response r1 = tradingSystem.AddNewOwner(NofetID, NconnID, NofetStore, ElinorID);
@@ -302,6 +302,7 @@ class TradingSystemTest {
         assertFalse(r1.getIsErr());
     }
 
+    // requirement 4.3
     @Test
     void NewOwnerNotConnected() {
         Response r = tradingSystem.AddNewOwner(NofetID, "--", NofetStore, ElinorID);
@@ -309,6 +310,7 @@ class TradingSystemTest {
         assertTrue(r.getIsErr());
     }
 
+    // requirement 4.3
     @Test
     void NewOwnerNotSubscriber() {
         Response r1 = tradingSystem.AddNewOwner(-1, NconnID, NofetStore, ElinorID);
@@ -319,6 +321,7 @@ class TradingSystemTest {
         assertTrue(r2.getIsErr());
     }
 
+    // requirement 4.3
     @Test
     void AddNewOwnerIsNotTheOwner() {
         String gust2 = tradingSystem.ConnectSystem().returnConnID();
@@ -329,6 +332,7 @@ class TradingSystemTest {
         assertTrue(res3.getIsErr());
     }
 
+    // requirement 4.3
     @Test
     void NewOwnerDouble() {
         String gust = tradingSystem.ConnectSystem().returnConnID();
@@ -340,6 +344,7 @@ class TradingSystemTest {
         assertTrue(r.getIsErr());
     }
 
+    // requirement 4.3
     @Test
     void NewOwnerAlreadyManager() {
         String gust = tradingSystem.ConnectSystem().returnConnID();
@@ -351,21 +356,26 @@ class TradingSystemTest {
         assertTrue(r.getIsErr());
     }
 
-
+    // requirement 4.5
     @Test
     void NewManagerSuccess() {
-        Response r1 = tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, NofetID);
+        String gust = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(gust, "r", "123");
+        Response res = tradingSystem.Login(gust, "r", "123");
+        Response r1 = tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
         System.out.println(r1.getMessage());
         assertFalse(r1.getIsErr());
     }
 
+    // requirement 4.5
     @Test
     void NewManagerNotConnected() {
-        Response r = tradingSystem.AddNewOwner(NofetID, "--", NofetStore, ElinorID);
+        Response r = tradingSystem.AddNewManager(NofetID, "--", NofetStore, ElinorID);
         System.out.println(r.getMessage());
         assertTrue(r.getIsErr());
     }
 
+    // requirement 4.5
     @Test
     void NewManagerNotSubscriber() {
         Response r1 = tradingSystem.AddNewManager(-1, NconnID, NofetStore, ElinorID);
@@ -376,16 +386,18 @@ class TradingSystemTest {
         assertTrue(r2.getIsErr());
     }
 
+    // requirement 4.5
     @Test
     void AddNewManagerIsNotTheOwner() {
         String gust2 = tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(gust2, "roee", "123");
-        Response res2= tradingSystem.Login(gust2, "roee", "123");
-        Response res3 =tradingSystem.AddNewManager(res2.returnUserID(), res2.returnConnID(), NofetStore, ElinorID);
+        Response res2 = tradingSystem.Login(gust2, "roee", "123");
+        Response res3 = tradingSystem.AddNewManager(res2.returnUserID(), res2.returnConnID(), NofetStore, ElinorID);
         System.out.println(res3.getMessage());
         assertTrue(res3.getIsErr());
     }
 
+    // requirement 4.5
     @Test
     void NewManagerDouble() {
         String gust = tradingSystem.ConnectSystem().returnConnID();
@@ -397,6 +409,7 @@ class TradingSystemTest {
         assertTrue(r.getIsErr());
     }
 
+    // requirement 4.5
     @Test
     void NewManagerAlreadyOwner() {
         String gust = tradingSystem.ConnectSystem().returnConnID();
@@ -406,6 +419,72 @@ class TradingSystemTest {
         Response r = tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
         System.out.println(r.getMessage());
         assertTrue(r.getIsErr());
+    }
+
+    // requirement 4.7
+    @Test
+    void RemoveManagerSuccess() {
+        String gust = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(gust, "Deme", "123");
+        Response res= tradingSystem.Login(gust, "Deme", "123");
+        tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
+        Response r1 = tradingSystem.RemoveManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
+        System.out.println(r1.getMessage());
+        assertFalse(r1.getIsErr());
+    }
+
+    // requirement 4.7
+    @Test
+    void RemoveManagerNotConnected() {
+        Response r = tradingSystem.RemoveManager(NofetID, "--", NofetStore, ElinorID);
+        System.out.println(r.getMessage());
+        assertTrue(r.getIsErr());
+    }
+
+    // requirement 4.7
+    @Test
+    void RemoveManagerNotSubscriber() {
+        Response r1 = tradingSystem.RemoveManager(-1, NconnID, NofetStore, ElinorID);
+        System.out.println(r1.getMessage());
+        assertTrue(r1.getIsErr());
+        Response r2 = tradingSystem.RemoveManager(NofetID, NconnID, NofetStore, 20);
+        System.out.println(r2.getMessage());
+        assertTrue(r2.getIsErr());
+    }
+
+    // requirement 4.7
+    @Test
+    void RemoveManagerIsNotTheOwner() {
+        String gust = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(gust, "Deme2", "123");
+        Response res= tradingSystem.Login(gust, "Deme2", "123");
+        Response res3 =tradingSystem.RemoveManager(res.returnUserID(), res.returnConnID(), ElinorStore, ElinorID);
+        System.out.println(res3.getMessage());
+        assertTrue(res3.getIsErr());
+    }
+
+    // requirement 4.7
+    @Test
+    void RemoveManagerIsNotManager() {
+        String gust = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(gust, "A", "123");
+        Response res= tradingSystem.Login(gust, "A", "123");
+        Response r = tradingSystem.RemoveManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
+        System.out.println(r.getMessage());
+        assertTrue(r.getIsErr());
+    }
+
+    // requirement 4.7
+    @Test
+    void RemoveManagerIsNotTheAppointment() {
+        String gust = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(gust, "Deme3", "123");
+        Response res = tradingSystem.Login(gust, "Deme3", "123");
+        tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
+        tradingSystem.AddNewOwner(ElinorID, EconnID, ElinorStore, NofetID);
+        Response res3 = tradingSystem.RemoveManager(NofetID, NconnID, ElinorStore, res.returnUserID());
+        System.out.println(res3.getMessage());
+        assertTrue(res3.getIsErr());
     }
 
 }
