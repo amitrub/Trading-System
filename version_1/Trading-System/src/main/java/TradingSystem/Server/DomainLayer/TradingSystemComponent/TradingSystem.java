@@ -148,7 +148,7 @@ public class TradingSystem {
             List<Product> Products = this.stores.get(id).getProducts();
             for (Product p : Products) {
                 int quantity= this.stores.get(id).getQuantity(p.getProductID());
-                System.out.println(ANSI_WHITE + p + " with quantity of- "+ quantity + ":\n" + ANSI_WHITE);
+                System.out.println(ANSI_WHITE + p + " with quantity of: "+ quantity + ":\n" + ANSI_WHITE);
             }
             }
         System.out.println("-----------------------------------------------");
