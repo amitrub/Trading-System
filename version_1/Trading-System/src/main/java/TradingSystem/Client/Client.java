@@ -364,13 +364,13 @@ public class Client {
         System.out.println(ANSI_YELLOW + "(editProduct) response: " + response + ANSI_RESET);
         return response.getIsErr();
     }
-    public List<DummyProduct> showStoreHistory(int storeID) {
+    public List<DummyShoppingHistory> showStoreHistory(int storeID) {
         String path = String.format("%s/store_history/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-        System.out.println(ANSI_YELLOW + "(removeProduce) response: " + dummyProductResponeArr + ANSI_RESET);
-        return dummyProductResponeArr;
+        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
+        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
+        return dummyShoppingHistoryResponse;
     }
     public boolean addOwner(int storeID, int newOwnerID) {
         String path = String.format("%s/store/%s/add_new_owner/%s", this.userID, storeID, newOwnerID);

@@ -432,7 +432,7 @@ public class StoreOwnerService {
     //TODO: not check yet
     @GetMapping("{userID}/store_history/{storeID}")
     public Response ShowStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
-        return tradingSystem.StoreHistory(userID,storeID,connID);
+        return tradingSystem.StoreHistoryOwner(userID,storeID,connID);
     }
 
     /**
