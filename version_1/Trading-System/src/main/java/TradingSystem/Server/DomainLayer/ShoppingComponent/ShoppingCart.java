@@ -5,7 +5,10 @@ import TradingSystem.Server.DomainLayer.ExternalServices.SupplySystem;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,8 +21,11 @@ public class ShoppingCart {
     private final SupplySystem supplySystem = SupplySystem.getInstance();
 
     private final Integer userID;
+    
+    private static final LoggerController loggerController=LoggerController.getInstance();
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags = new ConcurrentHashMap<>();
+
 
     public ShoppingCart(Integer userID){
         this.userID = userID;
@@ -59,10 +65,28 @@ public class ShoppingCart {
     }
 
 
+
+    /**
+     /**
+     * @requirement 2.7
+     *
+     * @param storeID
+     * @param productID
+     * @param quantity
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */    
+
     public Response addProductToBag(Integer storeID, Integer productID, Integer quantity){
+
         ConcurrentHashMap<Integer, Integer> productsInTheBug = new ConcurrentHashMap<Integer, Integer>();
         productsInTheBug.put(productID, quantity);
-        if(this.shoppingBags.containsKey(storeID)){
+        if(this.shoppingBags.containsKey(storeID))
+        {
             ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
             Set<Integer> productSet = shoppingBag.getProducts().keySet();
             for (Integer key : productSet){
@@ -72,21 +96,25 @@ public class ShoppingCart {
                     productsInTheBug.put(key, shoppingBag.getProducts().get(key));
             }
         }
-        if (tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productsInTheBug.get(productID))) {
-            if (tradingSystem.validation.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
-                if(!this.shoppingBags.containsKey(storeID)){
-                    this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
-                }
-                this.shoppingBags.get(storeID).addProduct(productID, quantity);
-                Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
-                shoppingBags.get(storeID).setFinalPrice(priceForBug);
-                return new Response( "The product added successfully");
-            }
-
+        if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productsInTheBug.get(productID))) {
+            loggerController.WriteErrorMsg("User "+userID+" try to add product " +productID+ " from store "+storeID+" to cart but failed. the product is not in the stock");
+            return new Response(true, "The product or quantity is not in stock");
+        }
+        if (!tradingSystem.validation.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
+            loggerController.WriteErrorMsg("User "+userID+" try to add product " +productID+ " from store "+storeID+" to cart but failed. Adding the product is against the store policy");
             return new Response(true, "Adding the product is against the store policy");
         }
-        return new Response(true, "The product or quantity is not in stock");
+        if(!this.shoppingBags.containsKey(storeID)){
+            this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
+        }
+        this.shoppingBags.get(storeID).addProduct(productID, quantity);
+        Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
+        shoppingBags.get(storeID).setFinalPrice(priceForBug);
+        loggerController.WriteLogMsg("User "+userID+" added product " +productID+ " from store "+storeID+" to cart successfully");
+        NewResponse res =new Response("The product added successfully");
+        return res;
     }
+
     private synchronized Double calculatePrice(){
         double price = 0.0;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
