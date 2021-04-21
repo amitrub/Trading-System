@@ -37,18 +37,19 @@ public class SubscriberTests {
         assertFalse(respone.getIsErr());
     }
     //endregion
-    //region open store tests
+    //region requirement 3.2: open store tests
+    //case 3.2.1
     @Test
     void openStore_Happy() {
         client.Register("Lee", "123");
         client.Login("Lee", "123");
         Integer preSize = client.showAllStores().size();
 
-        boolean b1 = client.openStore("Mania1");
-        assertFalse(b1);
+        Response response = client.openStore("Mania1");
+        assertFalse(response.getIsErr());
         assertEquals(preSize+1, client.showAllStores().size());
     }
-
+    //case 3.2.2
     @Test
     void openStore_SadDuplicateName() {
         client.Register("Lin", "123");
@@ -56,23 +57,18 @@ public class SubscriberTests {
         //Integer preSize = client.showAllStores().size();
 
         client.openStore("Mania2");
-        boolean b1 = client.openStore("Mania2");
-        //Integer newSize = client.showAllStores().size();
-        assertTrue(b1);
-        //assertEquals(preSize, newSize);
+        Response response = client.openStore("Mania2");
+        assertTrue(response.getIsErr());
     }
 
-    //    @Test
-//    void openStore() {
-//        client.Register("Lior", "123");
+    //case 3.2.3
+        @Test
+    void sad_openStoreNotRegistered() {
+        client.Register("Lior", "123");
 //        client.Login("Lior", "123");
-//        boolean b1 = client.openStore("American Eagle11");
-//        assertFalse(b1);
-//
-//        //sad add - duplicate store name
-//        boolean b2 = client.openStore("American Eagle122");
-//        assertTrue(b2);
-//    }
+        Response response = client.openStore("American Eagle11");
+        assertTrue(response.getIsErr());
+    }
     //endregion
 
     /*

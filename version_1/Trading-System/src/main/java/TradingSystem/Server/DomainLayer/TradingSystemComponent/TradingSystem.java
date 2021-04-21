@@ -736,6 +736,7 @@ public class TradingSystem {
             NM.unlockUser();
             return res2;
         }
+
         ManagerPermission MP= new ManagerPermission(newManager, storeID);
         MP.setAppointmentId(userID);
         NM.AddStoreInManager(storeID, MP);

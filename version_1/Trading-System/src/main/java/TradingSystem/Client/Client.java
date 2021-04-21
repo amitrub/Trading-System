@@ -277,12 +277,18 @@ public class Client {
         this.connID = response.returnConnID();
         return response;
     }
-    public boolean openStore(String storeName){
+
+    /**
+     * @requirement 3.2 open store
+     * @param storeName
+     * @return
+     */
+    public Response openStore(String storeName){
         String path = String.format("%s/add_store", this.userID);
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber + path, storeName, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(openStore) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        return response;
     }
     public List<DummyProduct> showUserHistory() {
         String path = String.format("%s/user_history", this.userID);
