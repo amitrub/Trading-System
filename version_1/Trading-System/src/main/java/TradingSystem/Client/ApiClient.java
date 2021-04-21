@@ -1,6 +1,7 @@
 package TradingSystem.Client;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 
 import java.util.ArrayList;
@@ -545,11 +546,11 @@ public class ApiClient {
         }
         int storeID = sc.nextInt();
 
-        List<DummyProduct> dummyProducts = client.showStoreHistory(storeID);
+        List<DummyShoppingHistory> dummyHistories = client.showStoreHistory(storeID);
 
         System.out.println(ANSI_GREEN + "---- Store " + storeID + " History Results ----");
-        for(DummyProduct dummyProduct : dummyProducts) {
-            System.out.println(dummyProduct);
+        for(DummyShoppingHistory dummyHistory : dummyHistories) {
+            System.out.println(dummyHistory);
         }
         System.out.println("--------------------------" + ANSI_RESET);
     }
