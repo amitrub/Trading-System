@@ -16,6 +16,7 @@ public class AdminTests {
     @BeforeEach
     void setUp() {
         client = new Client();
+        client.ClearSystem();
     }
     @AfterEach
     void tearDown() {
