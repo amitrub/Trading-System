@@ -881,24 +881,21 @@ public class TradingSystem {
         return new Response(false, "the comment added successfully");
     }
 
+
     /**
-     * @requirement 4.1
-     *
-     * @param userID : int (Path)
-     * @param storeID: int (Path)
-     * @param productID: int (Path)
-     * @param connID: String (Header)
-     * @param obj:{
-     *  "productName": String
-     *  "category": String
-     *  "price": String
-     *  "double": int
-     * }
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productID
+     * @param productName
+     * @param category
+     * @param price
+     * @param quantity
      * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
+     *        "isErr: boolean
+     *        "message": String
+     *        "connID": String
+     *       }
      */
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
         if(ValidConnectedUser(userID, connID)){
