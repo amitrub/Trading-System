@@ -46,11 +46,9 @@ public class AdminService {
      *  }]
      * }
      */
-    //TODO: not implemented
     @GetMapping("{adminID}/stores")
     public Response ShowAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowAllStores(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.ShowAllStores();
         return res;
     }
 
