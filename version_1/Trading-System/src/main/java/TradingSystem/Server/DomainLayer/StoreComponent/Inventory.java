@@ -86,6 +86,7 @@ public class Inventory {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
             this.products.remove(productID);
+            System.out.println("TEST------------>");
 //            this.productLock.remove(productID);
             return new Response("Remove Product from the Inventory was successful");
         } else
@@ -182,19 +183,19 @@ public class Inventory {
         return products;
     }
 
-    public String editProductDetails(Integer productId, String productName, Double price, String category) {
+    public Response editProductDetails(Integer productId, String productName, Double price, String category, Integer quantity) {
         Iterator it = this.products.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             int id = (int) pair.getKey();
             if (id == productId) {
-                Product p = new Product(productId, productName, category, price);
+                Product p = new Product(productId, productName, category, price, quantity);
                 this.products.remove(productId);
                 this.products.put(id, p);
-                return "The product update";
+                return new Response(false, "The product update successfully");
             }
         }
-        return "The product does not exist in the system";
+        return new Response(true, "The product does not exist in the system");
     }
 
     public List<Integer> SearchProduct(String name, String category, int minprice, int maxprice) {

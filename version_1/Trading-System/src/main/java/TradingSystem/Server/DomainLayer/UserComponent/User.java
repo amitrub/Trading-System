@@ -8,6 +8,7 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -55,6 +56,8 @@ public  class User {
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
     private final Lock Lock = new ReentrantLock();;
+
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
     public User() {
         this.id = -1;
@@ -246,6 +249,28 @@ public  class User {
             }
         }
         return false;
+    }
+
+
+    public Response AbleToAddOwner(int userID, int storeID) {
+        if (this.checkOwner(storeID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to Add "+this.id+" to be the owner of store "+storeID + " and failed. "+ this.id+" is already owner the store");
+            return new Response(true, "User "+this.id+" is owner the store, so he can not appoint to owner again");
+        }
+        if (this.checkManager(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to Add " +this.id+" to be the owner of store " + storeID + " and failed. "+ this.id+" is already manages the store");
+            return new Response(true, "User "+this.id+" is manages the store, so he can not be owner");
+        }
+        return new Response(false,"It is possible to add the user as the owner");
+}
+
+    public boolean checkOwner(int storeID) {
+    return this.myOwnedStoresIDs.contains(storeID);
+    }
+
+
+    public boolean checkManager(int storeID) {
+    return this.myManagedStoresIDs.contains(storeID);
     }
 
 }
