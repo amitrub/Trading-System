@@ -244,6 +244,7 @@ public class GuestService {
     @GetMapping("shopping_cart")
     public Response ShowShoppingCart(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.ShowShoppingCart(connID);
+        res.AddConnID(connID);
         return res;
     }
 
