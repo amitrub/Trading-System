@@ -28,6 +28,16 @@ public class ShoppingCart {
         this.shoppingBags = new ConcurrentHashMap<>();
     }
 
+    public ShoppingCart(ShoppingCart shoppingCartToCopy){
+        this.userID = shoppingCartToCopy.userID;
+        this.shoppingBags = new ConcurrentHashMap<>();
+        Set<Integer> shoppingBagsSet = shoppingCartToCopy.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet) {
+            ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
+            this.shoppingBags.put(storeID, new ShoppingBag(shoppingBag));
+        }
+    }
+
     @Override
     public String toString() {
         return "ShoppingCart{" +
