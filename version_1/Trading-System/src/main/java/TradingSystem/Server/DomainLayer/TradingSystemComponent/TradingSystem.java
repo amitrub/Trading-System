@@ -749,68 +749,54 @@ public class TradingSystem {
         return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
     }
 
+
+    /**
+     * @requirement 4.7
+     *
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param ManagerToRemove
+     * @return Response{
+      *  "isErr: boolean
+      *  "message": String
+      * }
+     */
     public Response RemoveManager(int userID, String connID, int storeID, int ManagerToRemove)  {
-        if (ValidConnectedUser(userID, connID)) {
-            if (this.subscribers.get(ManagerToRemove) != null) {
-                while (!this.subscribers.get(ManagerToRemove).userIsLock()) {
-                    try{
-                        this.wait(3);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                    this.subscribers.get(ManagerToRemove).lockUser();
-                    Response res = this.AbleToRemoveManager(userID, storeID, ManagerToRemove);
-                    if (!res.getIsErr()) {
-                        User MTR = this.subscribers.get(ManagerToRemove);
-                        MTR.removeStore(storeID);
-                        stores.get(storeID).removeManager(userID, ManagerToRemove);
-                        this.subscribers.get(ManagerToRemove).unlockUser();
-                        loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
-                        return new Response("The manager removed successfully");
-                    }
-                    this.subscribers.get(ManagerToRemove).unlockUser();
-                    return res;
-            }
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to remove manager from store " + storeID + " and failed. The err message: Error in User details");
+            return new Response(true, "Error in User details");
+        }
+        if (this.subscribers.get(ManagerToRemove) == null) {
             loggerController.WriteErrorMsg("User " + userID + " try to Remove " + ManagerToRemove + " from management the store " + storeID + " and failed. " + ManagerToRemove + " is not subscriber");
             return new Response(true, "The user " + ManagerToRemove + " is not subscriber, so it impossible to remove him from management the store");
-         }
-        loggerController.WriteErrorMsg("User " + userID + " try to remove manager from store " + storeID + " and failed. The err message: Error in User details");
-        return new Response(true, "Error in User details");
-    }
-    private Response AbleToRemoveManager(int userID, int storeID, int managerToRemove){
-        if (this.subscribers.containsKey(userID)) {
-            if (this.subscribers.containsKey(managerToRemove)) {
-                if (this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
-                        if (stores.get(storeID).checkManager(managerToRemove)){
-                            User manager=subscribers.get(managerToRemove);
-                            if(manager.getManagerPermission(storeID).getAppointmentId()==userID) {
-                                if (this.hasPermission(userID,storeID,User.Permission.RemoveManager)) {
-                                    return new Response("It is possible to add the user as the owner");
-                                } else {
-                                    loggerController.WriteErrorMsg("User " + userID + " try to remove " + managerToRemove + " from be the manager of store " + storeID + " and failed. " + userID + " is not allowed to remove manager from the store");
-                                    return new Response(true, "The user " + userID + " is not allowed to remove manager from store");
-                                }
-                            }
-                            loggerController.WriteErrorMsg("User " + userID + " try to remove " + managerToRemove + " from be the manager of store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
-                            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
-                        }
-                        loggerController.WriteErrorMsg("User " + userID + " try to remove " +managerToRemove+" from be the manager of store " + storeID + " and failed. "+ managerToRemove+" is not manages the store");
-                        return new Response(true, "The user "+managerToRemove+" is not manages the store, so he can not be removed from Manages the store.");
-                    }
-                loggerController.WriteErrorMsg("User " + userID + " try to remove "+managerToRemove+" from be the manager of store "+storeID + " and failed. "+ userID+" is not the owner of the store");
-                return new Response(true, "The user "+userID+" is not the owner of the store, so he can not removed manager from store");
-            }
-            loggerController.WriteErrorMsg("User " + userID + " try to remove "+managerToRemove+" from be the manager of store "+storeID + " and failed. "+ managerToRemove+" is not subscriber");
-            return new Response(true, "The user "+managerToRemove+" is not subscriber, so he can not be removed from manages store");
         }
-        loggerController.WriteErrorMsg("User " + userID + " try to remove "+managerToRemove+" from be the manager of store "+storeID + " and failed. "+ userID+" is not not subscriber");
-        return new Response(true, "The user "+userID+" is not subscriber, so he can not removed manager from store");
-    }
+        while (!this.subscribers.get(ManagerToRemove).userIsLock()) {
+            try{
+                this.wait(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        this.subscribers.get(ManagerToRemove).lockUser();
+        User MTR = this.subscribers.get(ManagerToRemove);
+        Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, User.Permission.RemoveManager);
+        if (res1.getIsErr()) {
+            MTR.unlockUser();
+            return res1;
+        }
+        Response res2 =MTR.AbleToRemoveManager(userID, storeID);
+        if (res2.getIsErr()) {
+            MTR.unlockUser();
+            return res2;
+        }
+        MTR.removeStore(storeID);
+        stores.get(storeID).removeManager(userID, ManagerToRemove);
+        MTR.unlockUser();
+        loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
+        return new Response("The manager removed successfully");
+        }
 
-    public Double calculateBugPrice(Integer productID, Integer storeID, Integer quantity, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        return this.stores.get(storeID).calculateBugPrice(productID,quantity,productsInTheBug);
-    }
 
     public boolean productIsLock(int productID, int storeID) {
         return this.stores.get(storeID).productIsLock(productID);

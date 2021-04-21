@@ -117,6 +117,7 @@ public class Store {
 
     public String removeManager(Integer userId, Integer managerId) {
         this.managersIDs.remove(managerId);
+        this.managersPermission.remove(managerId);
         return "The Manager removed";
     }
     //todo - ensure that only the Trading Administrator can access this function.

@@ -19,7 +19,6 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public  class User {
 
-
     public enum Permission {
         AddProduct,
         ReduceProduct,
@@ -273,6 +272,18 @@ public  class User {
     return this.myManagedStoresIDs.contains(storeID);
     }
 
+    public Response AbleToRemoveManager(int userID, int storeID) {
+        if (!this.myManagedStoresIDs.contains(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to remove " +this.id+" from be the manager of store " + storeID + " and failed. "+ this.id+" is not manages the store");
+            return new Response(true, "The user "+this.id+" is not manages the store, so he can not be removed from Manages the store.");
+        }
+        if (this.managerPermission.get(storeID)!=null&&
+            this.managerPermission.get(storeID).getAppointmentId()!=userID) {
+            loggerController.WriteErrorMsg("User " + userID + " try to remove " + this.id + " from be the manager of store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
+            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+        }
+        return new Response("It is possible to add the user as the owner");
+    }
 }
 
 
