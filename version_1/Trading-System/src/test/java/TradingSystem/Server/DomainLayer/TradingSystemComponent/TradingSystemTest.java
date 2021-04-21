@@ -21,28 +21,28 @@ class TradingSystemTest {
 
     @BeforeEach
     void setUp() {
-        connID= tradingSystem.ConnectSystem().getConnID();
+        connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID,"reutlevy","8119");
-        userID= response.getUserID();
-        connID= tradingSystem.Login(connID,"reutlevy","8119").getConnID();
+        userID= response.returnUserID();
+        connID= tradingSystem.Login(connID,"reutlevy","8119").returnConnID();
     }
   
   @Test
     void connectSystem() {
         Response response= tradingSystem.ConnectSystem();
-        assertTrue(response.getConnID()!="" && response.getIsErr()==false);
+        assertTrue(response.returnConnID()!="" && response.getIsErr()==false);
     }
   
     @Test
     void exitGood() {
-        String connId= tradingSystem.ConnectSystem().getConnID();
+        String connId= tradingSystem.ConnectSystem().returnConnID();
         Response response=tradingSystem.Exit(connId);
         assertFalse(response.getIsErr());
     }
 
     @Test
     void exiBad() {
-        String connId= tradingSystem.ConnectSystem().getConnID();
+        String connId= tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Exit(connId);
         Response response=tradingSystem.Exit(connId);
         assertTrue(response.getIsErr());
@@ -50,13 +50,13 @@ class TradingSystemTest {
     
     @Test
     void registerGood() {
-        String connID= tradingSystem.ConnectSystem().getConnID();
+        String connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID,"reutlevy30","8111996");
-        assertFalse(response.getIsErr() && response.getUserID()<0);
+        assertFalse(response.getIsErr() && response.returnUserID()<0);
     }
     @Test
     void registerExistUser() {
-        String connID= tradingSystem.ConnectSystem().getConnID();
+        String connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID,"reutlevy30","8111996");
         response= tradingSystem.Register(connID,"reutlevy30","reut");
         assertTrue(response.getIsErr());
@@ -68,20 +68,20 @@ class TradingSystemTest {
 
     @Test
     void loginSucess() {
-        String connID= tradingSystem.ConnectSystem().getConnID();
+        String connID= tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(connID,"reutlevy30","811199");
         Response response=tradingSystem.Login(connID,"reutlevy30","811199");
-        assertFalse(response.getIsErr() && response.getUserID()<0);
+        assertFalse(response.getIsErr() && response.returnUserID()<0);
     }
     @Test
     void loginWrongUserName() {
-        String connID= tradingSystem.ConnectSystem().getConnID();
+        String connID= tradingSystem.ConnectSystem().returnConnID();
         Response response=tradingSystem.Login(connID,"reutlevy3","811199");
         assertTrue(response.getIsErr());
     }
     @Test
     void loginWrongPassword() {
-        String connID= tradingSystem.ConnectSystem().getConnID();
+        String connID= tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(connID,"reutlevy30","811199");
         Response response=tradingSystem.Login(connID,"reutlevy30","8111996");
         assertTrue(response.getIsErr());
@@ -91,7 +91,7 @@ class TradingSystemTest {
     void showAllStoresGood() {
         tradingSystem.AddStore(userID,connID,"Store");
         Response res = tradingSystem.ShowAllStores();
-        List<DummyStore> list = res.getStoreList();
+        List<DummyStore> list = res.returnStoreList();
         System.out.println(list.size());
         assertEquals(list.size(),1);
     }
@@ -111,7 +111,7 @@ class TradingSystemTest {
 
     @Test
     void AddStoreNotSubscriber() {
-        connID= tradingSystem.ConnectSystem().getConnID();
+        connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.AddStore(11,connID,"Store3");
         assertTrue(response.getIsErr());
     }

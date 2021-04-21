@@ -47,6 +47,7 @@ public class TradingSystem {
         if (tradingSystem == null) {
             tradingSystem = new TradingSystem();
             tradingSystem.validation = new Validation();
+            tradingSystem.ClearSystem();
 //            tradingSystem.Initialization();
         }
         return tradingSystem;
@@ -272,11 +273,11 @@ public class TradingSystem {
         if (response.getIsErr())
             return response;
         User myGuest = guests.get(guestConnID);
-        subscribers.get(response.getUserID()).mergeToMyCart(myGuest.getShoppingCart());
-        String connID = connectSubscriberToSystemConnID(response.getUserID());
+        subscribers.get(response.returnUserID()).mergeToMyCart(myGuest.getShoppingCart());
+        String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
         Response res = new Response("Login was successful");
-        res.AddUserID(response.getUserID());
+        res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         return res;
     }
@@ -914,6 +915,19 @@ public class TradingSystem {
         this.stores.get(storeID).pay(finalPrice);
     }
 
+    public Response editProductQuantityFromCart(String connID, int storeID, int productID, int quantity) {
+        if(guests.containsKey(connID)){
+            User myGuest= guests.get(connID);
+            return myGuest.editProductQuantityFromCart(storeID, productID, quantity);
+        }
+        else if(connectedSubscribers.containsKey(connID)){
+            int userID= connectedSubscribers.get(connID);
+            return subscribers.get(userID).editProductQuantityFromCart(storeID, productID, quantity);
+        }
+        else {
+            return new Response(true, "User not connect to system");
+        }
+    }
     public Response RemoveProductFromCart(String connID, int storeID, int productID) {
         if(guests.containsKey(connID)) {
             Response res =guests.get(connID).RemoveProductFromCart(storeID,productID);
@@ -934,5 +948,25 @@ public class TradingSystem {
        return this.stores.get(storeID).calculateBugPrice(true,productsInTheBug);
        else
        return this.stores.get(storeID).calculateBugPrice(false,productsInTheBug);
+    }
+
+    public Response ShowAllUsers(int adminID, String connID) {
+        if(!ValidConnectedUser(adminID, connID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed");
+            return new Response(true, "Error in User details");
+        }
+        else if (!systemAdmins.containsKey(adminID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed not admin");
+            return new Response(true, "Error User not admin");
+        }
+        else {
+            List<DummyUser> list = new ArrayList<>();
+            for (Map.Entry<Integer, User> currUser : subscribers.entrySet()) {
+                list.add(new DummyUser(currUser.getValue()));
+            }
+            Response res = new Response("num of users in the system is " + list.size());
+            res.AddPair("users", list);
+            return res;
+        }
     }
 }
