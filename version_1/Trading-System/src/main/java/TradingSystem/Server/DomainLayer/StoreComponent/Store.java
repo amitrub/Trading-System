@@ -3,6 +3,8 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -23,9 +25,9 @@ public class Store {
     private List<Integer> managersIDs = new ArrayList<>();
 
     //ownerID_Permission
-   // private ConcurrentHashMap<Integer, OwnerPermission> ownersPermission = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, OwnerPermission> ownersPermission = new ConcurrentHashMap<>();
     //managersID_Permission
-    //private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
+    private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
 
     private DiscountPolicy discountPolicy;
     private BuyingPolicy buyingPolicy;
@@ -341,5 +343,9 @@ public class Store {
         }
         else
             return 2.0;
+    }
+
+    public void addOwnerPermission(int newOwner, OwnerPermission op) {
+        this.ownersPermission.put(newOwner,op);
     }
 }

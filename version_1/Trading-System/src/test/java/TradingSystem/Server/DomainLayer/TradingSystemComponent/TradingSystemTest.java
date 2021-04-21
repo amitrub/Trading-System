@@ -357,4 +357,70 @@ class TradingSystemTest {
         assertTrue(response.getIsErr());
     }
 
+    @Test
+    void NewOwnerSuccess() {
+        tradingSystem.AddStore(userID,connID,"store");
+        String gust1 = tradingSystem.ConnectSystem().getConnID();
+        tradingSystem.Register(gust1, "elinor", "123");
+        Response r=tradingSystem.Login(gust1, "elinor", "123");
+        Response r1 = tradingSystem.AddNewOwner(userID, connID, 1, r.getUserID());
+        System.out.println(r1.getMessage());
+        assertFalse(r1.getIsErr());
+    }
+
+    @Test
+    void NewOwnerNotConnected() {
+        tradingSystem.AddStore(userID,connID,"store");
+        Response r = tradingSystem.AddNewManager(-1, "--", 1, 2);
+        System.out.println(r.getMessage());
+        assertTrue(r.getIsErr());
+    }
+
+    @Test
+    void NewOwnerNotSubscriber() {
+        tradingSystem.AddStore(userID,connID,"store");
+        Response r1 = tradingSystem.AddNewOwner(-1, connID, 1, 2);
+        System.out.println(r1.getMessage());
+        assertTrue(r1.getIsErr());
+        Response r2 = tradingSystem.AddNewOwner(userID, connID, 1, 7);
+        System.out.println(r2.getMessage());
+        assertTrue(r2.getIsErr());
+    }
+
+    @Test
+    void AddNewOwnerIsNotTheOwner() {
+        tradingSystem.AddStore(userID,connID,"store");
+        String gust1 = tradingSystem.ConnectSystem().getConnID();
+        tradingSystem.Register(gust1, "elinor", "123");
+        Response res = tradingSystem.Login(gust1, "elinor", "123");
+        String gust2 = tradingSystem.ConnectSystem().getConnID();
+        tradingSystem.Register(gust2, "roee", "123");
+        tradingSystem.Login(gust2, "roee", "123").getConnID();
+        Response r1 = tradingSystem.AddNewOwner(res.getUserID(), res.getConnID(), 1, 3);
+        System.out.println(r1.getMessage());
+        assertTrue(r1.getIsErr());
+    }
+
+    @Test
+    void NewOwnerDouble() {
+        tradingSystem.AddStore(userID,connID,"store");
+        String gust1 = tradingSystem.ConnectSystem().getConnID();
+        tradingSystem.Register(gust1, "elinor", "123");
+        Response res = tradingSystem.Login(gust1, "elinor", "123");
+        tradingSystem.AddNewOwner(userID, connID, 1, res.getUserID());
+        Response r = tradingSystem.AddNewOwner(userID, connID, 1, res.getUserID());
+        System.out.println(r.getMessage());
+        assertTrue(r.getIsErr());
+    }
+
+    @Test
+    void NewOwnerAlreadyManager() {
+        // String gust1 = tradingSystem.ConnectSystem().getConnID();
+        //tradingSystem.Register(gust1, "elinor", "123");
+        //Response res = tradingSystem.Login(gust1, "elinor", "123");
+        //tradingSystem.AddNewManager(userID, connID, 1, res.getUserID());
+        //Response r = tradingSystem.AddNewOwner(userID, connID, 1, res.getUserID());
+        //assertTrue(!r.getIsErr());
+    }
+
 }
