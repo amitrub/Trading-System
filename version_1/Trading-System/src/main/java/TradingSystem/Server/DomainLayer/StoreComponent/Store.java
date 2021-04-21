@@ -329,5 +329,9 @@ public class Store {
         return this.managersIDs.contains(newOwner);
     }
 
+    public boolean isProductExist(int id){
+        return inventory.checkProductsExistInTheStore(id,1);
+    }
+
 
 }

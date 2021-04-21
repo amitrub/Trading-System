@@ -10,6 +10,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -228,6 +229,15 @@ public  class User {
         int index=this.myManagedStoresIDs.indexOf(storeID);
         this.myManagedStoresIDs.remove(index);
         this.managerPermission.remove(storeID);
+    }
+
+    public boolean IsProductExist(int productid){
+        for(ShoppingHistory shoppingHistory:this.shoppingHistory){
+            if(shoppingHistory.isProductExist(productid)){
+                return true;
+            }
+        }
+        return false;
     }
 }
 
