@@ -914,18 +914,18 @@ public class TradingSystem {
         this.stores.get(storeID).pay(finalPrice);
     }
 
-    public NewResponse RemoveProductFromCart(String connID, int storeID, int productID) {
+    public Response RemoveProductFromCart(String connID, int storeID, int productID) {
         if(guests.containsKey(connID)) {
-            NewResponse res =guests.get(connID).RemoveProductFromCart(storeID,productID);
+            Response res =guests.get(connID).RemoveProductFromCart(storeID,productID);
             return res;
         }
         else if(connectedSubscribers.containsKey(connID)) {
             int userID = connectedSubscribers.get(connID);
-            NewResponse res = subscribers.get(userID).RemoveProductFromCart(storeID,productID);
+            Response res = subscribers.get(userID).RemoveProductFromCart(storeID,productID);
             return res;
         }
         else {
-            return new NewResponse(true, "user not Exist");
+            return new Response(true, "user not Exist");
         }
     }
 

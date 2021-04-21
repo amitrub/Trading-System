@@ -45,7 +45,6 @@ public class ShoppingCart {
         return shoppingBags;
     }
 
-    private static final LoggerController loggerController = LoggerController.getInstance();
 
     @Override
     public String toString() {
