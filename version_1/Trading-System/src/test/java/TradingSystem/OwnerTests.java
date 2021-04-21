@@ -463,7 +463,7 @@ public class OwnerTests {
 
     //endregion
 
-    //region requirement 4.6: Edit manager Permissions tests
+    //region requirement 4.6: Edit manager Permissions tests - TODO
 
     //endregion
 
@@ -526,7 +526,7 @@ public class OwnerTests {
 
     //endregion
 
-    //region requirement 4.9: Information on officials tests
+    //region requirement 4.9: Information on officials tests - TODO
     @Test
     void HappyShowOfficialsInfo() {
     }
