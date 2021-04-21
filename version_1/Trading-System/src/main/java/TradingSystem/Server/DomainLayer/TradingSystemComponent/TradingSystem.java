@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -297,8 +298,7 @@ public class TradingSystem {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
             connectedSubscribers.remove(connID);
             User newGuest = new User();
-            //TODO: mybe do deep copy
-            newGuest.setShoppingCart(myUser.getShoppingCart());
+            newGuest.setShoppingCart(new ShoppingCart( myUser.getShoppingCart()));
             String guestConnID = connectGuestToSystemConnID(newGuest);
             Response res = new Response("Logout was successful");
             res.AddConnID(guestConnID);
@@ -842,7 +842,7 @@ public class TradingSystem {
         return connectedSubscribers.containsKey(connID) && connectedSubscribers.get(connID).equals(userID);
     }
 
-    public Response reduseProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
+    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
@@ -1057,6 +1057,58 @@ public class TradingSystem {
             }
             Response res = new Response("num of users in the system is " + list.size());
             res.AddPair("users", list);
+            return res;
+        }
+    }
+
+    public Response ShowUserHistory(int adminID, int userID, String connID) {
+        if(!ValidConnectedUser(adminID, connID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed");
+            return new Response(true, "Error in User details");
+        }
+        else if (!systemAdmins.containsKey(adminID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed not admin");
+            return new Response(true, "Error User not admin");
+        }
+        else if (!subscribers.containsKey(userID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see history details of user"+userID+" and failed");
+            return new Response(true, "Error in User details");
+        }
+        else {
+            List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
+            if(list.isEmpty()){
+                return new Response(true,"There are no older shopping in the history");
+            }
+            Response res = new Response("num of history buying of the user is " + list.size());
+            res.AddPair("history", list);
+            return res;
+        }
+    }
+      
+    public Response ShowOwnerStores(int userID, String connID)
+    {
+        if(!ValidConnectedUser(userID, connID))
+        {
+            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed");
+            return new Response(true, "User is nor logged in");
+        }
+        else if (!subscribers.containsKey(userID)){
+            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed not admin");
+            return new Response(true, "User is not subscriber");
+        }
+        else{
+            User user = subscribers.get(userID);
+            List<Integer> store = user.getMyOwnerStore();
+            ConcurrentHashMap<Integer, Store> storeObjects = new ConcurrentHashMap<>();
+            List<DummyStore> list = new ArrayList<>();
+            for(int i=0; i<store.size(); i++) {
+                for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
+                    if (currStore.getValue().getId() == store.get(i))
+                        list.add(new DummyStore(currStore.getValue()));
+                }
+            }
+            Response res = new Response("num of owned stores of the user is " + list.size());
+            res.AddPair("stores", list);
             return res;
         }
     }

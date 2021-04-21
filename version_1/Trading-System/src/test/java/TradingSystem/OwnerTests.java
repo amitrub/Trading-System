@@ -19,18 +19,19 @@ import static org.junit.Assert.assertTrue;
 public class OwnerTests {
 
     Client client;
+    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
         this.client = new Client();
-        client.ClearSystem();
+        client.clearSystem();
         client.connectSystem();
-
     }
 
     @AfterEach
     void tearDown() {
         client.exitSystem();
+        client.clearSystem();
     }
 
     //region other functions

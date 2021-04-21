@@ -77,11 +77,9 @@ public class AdminService {
      *  }]
      * }
      */
-    //TODO: not implemented
     @GetMapping("{adminID}/user_history/{userID}")
     public Response ShowUserHistory(@PathVariable int adminID, @PathVariable int userID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowAllStores(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.ShowUserHistory(adminID,userID ,connID);
         return res;
     }
 
@@ -110,11 +108,9 @@ public class AdminService {
      *  }]
      * }
      */
-    //TODO: not implemented
     @GetMapping("{adminID}/store_history/{storeID}")
     public Response ShowStoreHistory(@PathVariable int adminID, @PathVariable int storeID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowStoreHistory(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.StoreHistory(adminID, storeID, connID);
         return res;
     }
 }

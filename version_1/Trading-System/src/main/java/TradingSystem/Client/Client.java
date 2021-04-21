@@ -37,7 +37,7 @@ public class Client {
 
     //Guest
 
-    public void ClearSystem() {
+    public void clearSystem() {
         String path = "clear_system";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
@@ -46,9 +46,9 @@ public class Client {
     /**
      * @requirement 2.1
      *
-     * @return string connID
+     *
      */
-    public String connectSystem() {
+    public void connectSystem() {
         String path = "home";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
@@ -57,14 +57,12 @@ public class Client {
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "38", "connect system error"));
         }
-        return this.connID;
     }
 
     /**
      * @requirement 2.2
-     * @return string connID
-     */
-    public String exitSystem() {
+     * */
+    public void exitSystem() {
         String path = "exit";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
@@ -73,7 +71,6 @@ public class Client {
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "48", "exit system error"));
         }
-        return this.connID;
     }
 
     /**
@@ -117,7 +114,7 @@ public class Client {
 
      /**
      * @requirement 2.5
-     * @return
+     * @return int userID
      */
     public List<DummyStore> showAllStores() {
         String path = "stores";
@@ -135,14 +132,14 @@ public class Client {
     }
 
     /**
-     * @requirement 2.6 search f
-     * @param mode
-     * @param name
-     * @param minPrice
-     * @param maxPrice
-     * @param p_rank
-     * @param s_rank
-     * @return
+     * @requirement 2.6
+     * @param mode mode
+     * @param name name
+     * @param minPrice minPrice
+     * @param maxPrice maxPrice
+     * @param p_rank p_rank
+     * @param s_rank s_rank
+     * @return List<DummyProduct>
      */
     public List<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
 
@@ -178,7 +175,14 @@ public class Client {
     }
 
 
-    public void addProductToCart(int storeID, int productID, int quantity) {
+    /**
+     * @requirement 2.7
+     * @param storeID  storeID
+     * @param productID productID
+     * @param quantity quantity
+     * @return response
+     */
+    public Response addProductToCart(int storeID, int productID, int quantity) {
         String path = "shopping_cart/add_product" ;
         JSONObject post_data = new JSONObject();
         try {
@@ -190,16 +194,56 @@ public class Client {
         }
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, post_data.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(addProductToCart) response: " + response + ANSI_RESET);
         if(response.getIsErr())
             System.out.println(errMsgGenerator("Client", "Client", "130", response.getMessage()));
+        return response;
     }
-    public List<DummyProduct> showShoopingCart() {
+
+
+    /**
+     * @requirement 2.8
+     * @return List<DummyProduct>
+     */
+    public List<DummyProduct> showShoppingCart() {
         String path = "shopping_cart";
         JSONObject jsonArray = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonArray);
+        System.out.println(ANSI_YELLOW + "(addProductToCart) response: " + response + ANSI_RESET);
         List<DummyProduct> dummyProductResponeArr = response.returnProductList();
         return dummyProductResponeArr;
     }
+    public Response removeFromShoppingCart(int storeID, int productID) {
+        String path = "shopping_cart/remove_product";
+        JSONObject post_data = new JSONObject();
+        try {
+            post_data.put("storeID", storeID);
+            post_data.put("productID", productID);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "222", "Error: removeFromShoppingCart"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest+path, post_data.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(removeFromShoppingCart) response: " + response + ANSI_RESET);
+        return response;
+    }
+    public Response editShoppingCart(int storeID, int productID, int quantity) {
+        String path = "shopping_cart/edit_product";
+        JSONObject post_data = new JSONObject();
+        try {
+            post_data.put("storeID", storeID);
+            post_data.put("productID", productID);
+            post_data.put("quantity", quantity);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "125", "Error: addProductToCart"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, post_data.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(editShoppingCart) response: " + response + ANSI_RESET);
+        return response;
+    }
+
+
     public boolean guestPurchase(String name, String credit_number, String phone_number, String address) {
         String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
@@ -330,14 +374,28 @@ public class Client {
     }
     public boolean addOwner(int storeID, int newOwnerID) {
         String path = String.format("%s/store/%s/add_new_owner/%s", this.userID, storeID, newOwnerID);
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("userID", newOwnerID);
+            jsonPost.put("storeID", storeID);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addOwner, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addOwner) response: " + response + ANSI_RESET);
         return response.getIsErr();
     }
     public boolean addManager(int storeID, int newManagerID){
         String path = String.format("%s/store/%s/add_new_manager/%s", this.userID, storeID, newManagerID);
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("userID", newManagerID);
+            jsonPost.put("storeID", storeID);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addManager, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addManager) response: " + response + ANSI_RESET);
         return response.getIsErr();
