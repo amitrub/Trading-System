@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import java.util.List;
@@ -159,9 +160,21 @@ class TradingSystemTest {
                 productId= store1.getProductID("prod3");
             }
         }
-        System.out.println(productId);
-        Response response=tradingSystem.RemoveProduct(userID,storeid,productId,connID);
-        assertFalse(response.getIsErr());
+        String connID1= tradingSystem.ConnectSystem().getConnID();
+        Response response= tradingSystem.Register(connID1,"reutlevy30","8119");
+        int userID1= response.getUserID();
+        connID1= tradingSystem.Login(connID1,"reutlevy30","8119").getConnID();
+        response=tradingSystem.RemoveProduct(userID1,storeid,productId,connID1);
+        assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void RemoveProductNotExist(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        Product product=new Product(4,"prod4","food",7.0,11);
+        Response response=tradingSystem.RemoveProduct(userID,storeid,product.getProductID(),connID);
+        assertTrue(response.getIsErr());
     }
 
 
