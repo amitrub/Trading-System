@@ -130,5 +130,10 @@ class TradingSystemTest {
         assertFalse(response.getIsErr());
     }
 
+    @Test
+    void RemoveProductSuccess(){
+
+    }
+
 
 }
