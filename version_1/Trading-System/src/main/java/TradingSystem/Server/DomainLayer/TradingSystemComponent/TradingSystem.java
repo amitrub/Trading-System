@@ -800,10 +800,36 @@ public class TradingSystem {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
-    //show the history for some user
+    /**
+     * @requirement 3.7
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "history": List [{
+     *      "userID": int
+     *      "storeID": int
+     *      "products": List [{
+     *          "storeID": int
+     *          "storeName": String
+     *          "productID": int
+     *          "productName": String
+     *          "price": double
+     *          "category": String
+     *          "quantity": int
+     *      }]
+     *  }]
+     * }
+     */
     public Response ShowSubscriberHistory(int userID, String connID){
         if (ValidConnectedUser(userID,connID)){
             List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
+            if(list.isEmpty()){
+                return new Response(true,"There are no older shopping in the history");
+            }
             Response res = new Response("num of history buying of the user is " + list.size());
             res.AddPair("history", list);
             return res;
