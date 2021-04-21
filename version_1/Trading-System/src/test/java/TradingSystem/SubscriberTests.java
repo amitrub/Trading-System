@@ -1,6 +1,7 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -11,16 +12,19 @@ import static org.junit.Assert.assertTrue;
 public class SubscriberTests {
 
     Client client;
-
+    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
-        client = new Client();
+        this.client = new Client();
+        client.clearSystem();
         client.connectSystem();
     }
+
     @AfterEach
     void tearDown() {
         client.exitSystem();
+        client.clearSystem();
     }
 
     //region requirement 3.1: logout Tests

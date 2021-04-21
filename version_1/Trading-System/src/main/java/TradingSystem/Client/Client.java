@@ -37,7 +37,7 @@ public class Client {
 
     //Guest
 
-    public void ClearSystem() {
+    public void clearSystem() {
         String path = "clear_system";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
@@ -46,9 +46,9 @@ public class Client {
     /**
      * @requirement 2.1
      *
-     * @return string connID
+     *
      */
-    public String connectSystem() {
+    public void connectSystem() {
         String path = "home";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
@@ -57,14 +57,12 @@ public class Client {
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "38", "connect system error"));
         }
-        return this.connID;
     }
 
     /**
      * @requirement 2.2
-     * @return string connID
-     */
-    public String exitSystem() {
+     * */
+    public void exitSystem() {
         String path = "exit";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
@@ -73,7 +71,6 @@ public class Client {
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "48", "exit system error"));
         }
-        return this.connID;
     }
 
     /**
@@ -117,7 +114,7 @@ public class Client {
 
      /**
      * @requirement 2.5
-     * @return
+     * @return int userID
      */
     public List<DummyStore> showAllStores() {
         String path = "stores";
@@ -135,14 +132,14 @@ public class Client {
     }
 
     /**
-     * @requirement 2.6 search f
-     * @param mode
-     * @param name
-     * @param minPrice
-     * @param maxPrice
-     * @param p_rank
-     * @param s_rank
-     * @return
+     * @requirement 2.6
+     * @param mode mode
+     * @param name name
+     * @param minPrice minPrice
+     * @param maxPrice maxPrice
+     * @param p_rank p_rank
+     * @param s_rank s_rank
+     * @return List<DummyProduct>
      */
     public List<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
 
@@ -178,7 +175,14 @@ public class Client {
     }
 
 
-    public void addProductToCart(int storeID, int productID, int quantity) {
+    /**
+     * @requirement 2.7
+     * @param storeID  storeID
+     * @param productID productID
+     * @param quantity quantity
+     * @return response
+     */
+    public Response addProductToCart(int storeID, int productID, int quantity) {
         String path = "shopping_cart/add_product" ;
         JSONObject post_data = new JSONObject();
         try {
@@ -192,7 +196,10 @@ public class Client {
         Response response = Response.makeResponseFromJSON(jsonResponse);
         if(response.getIsErr())
             System.out.println(errMsgGenerator("Client", "Client", "130", response.getMessage()));
+        return response;
     }
+
+
     public List<DummyProduct> showShoopingCart() {
         String path = "shopping_cart";
         JSONObject jsonArray = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
