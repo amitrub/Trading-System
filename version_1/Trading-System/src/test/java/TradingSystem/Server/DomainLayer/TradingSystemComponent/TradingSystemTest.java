@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import java.util.List;
@@ -18,7 +19,7 @@ class TradingSystemTest {
     TradingSystem tradingSystem=TradingSystem.getInstance();
 
     String connID;
-    int userID;
+    int userID, storeid1;
 
     @BeforeEach
     void setUp() {
@@ -26,14 +27,26 @@ class TradingSystemTest {
         Response response= tradingSystem.Register(connID,"reutlevy","8119");
         userID= response.getUserID();
         connID= tradingSystem.Login(connID,"reutlevy","8119").getConnID();
+
+        String connID1= tradingSystem.ConnectSystem().getConnID();
+        Response response1= tradingSystem.Register(connID1,"reutlevy8","8119");
+        int userID1= response1.getUserID();
+        connID1= tradingSystem.Login(connID1,"reutlevy8","8119").getConnID();
+        tradingSystem.AddStore(userID1,connID1,"store8");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store8")){
+                storeid1=store1.getId();
+            }
+        }
+
     }
-  
-  @Test
+
+    @Test
     void connectSystem() {
         Response response= tradingSystem.ConnectSystem();
         assertTrue(response.getConnID()!="" && response.getIsErr()==false);
     }
-  
+
     @Test
     void exitGood() {
         String connId= tradingSystem.ConnectSystem().getConnID();
@@ -48,7 +61,7 @@ class TradingSystemTest {
         Response response=tradingSystem.Exit(connId);
         assertTrue(response.getIsErr());
     }
-    
+
     @Test
     void registerGood() {
         String connID= tradingSystem.ConnectSystem().getConnID();
