@@ -187,5 +187,9 @@ public class Product {
         return Comments;
     }
 
+    public boolean isUserComment(int userID){
+        return productComments.containsKey(userID);
+    }
+
 
 }
