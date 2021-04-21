@@ -911,26 +911,43 @@ public class TradingSystem {
     }
 
 
+    /**
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productID
+     * @param productName
+     * @param category
+     * @param price
+     * @param quantity
+     * @return Response{
+     *        "isErr: boolean
+     *        "message": String
+     *        "connID": String
+     *       }
+     */
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID, User.Permission.AddProduct)) {
-                if(price>=0) {
-                    if(quantity>0) {
+            if(!hasPermission(userID,storeID, User.Permission.AddProduct)){
+                return new Response(true, "The Edit is not allowed to Edit products");
+            }
+            else {
+                if(price<0){
+                    return new Response(true, "The product price can't be negative");
+                }
+                else {
+                    if(quantity<0){
+                        return new Response(true, "The product quantity can't be negative");
+                    }
+                    else{
                         //todo change quantity of product
                         stores.get(storeID).editProductDetails(userID, productID, productName, price, category);
                         printProducts();
                         loggerController.WriteLogMsg("User " + userID + " edit product " + productID + " successfully");
                         return new Response("Edit Product was successful");
                     }
-                    loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-                    return new Response(true, "The product quantity can't be negative");
-
                 }
-                loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-                return new Response(true, "The product price can't be negative");
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-            return new Response(true, "The Edit is not allowed to Edit products");
         }
         else{
             loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");

@@ -19,17 +19,15 @@ class TradingSystemTest {
     TradingSystem tradingSystem=TradingSystem.getInstance();
 
     String connID;
-
     int userID, storeid,productId;
-
 
     @BeforeEach
     void setUp() {
         connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID,"reutlevy","8119");
+
         userID= response.getUserID();
         connID= tradingSystem.Login(connID,"reutlevy","8119").getConnID();
-
 
         String connID1= tradingSystem.ConnectSystem().getConnID();
         Response response1= tradingSystem.Register(connID1,"reutlevy8","8119");
@@ -172,12 +170,39 @@ class TradingSystemTest {
                 productId= store1.getProductID("prod3");
             }
         }
-        String connID1= tradingSystem.ConnectSystem().getConnID();
+        String connID1= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID1,"reutlevy30","8119");
-        int userID1= response.getUserID();
-        connID1= tradingSystem.Login(connID1,"reutlevy30","8119").getConnID();
+        int userID1= response.returnUserID();
+        connID1= tradingSystem.Login(connID1,"reutlevy30","8119").returnConnID();
         response=tradingSystem.RemoveProduct(userID1,storeid,productId,connID1);
+        assertTrue(response.getIsErr());
     }
+
+    @Test
+    void RemoveProductNotExist(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        Product product=new Product(4,"prod4","food",7.0,11);
+        Response response=tradingSystem.RemoveProduct(userID,storeid,product.getProductID(),connID);
+        assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void EditProductSuccess(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        System.out.println(productId);
+        Response response=tradingSystem.EditProduct(userID,connID,storeid,productId,"prod4","food",12.0,9);
+       assertFalse(response.getIsErr());
+    }
+        
     void AddProductSuccess(){
         Store store= new Store("store11", userID);
         tradingSystem.AddStore(userID,connID,"store11");
@@ -192,6 +217,23 @@ class TradingSystemTest {
     }
 
     @Test
+    void EditProductInvalidPremmision(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        String connID1= tradingSystem.ConnectSystem().returnConnID();
+        Response response= tradingSystem.Register(connID1,"reutlevy30","8119");
+        int userID1= response.returnUserID();
+        connID1= tradingSystem.Login(connID1,"reutlevy30","8119").returnConnID();
+        response=tradingSystem.EditProduct(userID1,connID1,storeid,productId,"prod4","food",12.0,9);
+  assertTrue(response.getIsErr());
+    }
     void AddProductInvalidAmount(){
         Store store= new Store("store11", userID);
         tradingSystem.AddStore(userID,connID,"store11");
@@ -206,6 +248,29 @@ class TradingSystemTest {
     }
 
     @Test
+    void EditProductnotexist(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        Product product=new Product(4,"prod4","food",7.0,11);
+        Response response=tradingSystem.EditProduct(userID,connID,storeid,product.getProductID(),"prod4","food",12.0,9);
+        assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void EditProductWrongPrice(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        System.out.println(productId);
+        Response response=tradingSystem.EditProduct(userID,connID,storeid,productId,"prod4","food",-12.0,9);
+       assertTrue(response.getIsErr());
+    }
 
     void RemoveProductNotExist(){
         Store store= new Store("store11", userID);
@@ -221,6 +286,22 @@ class TradingSystemTest {
     }
 
     @Test
+    void EditProductWrongQuantity(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        System.out.println(productId);
+        Response response=tradingSystem.EditProduct(userID,connID,storeid,productId,"prod4","food",12.0,-9);
+        assertTrue(response.getIsErr());
+    }
+
+
     void AddProductInvaliddetails(){
         Response response=tradingSystem.AddProductToStore(userID,connID,storeid1,"prod3","food",-1,11);
         assertTrue(response.getIsErr());
