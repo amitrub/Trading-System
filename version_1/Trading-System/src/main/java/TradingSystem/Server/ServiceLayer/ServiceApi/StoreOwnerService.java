@@ -281,7 +281,6 @@ public class StoreOwnerService {
      *      *  "connID": String
      *      * }
      */
-    //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/add_new_owner/{newOwnerID}")
     public Response AddNewOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newOwnerID, @RequestHeader("connID") String connID)  {
         Response res = tradingSystem.AddNewOwner(userID, connID, storeID, newOwnerID);
@@ -310,6 +309,8 @@ public class StoreOwnerService {
     }
 
 
+
+
     /**
      * @requirement 4.5
      *
@@ -326,7 +327,8 @@ public class StoreOwnerService {
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/add_new_manager/{newManagerID}")
     public Response AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManagerID, @RequestHeader("connID") String connID)  {
-        return tradingSystem.AddNewManager(userID, connID, storeID,newManagerID);
+        Response res = tradingSystem.AddNewManager(userID, connID, storeID, newManagerID);
+        return res;
     }
 
     /**
