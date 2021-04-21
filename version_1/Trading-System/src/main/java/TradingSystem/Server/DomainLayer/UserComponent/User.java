@@ -231,6 +231,12 @@ public  class User {
         this.managerPermission.remove(storeID);
     }
 
+    public Response RemoveProductFromCart(int storeID, int productID) {
+      return this.shoppingCart.RemoveProductFromCart(storeID, productID);
+    }
+
+
+
     public boolean IsProductExist(int productid){
         for(ShoppingHistory shoppingHistory:this.shoppingHistory){
             if(shoppingHistory.isProductExist(productid)){
@@ -239,6 +245,7 @@ public  class User {
         }
         return false;
     }
+
 }
 
 

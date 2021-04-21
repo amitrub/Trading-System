@@ -10,6 +10,7 @@ import TradingSystem.Server.ServiceLayer.LoggerController;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -26,8 +27,8 @@ public class ShoppingCart {
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags = new ConcurrentHashMap<>();
 
-
     public ShoppingCart(Integer userID){
+
         this.userID = userID;
     }
 
@@ -44,6 +45,8 @@ public class ShoppingCart {
         return shoppingBags;
     }
 
+    private static final LoggerController loggerController = LoggerController.getInstance();
+
     @Override
     public String toString() {
         return "ShoppingCart{" +
@@ -51,20 +54,17 @@ public class ShoppingCart {
                 '}';
     }
 
-    public void mergeToMyCart(ShoppingCart shoppingCartToMerge){
+    public void mergeToMyCart(ShoppingCart shoppingCartToMerge) {
         Set<Integer> keySetToMerge = shoppingCartToMerge.shoppingBags.keySet();
-        for (int storeID : keySetToMerge){
+        for (int storeID : keySetToMerge) {
             ShoppingBag newShoppingBag = shoppingCartToMerge.shoppingBags.get(storeID);
-            if(!this.shoppingBags.containsKey(storeID)){
+            if (!this.shoppingBags.containsKey(storeID)) {
                 this.shoppingBags.put(storeID, newShoppingBag);
-            }
-            else {
+            } else {
                 this.shoppingBags.get(storeID).mergeToMyBag(newShoppingBag);
             }
         }
     }
-
-
 
     /**
      /**
@@ -80,17 +80,16 @@ public class ShoppingCart {
      *  "connID": String
      * }
      */    
-
     public Response addProductToBag(Integer storeID, Integer productID, Integer quantity){
-
         ConcurrentHashMap<Integer, Integer> productsInTheBug = new ConcurrentHashMap<Integer, Integer>();
         productsInTheBug.put(productID, quantity);
         if(this.shoppingBags.containsKey(storeID))
         {
+
             ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
             Set<Integer> productSet = shoppingBag.getProducts().keySet();
-            for (Integer key : productSet){
-                if(key == productID)
+            for (Integer key : productSet) {
+                if (key == productID)
                     productsInTheBug.put(key, shoppingBag.getProducts().get(key) + quantity);
                 else
                     productsInTheBug.put(key, shoppingBag.getProducts().get(key));
@@ -115,10 +114,11 @@ public class ShoppingCart {
         return res;
     }
 
+
     private synchronized Double calculatePrice(){
         double price = 0.0;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer key : shoppingBagsSet){
+        for (Integer key : shoppingBagsSet) {
             ShoppingBag p = this.shoppingBags.get(key);
             price = price + p.getFinalPrice();
 
@@ -129,7 +129,6 @@ public class ShoppingCart {
     public ConcurrentHashMap<Integer, ShoppingBag> GetInfo() {
         return this.shoppingBags;
     }
-
 
     public Response Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
         if (shoppingBags.size()==0){
@@ -145,7 +144,7 @@ public class ShoppingCart {
             this.releaseLocks(lockList);
             return new Response(true,"The Supply is not approve");
         }
-        if (!paymentSystem.checkCredit(name, credit_number, phone_number)){
+        if (!paymentSystem.checkCredit(name, credit_number, phone_number)) {
             this.releaseLocks(lockList);
             return new Response(true,"The payment is not approve");
         }
@@ -160,7 +159,7 @@ public class ShoppingCart {
 
     }
 
-    private List<Lock> getLockList(){
+    private List<Lock> getLockList() {
         List<Lock> output = new ArrayList<>();
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
@@ -169,14 +168,14 @@ public class ShoppingCart {
         }
         return output;
     }
-    private boolean tryLockList(List<Lock> lockList){
+
+    private boolean tryLockList(List<Lock> lockList) {
         List<Lock> succeededToLock = new ArrayList<>();
-        for (Lock lock : lockList){
-            if (lock.tryLock()){
+        for (Lock lock : lockList) {
+            if (lock.tryLock()) {
                 succeededToLock.add(lock);
-            }
-            else {
-                for (Lock lockedLock : succeededToLock){
+            } else {
+                for (Lock lockedLock : succeededToLock) {
                     lockedLock.unlock();
                 }
                 return false;
@@ -184,19 +183,20 @@ public class ShoppingCart {
         }
         return true;
     }
-    private void releaseLocks(List<Lock> lockList){
-        for (Lock lock : lockList){
+
+    private void releaseLocks(List<Lock> lockList) {
+        for (Lock lock : lockList) {
             lock.unlock();
         }
     }
 
-  
+
     private Response checkInventoryAndLockProduct(List<Lock> lockList){
         boolean succeededToLock = false;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        while (!succeededToLock){
-            synchronized (this){
-                for (Integer storeID : shoppingBagsSet){
+        while (!succeededToLock) {
+            synchronized (this) {
+                for (Integer storeID : shoppingBagsSet) {
                     ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
                     Response res = shoppingBag.checkInventory();
                     if (res.getIsErr()){
@@ -208,34 +208,38 @@ public class ShoppingCart {
         }
         return new Response();
     }
+
     private Response Buy(){
         Response res=new Response("The reduction was made successfully ");
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer storeID : shoppingBagsSet){
+        for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
             res = tradingSystem.reduseProducts(SB.getProducts(), storeID);
-            if (res.getIsErr()){
+            if (res.getIsErr()) {
                 return res;
             }
             PayToTheSellers();
         }
         return res;
     }
-    private void addShoppingHistory(boolean isGuest){
+
+    private void addShoppingHistory(boolean isGuest) {
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer storeID : shoppingBagsSet){
-            ShoppingBag shoppingBag= this.shoppingBags.get(storeID);
+        for (Integer storeID : shoppingBagsSet) {
+            ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
             ShoppingHistory shoppingHistory = shoppingBag.createShoppingHistory();
             tradingSystem.addHistoryToStoreAndUser(shoppingHistory, isGuest);
         }
     }
+
     private void PayToTheSellers() {
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
-            tradingSystem.PayToTheSellers(SB.getFinalPrice(),storeID);
+            tradingSystem.PayToTheSellers(SB.getFinalPrice(), storeID);
         }
     }
+
 
     /**
      * @requirement 2.8
@@ -245,17 +249,43 @@ public class ShoppingCart {
     public List<DummyProduct> ShowShoppingCart(){
         List<DummyProduct> outputList = new ArrayList<>();
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer storeID : shoppingBagsSet){
+        for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
             Set<Integer> productSet = SB.getProducts().keySet();
-            for (Integer productID: productSet){
+            for (Integer productID : productSet) {
                 int quantity = SB.getProducts().get(productID);
-                Product p = tradingSystem.getProduct(storeID,productID);
-                DummyProduct d = new DummyProduct(storeID,tradingSystem.getStoreName(storeID),productID,p.getProductName(),p.getPrice(),p.getCategory(), quantity);
+                Product p = tradingSystem.getProduct(storeID, productID);
+                DummyProduct d = new DummyProduct(storeID, tradingSystem.getStoreName(storeID), productID, p.getProductName(), p.getPrice(), p.getCategory(), quantity);
                 outputList.add(d);
             }
         }
         return outputList;
+    }
+
+    /**
+     * @requirement 2.8
+     *
+     * @param storeID
+     * @param productID
+     * @return NewResponse{
+     *  "isErr: boolean
+     *  "message": String
+     * }
+     */
+    public Response RemoveProductFromCart(int storeID, int productID) {
+        if (this.shoppingBags.get(storeID) == null ||
+                !this.shoppingBags.get(storeID).getProductsList().contains(productID)) {
+            loggerController.WriteErrorMsg("user " + userID + " try to remove product " + productID + " (Store " + storeID + "), but the product is not in the cart.");
+            return new Response(true, "product that does not exist in the cart cannot be removed");
+        } else {
+            ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
+            shoppingBag.RemoveProduct(productID);
+            ConcurrentHashMap<Integer, Integer> productsInTheBug = shoppingBag.getProducts();
+            Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, productsInTheBug);
+            shoppingBags.get(storeID).setFinalPrice(priceForBug);
+        }
+        loggerController.WriteLogMsg("user " + userID + " remove product " + productID + " (Store " + storeID + ") successfully");
+        return new Response("product remove successfully");
     }
 }
 
