@@ -947,6 +947,7 @@ public class TradingSystem {
      *       }
      */
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
+        System.out.println("TEST------------->");
         if(ValidConnectedUser(userID, connID)){
             if(!hasPermission(userID,storeID, User.Permission.AddProduct)){
                 return new Response(true, "The Edit is not allowed to Edit products");
@@ -961,10 +962,10 @@ public class TradingSystem {
                     }
                     else{
                         //todo change quantity of product
-                        stores.get(storeID).editProductDetails(userID, productID, productName, price, category);
+                        Response res = stores.get(storeID).editProductDetails(userID, productID, productName, price, category, quantity);
                         printProducts();
                         loggerController.WriteLogMsg("User " + userID + " edit product " + productID + " successfully");
-                        return new Response("Edit Product was successful");
+                        return res;
                     }
                 }
             }

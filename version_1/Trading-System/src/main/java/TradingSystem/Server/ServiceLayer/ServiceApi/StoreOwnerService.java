@@ -90,7 +90,6 @@ public class StoreOwnerService {
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/edit_product/{productID}")
     public Response EditProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        System.out.println("----------------------> EditProduct");
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
         int price_int;
@@ -119,7 +118,7 @@ public class StoreOwnerService {
      * }
      */
     //TODO: not check yet
-    @DeleteMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
     public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
         Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
         System.out.println(res);
