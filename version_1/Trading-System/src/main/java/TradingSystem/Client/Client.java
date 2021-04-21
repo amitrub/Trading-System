@@ -194,19 +194,56 @@ public class Client {
         }
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, post_data.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(addProductToCart) response: " + response + ANSI_RESET);
         if(response.getIsErr())
             System.out.println(errMsgGenerator("Client", "Client", "130", response.getMessage()));
         return response;
     }
 
 
-    public List<DummyProduct> showShoopingCart() {
+    /**
+     * @requirement 2.8
+     * @return List<DummyProduct>
+     */
+    public List<DummyProduct> showShoppingCart() {
         String path = "shopping_cart";
         JSONObject jsonArray = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonArray);
+        System.out.println(ANSI_YELLOW + "(addProductToCart) response: " + response + ANSI_RESET);
         List<DummyProduct> dummyProductResponeArr = response.returnProductList();
         return dummyProductResponeArr;
     }
+    public Response removeFromShoppingCart(int storeID, int productID) {
+        String path = "shopping_cart/remove_product";
+        JSONObject post_data = new JSONObject();
+        try {
+            post_data.put("storeID", storeID);
+            post_data.put("productID", productID);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "222", "Error: removeFromShoppingCart"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest+path, post_data.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(removeFromShoppingCart) response: " + response + ANSI_RESET);
+        return response;
+    }
+    public Response editShoppingCart(int storeID, int productID, int quantity) {
+        String path = "shopping_cart/edit_product";
+        JSONObject post_data = new JSONObject();
+        try {
+            post_data.put("storeID", storeID);
+            post_data.put("productID", productID);
+            post_data.put("quantity", quantity);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "125", "Error: addProductToCart"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, post_data.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(editShoppingCart) response: " + response + ANSI_RESET);
+        return response;
+    }
+
+
     public boolean guestPurchase(String name, String credit_number, String phone_number, String address) {
         String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
