@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -542,23 +543,32 @@ public class OwnerTests {
         client.Login("elinor", "123");
         client.openStore("Asos");
         Integer storeID = getStoreID(client.showAllStores(),"Asos");
-        client.addProduct(storeID, "Sneakers", "Heels", 80.0, 25);
+        client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
         List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Sneakers");
         client.Logout();
+
         client.Register("Yasmin", "123");
         client.Login("Yasmin", "123");
         client.addProductToCart(storeID, productID, 2);
         client.subscriberPurchase("123456789", "0501234567", "Kiryat Gat");
         client.Logout();
+
         client.Login("elinor", "123");
-        List<DummyProduct> products = client.showStoreHistory(storeID);
-        assertEquals(products.size(), 1);
-        assertEquals(products.get(0).getProductName(), "Heels");
+        List<DummyShoppingHistory> history = client.showStoreHistory(storeID);
+        assertEquals(history.size(), 1);
     }
 
     @Test
     void SadShowStoreHistory() {
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Asos");
+        Integer storeID = getStoreID(client.showAllStores(),"Asos");
+        client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
+
+        List<DummyShoppingHistory> history = client.showStoreHistory(storeID);
+        assertEquals(history.size(), 0);
     }
     //endregion
 

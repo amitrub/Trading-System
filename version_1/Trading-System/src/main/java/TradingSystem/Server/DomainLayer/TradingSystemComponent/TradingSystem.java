@@ -968,8 +968,22 @@ public class TradingSystem {
                 res.AddPair("history", list);
                 return res;
             }
+            return new Response("user has no permission to watch the history" );
         }
-        return new Response("Error in details" );//todo make response inside?
+        return new Response("Not connected user" );//todo make response inside?
+    }
+
+    public Response StoreHistoryOwner(int userID, int storeID, String connID){
+        if (ValidConnectedUser(userID, connID)) {
+            if (hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
+                List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
+                Response res = new Response("num of history buying in the store is " + list.size());
+                res.AddPair("history", list);
+                return res;
+            }
+            return new Response("user has no permission to watch the history" );
+        }
+        return new Response("Not connected user" );
     }
 
 

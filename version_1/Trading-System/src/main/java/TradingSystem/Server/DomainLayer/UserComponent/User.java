@@ -31,7 +31,8 @@ public  class User {
         GetInfoOfficials,
         GetInfoRequests,
         ResponseRequests,
-        GetHistoryPurchasing
+        GetHistoryPurchasing,
+        GetStoreHistory
     }
 
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
@@ -77,8 +78,6 @@ public  class User {
         this.userName = userName;
         this.password = password;
         this.shoppingCart = new ShoppingCart(this.id);
-        this.ownerPermission = null;
-        this.managerPermission = null;
         this.myManagedStoresIDs=new ArrayList<>();
         this.myManagedStoresIDs=new ArrayList<>();
         this.myFoundedStoresIDs=new ArrayList<>();

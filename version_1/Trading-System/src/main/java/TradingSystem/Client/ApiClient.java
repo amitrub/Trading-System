@@ -403,6 +403,7 @@
 //        sc = new Scanner(System.in);
 //        System.out.println("Enter product name:");
 //        String productName = sc.nextLine();
+
 //        while(productName.length() < 2) {
 //            System.out.println("Invalid input, please try again");
 //            sc = new Scanner(System.in);
