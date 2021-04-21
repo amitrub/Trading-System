@@ -130,9 +130,7 @@ public class SubscriberTests {
         assertTrue(response.getIsErr());
     }
     //endregion
-
-    //region 3.4
-
+    //region requirement 3.4: User Purchase
     @Test
     void Purchase_Happy() {
         // Prepare
@@ -165,20 +163,62 @@ public class SubscriberTests {
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
         assertEquals(shortPantsAfter.getQuantity(), shortPants.getQuantity() - 1); //check decrease quantity in store
     }
-    //TODO: not guest purchase need to add to history
     // endregion
-
     //region requirement 3.7: User History Tests
-
-    //todo after implement purchase
+    //case 3.7.1 have parchuses
     @Test
     void showUsersHistory_Happy() {
+        // Prepare
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        String store_name = "Mania Jeans";
+        client.openStore(store_name);
+        List<DummyStore> stores = client.showAllStores();
+        Integer storeID = getStoreID(stores, store_name);
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+    //        client.Logout();
+        client.addProductToCart(storeID, productID, 1);
+        String ans1 = client.showShoppingCart().get(0).getProductName();
+        assertEquals(ans1, "Short Pants");
 
+        //Issue
+        boolean purchaseFailed = client.subscriberPurchase( "12345678",
+                "052897878787", "sioot st. 5");
+
+        Response response = client.showUserHistory();
+        assertFalse(response.getIsErr());
     }
-
+    //case 3.7.2 no history for this user
     @Test
-    void showUserHistory_Sad() {
+    void showUserHistory_Sad_NoHistory() {
+        // Prepare
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        String store_name = "Mania Jeans";
+        client.openStore(store_name);
+        List<DummyStore> stores = client.showAllStores();
+        Integer storeID = getStoreID(stores, store_name);
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+        //        client.Logout();
+        client.addProductToCart(storeID, productID, 1);
+        String ans1 = client.showShoppingCart().get(0).getProductName();
+        assertEquals(ans1, "Short Pants");
+
+        //Issue
+//        boolean purchaseFailed = client.subscriberPurchase( "12345678",
+//                "052897878787", "sioot st. 5");
+
+        Response response = client.showUserHistory();
+        assertTrue(response.getIsErr());
     }
     //endregion
+
+    //TODO: user purchase need to add to history
+
+
 
 }
