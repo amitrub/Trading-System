@@ -883,15 +883,16 @@ public class TradingSystem {
 
 
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
+        System.out.println("TEST------------->");
         if(ValidConnectedUser(userID, connID)){
             if(hasPermission(userID,storeID, User.Permission.AddProduct)) {
                 if(price>=0) {
                     if(quantity>0) {
                         //todo change quantity of product
-                        stores.get(storeID).editProductDetails(userID, productID, productName, price, category);
+                        Response res = stores.get(storeID).editProductDetails(userID, productID, productName, price, category, quantity);
                         printProducts();
                         loggerController.WriteLogMsg("User " + userID + " edit product " + productID + " successfully");
-                        return new Response("Edit Product was successful");
+                        return res;
                     }
                     loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
                     return new Response(true, "The product quantity can't be negative");

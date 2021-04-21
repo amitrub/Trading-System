@@ -18,8 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShoppingCartTest {
+
     TradingSystem t=TradingSystem.getInstance();
-    String gust1=t.ConnectSystem().getConnID();
+    String gust1=t.ConnectSystem().returnConnID();
     String NconnID;
     ShoppingCart SC1;
     ShoppingCart SC2;
@@ -27,7 +28,7 @@ class ShoppingCartTest {
     @BeforeEach
     void setUp() {
         t.Register(gust1, "nofet", "123");
-        NconnID= t.Login(gust1, "nofet", "123").getConnID();
+        NconnID= t.Login(gust1, "nofet", "123").returnConnID();
     }  
   
     @Test
@@ -47,7 +48,7 @@ class ShoppingCartTest {
     }  
   
     @Test
-    void removeProductFromCart() {
+    void removeProductFromCart2() {
 
         SC1.addProductToBag(1,1,3);
         SC1.addProductToBag(2,2,2);

@@ -95,9 +95,9 @@ public class Store {
         return inventory.deleteProduct(productId);
     }
 
-    public void editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category)
+    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity)
     {
-        inventory.editProductDetails(productId,productName,price,category);
+        return inventory.editProductDetails(productId,productName,price,category,quantity);
     }
 
     public String addNewOwner(Integer userId, Integer newOwnerId) {
