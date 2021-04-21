@@ -10,9 +10,6 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 
-
-
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -27,9 +24,9 @@ class ShoppingCartTest {
     @Test
     void removeProductFromCart() {
         TradingSystem t=TradingSystem.getInstance();
-        String gust1=t.ConnectSystem().getConnID();
+        String gust1=t.ConnectSystem().returnConnID();
         t.Register(gust1, "nofet", "123");
-        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
+        String NconnID = t.Login(gust1, "nofet", "123").returnConnID();
 
         t.AddStore(1, NconnID, "Store1");
 
@@ -64,9 +61,9 @@ class ShoppingCartTest {
     void showShoppingCart() {
 
         TradingSystem t=TradingSystem.getInstance();
-        String gust1=t.ConnectSystem().getConnID();
+        String gust1=t.ConnectSystem().returnConnID();
         t.Register(gust1, "nofet", "123");
-        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
+        String NconnID = t.Login(gust1, "nofet", "123").returnConnID();
 
         t.AddStore(1, NconnID, "Store1");
 
@@ -111,9 +108,9 @@ class ShoppingCartTest {
     @Test
     void addProductToBag() {
         TradingSystem t=TradingSystem.getInstance();
-        String gust1=t.ConnectSystem().getConnID();
+        String gust1=t.ConnectSystem().returnConnID();
         t.Register(gust1, "nofet", "123");
-        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
+        String NconnID = t.Login(gust1, "nofet", "123").returnConnID();
 
         t.AddStore(3, NconnID, "NofetStore");
         t.AddProductToStore(3, NconnID, 2, "computer", "Technology", 3000.0,20);
@@ -168,9 +165,9 @@ class ShoppingCartTest {
     @Test
     void editProductQuantityFromCart() {
         TradingSystem t=TradingSystem.getInstance();
-        String gust1=t.ConnectSystem().getConnID();
+        String gust1=t.ConnectSystem().returnConnID();
         t.Register(gust1, "nofet", "123");
-        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
+        String NconnID = t.Login(gust1, "nofet", "123").returnConnID();
 
         t.AddStore(1, NconnID, "Store1");
 

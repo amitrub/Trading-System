@@ -48,8 +48,8 @@ public class Client {
         String path = "home";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        if(!response.getConnID().equals("") && !response.getIsErr()) { //because its guest
-            this.connID = response.getConnID();
+        if(!response.returnConnID().equals("") && !response.getIsErr()) { //because its guest
+            this.connID = response.returnConnID();
         } else {
             System.out.println(errMsgGenerator("Client", "Client", "38", "connect system error"));
         }
@@ -84,9 +84,9 @@ public class Client {
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Register) response: " + response + ANSI_RESET);
-        this.userID = response.getUserID();
+        this.userID = response.returnUserID();
  //       this.userID = -1;
-        this.connID = response.getConnID();
+        this.connID = response.returnConnID();
         this.userName = userName;
         this.pass = pass;
         return userID;
@@ -104,8 +104,8 @@ public class Client {
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Login) response: " + response + ANSI_RESET);
-        this.userID = response.getUserID();
-        this.connID = response.getConnID();
+        this.userID = response.returnUserID();
+        this.connID = response.returnConnID();
         this.userName = userName;
         this.pass = pass;
         return userID;
@@ -120,14 +120,14 @@ public class Client {
         String path = "stores";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyStore> dummySearchResponeArr = response.getStoreList();
+        List<DummyStore> dummySearchResponeArr = response.returnStoreList();
         return dummySearchResponeArr;
     }
     public List<DummyProduct> showStoreProducts(int storeID) {
         String path = String.format("store/%s/products", storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyProduct> dummyProductResponeArr = response.getProductList();
+        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
         return dummyProductResponeArr;
     }
 
@@ -169,7 +169,7 @@ public class Client {
         }
         JSONObject jsonArray = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, jsonSearch.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonArray);
-        List<DummyProduct> dummyProductResponeArr = response.getProductList();
+        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
         System.out.println(ANSI_YELLOW + "(Search) response: " + dummyProductResponeArr + ANSI_RESET);
 //        this.userID = response.getUserID();
 //        this.connID = response.getConnID();
@@ -196,7 +196,7 @@ public class Client {
         String path = "shopping_cart";
         JSONObject jsonArray = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonArray);
-        List<DummyProduct> dummyProductResponeArr = response.getProductList();
+        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
         return dummyProductResponeArr;
     }
     public boolean guestPurchase(String name, String credit_number, String phone_number, String address) {
@@ -228,8 +228,8 @@ public class Client {
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Logout) response: " + response + ANSI_RESET);
-        this.userID = response.getUserID();
-        this.connID = response.getConnID();
+        this.userID = response.returnUserID();
+        this.connID = response.returnConnID();
         return userID;
     }
     public boolean openStore(String storeName){
@@ -243,7 +243,7 @@ public class Client {
         String path = String.format("%s/user_history", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyProduct> dummyProductResponeArr = response.getProductList();
+        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
         System.out.println(ANSI_YELLOW + "(showUserHistory) response: " + dummyProductResponeArr + ANSI_RESET);
         return dummyProductResponeArr;
     }
@@ -323,7 +323,7 @@ public class Client {
         String path = String.format("%s/store_history/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyProduct> dummyProductResponeArr = response.getProductList();
+        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
         System.out.println(ANSI_YELLOW + "(removeProduce) response: " + dummyProductResponeArr + ANSI_RESET);
         return dummyProductResponeArr;
     }
@@ -352,7 +352,7 @@ public class Client {
         String path = String.format("%s/stores", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyStore> dummySearchResponeArr = response.getStoreList();
+        List<DummyStore> dummySearchResponeArr = response.returnStoreList();
         return dummySearchResponeArr;
     }
 
