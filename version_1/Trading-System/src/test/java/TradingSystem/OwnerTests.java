@@ -23,8 +23,9 @@ public class OwnerTests {
     @BeforeEach
     void setUp() {
         this.client = new Client();
-        client.connectSystem();
         client.ClearSystem();
+        client.connectSystem();
+
     }
 
     @AfterEach
