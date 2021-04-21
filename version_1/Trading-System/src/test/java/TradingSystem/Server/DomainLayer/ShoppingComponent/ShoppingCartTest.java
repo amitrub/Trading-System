@@ -29,6 +29,8 @@ class ShoppingCartTest {
     void setUp() {
         t.Register(gust1, "nofet", "123");
         NconnID= t.Login(gust1, "nofet", "123").returnConnID();
+        SC1=new ShoppingCart(1);
+        SC2=new ShoppingCart(1);
     }  
   
     @Test
