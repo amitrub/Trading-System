@@ -9,6 +9,10 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class Client {
 
+    public int getUserID() {
+        return userID;
+    }
+
     private int userID = -1;
     private String connID = "";
     private String userName;
@@ -111,7 +115,6 @@ public class Client {
         return userID;
     }
 
-
      /**
      * @requirement 2.5
      * @return
@@ -131,8 +134,6 @@ public class Client {
         return dummyProductResponeArr;
     }
 
-
-    
     /**
      * @requirement 2.6 search f
      * @param mode
@@ -223,14 +224,14 @@ public class Client {
      *
      * @return String userID
      */
-    public int Logout(){
+    public Response Logout(){
         String path = String.format("%s/logout",this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(Logout) response: " + response + ANSI_RESET);
-        this.userID = response.returnUserID();
+        this.userID = -1;
         this.connID = response.returnConnID();
-        return userID;
+        return response;
     }
     public boolean openStore(String storeName){
         String path = String.format("%s/add_store", this.userID);
