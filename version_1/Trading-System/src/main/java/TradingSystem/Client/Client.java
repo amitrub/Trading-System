@@ -330,7 +330,14 @@ public class Client {
     }
     public boolean addOwner(int storeID, int newOwnerID) {
         String path = String.format("%s/store/%s/add_new_owner/%s", this.userID, storeID, newOwnerID);
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("userID", newOwnerID);
+            jsonPost.put("storeID", storeID);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addProduct, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addOwner) response: " + response + ANSI_RESET);
         return response.getIsErr();

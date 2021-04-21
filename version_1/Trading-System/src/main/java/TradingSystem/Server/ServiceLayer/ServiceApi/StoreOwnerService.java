@@ -444,7 +444,7 @@ public class StoreOwnerService {
      */
     @GetMapping("{userID}/stores")
     public Response ShowOwnerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
-        Response res = this.tradingSystem.ShowAllStores();
+        Response res = this.tradingSystem.ShowOwnerStores(userID, connID);
         return res;
     }
 }
