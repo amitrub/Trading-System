@@ -744,7 +744,6 @@ public class TradingSystem {
         NM.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " add manager " + newManager + " to store " + storeID + " successfully");
         return new Response( "The manager Added successfully");
-
     }
 
 

@@ -311,7 +311,6 @@ public class StoreOwnerService {
 
 
 
-
     /**
      * @requirement 4.5
      *
