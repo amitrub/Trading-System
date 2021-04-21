@@ -147,8 +147,8 @@ public class Client {
     public List<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
 
         String path = "search";
-        int min = Integer.parseInt(minPrice);
-        int max = Integer.parseInt(maxPrice);
+        double min = Double.parseDouble(minPrice);
+        double max = Double.parseDouble(maxPrice);
         int pRank = Integer.parseInt(p_rank);
         int sRank = Integer.parseInt(s_rank);
         JSONObject jsonSearch = new JSONObject();

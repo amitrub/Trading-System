@@ -36,7 +36,7 @@ public class GuestTests {
         client.ClearSystem();
     }
 
-    //region system Tests
+    //region system Tests requirement 2.1-2.2
     /**
      * @requirement 2.1
      */
@@ -47,6 +47,7 @@ public class GuestTests {
         // client.connectSystem();
         assertNotEquals(this.client.getConnID(), "");
     }
+
     /**
      * @requirement 2.2
      */
@@ -56,8 +57,9 @@ public class GuestTests {
 //        client.exitSystem();
 //        assertEquals(this.client.getConnID(), "");
     }
+
     //endregion
-    //region Register Tests
+    //region Register Tests requirement 2.3
 
     /**
      * @requirement 2.3 register to the system
@@ -70,7 +72,6 @@ public class GuestTests {
         int respondID2 = client.Register("Dani", "qwerty");
         assertTrue(respondID2 != -1 && !this.client.getConnID().equals(""));
     }
-
     @Test
     void registerDuplicateUserName() {   //duplicate userName
         int respondID1 = client.Register("Avi", "qwerty");
@@ -78,13 +79,6 @@ public class GuestTests {
         int respondID2 = client.Register("Avi", "qqq");
         assertTrue(respondID2 == -1 && this.client.getConnID().equals(""));
     }
-
-//    @Test
-//    void registerShortPassword() {
-//        int respondID = client.Register("Lior", "q");
-//        assertTrue(respondID == -1);
-//    }
-
     @Test
     void registerParallelHappy(){
         ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
@@ -108,6 +102,7 @@ public class GuestTests {
 
         System.out.println("\n========Printing the results======");
 
+        assert resultList != null;
         for (int i = 0; i < resultList.size(); i++) {
             Future<Result> future = resultList.get(i);
             try {
@@ -118,7 +113,6 @@ public class GuestTests {
             }
         }
     }
-
     @Test
     void registerParallelSadSameName(){
         ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
@@ -142,6 +136,7 @@ public class GuestTests {
 
         System.out.println("\n========Printing the results======");
 
+        assert resultList != null;
         for (int i = 0; i < resultList.size(); i++) {
             Future<Result> future = resultList.get(i);
             try {
@@ -152,9 +147,14 @@ public class GuestTests {
             }
         }
     }
+//    @Test
+//    void registerShortPassword() {
+//        int respondID = client.Register("Lior", "q");
+//        assertTrue(respondID == -1);
+//    }
 
     //endregion
-    //region Login Tests
+    //region Login Tests requirement 2.4
 
     /**
      * @requirement 2.4 login tests
@@ -166,22 +166,63 @@ public class GuestTests {
         int subscriberID = client.Login("Yossi", "qwerty");
         assertTrue(guestID == subscriberID && !guestConnID.equals(this.client.getConnID()));
     }
-
     @Test
     void loginIncorrectPassword(){
         client.Register("Shai", "qwerty");
         int subscriberID = client.Login("Shai", "qwe");
         assertTrue(subscriberID == -1 && this.client.getConnID().equals(""));
     }
-
     @Test
     void loginIncorrectUserName(){
         client.Register("Elinor", "qwerty");
         int respondID = client.Login("Eli", "qwerty");
         assertTrue(respondID == -1 && this.client.getConnID().equals(""));
     }
+
     //endregion
-    //region Search Tests
+    //region Stores Tests: requirement 2.5
+    /**
+     * @requirement 2.5 show all stores, products in store
+     */
+    @Test
+    void showAllStores() {
+        //case: no stores at all
+        client.Register("Reut", "123");
+        tradingSystem.ClearSystem();
+        client.Login("Reut", "123");
+        List<DummyStore> stores1 = client.showAllStores();
+        assertEquals(stores1.size(), 0);
+
+        //case: have stores
+        client.openStore("Castro");
+        client.openStore("Urbanica");
+        client.openStore("Zara");
+        List<DummyStore> stores2 = client.showAllStores();
+        assertEquals(stores2.size(), 3);
+    }
+    @Test
+    void showAllStoresSadNoStores() {
+        //case: no stores at all
+        client.Register("Reut", "123");
+        tradingSystem.ClearSystem();
+        client.Login("Reut", "123");
+        List<DummyStore> stores1 = client.showAllStores();
+        assertEquals(stores1.size(), 0);
+    }
+    @Test
+    void showProductsOnSpecificStore() {
+        client.Register("Or", "123");
+        client.Login("Or", "123");
+        client.openStore("Renuar");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 20);
+        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 20);
+        List<DummyProduct> products= client.showStoreProducts(storeID);
+        assertEquals(products.size(), 2);
+    }
+    //endregion
+    //region Search Tests requirement 2.6
 
     /**
      * @requirement 2.6 search products
@@ -208,7 +249,6 @@ public class GuestTests {
         List<DummyProduct> searchNoProducts = client.Search("Product Name","blabla", "50.0","100.0","1","5");
         assertEquals(searchNoProducts.size(),0);
     }
-
     @Test
     void searchTest_ProductCategory() {
         client.Register("Shalom", "123");
@@ -230,7 +270,6 @@ public class GuestTests {
         List<DummyProduct> searchNoProducts = client.Search("Product Category", "blabla", "30.0","150.0","1", "5");
         assertEquals(searchNoProducts.size(),0);
     }
-
     @Test
     void searchTest_ProductCategoryAndPrice() {
         client.Register("Shaya", "123");
@@ -246,11 +285,10 @@ public class GuestTests {
 
         //2.6.5 search by product category and price
         List<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100.0","150.0","1", "5");
-        assertEquals(searchProducts3.size(),1);
+        assertEquals(searchProducts3.size(),2);
     }
-
     @Test
-    void search_Sad() {
+    void search_Sad_emptySearchList() {
         client.Register("Lital", "123");
         client.Login("Lital", "123");
         client.openStore("H&V");
@@ -265,42 +303,6 @@ public class GuestTests {
         //2.6.6 sad search - there isn't products that match the search
         List<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150.0","200.0","1", "5");
         assertEquals(searchProducts4.size(),0);
-    }
-    //endregion
-    //region Stores Tests
-//    @Test
-//    void showStoreProducts() {
-//        //todo - maybe there is problem with the function showAllStores
-//        client.Register("Or", "123");
-//        client.Login("Or", "123");
-//        client.openStore("Renuar");
-//        ArrayList<DummyStore> store = client.showAllStores();
-//        Integer storeID = store.get(0).getId();
-//        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 20);
-//        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 20);
-//        ArrayList<DummyProduct> products= client.showStoreProducts(storeID);
-//        assertEquals(products.size(), 2);
-//    }
-//
-
-    /**
-     * @requirement 2.5 show all stores
-     */
-    @Test
-    void showAllStores() {
-        //case: no stores at all
-        client.Register("Reut", "123");
-        tradingSystem.ClearSystem();
-        client.Login("Reut", "123");
-        List<DummyStore> stores1 = client.showAllStores();
-        assertEquals(stores1.size(), 0);
-
-        //case: have stores
-        client.openStore("Castro");
-        client.openStore("Urbanica");
-        client.openStore("Zara");
-        List<DummyStore> stores2 = client.showAllStores();
-        assertEquals(stores2.size(), 3);
     }
 
     //endregion
@@ -367,7 +369,6 @@ public class GuestTests {
     {
 
     }
-
     @Test
     void editShoppingCart_HappyQuantity()
     {
