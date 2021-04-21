@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import java.util.List;
 
@@ -17,7 +18,7 @@ class TradingSystemTest {
     TradingSystem tradingSystem=TradingSystem.getInstance();
 
     String connID;
-    int userID;
+    int userID, storeid,productId;
 
     @BeforeEach
     void setUp() {
@@ -25,6 +26,8 @@ class TradingSystemTest {
         Response response= tradingSystem.Register(connID,"reutlevy","8119");
         userID= response.getUserID();
         connID= tradingSystem.Login(connID,"reutlevy","8119").getConnID();
+
+
     }
   
   @Test
@@ -132,7 +135,33 @@ class TradingSystemTest {
 
     @Test
     void RemoveProductSuccess(){
-
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        System.out.println(productId);
+        Response response=tradingSystem.RemoveProduct(userID,storeid,productId,connID);
+        assertFalse(response.getIsErr());
+    }
+    @Test
+    void RemoveProductInvalidPermmison(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        System.out.println(productId);
+        Response response=tradingSystem.RemoveProduct(userID,storeid,productId,connID);
+        assertFalse(response.getIsErr());
     }
 
 
