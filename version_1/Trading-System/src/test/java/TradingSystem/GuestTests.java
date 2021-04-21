@@ -659,7 +659,6 @@ public class GuestTests {
 
     //Todo: 2 clients wants to buy different products, sleep 10 seconds, check that they aren't wait for 20 sec
     //TODO: CHECK DEADLOCKS 2 clients 2 products diffrenet order!!!
-    //TODO: not guest purchase need to add to history
 
     //endregion
 

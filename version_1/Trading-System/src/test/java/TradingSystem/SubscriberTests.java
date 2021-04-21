@@ -32,6 +32,16 @@ public class SubscriberTests {
         client.clearSystem();
     }
 
+    Integer getStoreID(List<DummyStore> stores, String storename)
+    {
+        for (int i=0; i<stores.size(); i++)
+        {
+            if(stores.get(i).getName().equals(storename))
+                return stores.get(i).getId();
+        }
+        return -1;
+    }
+
     //region requirement 3.1: logout Tests
     @Test
     void logoutHappy(){
@@ -79,15 +89,29 @@ public class SubscriberTests {
     //case: 3.3.1
     @Test
     void writeComment() {
-        client.Register("Sapir", "123");
-        client.Login("Sapir", "123");
-        client.openStore("Fox");
-        List<DummyStore> store = client.showAllStores();
-        Integer storeID = store.get(0).getId();
+        // Prepare
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        String store_name = "Mania Jeans";
+        client.openStore(store_name);
+        List<DummyStore> stores = client.showAllStores();
+        Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
         Integer productID = products.get(0).getProductID();
-       //TODO: to buy this product before trying to comment it
+//        client.Logout();
+        client.addProductToCart(storeID, productID, 1);
+        String ans1 = client.showShoppingCart().get(0).getProductName();
+        assertEquals(ans1, "Short Pants");
+
+        //Issue
+        boolean purchaseFailed = client.subscriberPurchase( "12345678",
+                "052897878787", "sioot st. 5");
+        List<DummyProduct> cartAfter = client.showShoppingCart();
+        List<DummyProduct> productsAfter = client.showStoreProducts(storeID);
+        DummyProduct shortPants = products.get(0);
+        DummyProduct shortPantsAfter = productsAfter.get(0);
+
         Response response = client.writeComment(storeID, productID, 3, "The product is nice");
         assertFalse(response.getIsErr());
     }
@@ -106,6 +130,44 @@ public class SubscriberTests {
         assertTrue(response.getIsErr());
     }
     //endregion
+
+    //region 3.4
+
+    @Test
+    void Purchase_Happy() {
+        // Prepare
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        String store_name = "Mania Jeans";
+        client.openStore(store_name);
+        List<DummyStore> stores = client.showAllStores();
+        Integer storeID = getStoreID(stores, store_name);
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+//        client.Logout();
+        client.addProductToCart(storeID, productID, 1);
+        String ans1 = client.showShoppingCart().get(0).getProductName();
+        assertEquals(ans1, "Short Pants");
+
+        //Issue
+        boolean purchaseFailed = client.subscriberPurchase( "12345678",
+                "052897878787", "sioot st. 5");
+        List<DummyProduct> cartAfter = client.showShoppingCart();
+        List<DummyProduct> productsAfter = client.showStoreProducts(storeID);
+        DummyProduct shortPants = products.get(0);
+        DummyProduct shortPantsAfter = productsAfter.get(0);
+
+        //Assert
+        if(!purchaseFailed)
+            System.out.println("purchase Succeed");
+        assertFalse(purchaseFailed);
+        assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
+        assertEquals(shortPantsAfter.getQuantity(), shortPants.getQuantity() - 1); //check decrease quantity in store
+    }
+    //TODO: not guest purchase need to add to history
+    // endregion
+
     //region requirement 3.7: User History Tests
 
     //todo after implement purchase
