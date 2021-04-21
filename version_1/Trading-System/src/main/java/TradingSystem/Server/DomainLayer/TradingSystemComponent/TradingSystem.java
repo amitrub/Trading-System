@@ -983,7 +983,7 @@ public class TradingSystem {
             }
             return new Response("user has no permission to watch the history" );
         }
-        return new Response("Not connected user" );//todo make response inside?
+        return new Response("Not connected user" );
     }
 
 
