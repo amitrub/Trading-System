@@ -25,16 +25,15 @@ public class GuestTests {
 
     @BeforeEach
     void setUp() {
-        tradingSystem.ClearSystem();
         this.client = new Client();
+        client.ClearSystem();
         client.connectSystem();
     }
 
     @AfterEach
     void tearDown() {
-        tradingSystem.ClearSystem();
         client.exitSystem();
-//        tradingSystem.Initialization();
+        client.ClearSystem();
     }
 
     //region system Tests
@@ -183,78 +182,90 @@ public class GuestTests {
     }
     //endregion
     //region Search Tests
-//    @Test
-//    void search_ProductName(){
-//        client.Register("Shani", "123");
-//        client.Login("Shani", "123");
-//        client.openStore("H&M");
-//        ArrayList<DummyStore> store = client.showAllStores();
-//        Integer storeID = store.get(0).getId();
-//        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
-//        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
-//        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
-//        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
-//        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
-//
-//        //Search by product name
-//        ArrayList<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50.0","100.0","1","5");
-//        assertEquals(searchProducts1.size(),1);
-//
-//    }
-//
-//    @Test
-//    void searchTest_ProductCategory() {
-//        client.Register("Shalom", "123");
-//        client.Login("Shalom", "123");
-//        client.openStore("H&O");
-//        ArrayList<DummyStore> store = client.showAllStores();
-//        Integer storeID = store.get(0).getId();
-//        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
-//        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
-//        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
-//        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
-//        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
-//
-//        //search by product category
-//        ArrayList<DummyProduct> searchProducts2 = client.Search("Product Category", "Tops", "30.0","150.0","1", "5");
-//        assertEquals(searchProducts2.size(),2);
-//    }
-//
-//    @Test
-//    void searchTest_ProductCategoryAndPrice() {
-//        client.Register("Shaya", "123");
-//        client.Login("Shaya", "123");
-//        client.openStore("H&L");
-//        ArrayList<DummyStore> store = client.showAllStores();
-//        Integer storeID = store.get(0).getId();
-//        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
-//        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
-//        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
-//        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
-//        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
-//
-//        //search by product category and price
-//        ArrayList<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100.0","150.0","1", "5");
-//        assertEquals(searchProducts3.size(),1);
-//    }
-//
-//    @Test
-//    void search_Sad() {
-//        client.Register("Lital", "123");
-//        client.Login("Lital", "123");
-//        client.openStore("H&V");
-//        ArrayList<DummyStore> store = client.showAllStores();
-//        Integer storeID = store.get(0).getId();
-//        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
-//        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
-//        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
-//        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
-//        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
-//
-//        //sad search - there isn't products that match the search
-//        ArrayList<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150.0","200.0","1", "5");
-//        assertEquals(searchProducts4.size(),0);
-//    }
+
+    /**
+     * @requirement 2.6 search products
+     */
+    @Test
+    void search_ProductName(){
+        client.Register("Shani", "123");
+        client.Login("Shani", "123");
+        client.openStore("H&M");
+        List<DummyStore> store = client.showAllStores();
+        DummyStore currStore = store.get(0);
+        Integer storeID = currStore.getId();
+        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
+        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
+        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
+        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
+        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
+
+        //2.6.1 Search by product name exist
+        List<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50.0","100.0","1","5");
+        assertEquals(searchProducts1.size(),1);
+
+        //2.6.2 Search by product name doesnt exist
+        List<DummyProduct> searchNoProducts = client.Search("Product Name","blabla", "50.0","100.0","1","5");
+        assertEquals(searchNoProducts.size(),0);
+    }
+
+    @Test
+    void searchTest_ProductCategory() {
+        client.Register("Shalom", "123");
+        client.Login("Shalom", "123");
+        client.openStore("H&O");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
+        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
+        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
+        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
+        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
+
+        //2.6.3 search by product category exist
+        List<DummyProduct> searchProducts2 = client.Search("Product Category", "Tops", "30.0","150.0","1", "5");
+        assertEquals(searchProducts2.size(),2);
+
+        //2.6.4 search by product category exist
+        List<DummyProduct> searchNoProducts = client.Search("Product Category", "blabla", "30.0","150.0","1", "5");
+        assertEquals(searchNoProducts.size(),0);
+    }
+
+    @Test
+    void searchTest_ProductCategoryAndPrice() {
+        client.Register("Shaya", "123");
+        client.Login("Shaya", "123");
+        client.openStore("H&L");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
+        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
+        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
+        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
+        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
+
+        //2.6.5 search by product category and price
+        List<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100.0","150.0","1", "5");
+        assertEquals(searchProducts3.size(),1);
+    }
+
+    @Test
+    void search_Sad() {
+        client.Register("Lital", "123");
+        client.Login("Lital", "123");
+        client.openStore("H&V");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
+        client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
+        client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
+        client.addProduct(storeID, "Basic T-shirt", "Tops", 120.0, 50);
+        client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
+
+        //2.6.6 sad search - there isn't products that match the search
+        List<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150.0","200.0","1", "5");
+        assertEquals(searchProducts4.size(),0);
+    }
     //endregion
     //region Stores Tests
 //    @Test
@@ -424,7 +435,7 @@ public class GuestTests {
         List<DummyStore> stores = client.showAllStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
         Integer productID = products.get(0).getProductID();
         client.Logout();
 

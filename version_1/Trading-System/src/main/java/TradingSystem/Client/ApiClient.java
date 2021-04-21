@@ -251,7 +251,7 @@ public class ApiClient {
             }
         }
 
-        ArrayList<DummyProduct> dummyProducts = client.Search(mode, name, minPrice, maxPrice, p_rank, s_rank);
+        List<DummyProduct> dummyProducts = client.Search(mode, name, minPrice, maxPrice, p_rank, s_rank);
 
         System.out.println(ANSI_BLUE + "Search results:");
         //print to user and ask him things
@@ -282,7 +282,7 @@ public class ApiClient {
         }
     }
     private static void showStoresProduct(int storeID) {
-        ArrayList<DummyProduct> dummyProducts = client.showStoreProducts(storeID);
+        List<DummyProduct> dummyProducts = client.showStoreProducts(storeID);
         System.out.println(ANSI_PURPLE + "---------- Product list in store " + storeID + " ----------");
         for(DummyProduct dummyProduct : dummyProducts) {
             System.out.println(dummyProduct);
@@ -319,7 +319,7 @@ public class ApiClient {
         client.addProductToCart(storeID, productID, quantity);
     }
     private static void showShoppingCart() {
-        ArrayList<DummyProduct> shoppingCart = client.showShoopingCart();
+        List<DummyProduct> shoppingCart = client.showShoopingCart();
         System.out.println(ANSI_PURPLE + "---------- Shopping List: ----------");
         for(DummyProduct dummyProduct : shoppingCart) {
             System.out.println(dummyProduct);
@@ -545,7 +545,7 @@ public class ApiClient {
         }
         int storeID = sc.nextInt();
 
-        ArrayList<DummyProduct> dummyProducts = client.showStoreHistory(storeID);
+        List<DummyProduct> dummyProducts = client.showStoreHistory(storeID);
 
         System.out.println(ANSI_GREEN + "---- Store " + storeID + " History Results ----");
         for(DummyProduct dummyProduct : dummyProducts) {

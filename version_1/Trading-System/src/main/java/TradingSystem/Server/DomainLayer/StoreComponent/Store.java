@@ -2,13 +2,9 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
-import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
@@ -71,6 +67,10 @@ public class Store {
         return nextStoreID;
     }
 
+    public static void ClearSystem() {
+        nextStoreID = 0;
+    }
+
     public boolean checkFounder(int userID){
         return this.founderID == userID;
     }
@@ -83,15 +83,15 @@ public class Store {
         return inventory.ShowStoreProducts();
     }
 
-    public NewResponse AddProductToStore(String productName , Double price, String category, int quantity){
+    public Response AddProductToStore(String productName , Double price, String category, int quantity){
         return inventory.addProduct(productName, category, price, quantity);
     }
 
-    public NewResponse addProductToInventory(Integer productId, Integer quantity){
+    public Response addProductToInventory(Integer productId, Integer quantity){
         return inventory.addQuantityProduct(productId, quantity);
     }
 
-    public NewResponse deleteProduct(Integer productId){
+    public Response deleteProduct(Integer productId){
         return inventory.deleteProduct(productId);
     }
 
@@ -260,16 +260,16 @@ public class Store {
         return this.inventory.getProduct(productID);
     }
 
-    public NewResponse reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
+    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
         return this.inventory.reduceProducts(products_quantity);
     }
 
-    public NewResponse WriteComment(int userId, int productId, String comment) {
+    public Response WriteComment(int userId, int productId, String comment) {
         if (this.possibleToAddComment(userId, productId)) {
             return this.inventory.addCommentToProduct(productId, userId, comment);
         }
         else
-            return new NewResponse(true, "User may not add a review for product he has not purchased before");
+            return new Response(true, "User may not add a review for product he has not purchased before");
     }
 
     public void addHistory(ShoppingHistory sh) {
