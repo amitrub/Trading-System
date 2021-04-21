@@ -349,4 +349,8 @@ public class Store {
     public void addOwnerPermission(int newOwner, OwnerPermission op) {
         this.ownersPermission.put(newOwner,op);
     }
+
+    public void addManagerPermission(ManagerPermission mp) {
+        this.managersPermission.put(mp.getUserId(),mp);
+    }
 }

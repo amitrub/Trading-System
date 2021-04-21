@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -297,8 +298,7 @@ public class TradingSystem {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
             connectedSubscribers.remove(connID);
             User newGuest = new User();
-            //TODO: mybe do deep copy
-            newGuest.setShoppingCart(myUser.getShoppingCart());
+            newGuest.setShoppingCart(new ShoppingCart( myUser.getShoppingCart()));
             String guestConnID = connectGuestToSystemConnID(newGuest);
             Response res = new Response("Logout was successful");
             res.AddConnID(guestConnID);
@@ -668,6 +668,10 @@ public class TradingSystem {
 
     private Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission)
     {
+        if (!this.subscribers.containsKey(userID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString()+" "+newRole+"  of store "+storeID + " and failed. "+ userID+" is not not subscriber");
+            return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
+        }
         if (!this.subscribers.containsKey(newRole)) {
             loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. "+ newRole+" is not subscriber");
             return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
@@ -683,70 +687,61 @@ public class TradingSystem {
         return new Response(false,"Sys OK");
     }
 
-    public Response AddNewManager(int userID, String connID, int storeID, int newManager) {
-        if (ValidConnectedUser(userID, connID))
-        {
-            if (this.subscribers.get(newManager) != null) {
-                while (!this.subscribers.get(newManager).userIsLock()) {
-                    try{
-                        this.wait(3);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                this.subscribers.get(newManager).lockUser();
-                Response res = this.AbleToAddManager(userID, storeID, newManager);
-                if (!res.getIsErr())
-                {
-                        User NM = this.subscribers.get(newManager);
-                        ManagerPermission MP= new ManagerPermission(newManager, storeID);
-                        MP.setAppointmentId(userID);
-                        NM.AddStoreInManager(storeID, MP);
-                        stores.get(storeID).addNewManager(userID, newManager);
-                        //stores.get(storeID).addManagerPermission(OM);
-                        this.subscribers.get(newManager).unlockUser();
-                        loggerController.WriteLogMsg("User " + userID + " add manager " + newManager + " to store " + storeID + " successfully");
-                        return new Response( "The manager Added successfully");
-                }
-                this.subscribers.get(newManager).unlockUser();
-                return res;
-                }
 
+    /**
+     /**
+     * @requirement 4.5
+     *
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param newManager
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     * }
+     *
+     */
+    public Response AddNewManager(int userID, String connID, int storeID, int newManager)
+    {
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to add manager to store " + storeID + " and failed. The err message: Error in User details");
+            return new Response(true, "Error in User details");
+        }
+        if (this.subscribers.get(newManager) == null) {
             loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the manager of store "+storeID + " and failed. "+ newManager+" is not subscriber");
             return new Response(true, "The user "+newManager+" is not subscriber, so he can not be manager for store");
         }
-        loggerController.WriteErrorMsg("User " + userID + " try to add manager to store " + storeID + " and failed. The err message: Error in User details");
-        return new Response(true, "Error in User details");
-    }
-    private Response AbleToAddManager(int userID, int storeID, int newManager){
-        if (this.subscribers.containsKey(userID)) {
-            if (this.subscribers.containsKey(newManager)) {
-                if (this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
-                    if (!stores.get(storeID).checkOwner(newManager)) {
-                        if (!stores.get(storeID).checkManager(newManager)){
-                            if(this.hasPermission(userID,storeID,User.Permission.AppointmentManager))
-                            {
-                                return new Response("It is possible to add the user as the owner");
-                            }
-                            else{
-                                loggerController.WriteErrorMsg("User " + userID + " try to Add " +newManager+" to be the owner of store " + storeID + " and failed. "+ userID+" is not allowed to add manager to the store");
-                                return new Response(true, "The user "+userID+" is not allowed to add manager to the store");
-                            }
-                        }
-                        loggerController.WriteErrorMsg("User " + userID + " try to Add " +newManager+" to be the Manager of store " + storeID + " and failed. "+ newManager+" is already manages the store");
-                        return new Response(true, "The user "+newManager+" is manages the store, so he can not appoint to Manager again");
-                    }
-                    loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the owner of store "+storeID + " and failed. "+ newManager+" is already owner the store");
-                    return new Response(true, "The user "+newManager+" is owner the store, so he can not appoint to Manager");
-                }
-                loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the manager of store "+storeID + " and failed. "+ userID+" is not the owner of the store");
-                return new Response(true, "The user "+userID+" is not the owner of the store, so he can not appoint new manager to the store");
+        while (!this.subscribers.get(newManager).userIsLock()) {
+            try{
+                this.wait(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the manager of store "+storeID + " and failed. "+ newManager+" is not subscriber");
-            return new Response(true, "The user "+newManager+" is not subscriber, so he can not be manager for store");
         }
-        loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the manager of store "+storeID + " and failed. "+ userID+" is not not subscriber");
-        return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
+        this.subscribers.get(newManager).lockUser();
+        User NM = this.subscribers.get(newManager);
+        Response res1 = this.systemRoleChecks(userID, storeID, newManager, User.Permission.AppointmentManager);
+        if (res1.getIsErr()) {
+            NM.unlockUser();
+            return res1;
+        }
+
+        Response res2 = NM.AbleToAddManager(userID, storeID, newManager);
+        if (res2.getIsErr()) {
+            NM.unlockUser();
+            return res2;
+        }
+        ManagerPermission MP= new ManagerPermission(newManager, storeID);
+        MP.setAppointmentId(userID);
+        NM.AddStoreInManager(storeID, MP);
+        stores.get(storeID).addNewManager(userID, newManager);
+        stores.get(storeID).addManagerPermission(MP);
+        NM.unlockUser();
+        loggerController.WriteLogMsg("User " + userID + " add manager " + newManager + " to store " + storeID + " successfully");
+        return new Response( "The manager Added successfully");
+
     }
 
 
