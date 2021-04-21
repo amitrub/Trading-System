@@ -52,4 +52,12 @@ public class ShoppingHistory {
     public Double getFinalPrice() {
         return finalPrice;
     }
+
+    public boolean isProductExist(int productId){
+        for(Product product: this.products.keySet()){
+            if(product.getProductID()==productId)
+                return true;
+        }
+        return false;
+    }
 }
