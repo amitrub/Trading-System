@@ -26,17 +26,17 @@ class TradingSystemTest {
         connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID,"reutlevy","8119");
 
-        userID= response.getUserID();
-        connID= tradingSystem.Login(connID,"reutlevy","8119").getConnID();
+        userID= response.returnUserID();
+        connID= tradingSystem.Login(connID,"reutlevy","8119").returnConnID();
 
-        String connID1= tradingSystem.ConnectSystem().getConnID();
+        String connID1= tradingSystem.ConnectSystem().returnConnID();
         Response response1= tradingSystem.Register(connID1,"reutlevy8","8119");
-        int userID1= response1.getUserID();
-        connID1= tradingSystem.Login(connID1,"reutlevy8","8119").getConnID();
+        int userID1= response1.returnUserID();
+        connID1= tradingSystem.Login(connID1,"reutlevy8","8119").returnConnID();
         tradingSystem.AddStore(userID1,connID1,"store8");
         for(Store store1: tradingSystem.stores.values()){
             if(store1.getName().equals("store8")){
-                storeid1=store1.getId();
+                storeid=store1.getId();
             }
         }
     }
@@ -178,14 +178,7 @@ class TradingSystemTest {
         assertTrue(response.getIsErr());
     }
 
-    @Test
-    void RemoveProductNotExist(){
-        Store store= new Store("store11", userID);
-        tradingSystem.AddStore(userID,connID,"store11");
-        Product product=new Product(4,"prod4","food",7.0,11);
-        Response response=tradingSystem.RemoveProduct(userID,storeid,product.getProductID(),connID);
-        assertTrue(response.getIsErr());
-    }
+
 
     @Test
     void EditProductSuccess(){
@@ -272,6 +265,7 @@ class TradingSystemTest {
        assertTrue(response.getIsErr());
     }
 
+    @Test
     void RemoveProductNotExist(){
         Store store= new Store("store11", userID);
         tradingSystem.AddStore(userID,connID,"store11");
@@ -280,8 +274,9 @@ class TradingSystemTest {
         assertTrue(response.getIsErr());
     }
 
+    @Test
     void AddProductInvalidPremmision(){
-        Response response=tradingSystem.AddProductToStore(userID,connID,storeid1,"prod3","food",11.0,-1);
+        Response response=tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,-1);
         assertTrue(response.getIsErr());
     }
 
@@ -353,17 +348,17 @@ class TradingSystemTest {
     }
 
     void AddProductInvaliddetails(){
-        Response response=tradingSystem.AddProductToStore(userID,connID,storeid1,"prod3","food",-1,11);
+        Response response=tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",-1,11);
         assertTrue(response.getIsErr());
     }
 
     @Test
     void NewOwnerSuccess() {
         tradingSystem.AddStore(userID,connID,"store");
-        String gust1 = tradingSystem.ConnectSystem().getConnID();
+        String gust1 = tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(gust1, "elinor", "123");
         Response r=tradingSystem.Login(gust1, "elinor", "123");
-        Response r1 = tradingSystem.AddNewOwner(userID, connID, 1, r.getUserID());
+        Response r1 = tradingSystem.AddNewOwner(userID, connID, 1, r.returnUserID());
         System.out.println(r1.getMessage());
         assertFalse(r1.getIsErr());
     }
@@ -390,13 +385,13 @@ class TradingSystemTest {
     @Test
     void AddNewOwnerIsNotTheOwner() {
         tradingSystem.AddStore(userID,connID,"store");
-        String gust1 = tradingSystem.ConnectSystem().getConnID();
+        String gust1 = tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(gust1, "elinor", "123");
         Response res = tradingSystem.Login(gust1, "elinor", "123");
-        String gust2 = tradingSystem.ConnectSystem().getConnID();
+        String gust2 = tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(gust2, "roee", "123");
-        tradingSystem.Login(gust2, "roee", "123").getConnID();
-        Response r1 = tradingSystem.AddNewOwner(res.getUserID(), res.getConnID(), 1, 3);
+        tradingSystem.Login(gust2, "roee", "123").returnConnID();
+        Response r1 = tradingSystem.AddNewOwner(res.returnUserID(), res.returnConnID(), 1, 3);
         System.out.println(r1.getMessage());
         assertTrue(r1.getIsErr());
     }
@@ -404,11 +399,11 @@ class TradingSystemTest {
     @Test
     void NewOwnerDouble() {
         tradingSystem.AddStore(userID,connID,"store");
-        String gust1 = tradingSystem.ConnectSystem().getConnID();
+        String gust1 = tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(gust1, "elinor", "123");
         Response res = tradingSystem.Login(gust1, "elinor", "123");
-        tradingSystem.AddNewOwner(userID, connID, 1, res.getUserID());
-        Response r = tradingSystem.AddNewOwner(userID, connID, 1, res.getUserID());
+        tradingSystem.AddNewOwner(userID, connID, 1, res.returnUserID());
+        Response r = tradingSystem.AddNewOwner(userID, connID, 1, res.returnUserID());
         System.out.println(r.getMessage());
         assertTrue(r.getIsErr());
     }
