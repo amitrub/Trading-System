@@ -358,6 +358,9 @@ public class TradingSystem {
         for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
             list.add(new DummyStore(currStore.getValue()));
         }
+        if(list.isEmpty()){
+            new Response(true,"There are no stores in the system");
+        }
         Response res = new Response("num of stores in the system is " + list.size());
         res.AddPair("stores", list);        
         return res;
