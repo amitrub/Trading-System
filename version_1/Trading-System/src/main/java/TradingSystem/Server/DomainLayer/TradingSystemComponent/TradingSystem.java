@@ -568,70 +568,77 @@ public class TradingSystem {
         return dummyProducts;
     }
 
-    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner)  {
-        if (ValidConnectedUser(userID, connID)) {
-            if (this.subscribers.get(newOwner) != null) {
-                while (!this.subscribers.get(newOwner).userIsLock()) {
-                    try{
-                        this.wait(3);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                this.subscribers.get(newOwner).lockUser();
-                Response res = this.AbleToAddOwner(userID, storeID, newOwner);
-                if (!res.getIsErr()) {
-                        User NU = this.subscribers.get(newOwner);
-                        OwnerPermission OP = new OwnerPermission(newOwner, storeID);
-                        OP.setAppointmentId(userID);
-                        NU.AddStoreInOwner(storeID, OP);
-                        stores.get(storeID).addNewOwner(userID, newOwner);
-                        // stores.get(storeID).addOnerPermission(OP);
-                        this.subscribers.get(newOwner).unlockUser();
-                        loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
-                        return new Response("The owner Added successfully");
-
-                    }
-                this.subscribers.get(newOwner).unlockUser();
-                return res;
-
-                }
+    /**
+     *
+     * @requirement 4.3
+     *
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param newOwner
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     * }
+     */
+    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner)
+    {
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to Add owner to store " + storeID + " and failed. The err message: Error in User details");
+            return new Response(true, "Error in User details");
+        }
+        if (this.subscribers.get(newOwner) == null) {
             loggerController.WriteErrorMsg("User " + userID + " try to Add " + newOwner + " to be the owner of store " + storeID + " and failed. " + newOwner + " is not subscriber");
             return new Response(true, "The user " + newOwner + " is not subscriber, so he can not be owner for store");
         }
-        loggerController.WriteErrorMsg("User " + userID + " try to Add owner to store " + storeID + " and failed. The err message: Error in User details");
-        return new Response(true, "Error in User details");
+        while (!this.subscribers.get(newOwner).userIsLock())
+        {
+            try{
+                this.wait(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        this.subscribers.get(newOwner).lockUser();
+        
+        Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
+        if (res1.getIsErr()) {
+            this.subscribers.get(newOwner).unlockUser();
+            return res1;
+        }
+        User NU = this.subscribers.get(newOwner);
+        Response res2 =NU.AbleToAddOwner(userID, storeID);
+        if (res2.getIsErr()) {
+            this.subscribers.get(newOwner).unlockUser();
+            return res2;
+        }
+
+        OwnerPermission OP = new OwnerPermission(newOwner, storeID);
+        OP.setAppointmentId(userID);
+        NU.AddStoreInOwner(storeID, OP);
+        stores.get(storeID).addNewOwner(userID, newOwner);
+        stores.get(storeID).addOwnerPermission(newOwner,OP);
+        this.subscribers.get(newOwner).unlockUser();
+        loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
+        return new Response("The owner Added successfully");
     }
 
-    private Response AbleToAddOwner(int userID, int storeID, int newOwner) {
-        if (this.subscribers.containsKey(userID)) {
-            if (this.subscribers.containsKey(newOwner)) {
-                if (this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
-                    if (!stores.get(storeID).checkOwner(newOwner)) {
-                        if (!stores.get(storeID).checkManager(newOwner)){
-                            if(this.hasPermission(userID,storeID,User.Permission.AppointmentOwner))
-                                {
-                                return new Response("It is possible to add the user as the owner");
-                                }
-                            else{
-                                loggerController.WriteErrorMsg("User " + userID + " try to Add " +newOwner+" to be the owner of store " + storeID + " and failed. "+ userID+" is not allowed to add owner to the store");
-                                return new Response(true, "User "+userID+" is not allowed to add owner to the store");
-                                }
-                        }
-                        loggerController.WriteErrorMsg("User " + userID + " try to Add " +newOwner+" to be the owner of store " + storeID + " and failed. "+ newOwner+" is already manages the store");
-                        return new Response(true, "User "+newOwner+" is manages the store, so he can not be owner");
-                    }
-                    loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ newOwner+" is already owner the store");
-                    return new Response(true, "User "+newOwner+" is owner the store, so he can not appoint to owner again");
-                }
-                loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ userID+" is not the owner of the store");
-                return new Response(true, "User "+userID+" is not the owner of the store, so he can not appoint new owner to the store");
-            }
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ newOwner+" is not subscriber");
-            return new Response(true, "User "+newOwner+" is not subscriber, so he can not be owner for store");
+    private Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission)
+    {
+        if (!this.subscribers.containsKey(newRole)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. "+ newRole+" is not subscriber");
+            return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
         }
-        loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ userID+" is not not subscriber");
-        return new Response(true, "User "+userID+" is not subscriber, so he can not appoint owner for store");
+        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. "+ userID+" is not the owner of the store");
+            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+        }
+        if(!this.hasPermission(userID,storeID,permission)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. " + userID + " is not allowed to do that");
+            return new Response(true, "User " + userID + " is not allowed to "+permission.toString());
+        }
+        return new Response(false,"Sys OK");
     }
 
     public Response AddNewManager(int userID, String connID, int storeID, int newManager) {
