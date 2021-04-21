@@ -995,4 +995,28 @@ public class TradingSystem {
             return res;
         }
     }
+
+    public Response ShowUserHistory(int adminID, int userID, String connID) {
+        if(!ValidConnectedUser(adminID, connID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed");
+            return new Response(true, "Error in User details");
+        }
+        else if (!systemAdmins.containsKey(adminID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed not admin");
+            return new Response(true, "Error User not admin");
+        }
+        else if (!subscribers.containsKey(userID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see history details of user"+userID+" and failed");
+            return new Response(true, "Error in User details");
+        }
+        else {
+            List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
+            if(list.isEmpty()){
+                return new Response(true,"There are no older shopping in the history");
+            }
+            Response res = new Response("num of history buying of the user is " + list.size());
+            res.AddPair("history", list);
+            return res;
+        }
+    }
 }
