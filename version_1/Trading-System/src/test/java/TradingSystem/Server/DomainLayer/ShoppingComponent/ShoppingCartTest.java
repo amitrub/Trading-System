@@ -18,8 +18,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShoppingCartTest {
+
     TradingSystem t=TradingSystem.getInstance();
-    String gust1=t.ConnectSystem().getConnID();
+    String gust1=t.ConnectSystem().returnConnID();
     String NconnID;
     ShoppingCart SC1;
     ShoppingCart SC2;
@@ -27,7 +28,7 @@ class ShoppingCartTest {
     @BeforeEach
     void setUp() {
         t.Register(gust1, "nofet", "123");
-        NconnID= t.Login(gust1, "nofet", "123").getConnID();
+        NconnID= t.Login(gust1, "nofet", "123").returnConnID();
     }  
   
     @Test
@@ -45,9 +46,10 @@ class ShoppingCartTest {
         SC1=new ShoppingCart(1);
         SC2=new ShoppingCart(1);
     }  
-  
+
+    /*
     @Test
-    void removeProductFromCart() {
+    void removeProductFromCart2() {
 
         SC1.addProductToBag(1,1,3);
         SC1.addProductToBag(2,2,2);
@@ -64,7 +66,7 @@ class ShoppingCartTest {
         //sad_productNotInTheStore
         assertTrue(res3.getMessage().equals("product that does not exist in the cart cannot be removed"));
     
-    }
+    } */
 
     @Test
     void showShoppingCart() {

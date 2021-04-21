@@ -19,18 +19,19 @@ import static org.junit.Assert.assertTrue;
 public class OwnerTests {
 
     Client client;
+    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
         this.client = new Client();
-        client.ClearSystem();
+        client.clearSystem();
         client.connectSystem();
-
     }
 
     @AfterEach
     void tearDown() {
         client.exitSystem();
+        client.clearSystem();
     }
 
     //region other functions
@@ -184,7 +185,7 @@ public class OwnerTests {
         Integer productID = getProductID(storeProducts1,"Arma Heels");
 
         //happy edit quantity
-        boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 100.0,35);
+        boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 80.0,35);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.get(0).getQuantity(), 35);
         assertEquals(storeProducts2.size(), 1);

@@ -363,29 +363,45 @@ public class TradingSystem {
         return res;
     }
 
-    //Product functions
+
+    /**
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productName
+     * @param category
+     * @param price
+     * @param quantity
+     * @return Response{
+     *      *  "isErr: boolean
+     *      *  "message": String
+     *      *  "connID": String
+     *      * }
+     */
     public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity){
         if(ValidConnectedUser(userID, connID)){
-            if(this.hasPermission(userID,storeID,User.Permission.AddProduct)) {
-                if(price>=0) {
-                    if(quantity>0) {
+            if(!this.hasPermission(userID,storeID,User.Permission.AddProduct)){
+                return new Response(true, "The User is not allowed to add a product");
+            }
+            else {
+                if(price<0) {
+                    return new Response(true, "The price of the product can't be negative");
+                }
+                else{
+                    if(quantity<0) {
+                        return new Response(true, "The quantity of the product can't be negative");
+
+                    }
+                    else{
                         Response res = stores.get(storeID).AddProductToStore(productName, price, category, quantity);
                         printProducts();
                         loggerController.WriteLogMsg("User " + userID + " add product " + productName + " to store " + storeID + " successfully");
                         return res;
                     }
-                    loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
-                    return new Response(true, "The quantity of the product can't be negative");
-
                 }
-                loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
-                return new Response(true, "The price of the product can't be negative");
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
-            return new Response(true, "The User is not allowed to add a product");
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
@@ -406,40 +422,65 @@ public class TradingSystem {
         return false;
     }
 
+
+    /**
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productId
+     * @param quantity
+     *  @return Response{
+     *        "isErr: boolean
+     *        "message": String
+     *        "connID": String
+     *       }
+     */
     public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity){
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID,User.Permission.AddProduct)) {
-                if(quantity>0) {
+            if(!hasPermission(userID,storeID,User.Permission.AddProduct)){
+                return new Response(true, "The User is not allowed to add products to the inventory");
+            }
+            else {
+                if(quantity<0){
+                    return new Response(true, "The quantity of the product can't be negative");
+                }
+                else {
                     Response res = stores.get(storeID).addProductToInventory(productId, quantity);
                     printProducts();
-                    loggerController.WriteLogMsg("User " + userID + " add " + quantity + " products of " + productId + " to store " + storeID + " successfully");
                     return res;
                 }
-                loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
-                return new Response(true, "The quantity of the product can't be negative");
-
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
-            return new Response(true, "The User is not allowed to add products to the inventory");
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
+
+    /**
+     * @requirement 4.1
+     *
+     * @param userID : int (Path)
+     * @param storeID: int (Path)
+     * @param productID: int (Path)
+     * @param connID: String (Header)
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
     public Response RemoveProduct(int userID, int storeID, int productID, String connID) {
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID,User.Permission.DeleteProduct)) {
+            if(!hasPermission(userID,storeID,User.Permission.DeleteProduct)){
+                return new Response(true, "The User is not allowed to remove products from the inventory");
+            }
+            else {
                 Response res = stores.get(storeID).deleteProduct(productID);
                 printProducts();
-                loggerController.WriteLogMsg("User "+userID+" remove product"+ productID+" from store "+storeID+" successfully");
                 return res;
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to remove product"+ productID+" from store "+storeID+" and failed");
-            return new Response(true, "The User is not allowed to remove products from the inventory");
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to remove product"+ productID+" from store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
@@ -569,70 +610,77 @@ public class TradingSystem {
         return dummyProducts;
     }
 
-    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner)  {
-        if (ValidConnectedUser(userID, connID)) {
-            if (this.subscribers.get(newOwner) != null) {
-                while (!this.subscribers.get(newOwner).userIsLock()) {
-                    try{
-                        this.wait(3);
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-                this.subscribers.get(newOwner).lockUser();
-                Response res = this.AbleToAddOwner(userID, storeID, newOwner);
-                if (!res.getIsErr()) {
-                        User NU = this.subscribers.get(newOwner);
-                        OwnerPermission OP = new OwnerPermission(newOwner, storeID);
-                        OP.setAppointmentId(userID);
-                        NU.AddStoreInOwner(storeID, OP);
-                        stores.get(storeID).addNewOwner(userID, newOwner);
-                        // stores.get(storeID).addOnerPermission(OP);
-                        this.subscribers.get(newOwner).unlockUser();
-                        loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
-                        return new Response("The owner Added successfully");
-
-                    }
-                this.subscribers.get(newOwner).unlockUser();
-                return res;
-
-                }
+    /**
+     *
+     * @requirement 4.3
+     *
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param newOwner
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     * }
+     */
+    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner)
+    {
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to Add owner to store " + storeID + " and failed. The err message: Error in User details");
+            return new Response(true, "Error in User details");
+        }
+        if (this.subscribers.get(newOwner) == null) {
             loggerController.WriteErrorMsg("User " + userID + " try to Add " + newOwner + " to be the owner of store " + storeID + " and failed. " + newOwner + " is not subscriber");
             return new Response(true, "The user " + newOwner + " is not subscriber, so he can not be owner for store");
         }
-        loggerController.WriteErrorMsg("User " + userID + " try to Add owner to store " + storeID + " and failed. The err message: Error in User details");
-        return new Response(true, "Error in User details");
+        while (!this.subscribers.get(newOwner).userIsLock())
+        {
+            try{
+                this.wait(3);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        this.subscribers.get(newOwner).lockUser();
+        
+        Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
+        if (res1.getIsErr()) {
+            this.subscribers.get(newOwner).unlockUser();
+            return res1;
+        }
+        User NU = this.subscribers.get(newOwner);
+        Response res2 =NU.AbleToAddOwner(userID, storeID);
+        if (res2.getIsErr()) {
+            this.subscribers.get(newOwner).unlockUser();
+            return res2;
+        }
+
+        OwnerPermission OP = new OwnerPermission(newOwner, storeID);
+        OP.setAppointmentId(userID);
+        NU.AddStoreInOwner(storeID, OP);
+        stores.get(storeID).addNewOwner(userID, newOwner);
+        stores.get(storeID).addOwnerPermission(newOwner,OP);
+        this.subscribers.get(newOwner).unlockUser();
+        loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
+        return new Response("The owner Added successfully");
     }
 
-    private Response AbleToAddOwner(int userID, int storeID, int newOwner) {
-        if (this.subscribers.containsKey(userID)) {
-            if (this.subscribers.containsKey(newOwner)) {
-                if (this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
-                    if (!stores.get(storeID).checkOwner(newOwner)) {
-                        if (!stores.get(storeID).checkManager(newOwner)){
-                            if(this.hasPermission(userID,storeID,User.Permission.AppointmentOwner))
-                                {
-                                return new Response("It is possible to add the user as the owner");
-                                }
-                            else{
-                                loggerController.WriteErrorMsg("User " + userID + " try to Add " +newOwner+" to be the owner of store " + storeID + " and failed. "+ userID+" is not allowed to add owner to the store");
-                                return new Response(true, "User "+userID+" is not allowed to add owner to the store");
-                                }
-                        }
-                        loggerController.WriteErrorMsg("User " + userID + " try to Add " +newOwner+" to be the owner of store " + storeID + " and failed. "+ newOwner+" is already manages the store");
-                        return new Response(true, "User "+newOwner+" is manages the store, so he can not be owner");
-                    }
-                    loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ newOwner+" is already owner the store");
-                    return new Response(true, "User "+newOwner+" is owner the store, so he can not appoint to owner again");
-                }
-                loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ userID+" is not the owner of the store");
-                return new Response(true, "User "+userID+" is not the owner of the store, so he can not appoint new owner to the store");
-            }
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ newOwner+" is not subscriber");
-            return new Response(true, "User "+newOwner+" is not subscriber, so he can not be owner for store");
+    private Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission)
+    {
+        if (!this.subscribers.containsKey(newRole)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. "+ newRole+" is not subscriber");
+            return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
         }
-        loggerController.WriteErrorMsg("User " + userID + " try to Add "+newOwner+" to be the owner of store "+storeID + " and failed. "+ userID+" is not not subscriber");
-        return new Response(true, "User "+userID+" is not subscriber, so he can not appoint owner for store");
+        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. "+ userID+" is not the owner of the store");
+            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+        }
+        if(!this.hasPermission(userID,storeID,permission)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. " + userID + " is not allowed to do that");
+            return new Response(true, "User " + userID + " is not allowed to "+permission.toString());
+        }
+        return new Response(false,"Sys OK");
     }
 
     public Response AddNewManager(int userID, String connID, int storeID, int newManager) {
@@ -796,7 +844,7 @@ public class TradingSystem {
         return connectedSubscribers.containsKey(connID) && connectedSubscribers.get(connID).equals(userID);
     }
 
-    public Response reduseProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
+    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
@@ -882,26 +930,45 @@ public class TradingSystem {
     }
 
 
+
+    /**
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productID
+     * @param productName
+     * @param category
+     * @param price
+     * @param quantity
+     * @return Response{
+     *        "isErr: boolean
+     *        "message": String
+     *        "connID": String
+     *       }
+     */
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
+        System.out.println("TEST------------->");
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID, User.Permission.AddProduct)) {
-                if(price>=0) {
-                    if(quantity>0) {
+            if(!hasPermission(userID,storeID, User.Permission.AddProduct)){
+                return new Response(true, "The Edit is not allowed to Edit products");
+            }
+            else {
+                if(price<0){
+                    return new Response(true, "The product price can't be negative");
+                }
+                else {
+                    if(quantity<0){
+                        return new Response(true, "The product quantity can't be negative");
+                    }
+                    else{
                         //todo change quantity of product
-                        stores.get(storeID).editProductDetails(userID, productID, productName, price, category);
+                        Response res = stores.get(storeID).editProductDetails(userID, productID, productName, price, category, quantity);
                         printProducts();
                         loggerController.WriteLogMsg("User " + userID + " edit product " + productID + " successfully");
-                        return new Response("Edit Product was successful");
+                        return res;
                     }
-                    loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-                    return new Response(true, "The product quantity can't be negative");
-
                 }
-                loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-                return new Response(true, "The product price can't be negative");
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-            return new Response(true, "The Edit is not allowed to Edit products");
         }
         else{
             loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
@@ -1016,6 +1083,34 @@ public class TradingSystem {
             }
             Response res = new Response("num of history buying of the user is " + list.size());
             res.AddPair("history", list);
+            return res;
+        }
+    }
+      
+    public Response ShowOwnerStores(int userID, String connID)
+    {
+        if(!ValidConnectedUser(userID, connID))
+        {
+            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed");
+            return new Response(true, "User is nor logged in");
+        }
+        else if (!subscribers.containsKey(userID)){
+            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed not admin");
+            return new Response(true, "User is not subscriber");
+        }
+        else{
+            User user = subscribers.get(userID);
+            List<Integer> store = user.getMyOwnerStore();
+            ConcurrentHashMap<Integer, Store> storeObjects = new ConcurrentHashMap<>();
+            List<DummyStore> list = new ArrayList<>();
+            for(int i=0; i<store.size(); i++) {
+                for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
+                    if (currStore.getValue().getId() == store.get(i))
+                        list.add(new DummyStore(currStore.getValue()));
+                }
+            }
+            Response res = new Response("num of owned stores of the user is " + list.size());
+            res.AddPair("stores", list);
             return res;
         }
     }

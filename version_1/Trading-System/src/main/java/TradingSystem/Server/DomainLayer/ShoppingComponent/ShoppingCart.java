@@ -214,7 +214,7 @@ public class ShoppingCart {
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
-            res = tradingSystem.reduseProducts(SB.getProducts(), storeID);
+            res = tradingSystem.reduceProducts(SB.getProducts(), storeID);
             if (res.getIsErr()) {
                 return res;
             }
