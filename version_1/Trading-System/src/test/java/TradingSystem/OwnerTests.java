@@ -59,7 +59,7 @@ public class OwnerTests {
 
 
 
-    //region requirement 4.1: Add Product Tests
+    //region requirement 4.1.1: Add Product Tests
     @Test
     void HappyAddProduct() {
         client.Register("Gal", "123");
@@ -117,7 +117,7 @@ public class OwnerTests {
     }
 
     //endregion
-    //region requirement 4.1: Remove Product Tests
+    //region requirement 4.1.2: Remove Product Tests
     @Test
     void HappyRemove() {
         client.Register("Oriya", "123");
@@ -155,8 +155,29 @@ public class OwnerTests {
         assertEquals(newSize, preSize);
         assertTrue(b2);
     }
+
+    @Test
+    void BadRemove_ParallelTest_() {
+        //Prepare
+        client.Register("Oriyan", "123");
+        client.Login("Oriyaמ", "123");
+        client.openStore("Mega Sport");
+        Integer storeID = getStoreID(client.showAllStores(), "Mega Sport");
+        client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Arma Heels");
+        client.removeProduct(storeID, productID);
+        Integer preSize = client.showStoreProducts(storeID).size();
+
+        //bad remove - the product doesn't exist
+        boolean b2 = client.removeProduct(storeID, productID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        Integer newSize = storeProducts2.size();
+        assertEquals(newSize, preSize);
+        assertTrue(b2);
+    }
     //endregion
-    //region requirement 4.1: Edit Product Tests
+    //region requirement 4.1.3: Edit Product Tests
     @Test
     void HappyEditPrice() {
         client.Register("Shani", "123");
