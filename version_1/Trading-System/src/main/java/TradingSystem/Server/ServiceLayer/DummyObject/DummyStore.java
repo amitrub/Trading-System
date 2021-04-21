@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
@@ -24,6 +25,17 @@ public class DummyStore {
         this.id = store.getId();
         this.name = store.getName();
         this.storeRate = store.getRate();
+    }
+
+    public DummyStore(Map<String, Object> map) {
+        this.id = (Integer) map.get("id");
+        this.name = (String) map.get("name");
+        try {
+            this.storeRate = (Double) map.get("storeRate");
+        }
+        catch (Exception e){
+            this.storeRate = new Double((Integer) map.get("storeRate"));
+        }
     }
 
     public Integer getId() {
