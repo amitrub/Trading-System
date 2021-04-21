@@ -329,5 +329,17 @@ public class Store {
         return this.managersIDs.contains(newOwner);
     }
 
+    public boolean isProductExist(int id){
+        return inventory.checkProductsExistInTheStore(id,1);
+    }
 
+
+    //TODO implement! by the policy
+    public Double calculateBugPrice(boolean userSubscribe, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        if(userSubscribe){
+            return 1.0;
+        }
+        else
+            return 2.0;
+    }
 }

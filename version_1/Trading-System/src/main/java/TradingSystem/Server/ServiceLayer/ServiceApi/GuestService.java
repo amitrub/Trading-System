@@ -217,6 +217,7 @@ public class GuestService {
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
+        res.AddConnID(connID);
         tradingSystem.printUsers();
         return res;
     }
@@ -254,20 +255,20 @@ public class GuestService {
      *  "storeID": int
      *  "productID": int
      * }
-     * @return Response{
+     * @return NewResponse{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
     @PostMapping("shopping_cart/remove_product")
-    public Response RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        int storeID = (int) obj.get("storeID");
-//        int productID = (int) obj.get("productID");
-        //TODO: not implemented
-//        Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
-        Response res = new Response(true, "not implemented");
-        return res;
+    public Response RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)
+    {
+       int storeID = (int) obj.get("storeID");
+       int productID = (int) obj.get("productID");
+       Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
+       res.AddConnID(connID);
+       return res;
     }
 
     /**

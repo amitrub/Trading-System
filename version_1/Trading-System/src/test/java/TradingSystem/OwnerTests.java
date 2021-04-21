@@ -4,7 +4,6 @@ import TradingSystem.Client.Client;
 import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import org.junit.jupiter.api.AfterEach;
@@ -19,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 public class OwnerTests {
 
     Client client;
-    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -29,7 +27,6 @@ public class OwnerTests {
     @AfterEach
     void tearDown() {
         client.exitSystem();
-        tradingSystem.ClearSystem();
     }
 
     //region other functions
@@ -287,7 +284,11 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         boolean b1 = client.addOwner(storeID, newOwnerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> owners = client.showOwnerStores();
         assertFalse(b1);
+        assertEquals(owners.size(), 1);
     }
 
     @Test
@@ -306,7 +307,11 @@ public class OwnerTests {
         client.Login("roee", "123");
 
         boolean b1 = client.addOwner(storeID, id1);
+        client.Logout();
+        client.Login("elinor", "123");
+        List<DummyStore> owners = client.showOwnerStores();
         assertTrue(b1);
+        assertEquals(owners.size(), 0);
     }
 
     @Test
@@ -317,7 +322,9 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         boolean b1 = client.addOwner(storeID, id+1);
+        List<DummyStore> owners = client.showOwnerStores();
         assertTrue(b1);
+        assertEquals(owners.size(), 1);
     }
 
     @Test
@@ -333,7 +340,11 @@ public class OwnerTests {
 
         client.addOwner(storeID, newOwnerID);
         boolean b1 = client.addOwner(storeID, newOwnerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> owners = client.showOwnerStores();
         assertTrue(b1);
+        assertEquals(owners.size(), 1);
     }
     //endregion
 

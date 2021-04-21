@@ -146,4 +146,8 @@ public class ShoppingBag {
         this.products.remove(productID);
         this.products.put(productID,quantity);
     }
+  
+    public void RemoveProduct(int productID) {
+        this.products.remove(productID);
+    }
 }

@@ -148,7 +148,7 @@ public class TradingSystem {
             List<Product> Products = this.stores.get(id).getProducts();
             for (Product p : Products) {
                 int quantity= this.stores.get(id).getQuantity(p.getProductID());
-                System.out.println(ANSI_WHITE + p + " with quantity of- "+ quantity + ":\n" + ANSI_WHITE);
+                System.out.println(ANSI_WHITE + p + " with quantity of: "+ quantity + ":\n" + ANSI_WHITE);
             }
             }
         System.out.println("-----------------------------------------------");
@@ -818,13 +818,40 @@ public class TradingSystem {
     }
 
 
+
+    /**
+     * @param userId
+     * @param connID
+     * @param storeId
+     * @param productId
+     * @param comment
+     * @return Response{
+     *      *  "isErr: boolean
+     *      *  "message": String
+     *      *  "connID": String
+     *      * }
+     */
     public Response WriteComment(int userId, String connID, int storeId, int productId, String comment) {
-        if (ValidConnectedUser(userId, connID)) {
-            loggerController.WriteLogMsg("User "+userId+" add new comment to store "+ storeId+" successfully");
-            return this.stores.get(storeId).WriteComment(userId, productId, comment);
+        if(!stores.containsKey(storeId)){
+            return new Response(true, "Store doesn't exist in the system");
         }
-        else
+        else if(stores.containsKey(storeId)){
+            Store store=stores.get(storeId);
+            if(!store.isProductExist(storeId)){
+                return new Response(true, "The product doesn't exist in the store anymore");
+            }
+        }
+        else if(!ValidConnectedUser(userId, connID)) {
             return new Response(true, "Error in User details");
+        }
+        User user=subscribers.get(userId);
+        if(!user.IsProductExist(productId)){
+            return new Response(true, "User didn't buy this product");
+        }
+        if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
+            return new Response(true, "The user already wrote comment for this product");
+        }
+        return new Response(false, "the comment added successfully");
     }
 
 
@@ -899,5 +926,26 @@ public class TradingSystem {
         else {
             return new Response(true, "User not connect to system");
         }
+    }
+    public Response RemoveProductFromCart(String connID, int storeID, int productID) {
+        if(guests.containsKey(connID)) {
+            Response res =guests.get(connID).RemoveProductFromCart(storeID,productID);
+            return res;
+        }
+        else if(connectedSubscribers.containsKey(connID)) {
+            int userID = connectedSubscribers.get(connID);
+            Response res = subscribers.get(userID).RemoveProductFromCart(storeID,productID);
+            return res;
+        }
+        else {
+            return new Response(true, "user not Exist");
+        }
+    }
+
+    public Double calculateBugPrice(int userID, int storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+       if(this.subscribers.contains(userID))
+       return this.stores.get(storeID).calculateBugPrice(true,productsInTheBug);
+       else
+       return this.stores.get(storeID).calculateBugPrice(false,productsInTheBug);
     }
 }
