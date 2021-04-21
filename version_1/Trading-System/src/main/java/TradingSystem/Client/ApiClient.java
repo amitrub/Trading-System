@@ -319,7 +319,7 @@ public class ApiClient {
         client.addProductToCart(storeID, productID, quantity);
     }
     private static void showShoppingCart() {
-        List<DummyProduct> shoppingCart = client.showShoopingCart();
+        List<DummyProduct> shoppingCart = client.showShoppingCart();
         System.out.println(ANSI_PURPLE + "---------- Shopping List: ----------");
         for(DummyProduct dummyProduct : shoppingCart) {
             System.out.println(dummyProduct);

@@ -537,11 +537,30 @@ public class OwnerTests {
 
     //region requirement 4.11: Store history tests
     @Test
-    void HappyShowStoreHistory() {
+    void HappyHistory() {
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Asos");
+        Integer storeID = getStoreID(client.showAllStores(),"Scoop");
+        client.addProduct(storeID, "Sneakers", "Heels", 80.0, 25);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Heels");
+        client.Logout();
+
+        client.Register("Yasmin", "123");
+        client.Login("Yasmin", "123");
+        client.addProductToCart(storeID, productID, 2);
+        client.subscriberPurchase("123456789", "0501234567", "Kiryat Gat");
+        client.Logout();
+
+        client.Login("elinor", "123");
+        List<DummyProduct> products = client.showStoreHistory(storeID);
+        assertEquals(products.size(), 1);
+        assertEquals(products.get(0).getProductName(), "Heels");
     }
 
     @Test
-    void SadShowStoreHistory() {
+    void SadHistory() {
     }
     //endregion
 
