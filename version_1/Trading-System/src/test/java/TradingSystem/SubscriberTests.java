@@ -2,10 +2,15 @@ package TradingSystem;
 
 import TradingSystem.Client.Client;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
 
@@ -70,10 +75,39 @@ public class SubscriberTests {
         assertTrue(response.getIsErr());
     }
     //endregion
+    //region requirement 3.3: Write Comment
+    //case: 3.3.1
+//    @Test
+//    void writeComment() {
+//        client.Register("Sapir", "123");
+//        client.Login("Sapir", "123");
+//        client.openStore("Fox");
+//        List<DummyStore> store = client.showAllStores();
+//        Integer storeID = store.get(0).getId();
+//        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+//        List<DummyProduct> products= client.showStoreProducts(storeID);
+//        Integer productID = products.get(0).getProductID();
+//       //TODO: to buy this product before trying to comment it
+//        Response response = client.writeComment(storeID, productID, 3, "The product is nice");
+//        assertFalse(response.getIsErr());
+//    }
+    //case: 3.3.2, trying comment on product sub didn't buy
+    @Test
+    void sad_didntBuy_writeComment() {
+        client.Register("Sapir", "123");
+        client.Login("Sapir", "123");
+        client.openStore("Fox");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products= client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+        Response response = client.writeComment(storeID, productID, 3, "The product is nice");
+        assertTrue(response.getIsErr());
+    }
+    //endregion
+    //region requirement 3.7: User History Tests
 
-    /*
-    //region User History Tests
-    
     //todo after implement purchase
     @Test
     void showUsersHistory_Happy() {
@@ -83,33 +117,6 @@ public class SubscriberTests {
     @Test
     void showUserHistory_Sad() {
     }
-
     //endregion
-     */
-    /*
-    //region Write Comment
-
-    //endregion
-     */
-    
-    
-
-    /*
-    //todo there isn't access to the comments
-    @Test
-    void writeComment() {
-        client.Login("Sapir", "123");
-        client.openStore("Fox");
-        ArrayList<DummyStore> store = client.showAllStores();
-        Integer storeID = store.get(0).getId();
-        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        ArrayList<DummyProduct> products= client.showStoreProducts(storeID);
-        Integer productID = products.get(0).getProductID();
-        client.writeComment(storeID, productID, 3, "The product is nice");
-
-    }
-    //endregion
-
-     */
 
 }
