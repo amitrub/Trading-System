@@ -565,8 +565,8 @@ public class GuestTests {
         assertEquals(ans1, "Short Pants");
 
         //Issue
-        boolean purchaseFailed = client.guestPurchase("Roee", "12345678",
-                                            "052897878787", "sioot st. 5");
+        Response response = client.guestPurchase("Roee", "12345678","052897878787", "sioot st. 5");
+        boolean purchaseFailed = response.getIsErr();
         List<DummyProduct> cartAfter = client.showShoppingCart();
         List<DummyProduct> productsAfter = client.showStoreProducts(storeID);
         DummyProduct shortPants = products.get(0);
@@ -579,7 +579,6 @@ public class GuestTests {
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
         assertEquals(shortPantsAfter.getQuantity(), shortPants.getQuantity() - 1); //check decrease quantity in store
     }
-
     @Test
     void Purchase_SadWrongPayingDetails()
     {
@@ -599,18 +598,17 @@ public class GuestTests {
         assertEquals(ans1, "Short Pants");
 
         //Issue
-        boolean purchaseFailed = client.guestPurchase("Roee", "wrong paying details",
-                "wrong phone", "sioot st. 5");
+        Response response =client.guestPurchase("Roee", "wrong paying details","wrong phone", "sioot st. 5");
+        boolean purchaseFailed = response.getIsErr();
 
         //Assert
         if(purchaseFailed)
             System.out.println("purchase shouldn't succeed!!!");
         assertTrue(purchaseFailed);
     }
-
     @Test
     void PurchaseParallelSadTwoBuyersLastProduct() {
-        //Open store and add one product
+        //Prepare
         client.Register("Hadas", "123");
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
@@ -629,7 +627,7 @@ public class GuestTests {
         List<PurchaseTask> taskList = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             PurchaseTask task = new PurchaseTask("Client-" + i, storeID, productID,
-                                                    "1234-5678", "0528-97878787", "sioot st. 5");
+                                                    "123456", "052897878787", "sioot st. 5");
             taskList.add(task);
         }
 
@@ -650,7 +648,10 @@ public class GuestTests {
             Future<Result> future = resultList.get(i);
             try {
                 Result result = future.get();
-                System.out.println(result.getName() + ": " + result.getTimestamp());
+//                System.out.println(result.getName() + ": " + result.getTimestamp());
+                Response response = result.getResponse();
+                System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                assertFalse(response.getIsErr());
             } catch (InterruptedException | ExecutionException e) {
                 e.printStackTrace();
             }
@@ -659,7 +660,6 @@ public class GuestTests {
 
     //Todo: 2 clients wants to buy different products, sleep 10 seconds, check that they aren't wait for 20 sec
     //TODO: CHECK DEADLOCKS 2 clients 2 products diffrenet order!!!
-    //TODO: not guest purchase need to add to history
 
     //endregion
 
