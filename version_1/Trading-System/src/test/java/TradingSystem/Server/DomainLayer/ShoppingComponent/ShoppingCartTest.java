@@ -5,44 +5,50 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.Before;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
 
 
-
-
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import org.junit.jupiter.api.BeforeEach;
 
 import java.util.concurrent.ConcurrentHashMap;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ShoppingCartTest {
-  
+    TradingSystem t=TradingSystem.getInstance();
+    String gust1=t.ConnectSystem().getConnID();
+    String NconnID;
+    ShoppingCart SC1;
+    ShoppingCart SC2;
+
     @BeforeEach
     void setUp() {
+        t.Register(gust1, "nofet", "123");
+        NconnID= t.Login(gust1, "nofet", "123").getConnID();
     }  
   
     @Test
-    void removeProductFromCart() {
-        TradingSystem t=TradingSystem.getInstance();
-        String gust1=t.ConnectSystem().getConnID();
-        t.Register(gust1, "nofet", "123");
-        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
-
+    void removeProductFromCart() {       
         t.AddStore(1, NconnID, "Store1");
-
+        t.AddStore(1, NconnID, "Store2");
         t.AddProductToStore(1, NconnID, 1, "computer", "Technology", 3000.0,20);
         t.AddProductToStore(1, NconnID, 1, "Bag", "Beauty", 100.0,50);
         t.AddProductToStore(1, NconnID, 1, "Bed", "Fun", 4500.0,30);
 
-        t.AddStore(1, NconnID, "Store2");
+
         t.AddProductToStore(1, NconnID, 2, "computer", "Technology", 3500.0,20);
         t.AddProductToStore(1, NconnID, 2, "Bag", "Beauty", 50.0,50);
         t.AddProductToStore(1, NconnID, 2, "Bed", "Fun", 4000.0,30);
+        SC1=new ShoppingCart(1);
+        SC2=new ShoppingCart(1);
+    }  
+  
+    @Test
+    void removeProductFromCart() {
 
-        ShoppingCart SC1=new ShoppingCart(1);
         SC1.addProductToBag(1,1,3);
         SC1.addProductToBag(2,2,2);
         SC1.addProductToBag(2,3,1);
@@ -62,31 +68,12 @@ class ShoppingCartTest {
 
     @Test
     void showShoppingCart() {
-
-        TradingSystem t=TradingSystem.getInstance();
-        String gust1=t.ConnectSystem().getConnID();
-        t.Register(gust1, "nofet", "123");
-        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
-
-        t.AddStore(1, NconnID, "Store1");
-
-        t.AddProductToStore(1, NconnID, 1, "computer", "Technology", 3000.0,20);
-        t.AddProductToStore(1, NconnID, 1, "Bag", "Beauty", 100.0,50);
-        t.AddProductToStore(1, NconnID, 1, "Bed", "Fun", 4500.0,30);
-
-        t.AddStore(1, NconnID, "Store2");
-        t.AddProductToStore(1, NconnID, 2, "computer", "Technology", 3500.0,20);
-        t.AddProductToStore(1, NconnID, 2, "Bag", "Beauty", 50.0,50);
-        t.AddProductToStore(1, NconnID, 2, "Bed", "Fun", 4000.0,30);
-
-        ShoppingCart SC1=new ShoppingCart(1);
         SC1.addProductToBag(1,1,3);
         SC1.addProductToBag(2,2,2);
         SC1.addProductToBag(2,3,1);
 
         List<DummyProduct> L1= SC1.ShowShoppingCart();
 
-        ShoppingCart SC2=new ShoppingCart(1);
         List<DummyProduct> L2= SC2.ShowShoppingCart();
 
         //happy
@@ -110,21 +97,10 @@ class ShoppingCartTest {
 
     @Test
     void addProductToBag() {
-        TradingSystem t=TradingSystem.getInstance();
-        String gust1=t.ConnectSystem().getConnID();
-        t.Register(gust1, "nofet", "123");
-        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
-
-        t.AddStore(3, NconnID, "NofetStore");
-        t.AddProductToStore(3, NconnID, 2, "computer", "Technology", 3000.0,20);
-        t.AddProductToStore(3, NconnID, 2, "Bag", "Beauty", 100.0,50);
-        t.AddProductToStore(3, NconnID, 2, "Bed", "Fun", 4000.0,30);
-
-        ShoppingCart SC=new ShoppingCart(3);
-        Response res1=SC.addProductToBag(2,1,10);
-        Response res2=SC.addProductToBag(2,2,60);
-        Response res3=SC.addProductToBag(2,7,10);
-        Response res4=SC.addProductToBag(2,3,10);
+        Response res1=SC1.addProductToBag(1,1,10);
+        Response res2=SC1.addProductToBag(1,2,60);
+        Response res3=SC1.addProductToBag(1,7,10);
+        //Response res4=SC1.addProductToBag(2,3,10);
 
         //happy
         assertTrue(res1.getMessage().equals("The product added successfully"));
@@ -168,9 +144,9 @@ class ShoppingCartTest {
     @Test
     void editProductQuantityFromCart() {
         TradingSystem t=TradingSystem.getInstance();
-        String gust1=t.ConnectSystem().getConnID();
+        String gust1=t.ConnectSystem().returnConnID();
         t.Register(gust1, "nofet", "123");
-        String NconnID = t.Login(gust1, "nofet", "123").getConnID();
+        String NconnID = t.Login(gust1, "nofet", "123").returnConnID();
 
         t.AddStore(1, NconnID, "Store1");
 

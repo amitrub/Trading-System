@@ -21,14 +21,13 @@ public class AdminService {
      *  "users": List [{
      *      "userID": int
      *      "userName": String
+     *      "password": "XXXXXXX"
      *  }]
      * }
      */
-    //TODO: not implemented
     @GetMapping("{adminID}/users")
     public Response ShowAllUsers(@PathVariable int adminID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowAllUsers(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.ShowAllUsers(adminID, connID);
         return res;
     }
 
@@ -47,11 +46,9 @@ public class AdminService {
      *  }]
      * }
      */
-    //TODO: not implemented
     @GetMapping("{adminID}/stores")
     public Response ShowAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowAllStores(adminID, connID);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.ShowAllStores();
         return res;
     }
 
