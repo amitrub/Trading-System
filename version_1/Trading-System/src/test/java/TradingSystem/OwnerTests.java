@@ -4,15 +4,12 @@ import TradingSystem.Client.Client;
 import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
-import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -21,7 +18,6 @@ import static org.junit.Assert.assertTrue;
 public class OwnerTests {
 
     Client client;
-    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -31,7 +27,6 @@ public class OwnerTests {
     @AfterEach
     void tearDown() {
         client.exitSystem();
-        tradingSystem.ClearSystem();
     }
 
     //region other functions
@@ -45,7 +40,7 @@ public class OwnerTests {
         return -1;
     }
 
-    Integer getProductID(ArrayList<DummyProduct> storeProducts, String productName)
+    Integer getProductID(List<DummyProduct> storeProducts, String productName)
     {
         for (int i=0; i<storeProducts.size(); i++)
         {
@@ -68,7 +63,7 @@ public class OwnerTests {
 
         //happy add
         boolean b1 = client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         assertEquals(storeProducts1.size(), 1);
         assertFalse(b1);
     }
@@ -82,7 +77,7 @@ public class OwnerTests {
 
         //sad add - product price illegal
         boolean b2 = client.addProduct(storeID, "Classic Heels", "Heels", -50.0, 25);
-        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.size(), 0);
         assertTrue(b2);
     }
@@ -96,7 +91,7 @@ public class OwnerTests {
         client.addProduct(storeID, "Arma Heels", "Heels", 60.0, 25);
 
         boolean b3 = client.addProduct(storeID, "Arma Heels", "Heels", 200.0, 25);
-        ArrayList<DummyProduct> storeProducts3 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts3 = client.showStoreProducts(storeID);
         assertEquals(storeProducts3.size(), 1);
         assertTrue(b3);
     }
@@ -110,7 +105,7 @@ public class OwnerTests {
 
         //sad add - product quantity is illegal
         boolean b4 = client.addProduct(storeID, "Short Heels", "Heels", 60.0, -10);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         assertEquals(storeProducts1.size(), 0);
         assertTrue(b4);
     }
@@ -124,13 +119,13 @@ public class OwnerTests {
         client.openStore("Ran Sport");
         Integer storeID = getStoreID(client.showAllStores(), "Ran Sport");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
         Integer preSize = client.showStoreProducts(storeID).size();
 
         //happy remove
         boolean b1 = client.removeProduct(storeID, productID);
-        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.size(), preSize-1);
         assertFalse(b1);
     }
@@ -142,14 +137,14 @@ public class OwnerTests {
         client.openStore("Mega Sport");
         Integer storeID = getStoreID(client.showAllStores(), "Mega Sport");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
         client.removeProduct(storeID, productID);
         Integer preSize = client.showStoreProducts(storeID).size();
 
         //bad remove - the product doesn't exist
         boolean b2 = client.removeProduct(storeID, productID);
-        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         Integer newSize = storeProducts2.size();
         assertEquals(newSize, preSize);
         assertTrue(b2);
@@ -163,12 +158,12 @@ public class OwnerTests {
         client.openStore("WeShoes");
         Integer storeID = getStoreID(client.showAllStores(), "WeShoes");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
 
         //happy edit price
         boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 100.0,25);
-        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.get(0).getPrice(), 100.0, 0);
         assertEquals(storeProducts2.size(), 1);
         assertFalse(b1);
@@ -181,12 +176,12 @@ public class OwnerTests {
         client.openStore("WeShoes");
         Integer storeID = getStoreID(client.showAllStores(), "WeShoes");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
 
         //happy edit quantity
         boolean b1 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 100.0,35);
-        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.get(0).getQuantity(), 35);
         assertEquals(storeProducts2.size(), 1);
         assertFalse(b1);
@@ -199,12 +194,12 @@ public class OwnerTests {
         client.openStore("Gali");
         Integer storeID = getStoreID(client.showAllStores(), "Gali");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
 
         //sad edit
         boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", -120.0,25);
-        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.get(0).getPrice(), 80.0, 0);
         assertEquals(storeProducts2.size(), 1);
         assertTrue(b2);
@@ -217,13 +212,13 @@ public class OwnerTests {
         client.openStore("Gali");
         Integer storeID = getStoreID(client.showAllStores(), "Gali");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
         Integer preSize = client.showStoreProducts(storeID).size();
 
         //sad edit
         boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,-25);
-        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         Integer newSize = storeProducts2.size();
         assertEquals(storeProducts2.get(0).getQuantity(), 25);
         assertEquals(newSize, preSize);
@@ -237,14 +232,14 @@ public class OwnerTests {
         client.openStore("Gali");
         Integer storeID = getStoreID(client.showAllStores(), "Gali");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        ArrayList<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
         client.removeProduct(storeID, productID);
         Integer preSize = client.showStoreProducts(storeID).size();
 
         //sad edit
         boolean b2 = client.editProduct(storeID, productID, "Arma Heels", "Heels", 120.0,25);
-        ArrayList<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         Integer newSize = storeProducts2.size();
         assertEquals(newSize, preSize);
         assertTrue(b2);
@@ -289,7 +284,11 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         boolean b1 = client.addOwner(storeID, newOwnerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> owners = client.showOwnerStores();
         assertFalse(b1);
+        assertEquals(owners.size(), 1);
     }
 
     @Test
@@ -308,7 +307,11 @@ public class OwnerTests {
         client.Login("roee", "123");
 
         boolean b1 = client.addOwner(storeID, id1);
+        client.Logout();
+        client.Login("elinor", "123");
+        List<DummyStore> owners = client.showOwnerStores();
         assertTrue(b1);
+        assertEquals(owners.size(), 0);
     }
 
     @Test
@@ -319,7 +322,9 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         boolean b1 = client.addOwner(storeID, id+1);
+        List<DummyStore> owners = client.showOwnerStores();
         assertTrue(b1);
+        assertEquals(owners.size(), 1);
     }
 
     @Test
@@ -335,7 +340,11 @@ public class OwnerTests {
 
         client.addOwner(storeID, newOwnerID);
         boolean b1 = client.addOwner(storeID, newOwnerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> owners = client.showOwnerStores();
         assertTrue(b1);
+        assertEquals(owners.size(), 1);
     }
     //endregion
 

@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
@@ -114,20 +113,20 @@ public class Product {
         this.quantity = quantity;
     }
 
-    public NewResponse addComment(Integer userID, String comment)
+    public Response addComment(Integer userID, String comment)
     {
         if(productComments.containsKey(userID)){
-            return new NewResponse(true, "User can not post more than one comment on a product");
+            return new Response(true, "User can not post more than one comment on a product");
         }
         this.productComments.put(userID,comment);
-        return new NewResponse("The response writing was performed successfully");
+        return new Response("The response writing was performed successfully");
     }
 
     public Response removeComment(Integer userID)
     {
         if(productComments.containsKey(userID)){
             this.productComments.remove(userID);
-            return new Response(false, "The comment has been successfully deleted");
+            return new Response("The comment has been successfully deleted");
         }
         return new Response(true, "The user has no comment for this product");
 
