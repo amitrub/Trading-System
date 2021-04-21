@@ -231,11 +231,13 @@ public  class User {
         this.managerPermission.remove(storeID);
     }
 
+
+    public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
+        return this.shoppingCart.editProductQuantityFromCart(storeID,productID, quantity);
+}
     public Response RemoveProductFromCart(int storeID, int productID) {
       return this.shoppingCart.RemoveProductFromCart(storeID, productID);
     }
-
-
 
     public boolean IsProductExist(int productid){
         for(ShoppingHistory shoppingHistory:this.shoppingHistory){

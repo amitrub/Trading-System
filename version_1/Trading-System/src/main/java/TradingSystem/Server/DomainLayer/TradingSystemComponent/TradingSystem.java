@@ -914,6 +914,19 @@ public class TradingSystem {
         this.stores.get(storeID).pay(finalPrice);
     }
 
+    public Response editProductQuantityFromCart(String connID, int storeID, int productID, int quantity) {
+        if(guests.containsKey(connID)){
+            User myGuest= guests.get(connID);
+            return myGuest.editProductQuantityFromCart(storeID, productID, quantity);
+        }
+        else if(connectedSubscribers.containsKey(connID)){
+            int userID= connectedSubscribers.get(connID);
+            return subscribers.get(userID).editProductQuantityFromCart(storeID, productID, quantity);
+        }
+        else {
+            return new Response(true, "User not connect to system");
+        }
+    }
     public Response RemoveProductFromCart(String connID, int storeID, int productID) {
         if(guests.containsKey(connID)) {
             Response res =guests.get(connID).RemoveProductFromCart(storeID,productID);

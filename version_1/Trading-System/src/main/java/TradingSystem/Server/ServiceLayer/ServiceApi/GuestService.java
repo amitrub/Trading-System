@@ -291,9 +291,8 @@ public class GuestService {
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
-        //TODO: not implemented
-//        Response res = tradingSystem.EditProductQuantityFromCart(connID, storeID, productID, quantity);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
+        res.AddConnID(connID);
         return res;
     }
 
