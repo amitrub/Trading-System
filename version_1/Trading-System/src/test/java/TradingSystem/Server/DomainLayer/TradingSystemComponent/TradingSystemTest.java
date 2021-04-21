@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import java.util.List;
 
@@ -129,6 +130,47 @@ class TradingSystemTest {
         Response response= tradingSystem.Logout(connID);
         assertFalse(response.getIsErr());
     }
+
+    @Test
+    void AddProductSuccess(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        int storeid=0;
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+            }
+        }
+        Response response=tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+        assertFalse(response.getIsErr());
+    }
+
+    @Test
+    void AddProductInvalidAmount(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        int storeid=0;
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+            }
+        }
+        Response response=tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,-1);
+        assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void AddProductInvalidPremmision(){
+        Response response=tradingSystem.AddProductToStore(userID,connID,storeid1,"prod3","food",11.0,-1);
+        assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void AddProductInvaliddetails(){
+        Response response=tradingSystem.AddProductToStore(userID,connID,storeid1,"prod3","food",-1,11);
+        assertTrue(response.getIsErr());
+    }
+
 
 
 }
