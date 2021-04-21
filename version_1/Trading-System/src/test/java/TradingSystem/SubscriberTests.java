@@ -1,6 +1,7 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,8 +28,9 @@ public class SubscriberTests {
     void logoutHappy(){
         client.Register("Gal", "123");
         client.Login("Gal", "123");
-        int respondID = client.Logout();
-        assertEquals(respondID, -1); //-1 means client is a guest in the system now
+        Response respone = client.Logout();
+        assertEquals(client.getUserID(), -1); //-1 means client is a guest in the system now
+        assertFalse(respone.getIsErr());
     }
     //endregion
     //region open store tests

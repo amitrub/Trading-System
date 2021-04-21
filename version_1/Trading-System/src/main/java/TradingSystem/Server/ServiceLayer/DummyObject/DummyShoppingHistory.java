@@ -4,6 +4,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 
 import java.util.Date;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DummyShoppingHistory {
@@ -26,6 +27,21 @@ public class DummyShoppingHistory {
         for (Product p : toCopyShoppingHistory.getProducts().keySet()){
             this.products.put(new DummyProduct(p), toCopyShoppingHistory.getProducts().get(p));
         }
+    }
+
+    public DummyShoppingHistory(Map<String, Object> map) {
+        this.userID = (Integer) map.get("userID");
+        this.storeID = (Integer) map.get("storeID");
+        this.date = (Date) map.get("date");
+        Double tmpFinalPrice;
+        try {
+            tmpFinalPrice = (Double) map.get("finalPrice");
+        }
+        catch (Exception e){
+            tmpFinalPrice = new Double((Integer) map.get("finalPrice"));
+        }
+        this.finalPrice = tmpFinalPrice;
+        this.products = (ConcurrentHashMap<DummyProduct, Integer>) map.get("products");
     }
 
     public Integer getUserID() {

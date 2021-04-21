@@ -47,6 +47,7 @@ public class TradingSystem {
         if (tradingSystem == null) {
             tradingSystem = new TradingSystem();
             tradingSystem.validation = new Validation();
+            tradingSystem.ClearSystem();
 //            tradingSystem.Initialization();
         }
         return tradingSystem;
@@ -272,11 +273,11 @@ public class TradingSystem {
         if (response.getIsErr())
             return response;
         User myGuest = guests.get(guestConnID);
-        subscribers.get(response.getUserID()).mergeToMyCart(myGuest.getShoppingCart());
-        String connID = connectSubscriberToSystemConnID(response.getUserID());
+        subscribers.get(response.returnUserID()).mergeToMyCart(myGuest.getShoppingCart());
+        String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
         Response res = new Response("Login was successful");
-        res.AddUserID(response.getUserID());
+        res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         return res;
     }
@@ -362,29 +363,45 @@ public class TradingSystem {
         return res;
     }
 
-    //Product functions
+
+    /**
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productName
+     * @param category
+     * @param price
+     * @param quantity
+     * @return Response{
+     *      *  "isErr: boolean
+     *      *  "message": String
+     *      *  "connID": String
+     *      * }
+     */
     public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity){
         if(ValidConnectedUser(userID, connID)){
-            if(this.hasPermission(userID,storeID,User.Permission.AddProduct)) {
-                if(price>=0) {
-                    if(quantity>0) {
+            if(!this.hasPermission(userID,storeID,User.Permission.AddProduct)){
+                return new Response(true, "The User is not allowed to add a product");
+            }
+            else {
+                if(price<0) {
+                    return new Response(true, "The price of the product can't be negative");
+                }
+                else{
+                    if(quantity<0) {
+                        return new Response(true, "The quantity of the product can't be negative");
+
+                    }
+                    else{
                         Response res = stores.get(storeID).AddProductToStore(productName, price, category, quantity);
                         printProducts();
                         loggerController.WriteLogMsg("User " + userID + " add product " + productName + " to store " + storeID + " successfully");
                         return res;
                     }
-                    loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
-                    return new Response(true, "The quantity of the product can't be negative");
-
                 }
-                loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
-                return new Response(true, "The price of the product can't be negative");
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
-            return new Response(true, "The User is not allowed to add a product");
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to add product "+ productName+" to store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
@@ -405,40 +422,65 @@ public class TradingSystem {
         return false;
     }
 
+
+    /**
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productId
+     * @param quantity
+     *  @return Response{
+     *        "isErr: boolean
+     *        "message": String
+     *        "connID": String
+     *       }
+     */
     public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity){
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID,User.Permission.AddProduct)) {
-                if(quantity>0) {
+            if(!hasPermission(userID,storeID,User.Permission.AddProduct)){
+                return new Response(true, "The User is not allowed to add products to the inventory");
+            }
+            else {
+                if(quantity<0){
+                    return new Response(true, "The quantity of the product can't be negative");
+                }
+                else {
                     Response res = stores.get(storeID).addProductToInventory(productId, quantity);
                     printProducts();
-                    loggerController.WriteLogMsg("User " + userID + " add " + quantity + " products of " + productId + " to store " + storeID + " successfully");
                     return res;
                 }
-                loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
-                return new Response(true, "The quantity of the product can't be negative");
-
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
-            return new Response(true, "The User is not allowed to add products to the inventory");
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
+
+    /**
+     * @requirement 4.1
+     *
+     * @param userID : int (Path)
+     * @param storeID: int (Path)
+     * @param productID: int (Path)
+     * @param connID: String (Header)
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
     public Response RemoveProduct(int userID, int storeID, int productID, String connID) {
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID,User.Permission.DeleteProduct)) {
+            if(!hasPermission(userID,storeID,User.Permission.DeleteProduct)){
+                return new Response(true, "The User is not allowed to remove products from the inventory");
+            }
+            else {
                 Response res = stores.get(storeID).deleteProduct(productID);
                 printProducts();
-                loggerController.WriteLogMsg("User "+userID+" remove product"+ productID+" from store "+storeID+" successfully");
                 return res;
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to remove product"+ productID+" from store "+storeID+" and failed");
-            return new Response(true, "The User is not allowed to remove products from the inventory");
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to remove product"+ productID+" from store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
@@ -806,10 +848,36 @@ public class TradingSystem {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
-    //show the history for some user
+    /**
+     * @requirement 3.7
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "history": List [{
+     *      "userID": int
+     *      "storeID": int
+     *      "products": List [{
+     *          "storeID": int
+     *          "storeName": String
+     *          "productID": int
+     *          "productName": String
+     *          "price": double
+     *          "category": String
+     *          "quantity": int
+     *      }]
+     *  }]
+     * }
+     */
     public Response ShowSubscriberHistory(int userID, String connID){
         if (ValidConnectedUser(userID,connID)){
             List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
+            if(list.isEmpty()){
+                return new Response(true,"There are no older shopping in the history");
+            }
             Response res = new Response("num of history buying of the user is " + list.size());
             res.AddPair("history", list);
             return res;
@@ -862,26 +930,44 @@ public class TradingSystem {
     }
 
 
+
+    /**
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productID
+     * @param productName
+     * @param category
+     * @param price
+     * @param quantity
+     * @return Response{
+     *        "isErr: boolean
+     *        "message": String
+     *        "connID": String
+     *       }
+     */
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID, User.Permission.AddProduct)) {
-                if(price>=0) {
-                    if(quantity>0) {
+            if(!hasPermission(userID,storeID, User.Permission.AddProduct)){
+                return new Response(true, "The Edit is not allowed to Edit products");
+            }
+            else {
+                if(price<0){
+                    return new Response(true, "The product price can't be negative");
+                }
+                else {
+                    if(quantity<0){
+                        return new Response(true, "The product quantity can't be negative");
+                    }
+                    else{
                         //todo change quantity of product
                         stores.get(storeID).editProductDetails(userID, productID, productName, price, category);
                         printProducts();
                         loggerController.WriteLogMsg("User " + userID + " edit product " + productID + " successfully");
                         return new Response("Edit Product was successful");
                     }
-                    loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-                    return new Response(true, "The product quantity can't be negative");
-
                 }
-                loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-                return new Response(true, "The product price can't be negative");
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-            return new Response(true, "The Edit is not allowed to Edit products");
         }
         else{
             loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
@@ -954,5 +1040,25 @@ public class TradingSystem {
        return this.stores.get(storeID).calculateBugPrice(true,productsInTheBug);
        else
        return this.stores.get(storeID).calculateBugPrice(false,productsInTheBug);
+    }
+
+    public Response ShowAllUsers(int adminID, String connID) {
+        if(!ValidConnectedUser(adminID, connID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed");
+            return new Response(true, "Error in User details");
+        }
+        else if (!systemAdmins.containsKey(adminID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed not admin");
+            return new Response(true, "Error User not admin");
+        }
+        else {
+            List<DummyUser> list = new ArrayList<>();
+            for (Map.Entry<Integer, User> currUser : subscribers.entrySet()) {
+                list.add(new DummyUser(currUser.getValue()));
+            }
+            Response res = new Response("num of users in the system is " + list.size());
+            res.AddPair("users", list);
+            return res;
+        }
     }
 }

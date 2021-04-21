@@ -4,6 +4,7 @@ import TradingSystem.Client.Client;
 import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import org.junit.jupiter.api.AfterEach;
@@ -22,8 +23,11 @@ public class OwnerTests {
     @BeforeEach
     void setUp() {
         this.client = new Client();
+        client.ClearSystem();
         client.connectSystem();
+
     }
+
     @AfterEach
     void tearDown() {
         client.exitSystem();

@@ -33,7 +33,7 @@ public class Response {
         this.returnObject.put("userID", value);
     }
 
-    public Integer getUserID(){
+    public Integer returnUserID(){
         if(!this.isErr){
             Integer userID = (Integer) this.returnObject.get("userID");
             return userID;
@@ -41,7 +41,7 @@ public class Response {
         else
             return -1;
     }
-    public String getConnID(){
+    public String returnConnID(){
         if(!this.isErr){
             String connID = (String) this.returnObject.get("connID");
             return connID;
@@ -49,26 +49,38 @@ public class Response {
         else
             return "";
     }
-    public ArrayList<DummyStore> getStoreList(){
+    public List<DummyStore> returnStoreList(){
         if(!this.isErr){
-            ArrayList<DummyStore> storeList = (ArrayList<DummyStore>) this.returnObject.get("stores");
-            return storeList;
+            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("stores");
+            List<DummyStore> output = new ArrayList<>();
+            for (Map<String, Object> map: storeList){
+                output.add(new DummyStore(map));
+            }
+            return output;
         }
         else
             return new ArrayList<>();
     }
-    public List<DummyProduct> getProductList(){
+    public List<DummyProduct> returnProductList(){
         if(!this.isErr){
-            List<DummyProduct> productList = (List<DummyProduct>) this.returnObject.get("products");
-            return productList;
+            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("products");
+            List<DummyProduct> output = new ArrayList<>();
+            for (Map<String, Object> map: storeList){
+                output.add(new DummyProduct(map));
+            }
+            return output;
         }
         else
             return new ArrayList<>();
     }
-    public List<DummyShoppingHistory> getHistoryList(){
+    public List<DummyShoppingHistory> returnHistoryList(){
         if(!this.isErr){
-            List<DummyShoppingHistory> historyList = (List<DummyShoppingHistory>) this.returnObject.get("history");
-            return historyList;
+            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("history");
+            List<DummyShoppingHistory> output = new ArrayList<>();
+            for (Map<String, Object> map: storeList){
+                output.add(new DummyShoppingHistory(map));
+            }
+            return output;
         }
         else
             return new ArrayList<>();
