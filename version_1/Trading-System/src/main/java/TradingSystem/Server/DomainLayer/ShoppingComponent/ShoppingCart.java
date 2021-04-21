@@ -111,7 +111,7 @@ public class ShoppingCart {
         Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, quantity, productsInTheBug);
         shoppingBags.get(storeID).setFinalPrice(priceForBug);
         loggerController.WriteLogMsg("User "+userID+" added product " +productID+ " from store "+storeID+" to cart successfully");
-        NewResponse res =new Response("The product added successfully");
+        Response res =new Response("The product added successfully");
         return res;
     }
 
