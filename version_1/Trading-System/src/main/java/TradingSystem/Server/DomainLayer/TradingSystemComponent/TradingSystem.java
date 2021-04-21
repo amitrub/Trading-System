@@ -443,19 +443,32 @@ public class TradingSystem {
             return new Response(true, "Error in User details");
         }
     }
+
+    /**
+     * @requirement 4.1
+     *
+     * @param userID : int (Path)
+     * @param storeID: int (Path)
+     * @param productID: int (Path)
+     * @param connID: String (Header)
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
     public Response RemoveProduct(int userID, int storeID, int productID, String connID) {
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID,User.Permission.DeleteProduct)) {
+            if(!hasPermission(userID,storeID,User.Permission.DeleteProduct)){
+                return new Response(true, "The User is not allowed to remove products from the inventory");
+            }
+            else {
                 Response res = stores.get(storeID).deleteProduct(productID);
                 printProducts();
-                loggerController.WriteLogMsg("User "+userID+" remove product"+ productID+" from store "+storeID+" successfully");
                 return res;
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to remove product"+ productID+" from store "+storeID+" and failed");
-            return new Response(true, "The User is not allowed to remove products from the inventory");
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to remove product"+ productID+" from store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
