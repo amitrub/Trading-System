@@ -369,7 +369,7 @@ public class Client {
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
-        System.out.println(ANSI_YELLOW + "(removeProduce) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
         return dummyShoppingHistoryResponse;
     }
     public boolean addOwner(int storeID, int newOwnerID) {
