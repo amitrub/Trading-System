@@ -4,6 +4,7 @@ import TradingSystem.Client.Client;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,14 +27,14 @@ public class GuestTests {
     @BeforeEach
     void setUp() {
         this.client = new Client();
-        client.ClearSystem();
+        client.clearSystem();
         client.connectSystem();
     }
 
     @AfterEach
     void tearDown() {
         client.exitSystem();
-        client.ClearSystem();
+        client.clearSystem();
     }
 
     //region system Tests requirement 2.1-2.2
@@ -306,63 +307,82 @@ public class GuestTests {
     }
 
     //endregion
-    //region Shopping Cart Tests
-//    @Test
-//    void addProductToCart_Happy() {
-//        client.Register("Hadas", "123");
-//        client.Login("Hadas", "123");
-//        client.openStore("Mania Jeans");
-//        ArrayList<DummyStore> store = client.showAllStores();
-//        Integer storeID = store.get(0).getId();
-//        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-//        ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
-//        Integer productID = products.get(0).getProductID();
-//
-//        client.addProductToCart(storeID, productID, 1);
-//        assertEquals(client.showShoopingCart().size(), 1);
-//        String ans1 = client.showShoopingCart().get(0).getProductName();
-//        assertEquals(ans1, "Short Pants");
-//    }
-//
-//    @Test
-//    void addProductToCart_SadQuantity() {
-//        client.Register("Liat", "123");
-//        client.Login("Liat", "123");
-//        client.openStore("Mango");
-//        ArrayList<DummyStore> store = client.showAllStores();
-//        Integer storeID = store.get(0).getId();
-//        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-//        ArrayList<DummyProduct> products = client.showStoreProducts(storeID);
-//        Integer productID = products.get(0).getProductID();
-//
-//        client.addProductToCart(storeID, productID, 3);
-//        assertEquals(client.showShoopingCart().size(), 0);
-//    }
-//
-//    @Test
-//    void showShoopingCart_Happy() {
-//        client.Register("Amit", "123");
-//        client.Login("Amit", "123");
-//        client.openStore("Bershka");
-//        ArrayList<DummyStore> store = client.showAllStores();
-//        Integer storeID = store.get(0).getId();
-//        client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
-//
-//        ArrayList<DummyProduct> products= client.showStoreProducts(storeID);
-//        Integer productID = products.get(0).getProductID();
-//        client.addProductToCart(storeID, productID , 3);
-//        assertEquals(client.showShoopingCart().size(), 3);
-//    }
-//
-//    @Test
-//    void showShoopingCart_Sad() {
-//        client.Register("Dana", "123");
-//        client.Login("Dana", "123");
-//        client.openStore("Cocktail");
-//
-//        ArrayList<DummyProduct> ans1 = client.showShoopingCart();
-//        assertEquals(ans1.size(), 0);
-//    }
+    //region Shopping Cart Tests requirement 2.7-2.8
+
+    /**
+     * @requirement  2.7
+     */
+    @Test
+    void addProductToCart_Happy() {
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        client.openStore("Mania Jeans");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+
+        client.addProductToCart(storeID, productID, 1);
+        assertEquals(client.showShoopingCart().size(), 1);
+        String ans1 = client.showShoopingCart().get(0).getProductName();
+        assertEquals(ans1, "Short Pants");
+    }
+    @Test
+    void addProductToCart_SadQuantity() {
+        client.Register("Liat", "123");
+        client.Login("Liat", "123");
+        client.openStore("Mango");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+
+        Response response = client.addProductToCart(storeID, productID, 3);
+        assertEquals(client.showShoopingCart().size(), 0);
+    }
+    @Test
+    void addProductToCart_SadStoreWithoutThisProduct() {
+        client.Register("Liat", "123");
+        client.Login("Liat", "123");
+        client.openStore("Mango");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+
+        Response response = client.addProductToCart(storeID, 8, 3);
+        assertEquals(client.showShoopingCart().size(), 0);
+    }
+
+
+
+    @Test
+    void showShoopingCart_Happy() {
+        client.Register("Amit", "123");
+        client.Login("Amit", "123");
+        client.openStore("Bershka");
+        List<DummyStore> store = client.showAllStores();
+        Integer storeID = store.get(0).getId();
+        client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
+
+        List<DummyProduct> products= client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+        client.addProductToCart(storeID, productID , 3);
+        assertEquals(client.showShoopingCart().size(), 3);
+    }
+    @Test
+    void showShoopingCart_Sad() {
+        client.Register("Dana", "123");
+        client.Login("Dana", "123");
+        client.openStore("Cocktail");
+
+        List<DummyProduct> ans1 = client.showShoopingCart();
+        assertEquals(ans1.size(), 0);
+    }
+
 
     @Test
     void editShoppingCart_HappyRemove()
@@ -374,17 +394,17 @@ public class GuestTests {
     {
 
     }
-
     @Test
     void editShoppingCart_SadQauntity()
     {
     }
-
     @Test
     void editShoppingCart_SadEmptyCart()
     {
 
     }
+
+
     //endregion
     //region Purchase tests
 
