@@ -251,7 +251,7 @@ public class Client {
      * @param address
      * @return
      */
-    public boolean guestPurchase(String name, String credit_number, String phone_number, String address) {
+    public Response guestPurchase(String name, String credit_number, String phone_number, String address) {
         String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
         try {
@@ -264,8 +264,8 @@ public class Client {
         }
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(guestPurchase) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        System.out.println(ANSI_YELLOW + this.getUserName() + ": (guestPurchase) response: " + response + ANSI_RESET);
+        return response;
     }
 
     //Subscriber

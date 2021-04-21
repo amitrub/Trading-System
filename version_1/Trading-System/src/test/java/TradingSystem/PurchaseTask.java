@@ -1,8 +1,12 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_GREEN;
@@ -47,18 +51,24 @@ public class PurchaseTask implements Callable<Result> {
         System.out.println(ANSI_RESET);
         client.addProductToCart(storeID, productID, 1);
 
-        if(client.showShoppingCart().size() != 1)
-            System.out.println("Error!!! purchase task");
-        String ans1 = client.showShoppingCart().get(0).getProductName();
-        if(ans1 != "Short Pants")
-            System.out.println("Error!!! purchase task");
+//
+//        List<DummyProduct> dummyProductList= client.showShoppingCart();
+//        int sizeCart = dummyProductList.size();
+//        String productName = dummyProductList.get(0).getProductName();
+//        System.out.println("!!!!!!!-------- shopping cart size: " + sizeCart);
+//        System.out.println("!!!!!!!-------- productName: " + productName);
+//
+//        if(sizeCart != 1)
+//            System.out.println("Error!!! purchase task");
+//        String ans1 = client.showShoppingCart().get(0).getProductName();
 
-        boolean purchaseFailed = client.guestPurchase("Roee", "1234-5678",
-                "0528-97878787", "sioot st. 5");
-        if(!purchaseFailed)
-            System.out.println("purchase Succeed");
-        else
-            System.out.println("purchase Failed");
+
+        Response response = client.guestPurchase(this.name, this.creditCard, this.phoneNumber, this.adress);
+        System.out.println(client.getUserName() + ": (Purchase task parallel) response: " + response);
+//
+//        List<DummyProduct> cartAfter = client.showShoppingCart();
+//        List<DummyProduct> productsAfter = client.showStoreProducts(storeID);
+//        DummyProduct shortPantsAfter = productsAfter.get(0);
 
         //Todo: result take back information to assert in tests
 //        try {
@@ -69,5 +79,6 @@ public class PurchaseTask implements Callable<Result> {
 //            e.printStackTrace();
 //        }
 
-        return new Result(this.name, LocalDateTime.now().toString());    }
+        return new Result(this.name, LocalDateTime.now().toString(), response);
+    }
 }
