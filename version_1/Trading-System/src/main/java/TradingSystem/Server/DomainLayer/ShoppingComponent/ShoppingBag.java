@@ -77,6 +77,13 @@ public class ShoppingBag {
         else
             this.products.put(productID,quantity);
     }
+    public int getProductQuantity(Integer productID) {
+        if (this.products.containsKey(productID)){
+            return this.products.get(productID);
+        }
+        else
+            return 0;
+    }
 
     public Integer getUserID() {
         return userID;
