@@ -28,8 +28,6 @@ public class ShoppingCart {
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags = new ConcurrentHashMap<>();
 
-    private static final LoggerController loggerController=LoggerController.getInstance();
-
     public ShoppingCart(Integer userID){
 
         this.userID = userID;
