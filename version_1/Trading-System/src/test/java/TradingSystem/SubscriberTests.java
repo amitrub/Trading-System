@@ -131,6 +131,7 @@ public class SubscriberTests {
     }
     //endregion
     //region requirement 3.4: User Purchase
+    //case 3.4.1 simple purchase
     @Test
     void Purchase_Happy() {
         // Prepare
@@ -162,6 +163,31 @@ public class SubscriberTests {
         assertFalse(purchaseFailed);
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
         assertEquals(shortPantsAfter.getQuantity(), shortPants.getQuantity() - 1); //check decrease quantity in store
+    }
+
+    //case 3.4.2 input doesn't fit
+    @Test
+    void Purchase_Sad() {
+        // Prepare
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        String store_name = "Mania Jeans";
+        client.openStore(store_name);
+        List<DummyStore> stores = client.showAllStores();
+        Integer storeID = getStoreID(stores, store_name);
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = client.showStoreProducts(storeID);
+        Integer productID = products.get(0).getProductID();
+//        client.Logout();
+        client.addProductToCart(storeID, productID, 1);
+        String ans1 = client.showShoppingCart().get(0).getProductName();
+        assertEquals(ans1, "Short Pants");
+
+        //Issue, not valid credit number and phone number
+        boolean purchaseFailed = client.subscriberPurchase( "1", "7", "sioot st. 5");
+
+        //Assert
+        assertTrue(purchaseFailed);
     }
     // endregion
     //region requirement 3.7: User History Tests
