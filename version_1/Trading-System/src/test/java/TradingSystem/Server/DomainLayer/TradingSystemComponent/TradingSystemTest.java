@@ -301,6 +301,56 @@ class TradingSystemTest {
         assertTrue(response.getIsErr());
     }
 
+    @Test
+    void ChangeProductQuantitySuccess(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        System.out.println(productId);
+        Response response=tradingSystem.ChangeQuantityProduct(userID,connID,storeid,productId,10);
+        assertFalse(response.getIsErr());
+    }
+
+    @Test
+    void ChangeProductQunatityInvalidPremmision(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        String connID1= tradingSystem.ConnectSystem().returnConnID();
+        Response response= tradingSystem.Register(connID1,"reutlevy30","8119");
+        int userID1= response.returnUserID();
+        connID1= tradingSystem.Login(connID1,"reutlevy30","8119").returnConnID();
+        response=tradingSystem.ChangeQuantityProduct(userID1,connID1,storeid,productId,10);
+        assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void ChangeProductWrongQuantity(){
+        Store store= new Store("store11", userID);
+        tradingSystem.AddStore(userID,connID,"store11");
+        for(Store store1: tradingSystem.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+                tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,9);
+                productId= store1.getProductID("prod3");
+            }
+        }
+        System.out.println(productId);
+        Response response=tradingSystem.ChangeQuantityProduct(userID,connID,storeid,productId,-10);
+        assertTrue(response.getIsErr());
+    }
 
     void AddProductInvaliddetails(){
         Response response=tradingSystem.AddProductToStore(userID,connID,storeid1,"prod3","food",-1,11);
