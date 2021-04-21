@@ -47,9 +47,9 @@ public class PurchaseTask implements Callable<Result> {
         System.out.println(ANSI_RESET);
         client.addProductToCart(storeID, productID, 1);
 
-        if(client.showShoopingCart().size() != 1)
+        if(client.showShoppingCart().size() != 1)
             System.out.println("Error!!! purchase task");
-        String ans1 = client.showShoopingCart().get(0).getProductName();
+        String ans1 = client.showShoppingCart().get(0).getProductName();
         if(ans1 != "Short Pants")
             System.out.println("Error!!! purchase task");
 

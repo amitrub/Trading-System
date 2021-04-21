@@ -2,13 +2,11 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
@@ -27,9 +25,9 @@ public class Store {
     private List<Integer> managersIDs = new ArrayList<>();
 
     //ownerID_Permission
-   // private ConcurrentHashMap<Integer, OwnerPermission> ownersPermission = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, OwnerPermission> ownersPermission = new ConcurrentHashMap<>();
     //managersID_Permission
-    //private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
+    private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
 
     private DiscountPolicy discountPolicy;
     private BuyingPolicy buyingPolicy;
@@ -71,6 +69,10 @@ public class Store {
         return nextStoreID;
     }
 
+    public static void ClearSystem() {
+        nextStoreID = 0;
+    }
+
     public boolean checkFounder(int userID){
         return this.founderID == userID;
     }
@@ -83,21 +85,21 @@ public class Store {
         return inventory.ShowStoreProducts();
     }
 
-    public NewResponse AddProductToStore(String productName , Double price, String category, int quantity){
+    public Response AddProductToStore(String productName , Double price, String category, int quantity){
         return inventory.addProduct(productName, category, price, quantity);
     }
 
-    public NewResponse addProductToInventory(Integer productId, Integer quantity){
+    public Response addProductToInventory(Integer productId, Integer quantity){
         return inventory.addQuantityProduct(productId, quantity);
     }
 
-    public NewResponse deleteProduct(Integer productId){
+    public Response deleteProduct(Integer productId){
         return inventory.deleteProduct(productId);
     }
 
-    public void editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category)
+    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity)
     {
-        inventory.editProductDetails(productId,productName,price,category);
+        return inventory.editProductDetails(productId,productName,price,category,quantity);
     }
 
     public String addNewOwner(Integer userId, Integer newOwnerId) {
@@ -172,6 +174,7 @@ public class Store {
         return inventory.getDummySearchForList(FinalID);
     }
     /*
+
     public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
         List<Integer> FinalID = new ArrayList<>();
         if (name != null) {
@@ -259,16 +262,16 @@ public class Store {
         return this.inventory.getProduct(productID);
     }
 
-    public NewResponse reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
+    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
         return this.inventory.reduceProducts(products_quantity);
     }
 
-    public NewResponse WriteComment(int userId, int productId, String comment) {
+    public Response WriteComment(int userId, int productId, String comment) {
         if (this.possibleToAddComment(userId, productId)) {
             return this.inventory.addCommentToProduct(productId, userId, comment);
         }
         else
-            return new NewResponse(true, "User may not add a review for product he has not purchased before");
+            return new Response(true, "User may not add a review for product he has not purchased before");
     }
 
     public void addHistory(ShoppingHistory sh) {
@@ -328,5 +331,21 @@ public class Store {
         return this.managersIDs.contains(newOwner);
     }
 
+    public boolean isProductExist(int id){
+        return inventory.checkProductsExistInTheStore(id,1);
+    }
 
+
+    //TODO implement! by the policy
+    public Double calculateBugPrice(boolean userSubscribe, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        if(userSubscribe){
+            return 1.0;
+        }
+        else
+            return 2.0;
+    }
+
+    public void addOwnerPermission(int newOwner, OwnerPermission op) {
+        this.ownersPermission.put(newOwner,op);
+    }
 }

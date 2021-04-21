@@ -1,12 +1,9 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -32,7 +29,7 @@ public class StoreOwnerService {
      * }
      */
     @PostMapping("{userID}/store/{storeID}/add_new_product")
-    public NewResponse AddProductToStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
+    public Response AddProductToStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
         int quantity  = (int) obj.get("quantity");
@@ -44,7 +41,7 @@ public class StoreOwnerService {
             price_int = (int) obj.get("price");
             price = new Double(price_int);
         }
-        NewResponse res = tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
+        Response res = tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
         return res;
     }
 
@@ -66,7 +63,7 @@ public class StoreOwnerService {
      */
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/change_quantity_product/{productID}")
-    public NewResponse ChangeQuantityProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public Response ChangeQuantityProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int quantity  = (int) obj.get("quantity");
         return tradingSystem.ChangeQuantityProduct(userID,connID,storeID,productID,quantity);
     }
@@ -92,8 +89,7 @@ public class StoreOwnerService {
      */
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/edit_product/{productID}")
-    public NewResponse EditProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        System.out.println("----------------------> EditProduct");
+    public Response EditProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
         int price_int;
@@ -122,9 +118,9 @@ public class StoreOwnerService {
      * }
      */
     //TODO: not check yet
-    @DeleteMapping("{userID}/store/{storeID}/remove_product/{productID}")
-    public NewResponse RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
-        NewResponse res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);    
+    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
+        Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
         System.out.println(res);
         tradingSystem.printProducts();
         return res;
@@ -147,9 +143,9 @@ public class StoreOwnerService {
      */
     //TODO: not implemented version 2
     @PostMapping("{userID}/store/{storeID}/add_buying_policy}")
-    public NewResponse AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
 //        Response res = this.tradingSystem.AddBuyingPolicy(userID,storeID,connID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
 
@@ -170,9 +166,9 @@ public class StoreOwnerService {
      */
     //TODO: not implemented version 2
     @PostMapping("{userID}/store/{storeID}/add_discount_policy}")
-    public NewResponse AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public Response AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
 //        Response res = this.tradingSystem.AddDiscountPolicy(userID,storeID,connID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
 
@@ -194,9 +190,9 @@ public class StoreOwnerService {
      */
     //TODO: not implemented version 2
     @PostMapping("{userID}/store/{storeID}/edit_buying_policy/{buyingPolicyID}")
-    public NewResponse EditBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public Response EditBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
 //        Response res = this.tradingSystem.EditBuyingPolicy(userID,storeID,connID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
 
@@ -218,9 +214,9 @@ public class StoreOwnerService {
      */
     //TODO: not implemented version 2
     @PostMapping("{userID}/store/{storeID}/edit_discount_policy/{discountPolicyID}}")
-    public NewResponse EditDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public Response EditDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
 //        Response res = this.tradingSystem.EditDiscountPolicy(userID,storeID,connID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
 
@@ -242,9 +238,9 @@ public class StoreOwnerService {
      */
     //TODO: not implemented version 2
     @DeleteMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
-    public NewResponse RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
 //        Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
 
@@ -266,9 +262,9 @@ public class StoreOwnerService {
      */
     //TODO: not implemented version 2
     @DeleteMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}}")
-    public NewResponse RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
 //        Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
 
@@ -285,10 +281,9 @@ public class StoreOwnerService {
      *      *  "connID": String
      *      * }
      */
-    //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/add_new_owner/{newOwnerID}")
-    public NewResponse AddNewOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newOwnerID, @RequestHeader("connID") String connID)  {
-        NewResponse res = tradingSystem.AddNewOwner(userID, connID, storeID, newOwnerID);
+    public Response AddNewOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newOwnerID, @RequestHeader("connID") String connID)  {
+        Response res = tradingSystem.AddNewOwner(userID, connID, storeID, newOwnerID);
         return res;
     }
 
@@ -307,11 +302,13 @@ public class StoreOwnerService {
      */
     //TODO: not implemented version 2
     @DeleteMapping("{userID}/store/{storeID}/add_new_owner/{OwnerID}")
-    public NewResponse RemoveOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int OwnerID, @RequestHeader("connID") String connID)  {
+    public Response RemoveOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int OwnerID, @RequestHeader("connID") String connID)  {
 //        Response res = tradingSystem.RemoveOwner(userID, connID, storeID, newOwnerID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
+
+
 
 
     /**
@@ -329,8 +326,9 @@ public class StoreOwnerService {
      */
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/add_new_manager/{newManagerID}")
-    public NewResponse AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManagerID, @RequestHeader("connID") String connID)  {
-        return tradingSystem.AddNewManager(userID, connID, storeID,newManagerID);
+    public Response AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManagerID, @RequestHeader("connID") String connID)  {
+        Response res = tradingSystem.AddNewManager(userID, connID, storeID, newManagerID);
+        return res;
     }
 
     /**
@@ -351,9 +349,9 @@ public class StoreOwnerService {
      */
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/add_new_manager/{managerID}")
-    public NewResponse EditManagerPermissions(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)  {
+    public Response EditManagerPermissions(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)  {
 //        Response res = tradingSystem.EditManagerPermissions(userID, connID, storeID, newOwnerID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
 
@@ -372,7 +370,7 @@ public class StoreOwnerService {
      */
     //TODO: not check yet
     @GetMapping("{userID}/store/{storeID}/remove_manager/{managerID}")
-    public NewResponse RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID)  {
+    public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID)  {
         return tradingSystem.RemoveManager(userID, connID, storeID,managerID);
     }
 
@@ -396,9 +394,9 @@ public class StoreOwnerService {
      */
     //TODO: not implemented
     @GetMapping("{userID}/store/{storeID}/workers")
-    public NewResponse ShowStoreWorkers(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
+    public Response ShowStoreWorkers(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
 //        Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
-        NewResponse res = new NewResponse(true, "not implemented");
+        Response res = new Response(true, "not implemented");
         return res;
     }
 
@@ -429,8 +427,26 @@ public class StoreOwnerService {
      */
     //TODO: not check yet
     @GetMapping("{userID}/store_history/{storeID}")
-    public NewResponse ShowStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+    public Response ShowStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         return tradingSystem.StoreHistory(userID,storeID,connID);
     }
-    
+
+    /**
+     * @requirement none
+     *
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "stores": [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */
+    @GetMapping("{userID}/stores")
+    public Response ShowOwnerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
+        Response res = this.tradingSystem.ShowOwnerStores(userID, connID);
+        return res;
+    }
 }

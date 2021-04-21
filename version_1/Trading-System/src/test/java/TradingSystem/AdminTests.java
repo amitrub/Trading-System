@@ -16,27 +16,28 @@ public class AdminTests {
     @BeforeEach
     void setUp() {
         client = new Client();
+        client.clearSystem();
     }
     @AfterEach
     void tearDown() {
         client.exitSystem();
     }
 
-    //region Purchase history
+    //region requirement 6.4: Purchase history
     @Test
-    void allHistory_Happy() {
+    void HappyHistory() {
     }
 
     @Test
-    void allHistory_SadAdminUser() {
+    void SadAdminUser() {
     }
 
     @Test
-    void allHistory_SadStoreId() {
+    void SadStoreId() {
     }
 
     @Test
-    void allHistory_SadUserId() {
+    void SadUserId() {
     }
     //endregion
 }

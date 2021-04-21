@@ -7,10 +7,11 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -56,6 +57,8 @@ public  class User {
 
     private final Lock Lock = new ReentrantLock();;
 
+    private static final LoggerController loggerController=LoggerController.getInstance();
+
     public User() {
         this.id = -1;
         this.userName = "guest";
@@ -99,6 +102,10 @@ public  class User {
     private static synchronized int getNextUserID() {
         nextUserID++;
         return nextUserID;
+    }
+
+    public static void ClearSystem() {
+        nextUserID = 0;
     }
 
     public void lockUser() {
@@ -166,7 +173,7 @@ public  class User {
                 '}';
     }
 
-    public NewResponse AddProductToCart(int StoreId, int productId, int quantity) {
+    public Response AddProductToCart(int StoreId, int productId, int quantity) {
         return shoppingCart.addProductToBag(StoreId, productId, quantity);
     }
 
@@ -174,11 +181,11 @@ public  class User {
         return shoppingCart.ShowShoppingCart();
     }
 
-    public NewResponse guestPurchase(String name, String credit_number, String phone_number, String address){
+    public Response guestPurchase(String name, String credit_number, String phone_number, String address){
         return shoppingCart.Purchase(true, name, credit_number, phone_number, address);
     }
 
-    public NewResponse subscriberPurchase(String credit_number, String phone_number, String address){
+    public Response subscriberPurchase(String credit_number, String phone_number, String address){
         return shoppingCart.Purchase(false, this.userName, credit_number, phone_number, address);
 
     }
@@ -226,6 +233,46 @@ public  class User {
         this.myManagedStoresIDs.remove(index);
         this.managerPermission.remove(storeID);
     }
+
+
+    public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
+        return this.shoppingCart.editProductQuantityFromCart(storeID,productID, quantity);
+}
+    public Response RemoveProductFromCart(int storeID, int productID) {
+      return this.shoppingCart.RemoveProductFromCart(storeID, productID);
+    }
+
+    public boolean IsProductExist(int productid){
+        for(ShoppingHistory shoppingHistory:this.shoppingHistory){
+            if(shoppingHistory.isProductExist(productid)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public Response AbleToAddOwner(int userID, int storeID) {
+        if (this.checkOwner(storeID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to Add "+this.id+" to be the owner of store "+storeID + " and failed. "+ this.id+" is already owner the store");
+            return new Response(true, "User "+this.id+" is owner the store, so he can not appoint to owner again");
+        }
+        if (this.checkManager(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to Add " +this.id+" to be the owner of store " + storeID + " and failed. "+ this.id+" is already manages the store");
+            return new Response(true, "User "+this.id+" is manages the store, so he can not be owner");
+        }
+        return new Response(false,"It is possible to add the user as the owner");
+}
+
+    public boolean checkOwner(int storeID) {
+    return this.myOwnedStoresIDs.contains(storeID);
+    }
+
+
+    public boolean checkManager(int storeID) {
+    return this.myManagedStoresIDs.contains(storeID);
+    }
+
 }
 
 

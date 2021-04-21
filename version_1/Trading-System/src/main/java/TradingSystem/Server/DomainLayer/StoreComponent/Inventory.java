@@ -1,14 +1,10 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.NewResponse;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import com.fasterxml.jackson.core.PrettyPrinter;
 
-import java.security.KeyPair;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -48,16 +44,16 @@ public class Inventory {
         return products;
     }
 
-    public NewResponse addProduct(String productName, String category, Double price, int quantity){
+    public Response addProduct(String productName, String category, Double price, int quantity){
         if (!IsProductNameExist(productName)){
             Integer productID=getNextProductID();
             Product p=new Product(productID, productName, category, price, quantity);
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());
-            return new NewResponse("Add Product was successful");
+            return new Response("Add Product was successful");
         } else
-            return new NewResponse(true, "Error Product name is taken");
+            return new Response(true, "Error Product name is taken");
 
     }
 
@@ -75,24 +71,26 @@ public class Inventory {
         return this.products.containsKey(productID) && this.products.get(productID).getQuantity() >= quantity;
     }
 
-    public NewResponse addQuantityProduct(Integer productId, Integer quantity) {
+
+    public Response addQuantityProduct(Integer productId, Integer quantity) {
         if (this.products.containsKey(productId)) {
             Product product = this.products.get(productId);
             Integer oldQuantity = product.getQuantity();
             product.setQuantity(quantity + oldQuantity);
-            return new NewResponse("Add Product to Inventory was successful");
+            return new Response("Add Product to Inventory was successful");
         } else
-            return new NewResponse(true, "The product does not exist in the system");
+            return new Response(true, "The product does not exist in the system");
     }
 
-    public NewResponse deleteProduct(Integer productID) {
+    public Response deleteProduct(Integer productID) {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
             this.products.remove(productID);
+            System.out.println("TEST------------>");
 //            this.productLock.remove(productID);
-            return new NewResponse("Remove Product from the Inventory was successful");
+            return new Response("Remove Product from the Inventory was successful");
         } else
-            return new NewResponse(true, "The product does not exist in the system");
+            return new Response(true, "The product does not exist in the system");
     }
 
     public Product getProduct(Integer productId) {
@@ -100,7 +98,7 @@ public class Inventory {
     }
 
     //todo- syncronize!
-    public NewResponse reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
+    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
         Set<Integer> PQ = products_quantity.keySet();
         for (Integer PID : PQ) {
             int quantityToReduce = products_quantity.get(PID);
@@ -109,23 +107,23 @@ public class Inventory {
                 int quantity = product.getQuantity();
                 int newQuantity = quantity - quantityToReduce;
                 if (newQuantity < 0) {
-                    return new NewResponse(true, "There are not enough units from a product " + PID + " In store " + storeID);
+                    return new Response(true, "There are not enough units from a product " + PID + " In store " + storeID);
                 }
                 product.setQuantity(newQuantity);
 //                this.productQuantity.remove(PID);
 //                this.productQuantity.put(PID, newQuantity);
             } else {
-                return new NewResponse(true, "The product " + PID + " In store " + storeID + " does not exist in the system");
+                return new Response(true, "The product " + PID + " In store " + storeID + " does not exist in the system");
             }
         }
-        return new NewResponse("Product inventory successfully updated");
+        return new Response("Product inventory successfully updated");
     }
 
-    public NewResponse addCommentToProduct(Integer productId, Integer userID, String comment) {
+    public Response addCommentToProduct(Integer productId, Integer userID, String comment) {
         if (this.products.containsKey(productId)) {
             return this.products.get(productId).addComment(userID, comment);
         } else
-            return new NewResponse(true, "The product does not exist in the system");
+            return new Response(true, "The product does not exist in the system");
     }
 
     public Response removeCommentFromProduct(Integer productId, Integer userID) {
@@ -185,19 +183,19 @@ public class Inventory {
         return products;
     }
 
-    public String editProductDetails(Integer productId, String productName, Double price, String category) {
+    public Response editProductDetails(Integer productId, String productName, Double price, String category, Integer quantity) {
         Iterator it = this.products.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             int id = (int) pair.getKey();
             if (id == productId) {
-                Product p = new Product(productId, productName, category, price);
+                Product p = new Product(productId, productName, category, price, quantity);
                 this.products.remove(productId);
                 this.products.put(id, p);
-                return "The product update";
+                return new Response(false, "The product update successfully");
             }
         }
-        return "The product does not exist in the system";
+        return new Response(true, "The product does not exist in the system");
     }
 
     public List<Integer> SearchProduct(String name, String category, int minprice, int maxprice) {
