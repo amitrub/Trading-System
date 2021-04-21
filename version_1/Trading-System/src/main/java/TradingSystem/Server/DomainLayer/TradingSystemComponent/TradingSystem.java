@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -297,8 +298,7 @@ public class TradingSystem {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
             connectedSubscribers.remove(connID);
             User newGuest = new User();
-            //TODO: mybe do deep copy
-            newGuest.setShoppingCart(myUser.getShoppingCart());
+            newGuest.setShoppingCart(new ShoppingCart( myUser.getShoppingCart()));
             String guestConnID = connectGuestToSystemConnID(newGuest);
             Response res = new Response("Logout was successful");
             res.AddConnID(guestConnID);

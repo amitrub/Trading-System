@@ -31,8 +31,20 @@ public class ShoppingBag {
 
         this.userID = userID;
         this.storeID = storeID;
-        products=new ConcurrentHashMap<Integer,Integer>();
-        finalPrice=0.0;
+        this.products=new ConcurrentHashMap<Integer,Integer>();
+        this.finalPrice=0.0;
+    }
+
+    public ShoppingBag(ShoppingBag shoppingBagToCopy) {
+        this.userID = shoppingBagToCopy.userID;
+        this.storeID = shoppingBagToCopy.storeID;
+        this.products=new ConcurrentHashMap<Integer,Integer>();
+        this.finalPrice= shoppingBagToCopy.finalPrice;
+        Set<Integer> productsSet = shoppingBagToCopy.products.keySet();
+        for (int productID : productsSet) {
+            Integer quantity = shoppingBagToCopy.products.get(productID);
+            this.products.put(productID,quantity);
+        }
     }
 
     @Override

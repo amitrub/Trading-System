@@ -33,6 +33,16 @@ public class ShoppingCart {
         this.userID = userID;
     }
 
+    public ShoppingCart(ShoppingCart shoppingCartToCopy){
+        this.userID = shoppingCartToCopy.userID;
+        this.shoppingBags = new ConcurrentHashMap<>();
+        Set<Integer> shoppingBagsSet = shoppingCartToCopy.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet) {
+            ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
+            this.shoppingBags.put(storeID, new ShoppingBag(shoppingBag));
+        }
+    }
+
     public ShoppingCart(Integer userID, ConcurrentHashMap<Integer, ShoppingBag> shoppingBags) {
         this.userID = userID;
         this.shoppingBags = shoppingBags;
