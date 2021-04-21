@@ -5,6 +5,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
@@ -34,6 +35,23 @@ public class DummyProduct {
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.category = product.getCategory();
+    }
+
+    public DummyProduct(Map<String, Object> map) {
+        this.storeID = (Integer) map.get("storeID");
+        this.storeName = (String) map.get("storeName");
+        this.productID = (Integer) map.get("productID");
+        this.productName = (String) map.get("productName");
+        Double tmpPrice;
+        try {
+            tmpPrice = (Double) map.get("price");
+        }
+        catch (Exception e){
+            tmpPrice = new Double((Integer) map.get("price"));
+        }
+        this.price = tmpPrice;
+        this.category = (String) map.get("category");
+        this.quantity = (Integer) map.get("quantity");
     }
 
     public DummyProduct(int storeID, String storeName, int productID, String productName, double price, String category, int quantity) {

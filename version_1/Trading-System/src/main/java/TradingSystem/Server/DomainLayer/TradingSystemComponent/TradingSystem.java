@@ -47,6 +47,7 @@ public class TradingSystem {
         if (tradingSystem == null) {
             tradingSystem = new TradingSystem();
             tradingSystem.validation = new Validation();
+            tradingSystem.ClearSystem();
 //            tradingSystem.Initialization();
         }
         return tradingSystem;
@@ -272,11 +273,11 @@ public class TradingSystem {
         if (response.getIsErr())
             return response;
         User myGuest = guests.get(guestConnID);
-        subscribers.get(response.getUserID()).mergeToMyCart(myGuest.getShoppingCart());
-        String connID = connectSubscriberToSystemConnID(response.getUserID());
+        subscribers.get(response.returnUserID()).mergeToMyCart(myGuest.getShoppingCart());
+        String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
         Response res = new Response("Login was successful");
-        res.AddUserID(response.getUserID());
+        res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         return res;
     }
@@ -815,10 +816,36 @@ public class TradingSystem {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
-    //show the history for some user
+    /**
+     * @requirement 3.7
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "history": List [{
+     *      "userID": int
+     *      "storeID": int
+     *      "products": List [{
+     *          "storeID": int
+     *          "storeName": String
+     *          "productID": int
+     *          "productName": String
+     *          "price": double
+     *          "category": String
+     *          "quantity": int
+     *      }]
+     *  }]
+     * }
+     */
     public Response ShowSubscriberHistory(int userID, String connID){
         if (ValidConnectedUser(userID,connID)){
             List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
+            if(list.isEmpty()){
+                return new Response(true,"There are no older shopping in the history");
+            }
             Response res = new Response("num of history buying of the user is " + list.size());
             res.AddPair("history", list);
             return res;
@@ -963,5 +990,25 @@ public class TradingSystem {
        return this.stores.get(storeID).calculateBugPrice(true,productsInTheBug);
        else
        return this.stores.get(storeID).calculateBugPrice(false,productsInTheBug);
+    }
+
+    public Response ShowAllUsers(int adminID, String connID) {
+        if(!ValidConnectedUser(adminID, connID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed");
+            return new Response(true, "Error in User details");
+        }
+        else if (!systemAdmins.containsKey(adminID)){
+            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed not admin");
+            return new Response(true, "Error User not admin");
+        }
+        else {
+            List<DummyUser> list = new ArrayList<>();
+            for (Map.Entry<Integer, User> currUser : subscribers.entrySet()) {
+                list.add(new DummyUser(currUser.getValue()));
+            }
+            Response res = new Response("num of users in the system is " + list.size());
+            res.AddPair("users", list);
+            return res;
+        }
     }
 }
