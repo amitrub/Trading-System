@@ -8,11 +8,17 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
@@ -156,26 +162,6 @@ public class OwnerTests {
         assertTrue(b2);
     }
 
-    @Test
-    void BadRemove_ParallelTest_() {
-        //Prepare
-        client.Register("Oriyan", "123");
-        client.Login("Oriyaמ", "123");
-        client.openStore("Mega Sport");
-        Integer storeID = getStoreID(client.showAllStores(), "Mega Sport");
-        client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
-        Integer productID = getProductID(storeProducts1,"Arma Heels");
-        client.removeProduct(storeID, productID);
-        Integer preSize = client.showStoreProducts(storeID).size();
-
-        //bad remove - the product doesn't exist
-        boolean b2 = client.removeProduct(storeID, productID);
-        List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
-        Integer newSize = storeProducts2.size();
-        assertEquals(newSize, preSize);
-        assertTrue(b2);
-    }
     //endregion
     //region requirement 4.1.3: Edit Product Tests
     @Test

@@ -548,7 +548,8 @@ public class GuestTests {
     //region Purchase tests requirement 2.9
 
     @Test
-    void Purchase_Happy() {
+    void Purchase_Happy()
+    {
         // Prepare
         client.Register("Hadas", "123");
         client.Login("Hadas", "123");
@@ -607,7 +608,8 @@ public class GuestTests {
         assertTrue(purchaseFailed);
     }
     @Test
-    void PurchaseParallelSadTwoBuyersLastProduct() {
+    void PurchaseParallelSadTwoBuyersLastProduct()
+    {
         //Prepare
         client.Register("Hadas", "123");
         client.Login("Hadas", "123");
