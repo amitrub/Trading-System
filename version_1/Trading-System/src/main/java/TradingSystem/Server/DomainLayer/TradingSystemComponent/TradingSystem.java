@@ -406,24 +406,36 @@ public class TradingSystem {
         return false;
     }
 
+
+    /**
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productId
+     * @param quantity
+     *  @return Response{
+     *        "isErr: boolean
+     *        "message": String
+     *        "connID": String
+     *       }
+     */
     public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity){
         if(ValidConnectedUser(userID, connID)){
-            if(hasPermission(userID,storeID,User.Permission.AddProduct)) {
-                if(quantity>0) {
+            if(!hasPermission(userID,storeID,User.Permission.AddProduct)){
+                return new Response(true, "The User is not allowed to add products to the inventory");
+            }
+            else {
+                if(quantity<0){
+                    return new Response(true, "The quantity of the product can't be negative");
+                }
+                else {
                     Response res = stores.get(storeID).addProductToInventory(productId, quantity);
                     printProducts();
-                    loggerController.WriteLogMsg("User " + userID + " add " + quantity + " products of " + productId + " to store " + storeID + " successfully");
                     return res;
                 }
-                loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
-                return new Response(true, "The quantity of the product can't be negative");
-
             }
-            loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
-            return new Response(true, "The User is not allowed to add products to the inventory");
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to add "+ quantity+" products of "+productId+" to store "+storeID+" and failed");
             return new Response(true, "Error in User details");
         }
     }
@@ -881,25 +893,7 @@ public class TradingSystem {
         return new Response(false, "the comment added successfully");
     }
 
-    /**
-     * @requirement 4.1
-     *
-     * @param userID : int (Path)
-     * @param storeID: int (Path)
-     * @param productID: int (Path)
-     * @param connID: String (Header)
-     * @param obj:{
-     *  "productName": String
-     *  "category": String
-     *  "price": String
-     *  "double": int
-     * }
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
+   
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
         if(ValidConnectedUser(userID, connID)){
             if(!hasPermission(userID,storeID, User.Permission.AddProduct)){
