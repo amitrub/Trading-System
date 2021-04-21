@@ -100,12 +100,12 @@ public class ShoppingCart {
         }
         else {
             int oldQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
-            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity+oldQuantity)) {
-                loggerController.WriteErrorMsg("User "+userID+" try to add product " +productID+ " from store "+storeID+" to cart but failed. the product is not in the stock");
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity + oldQuantity)) {
+                loggerController.WriteErrorMsg("User " + userID + " try to add product " + productID + " from store " + storeID + " to cart but failed. the product is not in the stock");
                 return new Response(true, "The product or quantity is not in stock");
             }
-            this.shoppingBags.get(storeID).addProduct(productID, quantity);
         }
+
 //        TODO: checkBuyingPolicy
 //        if (!tradingSystem.validation.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
 //            loggerController.WriteErrorMsg("User "+userID+" try to add product " +productID+ " from store "+storeID+" to cart but failed. Adding the product is against the store policy");
@@ -114,6 +114,7 @@ public class ShoppingCart {
 //        TODO: calculateBugPrice
 //        Double priceForBug = tradingSystem.calculateBugPrice(productID, storeID, productsInTheBug);
 //        shoppingBags.get(storeID).setFinalPrice(priceForBug);
+        this.shoppingBags.get(storeID).addProduct(productID, quantity);
         loggerController.WriteLogMsg("User "+userID+" added product " +productID+ " from store "+storeID+" to cart successfully");
         Response res =new Response("The product added successfully");
         return res;
