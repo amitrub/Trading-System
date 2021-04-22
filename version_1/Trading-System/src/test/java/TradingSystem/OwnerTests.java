@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -649,50 +650,30 @@ public class OwnerTests {
         client.Login("owner", "123");
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
-        Response responsePosPer = client.GetPossiblePermissionsToManager();
-        
-        Response responseEditPer = client.editManagerPermissions(storeID, managerId, );
+        client.addManager(storeID, managerId);
+
+        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+
+        //this test give all permissions to manager
+        HashMap<String, Boolean> permissionToGive = new HashMap<>();
+        for (String per : optionalPermissionsForMannager) {
+            permissionToGive.put(per, true);
+        }
+        Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);
         client.Logout();
+        assertFalse(responseEditPer.getIsErr());
     }
 
     //case 4.6.2 sad edit permissions, manager id not ok
     @Test
     void SadAddPermissions() {
-        Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
-        client.Register("elinor", "123");
-        client.Login("elinor", "123");
-        client.openStore("Store");
-        Integer storeID = getStoreID(client.showAllStores(), "Store");
-
-        boolean b1 = client.addOwner(storeID, newOwnerID);
-        client.Logout();
-        client.Login("nofet", "123");
-        List<DummyStore> owners = client.showOwnerStores();
-        assertFalse(b1);
-        assertEquals(owners.size(), 1);
     }
 
     //case 4.6.3 sad edit permissions, cant give this permissions to manager
     @Test
     void SadAddPermissionsToManager() {
-        Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
-        client.Register("elinor", "123");
-        client.Login("elinor", "123");
-        client.openStore("Store");
-        Integer storeID = getStoreID(client.showAllStores(), "Store");
-
-        boolean b1 = client.addOwner(storeID, newOwnerID);
-        client.Logout();
-        client.Login("nofet", "123");
-        List<DummyStore> owners = client.showOwnerStores();
-        assertFalse(b1);
-        assertEquals(owners.size(), 1);
     }
     //endregion
 
