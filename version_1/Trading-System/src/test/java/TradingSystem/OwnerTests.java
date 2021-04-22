@@ -8,11 +8,14 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 import static org.junit.Assert.assertTrue;
@@ -59,7 +62,7 @@ public class OwnerTests {
 
 
 
-    //region requirement 4.1: Add Product Tests
+    //region requirement 4.1.1: Add Product Tests
     @Test
     void HappyAddProduct() {
         client.Register("Gal", "123");
@@ -117,9 +120,10 @@ public class OwnerTests {
     }
 
     //endregion
-    //region requirement 4.1: Remove Product Tests
+    //region requirement 4.1.2: Remove Product Tests
     @Test
     void HappyRemove() {
+        //Prepare
         client.Register("Oriya", "123");
         client.Login("Oriya", "123");
         client.openStore("Ran Sport");
@@ -130,7 +134,7 @@ public class OwnerTests {
         Integer preSize = client.showStoreProducts(storeID).size();
 
         //happy remove
-        boolean b1 = client.removeProduct(storeID, productID);
+        boolean b1 = client.removeProduct(storeID, productID).getIsErr();
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         assertEquals(storeProducts2.size(), preSize-1);
         assertFalse(b1);
@@ -149,14 +153,85 @@ public class OwnerTests {
         Integer preSize = client.showStoreProducts(storeID).size();
 
         //bad remove - the product doesn't exist
-        boolean b2 = client.removeProduct(storeID, productID);
+        boolean b2 = client.removeProduct(storeID, productID).getIsErr();
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID);
         Integer newSize = storeProducts2.size();
         assertEquals(newSize, preSize);
         assertTrue(b2);
     }
+
+    @Test
+    void removeProductFromStoreWhileOtherClientBuyingItTest(){
+        List<boolean[]> isErrsTotal = new ArrayList<>();
+        for(int test_i = 0; test_i < 10; test_i++) {
+            //Prepare
+            client.Register("Oriya", "123");
+            client.Login("Oriya", "123");
+            client.openStore("Ran Sport");
+            Integer storeID = getStoreID(client.showAllStores(), "Ran Sport");
+            client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
+            List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+            Integer productID = getProductID(storeProducts1, "Arma Heels");
+
+            //Create two clients with task to buy this product
+            ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+            //Prepare tasks for clients
+            List<Callable<Result>> taskList = new ArrayList<>();
+            Callable<Result> purchaseTask = new PurchaseTask("Client-guestBuyer", storeID, productID, 25, "123456", "052897878787", "sioot st. 5");
+            taskList.add(purchaseTask);
+            Callable<Result> removeTask = new RemoveProductTask("Client-StoreOwner", this.client, storeID, productID);
+            taskList.add(removeTask);
+
+            //Execute all tasks and get reference to Future objects
+            List<Future<Result>> resultList = null;
+
+            try {
+                resultList = executor.invokeAll(taskList);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            executor.shutdown();
+
+            System.out.println("\n========Printing the results======");
+            boolean[] isErrs = new boolean[2];
+            for (int i = 0; i < resultList.size(); i++) {
+                Future<Result> future = resultList.get(i);
+                try {
+                    Result result = future.get();
+//                System.out.println(result.getName() + ": " + result.getTimestamp());
+                    Response response = result.getResponse();
+                    System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                    isErrs[i] = response.getIsErr();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Check that one of the client failed and the other succeed.
+//            assertTrue((isErrs[0] && !isErrs[1]) || (isErrs[1] && !isErrs[0]));
+            isErrsTotal.add(isErrs);
+            tearDown();
+            setUp();
+        }
+
+        boolean ans = false;
+        for(boolean[] errArr : isErrsTotal) {
+            if ((errArr[0] && !errArr[1]) || (errArr[1] && !errArr[0])) {
+                ans = true;
+                break;
+            }
+        }
+        assertTrue(ans);
+        System.out.println("========Printing the results - TOTAL PARALLEL ======");
+        for(int i=0; i<isErrsTotal.size(); i++) {
+            System.out.printf("%d: purchase: %s remove: %s\n", i, isErrsTotal.get(i)[0], isErrsTotal.get(i)[1]);
+        }
+
+    }
+
     //endregion
-    //region requirement 4.1: Edit Product Tests
+    //region requirement 4.1.3: Edit Product Tests
     @Test
     void HappyEditPrice() {
         client.Register("Shani", "123");
