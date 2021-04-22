@@ -1,9 +1,13 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.UserComponent.Permission;
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -350,8 +354,9 @@ public class StoreOwnerService {
     //TODO: not check yet
     @PostMapping("{userID}/store/{storeID}/add_new_manager/{managerID}")
     public Response EditManagerPermissions(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)  {
-//        Response res = tradingSystem.EditManagerPermissions(userID, connID, storeID, newOwnerID);
-        Response res = new Response(true, "not implemented");
+        List<User.Permission> Permissions=new LinkedList<>();
+        Response res = tradingSystem.EditManagerPermissions(userID, connID, storeID, managerID, Permissions);
+        res.AddConnID(connID);
         return res;
     }
 

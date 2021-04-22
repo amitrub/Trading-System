@@ -4,10 +4,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
-import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
-import TradingSystem.Server.DomainLayer.UserComponent.SystemManagerPermission;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 
@@ -409,7 +406,7 @@ public class TradingSystem {
         }
     }
 
-    private boolean hasPermission(int userID, int storeID, User.Permission p) {
+    public boolean hasPermission(int userID, int storeID, User.Permission p) {
         if(this.subscribers.containsKey(userID)){
             User u=this.subscribers.get(userID);
             if(u.getOwnerPermission(storeID)!=null){
@@ -1257,5 +1254,35 @@ public class TradingSystem {
         Response res = new Response(false,"num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         return res;
+
+      
+    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to edit "+managerID+ " permissions for store " + storeID + " and failed. The err message: Error in User details");
+            return new Response(true, "Error in User details");
+        }
+        if (this.subscribers.get(managerID) == null) {
+            loggerController.WriteErrorMsg("User " + userID + " try to edit " + managerID + " details, for store " + storeID + " and failed. " + managerID + " is not subscriber");
+            return new Response(true, "The user " + managerID + " is not subscriber, so it impossible to edit his Permissions");
+        }
+
+       //TODO add synchronize
+        User MTE = this.subscribers.get(managerID);
+        Response res1 = this.systemRoleChecks(userID, storeID, managerID, User.Permission.EditManagerPermission);
+        if (res1.getIsErr()) {
+            //MTR.unlockUser();
+            return res1;
+        }
+        Response res2 =MTE.AbleToEditPermissions(userID, storeID);
+        if (res2.getIsErr()) {
+            //MTR.unlockUser();
+            return res2;
+        }
+
+        MTE.editPermissions(userID,storeID,permissions);
+        stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
+        //NM.unlockUser();
+        loggerController.WriteLogMsg("User " + userID + " edit permissions to " + managerID + " for store " + storeID + " successfully");
+        return new Response( "The manager permissions edit successfully");
     }
 }
