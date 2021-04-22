@@ -557,4 +557,29 @@ class TradingSystemTest {
     @Test
     void editManagerPermissions() {
     }
+
+    //4.9
+    @Test
+    void ShowStoreWorkersSuccess(){
+        tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, userID);
+        tradingSystem.AddNewOwner(ElinorID, EconnID, ElinorStore, NofetID);
+      //  System.out.println(tradingSystem.ShowStoreWorkers(ElinorID,EconnID,ElinorStore));
+        assertFalse(tradingSystem.ShowStoreWorkers(ElinorID,EconnID,ElinorStore).getIsErr());
+    }
+
+    @Test
+    void ShowStoreWorkersNotPerminssion(){
+        assertTrue(tradingSystem.ShowStoreWorkers(userID,EconnID,ElinorStore).getIsErr());
+    }
+
+    @Test
+    void ShowStoreWorkersStoreNotexist(){
+        assertTrue(tradingSystem.ShowStoreWorkers(userID,EconnID,-1).getIsErr());
+    }
+
+    @Test
+    void ShowStoreWorkersEmpty(){
+        Object res=tradingSystem.ShowStoreWorkers(ElinorID,EconnID,ElinorStore).getReturnObject().get("workers");
+        assertNull(res);
+    }
 }

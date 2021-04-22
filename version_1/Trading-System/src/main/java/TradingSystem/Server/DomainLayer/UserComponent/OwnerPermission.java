@@ -69,4 +69,13 @@ public class OwnerPermission implements Permission {
        else
        return false;
     }
+
+    @Override
+    public String toString(){
+        String res="";
+        for(int i=0;i<permissions.size();i++){
+            res+= permissions.get(i).toString()+" ,";
+        }
+        return res;
+    }
 }

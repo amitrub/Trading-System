@@ -10,6 +10,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -386,5 +387,13 @@ public class Store {
             this.managersPermission.remove(managerID);
             this.managersPermission.put(managerID,MP);
         }
+    }
+
+    public ConcurrentHashMap<Integer,OwnerPermission> getOwnersIDs(){
+       return this.ownersPermission;
+    }
+
+    public ConcurrentHashMap<Integer,ManagerPermission> getManagerIDs(){
+        return this.managersPermission;
     }
 }

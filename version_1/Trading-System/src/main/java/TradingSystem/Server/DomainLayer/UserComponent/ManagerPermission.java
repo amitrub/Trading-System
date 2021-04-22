@@ -56,4 +56,14 @@ public class ManagerPermission implements Permission {
     public boolean hasPermission(User.Permission p) {
         return this.permissions.contains(p);
     }
+
+    @Override
+    public String toString(){
+        String res="";
+        for(int i=0;i<permissions.size();i++){
+            res+= permissions.get(i).toString()+" ,";
+            res+= permissions.get(i).toString()+" ,";
+        }
+        return res;
+    }
 }

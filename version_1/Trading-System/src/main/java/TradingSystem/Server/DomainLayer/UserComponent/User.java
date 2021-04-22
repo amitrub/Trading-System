@@ -256,6 +256,8 @@ public  class User {
     }
 
 
+
+
     public Response AbleToAddOwner(int userID, int storeID) {
         if (this.checkOwner(storeID)) {
             loggerController.WriteErrorMsg("User " + userID + " try to Add "+this.id+" to be the owner of store "+storeID + " and failed. "+ this.id+" is already owner the store");
