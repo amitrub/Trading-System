@@ -279,7 +279,24 @@ public class Store {
         this.shoppingHistory.add(sh);
     }
 
-
+    /**
+     * @requirement 4.11
+     *
+     *  @Return List [{
+     *      "userID": int
+     *      "storeID": int
+     *      "products": List [{
+     *          "storeID": int
+     *          "storeName": String
+     *          "productID": int
+     *          "productName": String
+     *          "price": double
+     *          "category": String
+     *          "quantity": int
+     *      }]
+     *  }]
+     * }
+     */
     public List<DummyShoppingHistory> ShowStoreHistory(){
         List<DummyShoppingHistory> shoppingHistories=new ArrayList<>();
         for(ShoppingHistory shoppingHistory:shoppingHistory){

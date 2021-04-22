@@ -637,6 +637,7 @@ public class TradingSystem {
             loggerController.WriteErrorMsg("User " + userID + " try to Add " + newOwner + " to be the owner of store " + storeID + " and failed. " + newOwner + " is not subscriber");
             return new Response(true, "The user " + newOwner + " is not subscriber, so he can not be owner for store");
         }
+        /*
         while (!this.subscribers.get(newOwner).tryToLock())
         {
             try{
@@ -646,16 +647,18 @@ public class TradingSystem {
             }
         }
         this.subscribers.get(newOwner).lockUser();
+
+         */
         
         Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
         if (res1.getIsErr()) {
-            this.subscribers.get(newOwner).unlockUser();
+            //this.subscribers.get(newOwner).unlockUser();
             return res1;
         }
         User NU = this.subscribers.get(newOwner);
         Response res2 =NU.AbleToAddOwner(userID, storeID);
         if (res2.getIsErr()) {
-            this.subscribers.get(newOwner).unlockUser();
+            //this.subscribers.get(newOwner).unlockUser();
             return res2;
         }
 
@@ -664,7 +667,7 @@ public class TradingSystem {
         NU.AddStoreInOwner(storeID, OP);
         stores.get(storeID).addNewOwner(userID, newOwner);
         stores.get(storeID).addOwnerPermission(newOwner,OP);
-        this.subscribers.get(newOwner).unlockUser();
+        //this.subscribers.get(newOwner).unlockUser();
         loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
         return new Response("The owner Added successfully");
     }
@@ -781,6 +784,7 @@ public class TradingSystem {
             loggerController.WriteErrorMsg("User " + userID + " try to Remove " + ManagerToRemove + " from management the store " + storeID + " and failed. " + ManagerToRemove + " is not subscriber");
             return new Response(true, "The user " + ManagerToRemove + " is not subscriber, so it impossible to remove him from management the store");
         }
+        /*
         while (!this.subscribers.get(ManagerToRemove).tryToLock()) {
             try{
                 this.wait(3);
@@ -788,21 +792,22 @@ public class TradingSystem {
                 e.printStackTrace();
             }
         }
-        this.subscribers.get(ManagerToRemove).lockUser();
+         */
+        //this.subscribers.get(ManagerToRemove).lockUser();
         User MTR = this.subscribers.get(ManagerToRemove);
         Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, User.Permission.RemoveManager);
         if (res1.getIsErr()) {
-            MTR.unlockUser();
+            //MTR.unlockUser();
             return res1;
         }
         Response res2 =MTR.AbleToRemoveManager(userID, storeID);
         if (res2.getIsErr()) {
-            MTR.unlockUser();
+            //MTR.unlockUser();
             return res2;
         }
         MTR.removeStore(storeID);
         stores.get(storeID).removeManager(userID, ManagerToRemove);
-        MTR.unlockUser();
+        //MTR.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
         return new Response("The manager removed successfully");
         }
@@ -986,16 +991,16 @@ public class TradingSystem {
     }
 
     public Response StoreHistoryOwner(int userID, int storeID, String connID){
-        if (ValidConnectedUser(userID, connID)) {
-            if (hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
-                List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
-                Response res = new Response("num of history buying in the store is " + list.size());
-                res.AddPair("history", list);
-                return res;
-            }
-            return new Response("user has no permission to watch the history" );
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true,"Error in User details" );
         }
-        return new Response("Not connected user" );
+        if (!hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
+            return new Response(true,"user has no permission to watch the history" );
+        }
+        List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
+        Response res = new Response("num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        return res;
     }
 
 
