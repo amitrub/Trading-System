@@ -368,7 +368,6 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not check yet
     @GetMapping("{userID}/store/{storeID}/remove_manager/{managerID}")
     public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID)  {
         Response res=tradingSystem.RemoveManager(userID, connID, storeID,managerID);

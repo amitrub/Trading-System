@@ -781,6 +781,7 @@ public class TradingSystem {
             loggerController.WriteErrorMsg("User " + userID + " try to Remove " + ManagerToRemove + " from management the store " + storeID + " and failed. " + ManagerToRemove + " is not subscriber");
             return new Response(true, "The user " + ManagerToRemove + " is not subscriber, so it impossible to remove him from management the store");
         }
+        /*
         while (!this.subscribers.get(ManagerToRemove).tryToLock()) {
             try{
                 this.wait(3);
@@ -788,21 +789,22 @@ public class TradingSystem {
                 e.printStackTrace();
             }
         }
-        this.subscribers.get(ManagerToRemove).lockUser();
+         */
+        //this.subscribers.get(ManagerToRemove).lockUser();
         User MTR = this.subscribers.get(ManagerToRemove);
         Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, User.Permission.RemoveManager);
         if (res1.getIsErr()) {
-            MTR.unlockUser();
+            //MTR.unlockUser();
             return res1;
         }
         Response res2 =MTR.AbleToRemoveManager(userID, storeID);
         if (res2.getIsErr()) {
-            MTR.unlockUser();
+            //MTR.unlockUser();
             return res2;
         }
         MTR.removeStore(storeID);
         stores.get(storeID).removeManager(userID, ManagerToRemove);
-        MTR.unlockUser();
+        //MTR.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
         return new Response("The manager removed successfully");
         }
