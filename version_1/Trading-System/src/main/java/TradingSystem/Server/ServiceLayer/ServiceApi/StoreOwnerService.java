@@ -362,6 +362,25 @@ public class StoreOwnerService {
     }
 
     /**
+     * @param userID
+     * @param connID
+     * @returnResponse{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     *  "permissions":List[
+     *  permissions:String]
+     * }
+    */
+    //TODO: not check yet
+    @PostMapping("{userID}/store/get_possible_permissions_to_manager")
+    public Response GetPossiblePermissionsToManager(@PathVariable int userID, @RequestHeader("connID") String connID)  {
+        Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID);
+        res.AddConnID(connID);
+        return res;
+    }
+
+    /**
      * @requirement 4.7
      *
      * @param userID : int (Path)
@@ -402,7 +421,7 @@ public class StoreOwnerService {
     //TODO: not implemented
     @GetMapping("{userID}/store/{storeID}/workers")
     public Response ShowStoreWorkers(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
-//        Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
+//    Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
         Response res = new Response(true, "not implemented");
         return res;
     }

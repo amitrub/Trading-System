@@ -1251,4 +1251,52 @@ public class TradingSystem {
         loggerController.WriteLogMsg("User " + userID + " edit permissions to " + managerID + " for store " + storeID + " successfully");
         return new Response( "The manager permissions edit successfully");
     }
+
+    public User.Permission changeToPermission(String per){
+        switch (per){
+            case "AddProduct":
+                return User.Permission.AddProduct;
+            case "ReduceProduct":
+                return User.Permission.ReduceProduct;
+            case "DeleteProduct":
+                return User.Permission.DeleteProduct;
+            case "EditProduct":
+                return User.Permission.EditProduct;
+            case "AppointmentOwner":
+                return User.Permission.AppointmentOwner;
+            case "AppointmentManager":
+                return User.Permission.AppointmentManager;
+            case "EditManagerPermission":
+                return User.Permission.EditManagerPermission;
+            case "RemoveManager":
+                return User.Permission.RemoveManager;
+            case "GetInfoOfficials":
+                return User.Permission.GetInfoOfficials;
+            case "GetInfoRequests":
+                return User.Permission.GetInfoRequests;
+            case "ResponseRequests":
+                return User.Permission.ResponseRequests;
+            case "GetHistoryPurchasing":
+                return User.Permission.GetHistoryPurchasing;
+            case "GetStoreHistory":
+                return User.Permission.GetStoreHistory;
+        }
+        return null;
+    }
+
+    public Response GetPossiblePermissionsToManager(int userID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("User " + userID + "try to get permissions for store and failed. The err message: Error in User details");
+            return new Response(true, "Error in User details");
+        }
+        List<String> permissions = new ArrayList<>();
+        OwnerPermission OP = new OwnerPermission(userID, -1);
+        for (User.Permission P : OP.getPermissions()
+        ) {
+            permissions.add(P.toString());
+        }
+        Response res = new Response(false, "Viewing permissions was successful");
+        res.AddPair("permissions", permissions);
+        return res;
+    }
 }
