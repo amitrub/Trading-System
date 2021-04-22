@@ -1,8 +1,11 @@
 package TradingSystem.Client;
 
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
@@ -199,7 +202,6 @@ public class Client {
             System.out.println(errMsgGenerator("Client", "Client", "130", response.getMessage()));
         return response;
     }
-
 
     /**
      * @requirement 2.8
@@ -450,6 +452,40 @@ public class Client {
         return dummySearchResponeArr;
     }
 
+    /**
+     * @requirement 4.6
+     * @param storeID storeID
+     * @param managerID managerID
+     * @param permissions permissions
+     * @return Response
+     */
+    public Response editManagerPermissions(int storeID, int managerID, HashMap<String, Boolean> permissions) {
+        String path = String.format("%s/store/%s/add_new_manager/%s", this.userID, storeID, managerID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            for (String permissionKey : permissions.keySet()) {
+                jsonPost.put(permissionKey, permissions.get(permissionKey));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(editManagerPermissions) response: " + response + ANSI_RESET);
+        return response;
+    }
+    public List<String> GetPossiblePermissionsToManager() {
+        String path = String.format("%s/store/get_possible_permissions_to_manager", this.userID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        if(response.getIsErr()) {
+            System.out.println("(GetPossiblePermissionsToManager) response: " + response);
+            return new LinkedList<>();
+        }
+        List<String> dummyPermissionsList = response.returnPermissionList();
+        return dummyPermissionsList;
+    }
+
 
     //Admin
     public List<DummyShoppingHistory> adminStoreHistory(int storeID) {
@@ -488,6 +524,5 @@ public class Client {
         return dummyShoppingHistoryResponse;
     }
 
-
-
+    
 }

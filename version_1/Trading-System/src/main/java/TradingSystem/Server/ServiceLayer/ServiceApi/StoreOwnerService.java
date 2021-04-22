@@ -356,7 +356,55 @@ public class StoreOwnerService {
     @PostMapping("{userID}/store/{storeID}/add_new_manager/{managerID}")
     public Response EditManagerPermissions(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)  {
         List<User.Permission> Permissions=new LinkedList<>();
+        try {
+            if((boolean) obj.get("AddProduct"))
+                Permissions.add(User.Permission.AddProduct);
+            if((boolean) obj.get("ReduceProduct"))
+                Permissions.add(User.Permission.ReduceProduct);
+            if((boolean) obj.get("DeleteProduct"))
+                Permissions.add(User.Permission.DeleteProduct);
+            if((boolean) obj.get("EditProduct"))
+                Permissions.add(User.Permission.EditProduct);
+            if((boolean) obj.get("AppointmentOwner"))
+                Permissions.add(User.Permission.AppointmentOwner);
+            if((boolean) obj.get("AppointmentManager"))
+                Permissions.add(User.Permission.AppointmentManager);
+            if((boolean) obj.get("EditManagerPermission"))
+                Permissions.add(User.Permission.EditManagerPermission);
+            if((boolean) obj.get("RemoveManager"))
+                Permissions.add(User.Permission.RemoveManager);
+            if((boolean) obj.get("GetInfoOfficials"))
+                Permissions.add(User.Permission.GetInfoOfficials);
+            if((boolean) obj.get("GetInfoRequests"))
+                Permissions.add(User.Permission.GetInfoRequests);
+            if((boolean) obj.get("ResponseRequests"))
+                Permissions.add(User.Permission.ResponseRequests);
+            if((boolean) obj.get("GetStoreHistory"))
+                Permissions.add(User.Permission.GetStoreHistory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         Response res = tradingSystem.EditManagerPermissions(userID, connID, storeID, managerID, Permissions);
+        res.AddConnID(connID);
+        return res;
+    }
+
+    /**
+     * @param userID
+     * @param connID
+     * @returnResponse{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     *  "permissions":List[
+     *  permissions:String]
+     * }
+    */
+    //TODO: not check yet
+    @GetMapping("{userID}/store/get_possible_permissions_to_manager")
+    public Response GetPossiblePermissionsToManager(@PathVariable int userID, @RequestHeader("connID") String connID)  {
+        Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID);
         res.AddConnID(connID);
         return res;
     }
@@ -402,7 +450,7 @@ public class StoreOwnerService {
     //TODO: not implemented
     @GetMapping("{userID}/store/{storeID}/workers")
     public Response ShowStoreWorkers(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
-//        Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
+//    Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
         Response res = new Response(true, "not implemented");
         return res;
     }
