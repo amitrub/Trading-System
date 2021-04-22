@@ -428,7 +428,9 @@ public class StoreOwnerService {
      */
     @GetMapping("{userID}/store_history_owner/{storeID}")
     public Response OwnerStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
-        return tradingSystem.StoreHistoryOwner(userID,storeID,connID);
+        Response res = tradingSystem.StoreHistoryOwner(userID,storeID,connID);
+        res.AddConnID(connID);
+        return res;
     }
 
     /**

@@ -1000,25 +1000,26 @@ public class TradingSystem {
     }
 
     public Response StoreHistoryOwner(int userID, int storeID, String connID){
-        if (ValidConnectedUser(userID, connID)) {
-            if (stores.containsKey(storeID)) {
-                if (hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
-                    List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
-                    Response res = new Response("num of history buying in the store is " + list.size());
-                    res.AddPair("history", list);
-                    return res;
-                }
-                List<DummyShoppingHistory> list = new ArrayList<>();
-                Response res = new Response("user has no permission to watch the history");
-                res.AddPair("history", list);
-                return res;
-            }
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response("wrong store ID");
-            res.AddPair("history", list);
-            return res;
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true,"Error in User details" );
+        
+        if (!hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
+           List<DummyShoppingHistory> list = new ArrayList<>();
+           Response res = new Response(true,"user has no permission to watch the history" );
+           res.AddPair("history", list);
+           return res;
         }
-        return new Response("Not connected user" );
+        if (stores.containsKey(storeID)){
+          List<DummyShoppingHistory> list = new ArrayList<>();
+          Response res = new Response(true,"wrong store ID");
+          res.AddPair("history", list);
+          return res;
+        }
+        
+        List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
+        Response res = new Response("num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        return res;
     }
 
 
