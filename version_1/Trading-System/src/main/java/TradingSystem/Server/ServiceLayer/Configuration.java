@@ -47,6 +47,8 @@ public class Configuration {
     public static String urlbaseGuest = String.format("http://%s:8080/api/", ip) ;
     public static String urlbaseSubscriber = String.format("http://%s:8080/api/subscriber/", ip) ;
     public static String urlbaseOwner = String.format("http://%s:8080/api/owner/", ip) ;
+    public static String urlbaseAdmin = String.format("http://%s:8080/api/admin/", ip) ;
+    public static String urlbaseManager = String.format("http://%s:8080/api/manager/", ip) ;
 
 
     public static String errMsgGenerator(String side, String className, String line, String msg) {
