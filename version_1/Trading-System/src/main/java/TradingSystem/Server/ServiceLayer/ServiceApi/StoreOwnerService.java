@@ -311,7 +311,6 @@ public class StoreOwnerService {
 
 
 
-
     /**
      * @requirement 4.5
      *
@@ -325,8 +324,7 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not check yet
-    @PostMapping("{userID}/store/{storeID}/add_new_manager/{newManagerID}")
+    @GetMapping("{userID}/store/{storeID}/add_new_manager/{newManagerID}")
     public Response AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManagerID, @RequestHeader("connID") String connID)  {
         Response res=tradingSystem.AddNewManager(userID, connID, storeID,newManagerID);
         res.AddConnID(connID);
@@ -448,9 +446,15 @@ public class StoreOwnerService {
      *  }]
      * }
      */
-    @GetMapping("{userID}/stores")
+    @GetMapping("{userID}/stores_owner")
     public Response ShowOwnerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
         Response res = this.tradingSystem.ShowOwnerStores(userID, connID);
+        return res;
+    }
+
+    @GetMapping("{userID}/stores_manager")
+    public Response ShowManagerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
+        Response res = this.tradingSystem.ShowManagerStores(userID, connID);
         return res;
     }
 }

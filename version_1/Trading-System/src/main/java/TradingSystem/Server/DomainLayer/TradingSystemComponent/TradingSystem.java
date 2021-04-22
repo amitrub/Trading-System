@@ -745,7 +745,6 @@ public class TradingSystem {
         NM.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " add manager " + newManager + " to store " + storeID + " successfully");
         return new Response( "The manager Added successfully");
-
     }
 
 
@@ -1109,6 +1108,34 @@ public class TradingSystem {
                 }
             }
             Response res = new Response("num of owned stores of the user is " + list.size());
+            res.AddPair("stores", list);
+            return res;
+        }
+    }
+
+    public Response ShowManagerStores(int userID, String connID)
+    {
+        if(!ValidConnectedUser(userID, connID))
+        {
+            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed");
+            return new Response(true, "User is nor logged in");
+        }
+        else if (!subscribers.containsKey(userID)){
+            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed not admin");
+            return new Response(true, "User is not subscriber");
+        }
+        else{
+            User user = subscribers.get(userID);
+            List<Integer> store = user.getMyManagerStore();
+            ConcurrentHashMap<Integer, Store> storeObjects = new ConcurrentHashMap<>();
+            List<DummyStore> list = new ArrayList<>();
+            for(int i=0; i<store.size(); i++) {
+                for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
+                    if (currStore.getValue().getId() == store.get(i))
+                        list.add(new DummyStore(currStore.getValue()));
+                }
+            }
+            Response res = new Response("num of managed stores of the user is " + list.size());
             res.AddPair("stores", list);
             return res;
         }
