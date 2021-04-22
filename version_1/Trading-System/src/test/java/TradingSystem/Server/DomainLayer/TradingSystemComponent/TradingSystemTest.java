@@ -563,7 +563,7 @@ class TradingSystemTest {
     void ShowStoreWorkersSuccess(){
         tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, userID);
         tradingSystem.AddNewOwner(ElinorID, EconnID, ElinorStore, NofetID);
-      //  System.out.println(tradingSystem.ShowStoreWorkers(ElinorID,EconnID,ElinorStore));
+        System.out.println(tradingSystem.ShowStoreWorkers(ElinorID,EconnID,ElinorStore));
         assertFalse(tradingSystem.ShowStoreWorkers(ElinorID,EconnID,ElinorStore).getIsErr());
     }
 
