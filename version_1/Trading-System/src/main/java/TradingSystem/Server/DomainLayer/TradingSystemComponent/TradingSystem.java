@@ -873,7 +873,9 @@ public class TradingSystem {
         if (ValidConnectedUser(userID,connID)){
             List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
             if(list.isEmpty()){
-                return new Response(true,"There are no older shopping in the history");
+                Response res = new Response(true,"There are no older shopping in the history");
+                res.AddPair("history", list);
+                return res;
             }
             Response res = new Response("num of history buying of the user is " + list.size());
             res.AddPair("history", list);
@@ -925,7 +927,6 @@ public class TradingSystem {
         }
         return new Response(false, "the comment added successfully");
     }
-
 
 
     /**
@@ -1072,29 +1073,6 @@ public class TradingSystem {
         }
     }
 
-    public Response ShowUserHistory(int adminID, int userID, String connID) {
-        if(!ValidConnectedUser(adminID, connID)){
-            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed");
-            return new Response(true, "Error in User details");
-        }
-        else if (!systemAdmins.containsKey(adminID)){
-            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed not admin");
-            return new Response(true, "Error User not admin");
-        }
-        else if (!subscribers.containsKey(userID)){
-            loggerController.WriteErrorMsg("User "+adminID+" try see history details of user"+userID+" and failed");
-            return new Response(true, "Error in User details");
-        }
-        else {
-            List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
-            if(list.isEmpty()){
-                return new Response(true,"There are no older shopping in the history");
-            }
-            Response res = new Response("num of history buying of the user is " + list.size());
-            res.AddPair("history", list);
-            return res;
-        }
-    }
       
     public Response ShowOwnerStores(int userID, String connID)
     {
@@ -1273,68 +1251,52 @@ public class TradingSystem {
         loggerController.WriteLogMsg("User " + userID + " edit permissions to " + managerID + " for store " + storeID + " successfully");
         return new Response( "The manager permissions edit successfully");
     }
-    /**
-     * @requirement 4.9
-     *
-     * @param userID : int (Path)
-     * @param storeID: int (Path)
-     * @param connID: String (Header)
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     *  "workers": List [{
-     *      "userID": int
-     *      "name": String
-     *      "permissions": Permissions
-     *      TODO: Think what values should be of the worker
-     *  }]
-     * }
-     */
-    public Response ShowStoreWorkers(int userID, String connID, int storeID){
+
+    public User.Permission changeToPermission(String per){
+        switch (per){
+            case "AddProduct":
+                return User.Permission.AddProduct;
+            case "ReduceProduct":
+                return User.Permission.ReduceProduct;
+            case "DeleteProduct":
+                return User.Permission.DeleteProduct;
+            case "EditProduct":
+                return User.Permission.EditProduct;
+            case "AppointmentOwner":
+                return User.Permission.AppointmentOwner;
+            case "AppointmentManager":
+                return User.Permission.AppointmentManager;
+            case "EditManagerPermission":
+                return User.Permission.EditManagerPermission;
+            case "RemoveManager":
+                return User.Permission.RemoveManager;
+            case "GetInfoOfficials":
+                return User.Permission.GetInfoOfficials;
+            case "GetInfoRequests":
+                return User.Permission.GetInfoRequests;
+            case "ResponseRequests":
+                return User.Permission.ResponseRequests;
+            case "GetHistoryPurchasing":
+                return User.Permission.GetHistoryPurchasing;
+            case "GetStoreHistory":
+                return User.Permission.GetStoreHistory;
+        }
+        return null;
+    }
+
+    public Response GetPossiblePermissionsToManager(int userID, String connID) {
         if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("User " + userID + "try to get permissions for store and failed. The err message: Error in User details");
             return new Response(true, "Error in User details");
         }
-        if(!stores.containsKey(storeID)){
-            return new Response(true, "the store doesn't exist");
+        List<String> permissions = new ArrayList<>();
+        OwnerPermission OP = new OwnerPermission(userID, -1);
+        for (User.Permission P : OP.getPermissions()
+        ) {
+            permissions.add(P.toString());
         }
-        if(!stores.get(storeID).checkOwner(userID)){
-            return new Response(true, "the user has no permissions to see this information");
-        }
-        else{
-            List<String> list=new LinkedList<>();
-            ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
-            ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
-            if(ownerPermissionHashMap.size()==0 && managerPermissionHashMap.size()==0){
-                return new Response(true,"There are no users with permmissions in the store");
-            }
-            HashMap<Integer,List<Permission>> union= new HashMap<>();
-            for(Integer key:ownerPermissionHashMap.keySet()){
-                Permission permission=ownerPermissionHashMap.get(key);
-                List<Permission> lst = new LinkedList<>();
-                lst.add(ownerPermissionHashMap.get(key));
-                union.put(key,lst);
-            }
-            for(Integer key:managerPermissionHashMap.keySet()){
-                List<Permission> lst = union.getOrDefault(key, new LinkedList<>());
-                lst.add(managerPermissionHashMap.get(key));
-                union.put(key,lst);
-            }
-            List<String> workers=new LinkedList<>();
-            for(Integer key: union.keySet()){
-                List<Permission> value= union.get(key);
-                String permmision="";
-                for(int i=0;i<value.size();i++){
-                    permmision+= value.get(i).toString();
-                }
-                String res= "Id = "+key+", name ="+subscribers.get(key).getUserName()+", permissions= "+ permmision+"\n";
-                workers.add(res);
-            }
-            Response response = new Response(false, "");
-            response.AddPair("ConnId",connID);
-            response.AddPair("workers", workers);
-            return response;
-
-        }
+        Response res = new Response(false, "Viewing permissions was successful");
+        res.AddPair("permissions", permissions);
+        return res;
     }
 }
