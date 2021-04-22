@@ -85,6 +85,19 @@ public class Response {
         else
             return new ArrayList<>();
     }
+    public List<String> returnPermissionList() {
+//        TODO: DEBUG ERROR BADOOK
+        if(!this.isErr){
+            List<Map<String, Object>> permissionsList = (List<Map<String, Object>>) this.returnObject.get("permissions");
+            List<String> output = new ArrayList<>();
+            for (Map<String, Object> map: permissionsList){
+                output.add((String) map.get("permissions"));
+            }
+            return output;
+        }
+        else
+            return new ArrayList<>();
+    }
 
 
     public boolean getIsErr() {
@@ -131,4 +144,6 @@ public class Response {
                 ", returnObject=" + returnObject +
                 '}';
     }
+
+
 }
