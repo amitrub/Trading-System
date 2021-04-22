@@ -988,7 +988,7 @@ public class TradingSystem {
             res.AddPair("history", list);
             return res;
         }
-        if (stores.containsKey(storeID)) {
+        if (!stores.containsKey(storeID)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "Admin - wrong store ID");
             res.AddPair("history", list);
@@ -996,7 +996,7 @@ public class TradingSystem {
         }
 
         List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
-        Response res = new Response("num of history buying in the store is " + list.size());
+        Response res = new Response(false,"num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         return res;
     }
@@ -1012,7 +1012,7 @@ public class TradingSystem {
             res.AddPair("history", list);
             return res;
         }
-        if (stores.containsKey(storeID)) {
+        if (!stores.containsKey(storeID)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "Owner - wrong store ID");
             res.AddPair("history", list);
@@ -1020,7 +1020,7 @@ public class TradingSystem {
         }
 
         List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
-        Response res = new Response("num of history buying in the store is " + list.size());
+        Response res = new Response(false,"num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         return res;
     }

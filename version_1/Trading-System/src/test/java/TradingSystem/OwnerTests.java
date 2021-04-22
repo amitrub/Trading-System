@@ -631,7 +631,7 @@ public class OwnerTests {
         client.Register("Yasmin", "123");
         client.Login("Yasmin", "123");
         client.addProductToCart(storeID, productID, 2);
-        client.subscriberPurchase("123456789", "0501234567", "Kiryat Gat");
+        client.subscriberPurchase("123456789", "0521234567", "Kiryat Gat");
         client.Logout();
 
         client.Login("elinor", "123");

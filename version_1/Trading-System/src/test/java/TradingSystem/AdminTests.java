@@ -41,7 +41,7 @@ public class AdminTests {
         client.Register("Reut", "123");
         client.Login("Reut", "123");
         client.addProductToCart(storeID, productID1, 5);
-        client.subscriberPurchase("123456789", "0541111111", "Tel Aviv");
+        client.subscriberPurchase("123456789", "0521111111", "Tel Aviv");
         client.Logout();
     }
     @AfterEach
