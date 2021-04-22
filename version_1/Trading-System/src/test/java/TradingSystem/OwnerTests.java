@@ -667,7 +667,21 @@ public class OwnerTests {
     //case 4.6.2 sad edit permissions, manager id not ok
     @Test
     void SadAddPermissions() {
+        client.Register("owner", "123");
+        client.Login("owner", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
 
+        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+
+        //this test give all permissions to manager
+        HashMap<String, Boolean> permissionToGive = new HashMap<>();
+        for (String per : optionalPermissionsForMannager) {
+            permissionToGive.put(per, true);
+        }
+        Response responseEditPer = client.editManagerPermissions(storeID, 6, permissionToGive);
+        client.Logout();
+        assertTrue(responseEditPer.getIsErr());
     }
 
     //case 4.6.3 sad edit permissions, cant give this permissions to manager
@@ -675,6 +689,63 @@ public class OwnerTests {
     void SadAddPermissionsToManager() {
 
     }
+    //case 4.6.4 sad edit permissions, manager is not manage the store
+    @Test
+    void SadAddPermissionsNotManage() {
+        Integer managerId = client.Register("manager", "123");
+        client.Login("manager", "123");
+        client.Logout();
+
+        client.Register("owner", "123");
+        client.Login("owner", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+
+        //this test give all permissions to manager
+        HashMap<String, Boolean> permissionToGive = new HashMap<>();
+        for (String per : optionalPermissionsForMannager) {
+            permissionToGive.put(per, true);
+        }
+        Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);
+        client.Logout();
+        assertTrue(responseEditPer.getIsErr());
+    }
+
+    //case 4.6.5 sad edit permissions, manager is not manage the store
+    @Test
+    void SadAddPermissionsNotApppointment() {
+        Integer managerId = client.Register("manager", "123");
+        client.Login("manager", "123");
+        client.Logout();
+
+        Integer NewOwnerId = client.Register("NewOwnerId", "123");
+        client.Login("NewOwnerId", "123");
+        client.Logout();
+
+        client.Register("owner", "123");
+        client.Login("owner", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addOwner(storeID,NewOwnerId);
+        client.addManager(storeID, managerId);
+        client.Logout();
+
+        client.Login("NewOwnerId", "123");
+
+        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+
+        //this test give all permissions to manager
+        HashMap<String, Boolean> permissionToGive = new HashMap<>();
+        for (String per : optionalPermissionsForMannager) {
+            permissionToGive.put(per, true);
+        }
+        Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);
+        client.Logout();
+        assertTrue(responseEditPer.getIsErr());
+    }
+
     //endregion
 
     //region requirement 4.7: Remove manager tests
