@@ -701,11 +701,50 @@ public class OwnerTests {
     //region requirement 4.9: Information on officials tests - TODO
     @Test
     void HappyShowOfficialsInfo() {
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        Integer newManagerID = client.Register("hadas", "123");
+        client.Login("hadas", "123");
+        client.Logout();
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        client.addOwner(storeID, newOwnerID);
+        client.addManager(storeID, newManagerID);
+        Response res = client.showStoreWorkers(storeID);
+        assertFalse(res.getIsErr());
     }
 
     @Test
-    void SadShowOfficialsInfo() {
+    void SadNotOwner() {
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.Logout();
+
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        Response res = client.showStoreWorkers(storeID);
+        assertTrue(res.getIsErr());
     }
+
+    @Test
+    void SadWrongStoreID() {
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        Response res = client.showStoreWorkers(storeID+1);
+        assertTrue(res.getIsErr());
+    }
+
     //endregion
 
     //region requirement 4.11: Store history tests

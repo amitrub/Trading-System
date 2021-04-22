@@ -892,7 +892,6 @@ public class TradingSystem {
     }
 
 
-
     /**
      * @param userId
      * @param connID
@@ -1298,5 +1297,51 @@ public class TradingSystem {
         Response res = new Response(false, "Viewing permissions was successful");
         res.AddPair("permissions", permissions);
         return res;
+    }
+
+    public Response ShowStoreWorkers(int userID, String connID, int storeID){
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "Error in User details");
+        }
+        if(!stores.containsKey(storeID)){
+            return new Response(true, "the store doesn't exist");
+        }
+        if(!stores.get(storeID).checkOwner(userID)){
+            return new Response(true, "the user has no permissions to see this information");
+        }
+        else{
+            List<String> list=new LinkedList<>();
+            ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
+            ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
+            if(ownerPermissionHashMap.size()==0 && managerPermissionHashMap.size()==0){
+                return new Response(true,"There are no users with permmissions in the store");
+            }
+            HashMap<Integer,List<Permission>> union= new HashMap<>();
+            for(Integer key:ownerPermissionHashMap.keySet()){
+                Permission permission=ownerPermissionHashMap.get(key);
+                List<Permission> lst = new LinkedList<>();
+                lst.add(ownerPermissionHashMap.get(key));
+                union.put(key,lst);
+            }
+            for(Integer key:managerPermissionHashMap.keySet()){
+                List<Permission> lst = union.getOrDefault(key, new LinkedList<>());
+                lst.add(managerPermissionHashMap.get(key));
+                union.put(key,lst);
+            }
+            List<String> workers=new LinkedList<>();
+            for(Integer key: union.keySet()){
+                List<Permission> value= union.get(key);
+                String permmision="";
+                for(int i=0;i<value.size();i++){
+                    permmision+= value.get(i).toString();
+                }
+                String res= "Id = "+key+", name ="+subscribers.get(key).getUserName()+", permissions= "+ permmision+"\n";
+                workers.add(res);
+            }
+            Response response = new Response(false, "");
+            response.AddPair("ConnId",connID);
+            response.AddPair("workers", workers);
+            return response;
+        }
     }
 }

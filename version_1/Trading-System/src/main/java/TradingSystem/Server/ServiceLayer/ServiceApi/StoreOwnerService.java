@@ -447,11 +447,9 @@ public class StoreOwnerService {
      *  }]
      * }
      */
-    //TODO: not implemented
     @GetMapping("{userID}/store/{storeID}/workers")
     public Response ShowStoreWorkers(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
-//    Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
         return res;
     }
 

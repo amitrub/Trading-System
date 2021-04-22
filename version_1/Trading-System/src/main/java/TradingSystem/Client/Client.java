@@ -486,8 +486,25 @@ public class Client {
         return dummyPermissionsList;
     }
 
+    /**
+     * requirement 4.9
+     * @param storeID
+     * @return Response
+     */
+    public Response showStoreWorkers(int storeID) {
+        String path = String.format("%s/store/%s/workers", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
 
     //Admin
+    /**
+     * requirement 6.4
+     * @param storeID
+     * @returnList<DummyShoppingHistory>
+     */
     public List<DummyShoppingHistory> adminStoreHistory(int storeID) {
         String path = String.format("%s/store_history_admin/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
@@ -497,6 +514,11 @@ public class Client {
         return dummyShoppingHistoryResponse;
     }
 
+    /**
+     * requirement 6.4
+     * @param userToShow
+     * @returnList<DummyShoppingHistory>
+     */
     public List<DummyShoppingHistory> adminUserHistory(int userToShow) {
         String path = String.format("%s/user_history_admin/%s", this.userID, userToShow);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
@@ -506,6 +528,10 @@ public class Client {
         return dummyShoppingHistoryResponse;
     }
 
+    /**
+     * requirement 6.4
+     * @return List<DummyShoppingHistory>
+     */
     public List<DummyShoppingHistory> AdminAllStores() {
         String path = String.format("%s/stores", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
@@ -515,6 +541,10 @@ public class Client {
         return dummyShoppingHistoryResponse;
     }
 
+    /**
+     * requirement 6.4
+     * @return List<DummyShoppingHistory>
+     */
     public List<DummyShoppingHistory> AdminAllUsers() {
         String path = String.format("%s/users", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
