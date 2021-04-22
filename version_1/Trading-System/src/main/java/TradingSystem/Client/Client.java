@@ -243,7 +243,14 @@ public class Client {
         return response;
     }
 
-
+    /**
+     * @requirement 2.9
+     * @param name
+     * @param credit_number
+     * @param phone_number
+     * @param address
+     * @return
+     */
     public boolean guestPurchase(String name, String credit_number, String phone_number, String address) {
         String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
@@ -290,15 +297,29 @@ public class Client {
         System.out.println(ANSI_YELLOW + "(openStore) response: " + response + ANSI_RESET);
         return response;
     }
-    public List<DummyProduct> showUserHistory() {
+
+    /**
+     * @requirement 3.7 show history
+     * @return
+     */
+    public Response showUserHistory() {
         String path = String.format("%s/user_history", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-        System.out.println(ANSI_YELLOW + "(showUserHistory) response: " + dummyProductResponeArr + ANSI_RESET);
-        return dummyProductResponeArr;
+//        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
+//        System.out.println(ANSI_YELLOW + "(showUserHistory) response: " + dummyProductResponeArr + ANSI_RESET);
+        return response;
     }
-    public boolean writeComment(int storeID, int productID, double rate, String review) {
+
+    /**
+     * @requirement 3.3 write comment
+     * @param storeID
+     * @param productID
+     * @param rate
+     * @param review
+     * @return
+     */
+    public Response writeComment(int storeID, int productID, double rate, String review) {
         String path = String.format("%s/write_comment", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
@@ -312,8 +333,16 @@ public class Client {
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(writeComment) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        return response;
     }
+
+    /**
+     * @requirement 3.4 subscriber (user) purchase
+     * @param credit_number
+     * @param phone_number
+     * @param address
+     * @return
+     */
     public boolean subscriberPurchase(String credit_number, String phone_number, String address) {
         String path = String.format("%s/shopping_cart/purchase", this.userID);
         JSONObject jsonPost = new JSONObject();
