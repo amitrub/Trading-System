@@ -422,6 +422,16 @@ public class TradingSystem {
         return false;
     }
 
+    private boolean hasPermission(int userID, User.Permission p) {
+        if (this.subscribers.containsKey(userID)) {
+            User u = this.subscribers.get(userID);
+            if (this.systemManagerPermissions.get(userID) != null) {
+                return this.systemManagerPermissions.get(userID).hasPermission(p);
+            }
+        }
+        return false;
+    }
+
 
     /**
      * @param userID
@@ -974,30 +984,6 @@ public class TradingSystem {
         }
     }
 
-    public Response StoreHistoryAdmin(int userID, int storeID, String connID){
-        if (!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "Error in User details");
-        }
-
-        if (!hasPermission(userID, storeID, User.Permission.GetHistoryPurchasing)) {
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "user has no permission to watch the history");
-            res.AddPair("history", list);
-            return res;
-        }
-        if (!stores.containsKey(storeID)) {
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "Admin - wrong store ID");
-            res.AddPair("history", list);
-            return res;
-        }
-
-        List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
-        Response res = new Response(false,"num of history buying in the store is " + list.size());
-        res.AddPair("history", list);
-        return res;
-    }
-
     public Response StoreHistoryOwner(int userID, int storeID, String connID) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "Error in User details");
@@ -1177,6 +1163,99 @@ public class TradingSystem {
         }
     }
 
+
+    //Admin
+    public Response StoreHistoryAdmin(int AdminID, int storeID, String connID){
+        if (!ValidConnectedUser(AdminID, connID)) {
+            return new Response(true, "Error in AdminID details");
+        }
+        if (!hasPermission(AdminID, storeID, User.Permission.GetHistoryPurchasing)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "user has no permission to watch the history");
+            res.AddPair("history", list);
+            return res;
+        }
+        if (!stores.containsKey(storeID)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "Admin - wrong store ID");
+            res.AddPair("history", list);
+            return res;
+        }
+
+        List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
+        Response res = new Response(false,"num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        return res;
+    }
+
+    public Response UserHistoryAdmin(int AdminID, int userID, String connID){
+        if (!ValidConnectedUser(AdminID, connID)) {
+            return new Response(true, "Error in Admin details");
+        }
+        if (!hasPermission(AdminID, userID, User.Permission.GetHistoryPurchasing)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "user has no permission to watch the history");
+            res.AddPair("history", list);
+            return res;
+        }
+        if (!subscribers.containsKey(userID)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "Admin - wrong user ID");
+            res.AddPair("history", list);
+            return res;
+        }
+
+        User user = subscribers.get(userID);
+        List<DummyShoppingHistory> list = user.ShowUserHistory();
+        Response res = new Response(false,"num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        return res;
+    }
+
+    public Response AllStoresHistoryAdmin(int AdminID, String connID){
+        if (!ValidConnectedUser(AdminID, connID)) {
+            return new Response(true, "Error in Admin details");
+        }
+        if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "user has no permission to watch the history");
+            res.AddPair("history", list);
+            return res;
+        }
+        List<DummyShoppingHistory> list = new ArrayList<>();
+        for(Store s: stores.values())
+        {
+            for(DummyShoppingHistory e : s.ShowStoreHistory()) {
+                list.add(e);
+            }
+        }
+        Response res = new Response(false,"num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        return res;
+    }
+
+    public Response AllUsersHistoryAdmin(int AdminID, String connID){
+        if (!ValidConnectedUser(AdminID, connID)) {
+            return new Response(true, "Error in Admin details");
+        }
+        if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "user has no permission to watch the history");
+            res.AddPair("history", list);
+            return res;
+        }
+        List<DummyShoppingHistory> list = new ArrayList<>();
+        for(User u: subscribers.values())
+        {
+            for(DummyShoppingHistory e : u.ShowUserHistory()) {
+                list.add(e);
+            }
+        }
+        Response res = new Response(false,"num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        return res;
+
+      
     public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
         if (!ValidConnectedUser(userID, connID)) {
             loggerController.WriteErrorMsg("User " + userID + " try to edit "+managerID+ " permissions for store " + storeID + " and failed. The err message: Error in User details");
