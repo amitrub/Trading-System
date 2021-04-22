@@ -652,15 +652,6 @@ public class OwnerTests {
         assertEquals(history.size(), 0);
     }
     //endregion
-
-    //region Parallel tests
-    @Test
-    void PurchaseVsDelete() {
-    }
-
-    @Test
-    void AppointmentManger() {
-    }
-    //endregion
+    
 
 }
