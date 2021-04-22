@@ -541,7 +541,6 @@ public class OwnerTests {
         boolean b1 = client.addManager(storeID, id1);
         assertTrue(b1);
     }
-
     //endregion
 
     //region requirement 4.6: Edit manager Permissions tests - TODO
@@ -652,6 +651,6 @@ public class OwnerTests {
         assertEquals(history.size(), 0);
     }
     //endregion
-    
+
 
 }
