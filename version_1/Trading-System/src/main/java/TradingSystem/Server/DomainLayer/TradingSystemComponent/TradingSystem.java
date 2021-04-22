@@ -639,34 +639,35 @@ public class TradingSystem {
             return new Response(true, "The user " + newOwner + " is not subscriber, so he can not be owner for store");
         }
 
-
-        User NU = this.subscribers.get(newOwner);
+        User NO = this.subscribers.get(newOwner);
+        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
         boolean succeededToLock = false;
         while (!succeededToLock) {
             synchronized (this) {
-                succeededToLock = NU.tryToLock();
+                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
+                succeededToLock = NO.tryToLock();
             }
         }
         
         Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
         if (res1.getIsErr()) {
-            NU.unlockUser();
+            NO.unlockUser();
             return res1;
         }
-        Response res2 =NU.AbleToAddOwner(userID, storeID);
+        Response res2 =NO.AbleToAddOwner(userID, storeID);
         if (res2.getIsErr()) {
-            NU.unlockUser();
+            NO.unlockUser();
             return res2;
         }
 
         OwnerPermission OP = new OwnerPermission(newOwner, storeID);
         OP.setAppointmentId(userID);
-        NU.AddStoreInOwner(storeID, OP);
+        NO.AddStoreInOwner(storeID, OP);
         stores.get(storeID).addNewOwner(userID, newOwner);
         stores.get(storeID).addOwnerPermission(newOwner,OP);
         //this.subscribers.get(newOwner).unlockUser();
         loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
-        NU.unlockUser();
+        NO.unlockUser();
         return new Response("The owner Added successfully");
     }
 
@@ -718,44 +719,34 @@ public class TradingSystem {
             return new Response(true, "The user "+newManager+" is not subscriber, so he can not be manager for store");
         }
 
-        /*while (!this.subscribers.get(newManager).tryToLock()) {
-            try{
-                this.wait(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }*/
-
-        /*
-        System.out.println("TEST1!--------------------");
+        User NM = this.subscribers.get(newManager);
+        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
         boolean succeededToLock = false;
         while (!succeededToLock) {
             synchronized (this) {
-            System.out.println("TEST2!--------------------");
+                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
                 succeededToLock = NM.tryToLock();
             }
         }
 
-         */
-        User NM = this.subscribers.get(newManager);
         Response res1 = this.systemRoleChecks(userID, storeID, newManager, User.Permission.AppointmentManager);
         if (res1.getIsErr()) {
-            //NM.unlockUser();
+            NM.unlockUser();
             return res1;
         }
 
         Response res2 = NM.AbleToAddManager(userID, storeID, newManager);
         if (res2.getIsErr()) {
-            //NM.unlockUser();
+            NM.unlockUser();
             return res2;
         }
 
-        ManagerPermission MP= new ManagerPermission(newManager, storeID);
+        ManagerPermission MP = new ManagerPermission(newManager, storeID);
         MP.setAppointmentId(userID);
         NM.AddStoreInManager(storeID, MP);
         stores.get(storeID).addNewManager(userID, newManager);
         stores.get(storeID).addManagerPermission(MP);
-        //NM.unlockUser();
+        NM.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " add manager " + newManager + " to store " + storeID + " successfully");
         return new Response( "The manager Added successfully");
     }

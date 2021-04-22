@@ -3,8 +3,9 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
-
+import static TradingSystem.Server.ServiceLayer.Configuration.*;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping(path = "api/owner")

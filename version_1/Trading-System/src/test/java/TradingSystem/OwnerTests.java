@@ -542,7 +542,7 @@ public class OwnerTests {
     @Test
     void AddManager_Parallel_TwoOwnerAppointManagerTogether() {
         List<boolean[]> isErrsTotal = new ArrayList<>();
-        for(int test_i = 0; test_i < 10; test_i++) {
+        for(int test_i = 0; test_i < 100; test_i++) {
 
             //Prepare
             //Nofet - Manager to appoint
