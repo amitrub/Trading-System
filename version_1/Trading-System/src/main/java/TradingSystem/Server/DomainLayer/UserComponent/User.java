@@ -55,7 +55,7 @@ public  class User {
     private ShoppingCart shoppingCart;
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
-    private final Lock Lock = new ReentrantLock();;
+    private final Lock Lock = new ReentrantLock();
 
     private static final LoggerController loggerController=LoggerController.getInstance();
 
@@ -111,10 +111,10 @@ public  class User {
     }
     public void unlockUser(){
         this.Lock.unlock();
-      //  this.Lock.notify();
+        this.Lock.notifyAll();
     }
 
-    public boolean userIsLock() {
+    public boolean tryToLock() {
         return this.Lock.tryLock();
     }
 
