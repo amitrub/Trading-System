@@ -423,14 +423,7 @@ public class Client {
     }
     public boolean addManager(int storeID, int newManagerID){
         String path = String.format("%s/store/%s/add_new_manager/%s", this.userID, storeID, newManagerID);
-        JSONObject jsonPost = new JSONObject();
-        try {
-            jsonPost.put("userID", newManagerID);
-            jsonPost.put("storeID", storeID);
-        } catch (Exception e) {
-            System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addManager, making post json"));
-        }
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addManager) response: " + response + ANSI_RESET);
         return response.getIsErr();
@@ -443,7 +436,14 @@ public class Client {
         return response.getIsErr();
     }
     public List<DummyStore> showOwnerStores() {
-        String path = String.format("%s/stores", this.userID);
+        String path = String.format("%s/stores_owner", this.userID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        List<DummyStore> dummySearchResponeArr = response.returnStoreList();
+        return dummySearchResponeArr;
+    }
+    public List<DummyStore> showManagerStores() {
+        String path = String.format("%s/stores_manager", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         List<DummyStore> dummySearchResponeArr = response.returnStoreList();

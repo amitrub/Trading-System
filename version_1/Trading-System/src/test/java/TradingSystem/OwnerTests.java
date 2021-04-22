@@ -412,7 +412,11 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         boolean b1 = client.addManager(storeID, newManagerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> managers = client.showManagerStores();
         assertFalse(b1);
+        assertEquals(managers.size(), 1);
        }
 
     @Test
@@ -431,7 +435,9 @@ public class OwnerTests {
         client.Login("roee", "123");
 
         boolean b1 = client.addManager(storeID, id1);
+        List<DummyStore> managers = client.showManagerStores();
         assertTrue(b1);
+        assertEquals(managers.size(), 0);
     }
 
     @Test
@@ -569,6 +575,16 @@ public class OwnerTests {
 
         List<DummyShoppingHistory> history = client.showStoreHistory(storeID);
         assertEquals(history.size(), 0);
+    }
+    //endregion
+
+    //region Parallel tests
+    @Test
+    void PurchaseVsDelete() {
+    }
+
+    @Test
+    void AppointmentManger() {
     }
     //endregion
 

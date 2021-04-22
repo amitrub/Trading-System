@@ -213,10 +213,15 @@ public  class User {
         return this.myOwnedStoresIDs;
     }
 
+    public List<Integer> getMyManagerStore() {
+        return this.myManagedStoresIDs;
+    }
+
     public void AddStoreInManager(int storeID, ManagerPermission om) {
         this.myManagedStoresIDs.add(storeID);
         this.managerPermission.put(storeID, om);
     }
+
 
     public OwnerPermission getOwnerPermission(int storeID) {
         return this.ownerPermission.get(storeID);
