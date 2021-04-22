@@ -975,16 +975,16 @@ public class TradingSystem {
     }
 
     public Response StoreHistoryOwner(int userID, int storeID, String connID){
-        if (ValidConnectedUser(userID, connID)) {
-            if (hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
-                List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
-                Response res = new Response("num of history buying in the store is " + list.size());
-                res.AddPair("history", list);
-                return res;
-            }
-            return new Response("user has no permission to watch the history" );
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true,"Error in User details" );
         }
-        return new Response("Not connected user" );
+        if (!hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
+            return new Response(true,"user has no permission to watch the history" );
+        }
+        List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
+        Response res = new Response("num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        return res;
     }
 
 
