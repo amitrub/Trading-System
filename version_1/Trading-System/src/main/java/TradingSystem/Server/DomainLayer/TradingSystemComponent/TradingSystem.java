@@ -1172,7 +1172,6 @@ public class TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "Error in AdminID details");
         }
-
         if (!hasPermission(AdminID, storeID, User.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "user has no permission to watch the history");
@@ -1196,8 +1195,6 @@ public class TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "Error in Admin details");
         }
-
-        //TODO check permissions
         if (!hasPermission(AdminID, userID, User.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "user has no permission to watch the history");
@@ -1222,15 +1219,12 @@ public class TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "Error in Admin details");
         }
-
-        //TODO permission
         if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "user has no permission to watch the history");
             res.AddPair("history", list);
             return res;
         }
-
         List<DummyShoppingHistory> list = new ArrayList<>();
         for(Store s: stores.values())
         {
@@ -1247,15 +1241,12 @@ public class TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "Error in Admin details");
         }
-
-        //TODO permission
         if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "user has no permission to watch the history");
             res.AddPair("history", list);
             return res;
         }
-
         List<DummyShoppingHistory> list = new ArrayList<>();
         for(User u: subscribers.values())
         {
