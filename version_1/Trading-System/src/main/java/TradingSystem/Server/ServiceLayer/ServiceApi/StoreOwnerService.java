@@ -457,9 +457,4 @@ public class StoreOwnerService {
         Response res = this.tradingSystem.ShowManagerStores(userID, connID);
         return res;
     }
-
-    @GetMapping("{userID}/store_history_admin/{storeID}")
-    public Response AdminStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
-        return tradingSystem.StoreHistoryAdmin(userID,storeID,connID);
-    }
 }

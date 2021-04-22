@@ -407,14 +407,6 @@ public class Client {
         System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
         return dummyShoppingHistoryResponse;
     }
-    public List<DummyShoppingHistory> adminStoreHistory(int storeID) {
-        String path = String.format("%s/store_history_admin/%s", this.userID, storeID);
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
-        Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
-        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
-        return dummyShoppingHistoryResponse;
-    }
     public boolean addOwner(int storeID, int newOwnerID) {
         String path = String.format("%s/store/%s/add_new_owner/%s", this.userID, storeID, newOwnerID);
         /*JSONObject jsonPost = new JSONObject();
@@ -462,8 +454,42 @@ public class Client {
 
 
     //Admin
-    public int showAllUsersHistory() {
-        return 0;
+    public List<DummyShoppingHistory> adminStoreHistory(int storeID) {
+        String path = String.format("%s/store_history_admin/%s", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
+        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
+        return dummyShoppingHistoryResponse;
     }
+
+    public List<DummyShoppingHistory> adminUserHistory(int userToShow) {
+        String path = String.format("%s/user_history_admin/%s", this.userID, userToShow);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
+        System.out.println(ANSI_YELLOW + "(ShowUserHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
+        return dummyShoppingHistoryResponse;
+    }
+
+    public List<DummyShoppingHistory> AdminAllStores() {
+        String path = String.format("%s/stores", this.userID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
+        System.out.println(ANSI_YELLOW + "(ShowAllStoresHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
+        return dummyShoppingHistoryResponse;
+    }
+
+    public List<DummyShoppingHistory> AdminAllUsers() {
+        String path = String.format("%s/users", this.userID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
+        System.out.println(ANSI_YELLOW + "(ShowAllUsersHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
+        return dummyShoppingHistoryResponse;
+    }
+
+
 
 }
