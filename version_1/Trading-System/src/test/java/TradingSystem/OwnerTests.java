@@ -1,9 +1,6 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
-import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -486,7 +483,7 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        boolean b1 = client.addManager(storeID, newManagerID);
+        boolean b1 = client.addManager(storeID, newManagerID).getIsErr();
         client.Logout();
         client.Login("nofet", "123");
         List<DummyStore> managers = client.showManagerStores();
@@ -509,7 +506,7 @@ public class OwnerTests {
         client.Register("roee", "123");
         client.Login("roee", "123");
 
-        boolean b1 = client.addManager(storeID, id1);
+        boolean b1 = client.addManager(storeID, id1).getIsErr();
         List<DummyStore> managers = client.showManagerStores();
         assertTrue(b1);
         assertEquals(managers.size(), 0);
@@ -522,7 +519,7 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        boolean b1 = client.addManager(storeID, id+1);
+        boolean b1 = client.addManager(storeID, id+1).getIsErr();
         assertTrue(b1);
     }
 
@@ -538,12 +535,15 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         client.addManager(storeID, id1);
-        boolean b1 = client.addManager(storeID, id1);
+        boolean b1 = client.addManager(storeID, id1).getIsErr();
         assertTrue(b1);
     }
 
     @Test
     void AddManager_Parallel_TwoOwnerAppointManagerTogether() {
+        List<boolean[]> isErrsTotal = new ArrayList<>();
+
+        //Prepare
         //Nofet - Manager to appoint
         Integer newManagerID = client.Register("nofet", "123");
         client.Login("nofet", "123");
@@ -566,9 +566,49 @@ public class OwnerTests {
         client.Login("hadas", "123");
         List<DummyStore> owners = client.showOwnerStores();
         assertFalse(b1);
-        assertEquals(owners.size(), 1);
-        
+        assertEquals(owners.size(), 1); //Check that the add owner succeed
+        client.Logout();
 
+        //Create two clients with task to buy this product
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        //Prepare tasks for clients
+        List<Callable<Result>> taskList = new ArrayList<>();
+        Callable<Result> addManagetTask_1 = new AddManagerTask("elinor", "123", storeID, newManagerID);
+        taskList.add(addManagetTask_1);
+        Callable<Result> addManagetTask_2 = new AddManagerTask("hadas", "123", storeID, newManagerID);
+        taskList.add(addManagetTask_1);
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<Result>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+        boolean[] isErrs = new boolean[2];
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<Result> future = resultList.get(i);
+            try {
+                Result result = future.get();
+//                System.out.println(result.getName() + ": " + result.getTimestamp());
+                Response response = result.getResponse();
+                System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                isErrs[i] = response.getIsErr();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        //Check that one of the client failed and the other succeed.
+        assertTrue((isErrs[0] && !isErrs[1]) || (isErrs[1] && !isErrs[0]));
+        isErrsTotal.add(isErrs);
+        tearDown();
+        setUp();
 
 
 //        boolean b1 = client.addManager(storeID, newManagerID);
@@ -689,6 +729,6 @@ public class OwnerTests {
         assertEquals(history.size(), 0);
     }
     //endregion
-    
+
 
 }

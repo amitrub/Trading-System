@@ -637,7 +637,7 @@ public class TradingSystem {
             loggerController.WriteErrorMsg("User " + userID + " try to Add " + newOwner + " to be the owner of store " + storeID + " and failed. " + newOwner + " is not subscriber");
             return new Response(true, "The user " + newOwner + " is not subscriber, so he can not be owner for store");
         }
-        while (!this.subscribers.get(newOwner).userIsLock())
+        while (!this.subscribers.get(newOwner).tryToLock())
         {
             try{
                 this.wait(3);
@@ -716,24 +716,36 @@ public class TradingSystem {
             loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the manager of store "+storeID + " and failed. "+ newManager+" is not subscriber");
             return new Response(true, "The user "+newManager+" is not subscriber, so he can not be manager for store");
         }
-        while (!this.subscribers.get(newManager).userIsLock()) {
+
+        /*while (!this.subscribers.get(newManager).tryToLock()) {
             try{
                 this.wait(3);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
+        }*/
+
+        /*
+        System.out.println("TEST1!--------------------");
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+            System.out.println("TEST2!--------------------");
+                succeededToLock = NM.tryToLock();
+            }
         }
-        this.subscribers.get(newManager).lockUser();
+
+         */
         User NM = this.subscribers.get(newManager);
         Response res1 = this.systemRoleChecks(userID, storeID, newManager, User.Permission.AppointmentManager);
         if (res1.getIsErr()) {
-            NM.unlockUser();
+            //NM.unlockUser();
             return res1;
         }
 
         Response res2 = NM.AbleToAddManager(userID, storeID, newManager);
         if (res2.getIsErr()) {
-            NM.unlockUser();
+            //NM.unlockUser();
             return res2;
         }
 
@@ -742,7 +754,7 @@ public class TradingSystem {
         NM.AddStoreInManager(storeID, MP);
         stores.get(storeID).addNewManager(userID, newManager);
         stores.get(storeID).addManagerPermission(MP);
-        NM.unlockUser();
+        //NM.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " add manager " + newManager + " to store " + storeID + " successfully");
         return new Response( "The manager Added successfully");
     }
@@ -769,7 +781,7 @@ public class TradingSystem {
             loggerController.WriteErrorMsg("User " + userID + " try to Remove " + ManagerToRemove + " from management the store " + storeID + " and failed. " + ManagerToRemove + " is not subscriber");
             return new Response(true, "The user " + ManagerToRemove + " is not subscriber, so it impossible to remove him from management the store");
         }
-        while (!this.subscribers.get(ManagerToRemove).userIsLock()) {
+        while (!this.subscribers.get(ManagerToRemove).tryToLock()) {
             try{
                 this.wait(3);
             } catch (InterruptedException e) {
