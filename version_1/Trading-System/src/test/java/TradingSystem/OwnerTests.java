@@ -542,6 +542,43 @@ public class OwnerTests {
         assertTrue(b1);
     }
 
+    @Test
+    void AddManager_Parallel_TwoOwnerAppointManagerTogether() {
+        //Nofet - Manager to appoint
+        Integer newManagerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        //Hadas - Second owner of Store
+        Integer secondOwnerID = client.Register("hadas", "123");
+        client.Login("hadas", "123");
+        client.Logout();
+
+        //Elinor - First owner of Store
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        //appoint Hadas to owner
+        boolean b1 = client.addOwner(storeID, secondOwnerID);
+        client.Logout();
+        client.Login("hadas", "123");
+        List<DummyStore> owners = client.showOwnerStores();
+        assertFalse(b1);
+        assertEquals(owners.size(), 1);
+        
+
+
+
+//        boolean b1 = client.addManager(storeID, newManagerID);
+//        client.Logout();
+//        client.Login("nofet", "123");
+//        List<DummyStore> managers = client.showManagerStores();
+//        assertFalse(b1);
+//        assertEquals(managers.size(), 1);
+    }
+
     //endregion
 
     //region requirement 4.6: Edit manager Permissions tests - TODO
