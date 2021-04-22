@@ -110,7 +110,7 @@ public class AdminService {
      */
     @GetMapping("{adminID}/store_history/{storeID}")
     public Response ShowStoreHistory(@PathVariable int adminID, @PathVariable int storeID, @RequestHeader("connID") String connID){
-        Response res = tradingSystem.StoreHistory(adminID, storeID, connID);
+        Response res = tradingSystem.StoreHistoryAdmin(adminID, storeID, connID);
         return res;
     }
 }

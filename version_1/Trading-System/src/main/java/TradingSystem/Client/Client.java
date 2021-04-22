@@ -399,8 +399,16 @@ public class Client {
         System.out.println(ANSI_YELLOW + "(editProduct) response: " + response + ANSI_RESET);
         return response.getIsErr();
     }
-    public List<DummyShoppingHistory> showStoreHistory(int storeID) {
-        String path = String.format("%s/store_history/%s", this.userID, storeID);
+    public List<DummyShoppingHistory> ownerStoreHistory(int storeID) {
+        String path = String.format("%s/store_history_owner/%s", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
+        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
+        return dummyShoppingHistoryResponse;
+    }
+    public List<DummyShoppingHistory> adminStoreHistory(int storeID) {
+        String path = String.format("%s/store_history_admin/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();

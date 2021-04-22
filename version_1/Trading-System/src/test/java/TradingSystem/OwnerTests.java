@@ -727,19 +727,31 @@ public class OwnerTests {
         client.Logout();
 
         client.Login("elinor", "123");
-        List<DummyShoppingHistory> history = client.showStoreHistory(storeID);
+        List<DummyShoppingHistory> history = client.ownerStoreHistory(storeID);
         assertEquals(history.size(), 1);
     }
 
     @Test
-    void SadShowStoreHistory() {
+    void SadEmptyStoreHistory() {
         client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Asos");
         Integer storeID = getStoreID(client.showAllStores(),"Asos");
         client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
 
-        List<DummyShoppingHistory> history = client.showStoreHistory(storeID);
+        List<DummyShoppingHistory> history = client.ownerStoreHistory(storeID);
+        assertEquals(history.size(), 0);
+    }
+
+    @Test
+    void SadStoreID() {
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Asos");
+        Integer storeID = getStoreID(client.showAllStores(),"Asos");
+        client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
+
+        List<DummyShoppingHistory> history = client.ownerStoreHistory(storeID+1);
         assertEquals(history.size(), 0);
     }
     //endregion
