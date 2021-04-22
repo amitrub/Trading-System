@@ -1,7 +1,9 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
+import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
@@ -19,26 +21,26 @@ public class RemoveProductTask implements Callable<Result> {
         this.client = client;
         this.storeID = storeID;
         this.productID = productID;
-        System.out.printf(ANSI_YELLOW + "%s: Trying connect to system... ", this.name);
-        this.client.connectSystem();
-        if(this.client.getConnID().equals(""))
-            System.out.println("Failed!!");
-        else
-            System.out.printf("Connection succeed! connID=%s", this.client.getConnID());
-        System.out.println(ANSI_RESET);
+        System.out.printf(ANSI_YELLOW + "%s: Store Owner is trying to remove product... " + ANSI_RESET, this.name);
+//        this.client.connectSystem();
+//        if(this.client.getConnID().equals(""))
+//            System.out.println("Failed!!");
+//        else
+//            System.out.printf("Connection succeed! connID=%s", this.client.getConnID());
+//        System.out.println(ANSI_RESET);
     }
 
     @Override
     public Result call() throws Exception {
-        //Register parallel check
-        System.out.printf(ANSI_GREEN + "%s: Staring Register...\n", this.name);
-        int id = client.Register(this.name, "1234");
-        System.out.printf(ANSI_GREEN + "%s: Finish Register: id=%d connID=%s\n", this.name, id, this.client.getConnID());
-        System.out.println(ANSI_RESET);
-
         //Prepare
+        //assume owner client is register and logged in before execute call
 
-        return null;
+        //Issue
+        Response response = client.removeProduct(this.storeID, this.productID);
+        System.out.println(client.getUserName() + ": (RemoveProduct task parallel) response: " + response);
+
+        //Results to assert
+        return new Result(this.name, LocalDateTime.now().toString(), response);
 
     }
 }
