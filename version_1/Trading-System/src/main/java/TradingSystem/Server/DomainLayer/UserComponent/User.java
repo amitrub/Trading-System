@@ -111,7 +111,6 @@ public  class User {
     }
     public void unlockUser(){
         this.Lock.unlock();
-        this.Lock.notifyAll();
     }
 
     public boolean tryToLock() {

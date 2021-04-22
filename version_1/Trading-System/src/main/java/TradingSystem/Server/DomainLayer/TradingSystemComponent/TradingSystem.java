@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
@@ -637,28 +638,24 @@ public class TradingSystem {
             loggerController.WriteErrorMsg("User " + userID + " try to Add " + newOwner + " to be the owner of store " + storeID + " and failed. " + newOwner + " is not subscriber");
             return new Response(true, "The user " + newOwner + " is not subscriber, so he can not be owner for store");
         }
-        /*
-        while (!this.subscribers.get(newOwner).tryToLock())
-        {
-            try{
-                this.wait(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+
+        User NU = this.subscribers.get(newOwner);
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+                succeededToLock = NU.tryToLock();
             }
         }
-        this.subscribers.get(newOwner).lockUser();
-
-         */
         
         Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
         if (res1.getIsErr()) {
-            //this.subscribers.get(newOwner).unlockUser();
+            NU.unlockUser();
             return res1;
         }
-        User NU = this.subscribers.get(newOwner);
         Response res2 =NU.AbleToAddOwner(userID, storeID);
         if (res2.getIsErr()) {
-            //this.subscribers.get(newOwner).unlockUser();
+            NU.unlockUser();
             return res2;
         }
 
@@ -669,6 +666,7 @@ public class TradingSystem {
         stores.get(storeID).addOwnerPermission(newOwner,OP);
         //this.subscribers.get(newOwner).unlockUser();
         loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
+        NU.unlockUser();
         return new Response("The owner Added successfully");
     }
 
