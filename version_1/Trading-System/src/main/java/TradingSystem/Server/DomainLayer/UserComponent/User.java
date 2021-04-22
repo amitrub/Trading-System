@@ -19,6 +19,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public  class User {
 
+
+
     public enum Permission {
         AddProduct,
         ReduceProduct,
@@ -301,6 +303,35 @@ public  class User {
         }
         return new Response("It is possible to add the user as the owner");
     }
+
+    public Response AbleToEditPermissions(int userID, int storeID) {
+        if (!this.myManagedStoresIDs.contains(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " +this.id+" for store " + storeID + " and failed. "+ this.id+" is not manages the store");
+            return new Response(true, "The user "+this.id+" is not manages the store, so it impossible to edit his permissions.");
+        }
+        if (this.managerPermission.get(storeID)!=null&&
+                this.managerPermission.get(storeID).getAppointmentId()!=userID) {
+            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " + this.id + " for store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
+            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+        }
+        return new Response("It is possible to edit the manager permissions");
+    }
+
+    public void editPermissions(int userID,int storeID, List<User.Permission> permissions) {
+    ManagerPermission MP=managerPermission.get(storeID);
+    if(MP==null){
+        MP=new ManagerPermission(this.id,storeID);
+        MP.setAppointmentId(userID);
+        MP.setPermissions(permissions);
+        this.managerPermission.put(storeID,MP);
+    }
+    else{
+        MP.setPermissions(permissions);
+        this.managerPermission.remove(storeID);
+        this.managerPermission.put(storeID,MP);
+    }
+    }
+
 }
 
 

@@ -5,6 +5,8 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.Permission;
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -369,5 +371,20 @@ public class Store {
 
     public void addManagerPermission(ManagerPermission mp) {
         this.managersPermission.put(mp.getUserId(),mp);
+    }
+
+    public void editManagerPermissions(int userID, int managerID, List<User.Permission> permissions) {
+        ManagerPermission MP=this.managersPermission.get(managerID);
+        if(MP==null){
+            MP=new ManagerPermission(managerID,this.id);
+            MP.setAppointmentId(userID);
+            MP.setPermissions(permissions);
+            this.managersPermission.put(managerID,MP);
+        }
+        else{
+            MP.setPermissions(permissions);
+            this.managersPermission.remove(managerID);
+            this.managersPermission.put(managerID,MP);
+        }
     }
 }

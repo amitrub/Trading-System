@@ -3,7 +3,10 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+
+import java.util.LinkedList;
 import java.util.List;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -487,4 +490,71 @@ class TradingSystemTest {
         assertTrue(res3.getIsErr());
     }
 
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsSuccess() {
+        String gust = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(gust, "m", "123");
+        Response res = tradingSystem.Login(gust, "m", "123");
+        tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
+        LinkedList<User.Permission> p=new LinkedList<>();
+        p.add(User.Permission.AddProduct);
+        tradingSystem.EditManagerPermissions(ElinorID,EconnID,ElinorStore,res.returnUserID(),p);
+        boolean r1 = tradingSystem.hasPermission(res.returnUserID(),ElinorStore, User.Permission.AddProduct);
+        boolean r2 = tradingSystem.hasPermission(res.returnUserID(),ElinorStore, User.Permission.GetInfoOfficials);
+        assertTrue(r1);
+        assertFalse(r2);
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsNotConnected() {
+        Response r = tradingSystem.EditManagerPermissions(NofetID, "--", NofetStore, ElinorID,null);
+        System.out.println(r.getMessage());
+        assertTrue(r.getIsErr());
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsIsNotSubscriber() {
+        Response r1 = tradingSystem.EditManagerPermissions(-1, NconnID, NofetStore, ElinorID,null);
+        System.out.println(r1.getMessage());
+        assertTrue(r1.getIsErr());
+        Response r2 = tradingSystem.EditManagerPermissions(NofetID, NconnID, NofetStore, 20,null);
+        System.out.println(r2.getMessage());
+        assertTrue(r2.getIsErr());
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsIsNotTheOwner() {
+        String gust2 = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(gust2, "l", "123");
+        Response res2 = tradingSystem.Login(gust2, "l", "123");
+        LinkedList<User.Permission> p=new LinkedList<>();
+        p.add(User.Permission.AddProduct);
+        Response res3 = tradingSystem.EditManagerPermissions(res2.returnUserID(), res2.returnConnID(), NofetStore, ElinorID,p);
+        System.out.println(res3.getMessage());
+        assertTrue(res3.getIsErr());
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsIsNotTheAppointment() {
+        String gust = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(gust, "D", "123");
+        Response res = tradingSystem.Login(gust, "D", "123");
+        LinkedList<User.Permission> p=new LinkedList<>();
+        p.add(User.Permission.AddProduct);
+        tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
+        Response res3 = tradingSystem.EditManagerPermissions(NofetID, NconnID, ElinorStore, res.returnUserID(),p);
+        System.out.println(res3.getMessage());
+        assertTrue(res3.getIsErr());
+    }
+
+
+    @Test
+    void editManagerPermissions() {
+    }
 }
