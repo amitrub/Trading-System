@@ -635,8 +635,65 @@ public class OwnerTests {
 
     //endregion
 
-    //region requirement 4.6: Edit manager Permissions tests - TODO
+    //region requirement 4.6: Edit manager Permissions tests
 
+    //case 4.6.1 edit permissions
+    //owner edits manager permissions
+    @Test
+    void HappyAddPermissions() {
+        Integer managerId = client.Register("manager", "123");
+        client.Login("manager", "123");
+        client.Logout();
+
+        client.Register("owner", "123");
+        client.Login("owner", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        Response responsePosPer = client.GetPossiblePermissionsToManager();
+        
+        Response responseEditPer = client.editManagerPermissions(storeID, managerId, );
+        client.Logout();
+    }
+
+    //case 4.6.2 sad edit permissions, manager id not ok
+    @Test
+    void SadAddPermissions() {
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        boolean b1 = client.addOwner(storeID, newOwnerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> owners = client.showOwnerStores();
+        assertFalse(b1);
+        assertEquals(owners.size(), 1);
+    }
+
+    //case 4.6.3 sad edit permissions, cant give this permissions to manager
+    @Test
+    void SadAddPermissionsToManager() {
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        boolean b1 = client.addOwner(storeID, newOwnerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> owners = client.showOwnerStores();
+        assertFalse(b1);
+        assertEquals(owners.size(), 1);
+    }
     //endregion
 
     //region requirement 4.7: Remove manager tests
