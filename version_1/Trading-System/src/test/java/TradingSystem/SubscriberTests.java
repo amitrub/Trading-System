@@ -194,7 +194,6 @@ public class SubscriberTests {
     //case 3.7.1 have parchuses
     @Test
     void showUsersHistory_Happy() {
-        // Prepare
         client.Register("Hadas", "123");
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
@@ -204,17 +203,12 @@ public class SubscriberTests {
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
         List<DummyProduct> products = client.showStoreProducts(storeID);
         Integer productID = products.get(0).getProductID();
-    //        client.Logout();
         client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().get(0).getProductName();
-        assertEquals(ans1, "Short Pants");
-
-        //Issue
-        boolean purchaseFailed = client.subscriberPurchase( "12345678",
-                "052897878787", "sioot st. 5");
+        client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
 
         Response response = client.showUserHistory();
         assertFalse(response.getIsErr());
+        assertEquals(response.returnHistoryList().size(), 1);
     }
     //case 3.7.2 no history for this user
     @Test
@@ -227,16 +221,6 @@ public class SubscriberTests {
         List<DummyStore> stores = client.showAllStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
-        Integer productID = products.get(0).getProductID();
-        //        client.Logout();
-        client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().get(0).getProductName();
-        assertEquals(ans1, "Short Pants");
-
-        //Issue
-//        boolean purchaseFailed = client.subscriberPurchase( "12345678",
-//                "052897878787", "sioot st. 5");
 
         Response response = client.showUserHistory();
         assertTrue(response.getIsErr());

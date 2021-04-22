@@ -306,8 +306,6 @@ public class Client {
         String path = String.format("%s/user_history", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-//        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-//        System.out.println(ANSI_YELLOW + "(showUserHistory) response: " + dummyProductResponeArr + ANSI_RESET);
         return response;
     }
 
