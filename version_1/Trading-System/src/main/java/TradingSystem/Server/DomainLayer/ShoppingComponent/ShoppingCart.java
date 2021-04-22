@@ -161,6 +161,7 @@ public class ShoppingCart {
         }
         addShoppingHistory(isGuest);
         this.shoppingBags = new ConcurrentHashMap<>();
+        this.releaseLocks(lockList);
         return new Response("The purchase was made successfully ");
 
     }

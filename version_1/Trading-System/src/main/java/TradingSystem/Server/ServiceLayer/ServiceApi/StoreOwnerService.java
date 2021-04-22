@@ -5,10 +5,11 @@ import TradingSystem.Server.DomainLayer.UserComponent.Permission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
-
+import static TradingSystem.Server.ServiceLayer.Configuration.*;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+
 
 @RestController
 @RequestMapping(path = "api/owner")

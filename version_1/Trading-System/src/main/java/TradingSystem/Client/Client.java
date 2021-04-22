@@ -423,12 +423,12 @@ public class Client {
         System.out.println(ANSI_YELLOW + "(addOwner) response: " + response + ANSI_RESET);
         return response.getIsErr();
     }
-    public boolean addManager(int storeID, int newManagerID){
+    public Response addManager(int storeID, int newManagerID){
         String path = String.format("%s/store/%s/add_new_manager/%s", this.userID, storeID, newManagerID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addManager) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        return response;
     }
     public boolean removeManager(int storeID, int managerToRemoveID){
         String path = String.format("%s/store/%s/remove_manager/%s", this.userID, storeID, managerToRemoveID);
