@@ -426,9 +426,8 @@ public class StoreOwnerService {
      *  }]
      * }
      */
-    //TODO: not check yet
-    @GetMapping("{userID}/store_history/{storeID}")
-    public Response ShowStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+    @GetMapping("{userID}/store_history_owner/{storeID}")
+    public Response OwnerStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         return tradingSystem.StoreHistoryOwner(userID,storeID,connID);
     }
 
@@ -455,5 +454,10 @@ public class StoreOwnerService {
     public Response ShowManagerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
         Response res = this.tradingSystem.ShowManagerStores(userID, connID);
         return res;
+    }
+
+    @GetMapping("{userID}/store_history_admin/{storeID}")
+    public Response AdminStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        return tradingSystem.StoreHistoryAdmin(userID,storeID,connID);
     }
 }
