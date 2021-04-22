@@ -647,11 +647,11 @@ public class TradingSystem {
         }
 
         User NO = this.subscribers.get(newOwner);
-        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
+//        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
         boolean succeededToLock = false;
         while (!succeededToLock) {
             synchronized (this) {
-                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
+//                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
                 succeededToLock = NO.tryToLock();
             }
         }
@@ -780,30 +780,30 @@ public class TradingSystem {
             loggerController.WriteErrorMsg("User " + userID + " try to Remove " + ManagerToRemove + " from management the store " + storeID + " and failed. " + ManagerToRemove + " is not subscriber");
             return new Response(true, "The user " + ManagerToRemove + " is not subscriber, so it impossible to remove him from management the store");
         }
-        /*
-        while (!this.subscribers.get(ManagerToRemove).tryToLock()) {
-            try{
-                this.wait(3);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+
+        User MTR = this.subscribers.get(ManagerToRemove);
+//        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+//                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
+                succeededToLock = MTR.tryToLock();
             }
         }
-         */
-        //this.subscribers.get(ManagerToRemove).lockUser();
-        User MTR = this.subscribers.get(ManagerToRemove);
+
         Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, User.Permission.RemoveManager);
         if (res1.getIsErr()) {
-            //MTR.unlockUser();
+            MTR.unlockUser();
             return res1;
         }
         Response res2 =MTR.AbleToRemoveManager(userID, storeID);
         if (res2.getIsErr()) {
-            //MTR.unlockUser();
+            MTR.unlockUser();
             return res2;
         }
         MTR.removeStore(storeID);
         stores.get(storeID).removeManager(userID, ManagerToRemove);
-        //MTR.unlockUser();
+        MTR.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
         return new Response("The manager removed successfully");
         }
@@ -1223,7 +1223,7 @@ public class TradingSystem {
         return res;
     }
 
-    public Response AllUsersHistoryAdmin(int AdminID, String connID){
+    public Response AllUsersHistoryAdmin(int AdminID, String connID) {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "Error in Admin details");
         }
@@ -1234,17 +1234,16 @@ public class TradingSystem {
             return res;
         }
         List<DummyShoppingHistory> list = new ArrayList<>();
-        for(User u: subscribers.values())
-        {
-            for(DummyShoppingHistory e : u.ShowUserHistory()) {
+        for (User u : subscribers.values()) {
+            for (DummyShoppingHistory e : u.ShowUserHistory()) {
                 list.add(e);
             }
         }
-        Response res = new Response(false,"num of history buying in the store is " + list.size());
+        Response res = new Response(false, "num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         return res;
+    }
 
-      
     public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
         if (!ValidConnectedUser(userID, connID)) {
             loggerController.WriteErrorMsg("User " + userID + " try to edit "+managerID+ " permissions for store " + storeID + " and failed. The err message: Error in User details");
