@@ -90,10 +90,15 @@ public class Response {
         if(!this.isErr){
             List<Map<String, Object>> permissionsList = (List<Map<String, Object>>) this.returnObject.get("permissions");
             List<String> output = new ArrayList<>();
+           for(int i=0; i<permissionsList.size();i++){
+               Object s=permissionsList.get(i);
+               output.add(s.toString());
+           }
+/*
             for (Map<String, Object> map: permissionsList){
-                output.add((String) map.get("permissions"));
+                 map.get("permissions"));
             }
-            return output;
+  */          return output;
         }
         else
             return new ArrayList<>();
