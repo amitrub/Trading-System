@@ -2,13 +2,9 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -16,6 +12,18 @@ import java.util.Map;
 public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
     // 2.1 test
+
+    @GetMapping("test")
+    public int test(){
+        return 1;
+    }
+
+    @GetMapping("clear_system")
+    public Response ClearSystem(){
+        System.out.println("777777777777777777777777777777");
+        this.tradingSystem.ClearSystem();
+        return new Response();
+    }
 
     /**
      * @requirement 2.1
@@ -27,8 +35,8 @@ public class GuestService {
      * }
      */
     @GetMapping("home")
-    public Response connectSystem(){
-        Response res = this.tradingSystem.connectSystem();
+    public Response ConnectSystem(){
+        Response res = this.tradingSystem.ConnectSystem();
         tradingSystem.printUsers();
         return res;
     }
@@ -111,8 +119,8 @@ public class GuestService {
      * }
      */
     @GetMapping("stores")
-    public List<DummyStore> ShowAllStores() {
-        List<DummyStore> res = this.tradingSystem.ShowAllStores();
+    public Response ShowAllStores() {
+        Response res = this.tradingSystem.ShowAllStores();
         return res;
     }
 
@@ -136,8 +144,8 @@ public class GuestService {
      * }
      */
     @GetMapping("store/{storeID}/products")
-    public List<DummyProduct> ShowStoreProducts(@PathVariable int storeID) {
-        List<DummyProduct> res = this.tradingSystem.ShowStoreProducts(storeID);
+    public Response ShowStoreProducts(@PathVariable int storeID) {
+        Response res = this.tradingSystem.ShowStoreProducts(storeID);
         return res;
     }
 
@@ -171,7 +179,7 @@ public class GuestService {
      */
     //TODO: not check yet
     @PostMapping("search")
-    public List<DummyProduct> Search(@RequestBody Map<String, Object> obj){
+    public Response Search(@RequestBody Map<String, Object> obj){
         String name = (String) obj.get("name");
         boolean productNameMode = (boolean) obj.get("Product Name");
         boolean productCategoryMode = (boolean) obj.get("Product Category");
@@ -184,7 +192,7 @@ public class GuestService {
         else if(!productNameMode & productCategoryMode)
             return tradingSystem.SearchProduct(null, name, minPrice, maxPrice);
         else
-            return new ArrayList<>();
+            return new Response(true, "Input Error");
     }
 
 
@@ -209,6 +217,7 @@ public class GuestService {
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
+        res.AddConnID(connID);
         tradingSystem.printUsers();
         return res;
     }
@@ -233,8 +242,9 @@ public class GuestService {
      * }
      */
     @GetMapping("shopping_cart")
-    public List<DummyProduct> ShowShoppingCart(@RequestHeader("connID") String connID){
-        List<DummyProduct> res = this.tradingSystem.ShowShoppingCart(connID);
+    public Response ShowShoppingCart(@RequestHeader("connID") String connID){
+        Response res = this.tradingSystem.ShowShoppingCart(connID);
+        res.AddConnID(connID);
         return res;
     }
 
@@ -246,20 +256,20 @@ public class GuestService {
      *  "storeID": int
      *  "productID": int
      * }
-     * @return Response{
+     * @return NewResponse{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
     @PostMapping("shopping_cart/remove_product")
-    public Response RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        int storeID = (int) obj.get("storeID");
-//        int productID = (int) obj.get("productID");
-        //TODO: not implemented
-//        Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
-        Response res = new Response(true, "not implemented");
-        return res;
+    public Response RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)
+    {
+       int storeID = (int) obj.get("storeID");
+       int productID = (int) obj.get("productID");
+       Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
+       res.AddConnID(connID);
+       return res;
     }
 
     /**
@@ -282,9 +292,8 @@ public class GuestService {
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
-        //TODO: not implemented
-//        Response res = tradingSystem.EditProductQuantityFromCart(connID, storeID, productID, quantity);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
+        res.AddConnID(connID);
         return res;
     }
 

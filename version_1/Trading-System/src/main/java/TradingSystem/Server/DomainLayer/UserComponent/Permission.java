@@ -4,4 +4,6 @@ import java.util.List;
 
 public interface Permission {
    public boolean hasPermission(User.Permission p);
+
+   public String toString();
 }

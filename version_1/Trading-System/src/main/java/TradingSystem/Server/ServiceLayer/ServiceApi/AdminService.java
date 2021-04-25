@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(path = "api/admin")
 public class AdminService {
+
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
     /**
@@ -21,14 +22,13 @@ public class AdminService {
      *  "users": List [{
      *      "userID": int
      *      "userName": String
+     *      "password": "XXXXXXX"
      *  }]
      * }
      */
-    //TODO: not implemented
     @GetMapping("{adminID}/users")
-    public Response ShowAllUsers(@PathVariable int adminID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowAllUsers(adminID, connID);
-        Response res = new Response(true, "not implemented");
+    public Response AdminAllUsers(@PathVariable int adminID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.AllUsersHistoryAdmin(adminID, connID);
         return res;
     }
 
@@ -47,13 +47,12 @@ public class AdminService {
      *  }]
      * }
      */
-    //TODO: not implemented
     @GetMapping("{adminID}/stores")
-    public Response ShowAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowAllStores(adminID, connID);
-        Response res = new Response(true, "not implemented");
+    public Response AdminAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.AllStoresHistoryAdmin(adminID, connID);
         return res;
     }
+
 
     /**
      * @requirement 6.4
@@ -80,13 +79,12 @@ public class AdminService {
      *  }]
      * }
      */
-    //TODO: not implemented
-    @GetMapping("{adminID}/user_history/{userID}")
-    public Response ShowUserHistory(@PathVariable int adminID,@PathVariable int userID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowAllStores(adminID, connID);
-        Response res = new Response(true, "not implemented");
+    @GetMapping("{adminID}/user_history_admin/{userID}")
+    public Response AdminUserHistory(@PathVariable int adminID, @PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.UserHistoryAdmin(adminID, userID ,connID);
         return res;
     }
+
 
     /**
      * @requirement 6.4
@@ -113,11 +111,12 @@ public class AdminService {
      *  }]
      * }
      */
-    //TODO: not implemented
-    @GetMapping("{adminID}/store_history/{storeID}")
-    public Response ShowStoreHistory(@PathVariable int adminID,@PathVariable int storeID, @RequestHeader("connID") String connID){
-//        Response res = tradingSystem.ShowStoreHistory(adminID, connID);
-        Response res = new Response(true, "not implemented");
-        return res;
+    @GetMapping("{adminID}/store_history_admin/{storeID}")
+    public Response AdminStoreHistory(@PathVariable int adminID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        return tradingSystem.StoreHistoryAdmin(adminID,storeID,connID);
     }
+
+
+
+
 }

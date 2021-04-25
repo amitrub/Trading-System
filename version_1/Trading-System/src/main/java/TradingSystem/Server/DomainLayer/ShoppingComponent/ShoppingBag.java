@@ -3,16 +3,20 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-import java.util.LinkedList;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
 
 public class ShoppingBag {
 
-    private static int nextShoppingBagID = 0;
+    private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
     private Integer userID;
     private Integer storeID;
@@ -24,11 +28,23 @@ public class ShoppingBag {
 
 
     public ShoppingBag(Integer userID, Integer storeID) {
-        nextShoppingBagID=getnextShoppingBagID();
+
         this.userID = userID;
         this.storeID = storeID;
-        products=new ConcurrentHashMap<Integer,Integer>();
-        finalPrice=0.0;
+        this.products=new ConcurrentHashMap<Integer,Integer>();
+        this.finalPrice=0.0;
+    }
+
+    public ShoppingBag(ShoppingBag shoppingBagToCopy) {
+        this.userID = shoppingBagToCopy.userID;
+        this.storeID = shoppingBagToCopy.storeID;
+        this.products=new ConcurrentHashMap<Integer,Integer>();
+        this.finalPrice= shoppingBagToCopy.finalPrice;
+        Set<Integer> productsSet = shoppingBagToCopy.products.keySet();
+        for (int productID : productsSet) {
+            Integer quantity = shoppingBagToCopy.products.get(productID);
+            this.products.put(productID,quantity);
+        }
     }
 
     @Override
@@ -38,14 +54,6 @@ public class ShoppingBag {
                 '}';
     }
 
-    private static synchronized int getnextShoppingBagID() {
-        nextShoppingBagID++;
-        return nextShoppingBagID;
-    }
-
-    public int getNextShoppingBagID() {
-        return nextShoppingBagID;
-    }
 
     public void mergeToMyBag(ShoppingBag shoppingBagToMerge){
         Set<Integer> productsToMerge = shoppingBagToMerge.products.keySet();
@@ -68,6 +76,13 @@ public class ShoppingBag {
         }
         else
             this.products.put(productID,quantity);
+    }
+    public int getProductQuantity(Integer productID) {
+        if (this.products.containsKey(productID)){
+            return this.products.get(productID);
+        }
+        else
+            return 0;
     }
 
     public Integer getUserID() {
@@ -103,10 +118,55 @@ public class ShoppingBag {
     }
 
     public List<Integer> getProductsList(){
-        List<Integer> products=new LinkedList<>();
+        List<Integer> products=new ArrayList<>();
         for(Map.Entry<Integer,Integer> map: this.products.entrySet()){
             products.add(map.getKey());
         }
         return products;
+    }
+
+    public List<Lock> getLockList(){
+        List<Lock> output = new ArrayList<>();
+        Set<Integer> productsSet = this.getProducts().keySet();
+        for (Integer productID : productsSet){
+            Lock lock = tradingSystem.getProductLock(this.storeID, productID);
+            output.add(lock);
+        }
+        return output;
+    }
+
+    public Response checkInventory(){
+        Set<Integer> productsSet = this.getProducts().keySet();
+        for (Integer productID : productsSet){
+            int productQuantity = this.getProducts().get(productID);
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
+                String storeName = tradingSystem.getStoreName(storeID);
+                String productName = tradingSystem.getProductName(storeID, productID);
+                String err = productName + " in The store" + storeName + " is not exist in the stock";
+                return new Response(true, err);
+            }
+        }
+        return new Response();
+    }
+
+    public ShoppingHistory createShoppingHistory(){
+        ConcurrentHashMap<Product, Integer> productsToHistory = new ConcurrentHashMap<>();
+        Set<Integer> productQuantitySet = this.getProducts().keySet();
+        for (Integer productID: productQuantitySet){
+            Integer quantity = this.getProducts().get(productID);
+            Product p = tradingSystem.getProduct(storeID,productID);
+            Product newProduct = new Product(p);
+            productsToHistory.put(newProduct, quantity);
+        }
+        return new ShoppingHistory(this,productsToHistory);
+    }
+
+    public void editProductQuantity(int productID, int quantity) {
+        this.products.remove(productID);
+        this.products.put(productID,quantity);
+    }
+  
+    public void RemoveProduct(int productID) {
+        this.products.remove(productID);
     }
 }

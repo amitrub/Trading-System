@@ -1,6 +1,6 @@
 package TradingSystem.Server.DomainLayer.UserComponent;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
 public class OwnerPermission implements Permission {
@@ -15,7 +15,7 @@ public class OwnerPermission implements Permission {
         this.userId = userId;
         this.storeId = storeId;
         this.appointmentId=null;
-        this.permissions = new LinkedList<User.Permission>();
+        this.permissions = new ArrayList<User.Permission>();
         this.permissions.add(User.Permission.AddProduct);
         this.permissions.add(User.Permission.ReduceProduct);
         this.permissions.add(User.Permission.DeleteProduct);
@@ -27,6 +27,7 @@ public class OwnerPermission implements Permission {
         this.permissions.add(User.Permission.GetInfoOfficials);
         this.permissions.add(User.Permission.GetInfoRequests);
         this.permissions.add(User.Permission.ResponseRequests);
+        this.permissions.add(User.Permission.GetStoreHistory);
     }
 
     public Integer getUserId() {
@@ -67,5 +68,14 @@ public class OwnerPermission implements Permission {
         return true;
        else
        return false;
+    }
+
+    @Override
+    public String toString(){
+        String res="";
+        for(int i=0;i<permissions.size();i++){
+            res+= permissions.get(i).toString()+" ,";
+        }
+        return res;
     }
 }

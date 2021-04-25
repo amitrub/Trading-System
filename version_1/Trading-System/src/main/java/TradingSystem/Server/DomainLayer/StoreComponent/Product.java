@@ -119,22 +119,22 @@ public class Product {
             return new Response(true, "User can not post more than one comment on a product");
         }
         this.productComments.put(userID,comment);
-        return new Response(false, "The response writing was performed successfully");
+        return new Response("The response writing was performed successfully");
     }
 
     public Response removeComment(Integer userID)
     {
         if(productComments.containsKey(userID)){
             this.productComments.remove(userID);
-            return new Response(false, "The comment has been successfully deleted");
+            return new Response("The comment has been successfully deleted");
         }
         return new Response(true, "The user has no comment for this product");
 
     }
 
-    public LinkedList<String> getComments()
+    public List<String> getComments()
     {
-        LinkedList<String> Comments=new LinkedList<>();
+        List<String> Comments=new ArrayList<>();
         Iterator it = this.productComments.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry)it.next();
@@ -177,13 +177,17 @@ public class Product {
     }
 
     public List<String> getCommentsForProduct(int productID) {
-        LinkedList<String> Comments=new LinkedList<String>();
+        List<String> Comments=new ArrayList<String>();
         Set<Integer> userId = this.productComments.keySet();
         for (Integer id : userId) {
             String com=this.productComments.get(id);
             Comments.add(com);
         }
         return Comments;
+    }
+
+    public boolean isUserComment(int userID){
+        return productComments.containsKey(userID);
     }
 
 

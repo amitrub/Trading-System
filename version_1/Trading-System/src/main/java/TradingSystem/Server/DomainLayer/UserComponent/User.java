@@ -8,14 +8,17 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public  class User {
+
 
 
     public enum Permission {
@@ -30,7 +33,8 @@ public  class User {
         GetInfoOfficials,
         GetInfoRequests,
         ResponseRequests,
-        GetHistoryPurchasing
+        GetHistoryPurchasing,
+        GetStoreHistory
     }
 
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
@@ -39,11 +43,11 @@ public  class User {
     private final Integer id;
     private String userName;
     private String password;
-    private List<Integer> myFoundedStoresIDs = new LinkedList<>();
+    private List<Integer> myFoundedStoresIDs = new ArrayList<>();
     ;
-    private List<Integer> myOwnedStoresIDs = new LinkedList<>();
+    private List<Integer> myOwnedStoresIDs = new ArrayList<>();
     ;
-    private List<Integer> myManagedStoresIDs = new LinkedList<>();
+    private List<Integer> myManagedStoresIDs = new ArrayList<>();
     ;
     //storeID_OwnerPermission
     private ConcurrentHashMap<Integer, OwnerPermission> ownerPermission;
@@ -51,9 +55,11 @@ public  class User {
     private ConcurrentHashMap<Integer, ManagerPermission> managerPermission;
 
     private ShoppingCart shoppingCart;
-    private List<ShoppingHistory> shoppingHistory = new LinkedList<>();
+    private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
-    private final Lock Lock = new ReentrantLock();;
+    private final Lock Lock = new ReentrantLock();
+
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
     public User() {
         this.id = -1;
@@ -62,9 +68,9 @@ public  class User {
         this.shoppingCart = new ShoppingCart(this.id);
         this.ownerPermission = null;
         this.managerPermission = null;
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myFoundedStoresIDs=new LinkedList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
@@ -74,11 +80,9 @@ public  class User {
         this.userName = userName;
         this.password = password;
         this.shoppingCart = new ShoppingCart(this.id);
-        this.ownerPermission = null;
-        this.managerPermission = null;
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myFoundedStoresIDs=new LinkedList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
@@ -88,9 +92,9 @@ public  class User {
         this.userName = userName;
         this.password = password;
         this.shoppingCart = shoppingCart;
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myManagedStoresIDs=new LinkedList<>();
-        this.myFoundedStoresIDs=new LinkedList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
@@ -100,15 +104,18 @@ public  class User {
         return nextUserID;
     }
 
+    public static void ClearSystem() {
+        nextUserID = 0;
+    }
+
     public void lockUser() {
         this.Lock.lock();
     }
     public void unlockUser(){
         this.Lock.unlock();
-      //  this.Lock.notify();
     }
 
-    public boolean userIsLock() {
+    public boolean tryToLock() {
         return this.Lock.tryLock();
     }
 
@@ -187,7 +194,7 @@ public  class User {
     }
 
     public List<DummyShoppingHistory> ShowUserHistory(){
-        List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
+        List<DummyShoppingHistory> shoppingHistories=new ArrayList<>();
         for(ShoppingHistory shoppingHistory : shoppingHistory){
             shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
         }
@@ -207,10 +214,15 @@ public  class User {
         return this.myOwnedStoresIDs;
     }
 
+    public List<Integer> getMyManagerStore() {
+        return this.myManagedStoresIDs;
+    }
+
     public void AddStoreInManager(int storeID, ManagerPermission om) {
         this.myManagedStoresIDs.add(storeID);
         this.managerPermission.put(storeID, om);
     }
+
 
     public OwnerPermission getOwnerPermission(int storeID) {
         return this.ownerPermission.get(storeID);
@@ -225,11 +237,107 @@ public  class User {
         this.myManagedStoresIDs.remove(index);
         this.managerPermission.remove(storeID);
     }
+
+
+    public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
+        return this.shoppingCart.editProductQuantityFromCart(storeID,productID, quantity);
+}
+    public Response RemoveProductFromCart(int storeID, int productID) {
+      return this.shoppingCart.RemoveProductFromCart(storeID, productID);
+    }
+
+    public boolean IsProductExist(int productid){
+        for(ShoppingHistory shoppingHistory:this.shoppingHistory){
+            if(shoppingHistory.isProductExist(productid)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+
+
+    public Response AbleToAddOwner(int userID, int storeID) {
+        if (this.checkOwner(storeID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to Add "+this.id+" to be the owner of store "+storeID + " and failed. "+ this.id+" is already owner the store");
+            return new Response(true, "User "+this.id+" is owner the store, so he can not appoint to owner again");
+        }
+        if (this.checkManager(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to Add " +this.id+" to be the owner of store " + storeID + " and failed. "+ this.id+" is already manages the store");
+            return new Response(true, "User "+this.id+" is manages the store, so he can not be owner");
+        }
+        return new Response(false,"It is possible to add the user as the owner");
+}
+
+    public boolean checkOwner(int storeID) {
+    return this.myOwnedStoresIDs.contains(storeID);
+    }
+
+
+    public boolean checkManager(int storeID) {
+    return this.myManagedStoresIDs.contains(storeID);
+    }
+
+    public Response AbleToRemoveManager(int userID, int storeID) {
+        if (!this.myManagedStoresIDs.contains(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to remove " +this.id+" from be the manager of store " + storeID + " and failed. "+ this.id+" is not manages the store");
+            return new Response(true, "The user "+this.id+" is not manages the store, so he can not be removed from Manages the store.");
+        }
+        if (this.managerPermission.get(storeID)!=null&&
+            this.managerPermission.get(storeID).getAppointmentId()!=userID) {
+            loggerController.WriteErrorMsg("User " + userID + " try to remove " + this.id + " from be the manager of store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
+            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+        }
+        return new Response("It is possible to add the user as the owner");
+    }
+
+    public Response AbleToAddManager(int userID, int storeID, int newManager) {
+        if (this.checkOwner(storeID)) {
+            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the owner of store "+storeID + " and failed. "+ newManager+" is already owner the store");
+            return new Response(true, "The user "+newManager+" is owner the store, so he can not appoint to Manager");
+
+        }
+        if (this.checkManager(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to Add " +newManager+" to be the Manager of store " + storeID + " and failed. "+ newManager+" is already manages the store");
+            return new Response(true, "The user "+newManager+" is manages the store, so he can not appoint to Manager again");
+        }
+        return new Response("It is possible to add the user as the owner");
+    }
+
+    public Response AbleToEditPermissions(int userID, int storeID) {
+        if (!this.myManagedStoresIDs.contains(storeID)){
+            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " +this.id+" for store " + storeID + " and failed. "+ this.id+" is not manages the store");
+            return new Response(true, "The user "+this.id+" is not manages the store, so it impossible to edit his permissions.");
+        }
+        if (this.managerPermission.get(storeID)!=null&&
+                this.managerPermission.get(storeID).getAppointmentId()!=userID) {
+            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " + this.id + " for store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
+            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+        }
+        return new Response("It is possible to edit the manager permissions");
+    }
+
+    public void editPermissions(int userID,int storeID, List<User.Permission> permissions) {
+    ManagerPermission MP=managerPermission.get(storeID);
+    if(MP==null){
+        MP=new ManagerPermission(this.id,storeID);
+        MP.setAppointmentId(userID);
+        MP.setPermissions(permissions);
+        this.managerPermission.put(storeID,MP);
+    }
+    else{
+        MP.setPermissions(permissions);
+        this.managerPermission.remove(storeID);
+        this.managerPermission.put(storeID,MP);
+    }
+    }
+
 }
 
 
 //    public List<DummySearch> getShoppingCart(){
-//        List<DummySearch> shoppingBags=new LinkedList<>();
+//        List<DummySearch> shoppingBags=new ArrayList<>();
 //        for(ShoppingBag shoppingBag: shoppingCart.shoppingBags()){
 //            List<Integer> products=shoppingBag.getProductsList();
 //            for(Integer i:products){

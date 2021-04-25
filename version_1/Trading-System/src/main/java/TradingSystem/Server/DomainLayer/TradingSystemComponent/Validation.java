@@ -31,14 +31,23 @@ public class Validation {
         for (Integer id : userSet) {
             User user = tradingSystem.subscribers.get(id);
             if (userName.equals(user.getUserName())) {
-                if (password.equals(user.getPassword()))
-                    return new Response(id, "", false, "");
+                if (password.equals(user.getPassword())){
+                    Response res = new Response();
+                    res.AddUserID(id);
+                    return res;
+                }
                 else
                     return new Response(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "122", "Incorrect password"));
             }
         }
         return new Response(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
     }
+
+    //TODO- implement the function
+    public boolean VerifyPassword(String password) {
+            return true;
+    }
+
 
     //Store functions
     public synchronized boolean IsStoreNameExist(String storeName) {

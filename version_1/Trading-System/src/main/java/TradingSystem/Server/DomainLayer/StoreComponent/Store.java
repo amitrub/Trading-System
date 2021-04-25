@@ -2,13 +2,15 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.Permission;
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import javafx.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -22,13 +24,13 @@ public class Store {
     private String name;
 
     private final Integer founderID;
-    private List<Integer> ownersIDs = new LinkedList<>();
-    private List<Integer> managersIDs = new LinkedList<>();
+    private List<Integer> ownersIDs = new ArrayList<>();
+    private List<Integer> managersIDs = new ArrayList<>();
 
     //ownerID_Permission
-   // private ConcurrentHashMap<Integer, OwnerPermission> ownersPermission = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer, OwnerPermission> ownersPermission = new ConcurrentHashMap<>();
     //managersID_Permission
-    //private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
+    private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
 
     private DiscountPolicy discountPolicy;
     private BuyingPolicy buyingPolicy;
@@ -37,7 +39,7 @@ public class Store {
     //userID_rating
     private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
 
-    private List<ShoppingHistory> shoppingHistory = new LinkedList<>();
+    private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
     private Inventory inventory;
 
@@ -70,6 +72,10 @@ public class Store {
         return nextStoreID;
     }
 
+    public static void ClearSystem() {
+        nextStoreID = 0;
+    }
+
     public boolean checkFounder(int userID){
         return this.founderID == userID;
     }
@@ -94,9 +100,9 @@ public class Store {
         return inventory.deleteProduct(productId);
     }
 
-    public void editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category)
+    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity)
     {
-        inventory.editProductDetails(productId,productName,price,category);
+        return inventory.editProductDetails(productId,productName,price,category,quantity);
     }
 
     public String addNewOwner(Integer userId, Integer newOwnerId) {
@@ -114,6 +120,7 @@ public class Store {
 
     public String removeManager(Integer userId, Integer managerId) {
         this.managersIDs.remove(managerId);
+        this.managersPermission.remove(managerId);
         return "The Manager removed";
     }
     //todo - ensure that only the Trading Administrator can access this function.
@@ -167,12 +174,13 @@ public class Store {
     }
 
     public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
-        LinkedList<Integer> FinalID=inventory.SearchProduct(name, category,minprice, maxprice);
+        List<Integer> FinalID=inventory.SearchProduct(name, category,minprice, maxprice);
         return inventory.getDummySearchForList(FinalID);
     }
     /*
+
     public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
-        LinkedList<Integer> FinalID = new LinkedList<>();
+        List<Integer> FinalID = new ArrayList<>();
         if (name != null) {
             FinalID = inventory.getDummySearchByName(FinalID, name);
         }
@@ -186,7 +194,7 @@ public class Store {
     }
 */
     public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank){
-       LinkedList<Integer> FinalID=new LinkedList<>();
+       List<Integer> FinalID=new ArrayList<>();
        if(name!=null){
            FinalID=inventory.getDummySearchByName(FinalID,name);
        }
@@ -200,7 +208,7 @@ public class Store {
     }
 
     public List<DummyProduct> SearchByCategory(String category, int minprice, int maxprice, int prank){
-        LinkedList<Integer> FinalID = new LinkedList<>();
+        List<Integer> FinalID = new ArrayList<>();
         if (category != null) {
             FinalID = inventory.getDummySearchByCategory(FinalID, category);
         }
@@ -274,9 +282,26 @@ public class Store {
         this.shoppingHistory.add(sh);
     }
 
-
+    /**
+     * @requirement 4.11
+     *
+     *  @Return List [{
+     *      "userID": int
+     *      "storeID": int
+     *      "products": List [{
+     *          "storeID": int
+     *          "storeName": String
+     *          "productID": int
+     *          "productName": String
+     *          "price": double
+     *          "category": String
+     *          "quantity": int
+     *      }]
+     *  }]
+     * }
+     */
     public List<DummyShoppingHistory> ShowStoreHistory(){
-        List<DummyShoppingHistory> shoppingHistories=new LinkedList<>();
+        List<DummyShoppingHistory> shoppingHistories=new ArrayList<>();
         for(ShoppingHistory shoppingHistory:shoppingHistory){
             shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
         }
@@ -292,7 +317,7 @@ public class Store {
                 '}';
     }
 
-    public LinkedList<Product> getProducts() {
+    public List<Product> getProducts() {
         return this.inventory.getProducts();
     }
 
@@ -327,5 +352,48 @@ public class Store {
         return this.managersIDs.contains(newOwner);
     }
 
+    public boolean isProductExist(int id){
+        return inventory.checkProductsExistInTheStore(id,1);
+    }
 
+
+    //TODO implement! by the policy
+    public Double calculateBugPrice(boolean userSubscribe, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        if(userSubscribe){
+            return 1.0;
+        }
+        else
+            return 2.0;
+    }
+
+    public void addOwnerPermission(int newOwner, OwnerPermission op) {
+        this.ownersPermission.put(newOwner,op);
+    }
+
+    public void addManagerPermission(ManagerPermission mp) {
+        this.managersPermission.put(mp.getUserId(),mp);
+    }
+
+    public void editManagerPermissions(int userID, int managerID, List<User.Permission> permissions) {
+        ManagerPermission MP=this.managersPermission.get(managerID);
+        if(MP==null){
+            MP=new ManagerPermission(managerID,this.id);
+            MP.setAppointmentId(userID);
+            MP.setPermissions(permissions);
+            this.managersPermission.put(managerID,MP);
+        }
+        else{
+            MP.setPermissions(permissions);
+            this.managersPermission.remove(managerID);
+            this.managersPermission.put(managerID,MP);
+        }
+    }
+
+    public ConcurrentHashMap<Integer,OwnerPermission> getOwnersIDs(){
+       return this.ownersPermission;
+    }
+
+    public ConcurrentHashMap<Integer,ManagerPermission> getManagerIDs(){
+        return this.managersPermission;
+    }
 }

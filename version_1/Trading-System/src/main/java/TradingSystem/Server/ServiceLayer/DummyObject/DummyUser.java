@@ -1,5 +1,6 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import org.json.JSONObject;
 
 public class DummyUser {
@@ -9,6 +10,11 @@ public class DummyUser {
     public DummyUser(String userName, String password) {
         this.userName = userName;
         this.password = password;
+    }
+
+    public DummyUser(User user) {
+        this.userName = user.getUserName();
+        this.password = "XXXXXXX";
     }
 
     public String getUserName() {

@@ -2,12 +2,9 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import com.fasterxml.jackson.core.PrettyPrinter;
 
-import java.security.KeyPair;
 import java.util.*;
 import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -37,8 +34,8 @@ public class Inventory {
         return this.nextProductID;
     }
 
-    public LinkedList<DummyProduct> ShowStoreProducts() {
-        LinkedList<DummyProduct> products = new LinkedList<>();
+    public List<DummyProduct> ShowStoreProducts() {
+        List<DummyProduct> products = new ArrayList<>();
         Set<Integer> productSet = this.products.keySet();
         for (Integer key : productSet) {
             Product product = this.products.get(key);
@@ -54,7 +51,7 @@ public class Inventory {
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());
-            return new Response(false, "Add Product was successful");
+            return new Response("Add Product was successful");
         } else
             return new Response(true, "Error Product name is taken");
 
@@ -74,12 +71,13 @@ public class Inventory {
         return this.products.containsKey(productID) && this.products.get(productID).getQuantity() >= quantity;
     }
 
+
     public Response addQuantityProduct(Integer productId, Integer quantity) {
         if (this.products.containsKey(productId)) {
             Product product = this.products.get(productId);
             Integer oldQuantity = product.getQuantity();
             product.setQuantity(quantity + oldQuantity);
-            return new Response(false, "Add Product to Inventory was successful");
+            return new Response("Add Product to Inventory was successful");
         } else
             return new Response(true, "The product does not exist in the system");
     }
@@ -88,8 +86,9 @@ public class Inventory {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
             this.products.remove(productID);
+            System.out.println("TEST------------>");
 //            this.productLock.remove(productID);
-            return new Response(false, "Remove Product from the Inventory was successful");
+            return new Response("Remove Product from the Inventory was successful");
         } else
             return new Response(true, "The product does not exist in the system");
     }
@@ -117,7 +116,7 @@ public class Inventory {
                 return new Response(true, "The product " + PID + " In store " + storeID + " does not exist in the system");
             }
         }
-        return new Response(false, "Product inventory successfully updated");
+        return new Response("Product inventory successfully updated");
     }
 
     public Response addCommentToProduct(Integer productId, Integer userID, String comment) {
@@ -135,7 +134,7 @@ public class Inventory {
 
     }
 
-    public LinkedList<String> getAllCommentsForProduct(Integer productID) {
+    public List<String> getAllCommentsForProduct(Integer productID) {
         return this.products.get(productID).getComments();
     }
 
@@ -152,7 +151,7 @@ public class Inventory {
     }
 
     public Integer getProductID(Integer storeID, String productName) {
-        LinkedList<Integer> storeProducts = getAllTheStoreProductID(storeID);
+        List<Integer> storeProducts = getAllTheStoreProductID(storeID);
         for (Integer i : storeProducts
         ) {
             Product p = products.get(i);
@@ -163,8 +162,8 @@ public class Inventory {
         return -1;
     }
 
-    public LinkedList<Integer> getAllTheStoreProductID(Integer storeID) {
-        LinkedList<Integer> storeProducts = new LinkedList<>();
+    public List<Integer> getAllTheStoreProductID(Integer storeID) {
+        List<Integer> storeProducts = new ArrayList<>();
         Iterator it = this.products.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
@@ -174,8 +173,8 @@ public class Inventory {
         return storeProducts;
     }
 
-    public LinkedList<Product> getAllTheProducts(LinkedList<Integer> productsID) {
-        LinkedList<Product> products = new LinkedList<>();
+    public List<Product> getAllTheProducts(List<Integer> productsID) {
+        List<Product> products = new ArrayList<>();
         for (Integer i : productsID
         ) {
             Product p = products.get(i);
@@ -184,23 +183,23 @@ public class Inventory {
         return products;
     }
 
-    public String editProductDetails(Integer productId, String productName, Double price, String category) {
+    public Response editProductDetails(Integer productId, String productName, Double price, String category, Integer quantity) {
         Iterator it = this.products.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             int id = (int) pair.getKey();
             if (id == productId) {
-                Product p = new Product(productId, productName, category, price);
+                Product p = new Product(productId, productName, category, price, quantity);
                 this.products.remove(productId);
                 this.products.put(id, p);
-                return "The product update";
+                return new Response(false, "The product update successfully");
             }
         }
-        return "The product does not exist in the system";
+        return new Response(true, "The product does not exist in the system");
     }
 
-    public LinkedList<Integer> SearchProduct(String name, String category, int minprice, int maxprice) {
-        LinkedList<Integer> products = new LinkedList<>();
+    public List<Integer> SearchProduct(String name, String category, int minprice, int maxprice) {
+        List<Integer> products = new ArrayList<>();
         Set<Integer> productsId = this.products.keySet();
         for (Integer PID : productsId) {
             boolean AddTheProduct = true;
@@ -227,9 +226,9 @@ public class Inventory {
      return products;
     }
 
-    public LinkedList<Integer> getDummySearchByName(LinkedList<Integer> FinalID, String name)
+    public List<Integer> getDummySearchByName(List<Integer> FinalID, String name)
     {
-        LinkedList<Integer> products = new LinkedList<>();
+        List<Integer> products = new ArrayList<>();
         if (FinalID.isEmpty()) {
             Set<Integer> productsId = this.products.keySet();
             for (Integer PID : productsId) {
@@ -250,8 +249,8 @@ public class Inventory {
         return products;
     }
 
-    public LinkedList<Integer> getDummySearchByCategory(LinkedList<Integer> FinalID, String category) {
-        LinkedList<Integer> products = new LinkedList<>();
+    public List<Integer> getDummySearchByCategory(List<Integer> FinalID, String category) {
+        List<Integer> products = new ArrayList<>();
         if (FinalID.isEmpty()) {
             Set<Integer> productsId = this.products.keySet();
             for (Integer PID : productsId) {
@@ -273,9 +272,9 @@ public class Inventory {
 
         }
 
-        public LinkedList<Integer> getDummySearchByRate (LinkedList < Integer > FinalID,int prank)
+        public List<Integer> getDummySearchByRate (List < Integer > FinalID,int prank)
         {
-            LinkedList<Integer> products = new LinkedList<>();
+            List<Integer> products = new ArrayList<>();
             if (FinalID.isEmpty()) {
                 Set<Integer> productsId = this.products.keySet();
                 for (Integer PID : productsId) {
@@ -298,9 +297,9 @@ public class Inventory {
                 return products;
             }
 
-            public LinkedList<Integer> getDummySearchByPrice (LinkedList < Integer > FinalID, int minprice, int maxprice)
+            public List<Integer> getDummySearchByPrice (List<Integer> FinalID, int minprice, int maxprice)
             {
-                LinkedList<Integer> products = new LinkedList<>();
+                List<Integer> products = new ArrayList<>();
                 if (FinalID.isEmpty()) {
                     Set<Integer> productsId = this.products.keySet();
                     for (Integer PID : productsId) {
@@ -323,9 +322,9 @@ public class Inventory {
                 return products;
             }
 
-            public LinkedList<DummyProduct> getDummySearchForList (LinkedList < Integer > products)
+            public List<DummyProduct> getDummySearchForList (List<Integer> products)
             {
-                LinkedList<DummyProduct> dummyProducts = new LinkedList<DummyProduct>();
+                List<DummyProduct> dummyProducts = new ArrayList<DummyProduct>();
                 for (Integer i : products) {
                     Product p = this.products.get(i);
                     DummyProduct D = new DummyProduct(this.storeID, storeName, p.getProductID(), p.getProductName(), p.getPrice(), p.getCategory(), p.getQuantity());//productComments.get(i).getRate());
@@ -365,8 +364,8 @@ public class Inventory {
             return this.products.get(productID).productIsLock();
         }
 
-            public LinkedList<Product> getProducts () {
-            LinkedList<Product> products = new LinkedList<Product>();
+            public List<Product> getProducts () {
+            List<Product> products = new ArrayList<Product>();
             Set<Integer> productSet = this.products.keySet();
             for (Integer id : productSet) {
                 products.add(this.products.get(id));

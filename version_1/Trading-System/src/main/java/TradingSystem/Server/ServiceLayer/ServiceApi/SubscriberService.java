@@ -1,11 +1,9 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 import java.util.Map;
 
 
@@ -105,7 +103,7 @@ public class SubscriberService {
      */
     //TODO: fix DummyShoppingHistory
     @GetMapping("{userID}/user_history")
-    public List<DummyShoppingHistory> ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
+    public Response ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
         return tradingSystem.ShowSubscriberHistory(userID, connID);
     }
 
