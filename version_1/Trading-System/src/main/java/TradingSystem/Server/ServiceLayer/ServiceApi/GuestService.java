@@ -9,13 +9,16 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api")
-public class GuestService {
+//server localhost is 8080 and react localhost is 3000 - we need to crossOrigin to communicate between the two.
+//but, if we think security its a problem because everybody can control and get our info.
+//todo: define who we want to cross origin
+@CrossOrigin("*") public class GuestService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
     // 2.1 test
 
     @GetMapping("test")
-    public int test(){
-        return 1;
+    public String test(){
+        return "Hello Welcome to Trading System";
     }
 
     @GetMapping("clear_system")
