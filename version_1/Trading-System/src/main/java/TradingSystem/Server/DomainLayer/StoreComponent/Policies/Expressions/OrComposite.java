@@ -1,0 +1,11 @@
+package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions;
+
+import java.util.concurrent.ConcurrentHashMap;
+
+public class OrComposite extends CompositeExpression {
+
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products,Double finalPrice){
+        for(Expression expr : children) if(expr.evaluate(products, finalPrice)) return true;
+        return false;
+    }
+}
