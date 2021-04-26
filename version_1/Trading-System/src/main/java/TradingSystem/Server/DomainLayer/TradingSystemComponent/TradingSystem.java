@@ -802,7 +802,7 @@ public class TradingSystem {
             return res2;
         }
         MTR.removeStore(storeID);
-        stores.get(storeID).removeManager(userID, ManagerToRemove);
+        stores.get(storeID).removeManager(ManagerToRemove);
         MTR.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
         return new Response("The manager removed successfully");
@@ -1343,5 +1343,34 @@ public class TradingSystem {
             response.AddPair("workers", workers);
             return response;
         }
+    }
+
+    public Response RemoveManagerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
+        if (!ValidConnectedUser(ownerID, connID)) {
+            return new Response(true, "Error in User details");
+        }
+        if (!stores.get(storeID).checkOwner(removeOwnerID) || !stores.get(storeID).checkOwner(ownerID)) {
+            return new Response(true, "the user that we want to remove is not the owner of the store");
+        }
+        if (!stores.containsKey(storeID)) {
+            return new Response(true, "the store doesn't exist");
+        }
+        if (stores.get(storeID).getPermission(removeOwnerID).getAppointmentId()!=ownerID) {
+            return new Response(true, "the user has no permissions to see this information");
+        }
+        else{
+            stores.get(storeID).removeOwner(removeOwnerID);
+            ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
+            ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
+            for(OwnerPermission permission: ownerPermissionHashMap.values()){
+                if(permission.getAppointmentId()==removeOwnerID)
+                    stores.get(storeID).removeOwner(permission.getUserId());
+            }
+            for(ManagerPermission permission: managerPermissionHashMap.values()){
+                if(permission.getAppointmentId()==removeOwnerID)
+                    stores.get(storeID).removeManager(permission.getUserId());
+            }
+        }
+        return new Response(false, "Successfully removed the owner");
     }
 }
