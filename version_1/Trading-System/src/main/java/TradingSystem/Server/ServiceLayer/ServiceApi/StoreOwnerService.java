@@ -17,7 +17,7 @@ public class StoreOwnerService {
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
     /**
-     * @requirement 4.1
+     * @requirement 4.1.1
      * 
      * @param userID: int (Path) 
      * @param storeID: int (Path)
@@ -51,7 +51,29 @@ public class StoreOwnerService {
     }
 
     /**
-     * @requirement 4.1
+     * @requirement 4.1.2
+     *
+     * @param userID : int (Path)
+     * @param storeID: int (Path)
+     * @param productID: int (Path)
+     * @param connID: String (Header)
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
+    //TODO: not check yet
+    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
+        Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
+        System.out.println(res);
+        tradingSystem.printProducts();
+        return res;
+    }
+
+    /**
+     * @requirement 4.1.3
      *
      * @param userID : int (Path)
      * @param storeID: int (Path)
@@ -74,7 +96,7 @@ public class StoreOwnerService {
     }
 
     /**
-     * @requirement 4.1
+     * @requirement 4.1.3
      *
      * @param userID : int (Path)
      * @param storeID: int (Path)
@@ -107,28 +129,6 @@ public class StoreOwnerService {
         }
         int quantity  = (int) obj.get("quantity");
         return tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price,quantity);
-    }
-
-    /**
-     * @requirement 4.1
-     *
-     * @param userID : int (Path)
-     * @param storeID: int (Path)
-     * @param productID: int (Path)
-     * @param connID: String (Header)
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
-    //TODO: not check yet
-    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
-    public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
-        Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
-        System.out.println(res);
-        tradingSystem.printProducts();
-        return res;
     }
 
     /**
@@ -306,15 +306,13 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
-    @DeleteMapping("{userID}/store/{storeID}/add_new_owner/{OwnerID}")
+    @GetMapping("{userID}/store/{storeID}/remove_owner/{OwnerID}")
     public Response RemoveOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int OwnerID, @RequestHeader("connID") String connID)  {
-//        Response res = tradingSystem.RemoveOwner(userID, connID, storeID, newOwnerID);
+//        Response res = tradingSystem.RemoveOwner(userID, connID, storeID, OwnerID);
         Response res = new Response(true, "not implemented");
+        res.AddConnID(connID);
         return res;
     }
-
-
 
     /**
      * @requirement 4.5
@@ -352,8 +350,7 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not check yet
-    @PostMapping("{userID}/store/{storeID}/add_new_manager/{managerID}")
+    @PostMapping("{userID}/store/{storeID}/edit_manager_permissions/{managerID}")
     public Response EditManagerPermissions(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)  {
         List<User.Permission> Permissions=new LinkedList<>();
         try {
@@ -390,18 +387,6 @@ public class StoreOwnerService {
         return res;
     }
 
-    /**
-     * @param userID
-     * @param connID
-     * @returnResponse{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     *  "permissions":List[
-     *  permissions:String]
-     * }
-    */
-    //TODO: not check yet
     @GetMapping("{userID}/store/get_possible_permissions_to_manager")
     public Response GetPossiblePermissionsToManager(@PathVariable int userID, @RequestHeader("connID") String connID)  {
         Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID);
