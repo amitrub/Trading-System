@@ -10,16 +10,15 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public  class User {
+public  class User implements Observer {
 
 
+    private List<Object> messages = new ArrayList<>();
 
     public enum Permission {
         AddProduct,
@@ -333,6 +332,25 @@ public  class User {
     }
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        //is guest
+        if(tradingSystem.guests.containsValue(this)){
+            System.out.println(arg);
+        }
+        //is subscriber
+        else {
+            boolean isConnected = false;
+            for (Integer connectedUser : tradingSystem.getConnectedSubscribers().values()) {
+                if (connectedUser == this.id) {
+                    isConnected = true;
+                    System.out.println(arg);
+                }
+            }
+            if(!isConnected)
+                messages.add(arg);
+        }
+    }
 }
 
 

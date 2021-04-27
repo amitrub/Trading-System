@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
 
-public class TradingSystem {
+public class TradingSystem extends Observable {
 
     public Validation validation;
 
@@ -28,6 +28,9 @@ public class TradingSystem {
     public ConcurrentHashMap<Integer, Store> stores;
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
+
+    //Observable Pattern
+    private List<Observer> observers = new ArrayList<>();
 
     //    Singleton
     private static TradingSystem tradingSystem = null;
@@ -545,7 +548,23 @@ public class TradingSystem {
         }
         else {
             User myGuest= guests.get(connID);
-            return myGuest.guestPurchase(name, credit_number, phone_number, address);
+            observers = new ArrayList<>();
+            for (ShoppingBag s:myGuest.getShoppingCart().getShoppingBags().values())
+            {
+                Integer storeID = s.getStoreID();
+                for (User u:subscribers.values()) {
+                    for (Integer ownedStore:u.getMyOwnerStore()) {
+                        if(ownedStore == storeID)
+                            this.addObserver(myGuest);
+                    }
+                }
+            }
+            Response res = myGuest.guestPurchase(name, credit_number, phone_number, address);
+            if(!res.getIsErr())
+            {
+                this.notifyObservers("A product has been purchased from your store");
+            }
+            return res;
         }
     }
     public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
@@ -554,7 +573,23 @@ public class TradingSystem {
         }
         else {
             User user = subscribers.get(userID);
-            return user.subscriberPurchase(credit_number, phone_number, address);
+            observers = new ArrayList<>();
+            for (ShoppingBag s:user.getShoppingCart().getShoppingBags().values())
+            {
+                Integer storeID = s.getStoreID();
+                for (User u:subscribers.values()) {
+                    for (Integer ownedStore:u.getMyOwnerStore()) {
+                        if(ownedStore == storeID)
+                            this.addObserver(user);
+                    }
+                }
+            }
+            Response res = user.subscriberPurchase(credit_number, phone_number, address);
+            if(!res.getIsErr())
+            {
+                this.notifyObservers("A product has been purchased from your store!");
+            }
+            return res;
 
         }
     }
@@ -1344,4 +1379,22 @@ public class TradingSystem {
             return response;
         }
     }
+
+    public ConcurrentHashMap<String, Integer> getConnectedSubscribers() {
+        return connectedSubscribers;
+    }
+
+    //Observable pattern
+    @Override
+    public void addObserver(Observer observer) {
+        this.observers.add(observer);
+    }
+
+
+    public void notifyObservers(Object object) {
+        for (Observer o : this.observers) {
+            o.update(this, object);
+        }
+    }
+
 }
