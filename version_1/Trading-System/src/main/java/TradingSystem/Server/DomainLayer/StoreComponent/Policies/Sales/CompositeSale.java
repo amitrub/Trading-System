@@ -1,7 +1,5 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,8 +18,8 @@ public abstract class CompositeSale implements Sale{
         return this;
     }
 
-    public abstract Boolean checkEntitlement(ConcurrentHashMap<Integer,Integer> products,Double finalPrice);
-    public abstract Double calculateSale(ConcurrentHashMap<Integer,Integer> products,Double finalSale);
+    public abstract Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID);
+    public abstract Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID);
 
     public Boolean hasChildren()
     { return !children.isEmpty(); }

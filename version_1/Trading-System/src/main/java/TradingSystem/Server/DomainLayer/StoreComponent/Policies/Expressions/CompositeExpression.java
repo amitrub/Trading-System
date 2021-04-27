@@ -16,11 +16,7 @@ public abstract class CompositeExpression implements Expression {
         return this;
     }
 
-    public Expression set(String name, Boolean value){
-        for(Expression expr : children) expr.set(name,value);
-        return this;
-    }
-    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice);
+    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
 
     public Boolean hasChildren()
         { return !children.isEmpty(); }

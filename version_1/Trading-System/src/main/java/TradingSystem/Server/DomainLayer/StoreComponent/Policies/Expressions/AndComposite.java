@@ -4,9 +4,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AndComposite extends CompositeExpression {
 
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products,Double finalPrice){
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
 
-        for(Expression expr : children) if(!expr.evaluate(products, finalPrice)) return false;
+        for(Expression expr : children) if(!expr.evaluate(products, finalPrice, userID,storeID )) return false;
         return true;
     }
 }

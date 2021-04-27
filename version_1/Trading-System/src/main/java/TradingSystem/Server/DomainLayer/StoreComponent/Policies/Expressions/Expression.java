@@ -4,6 +4,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public interface Expression {
     Expression add(Expression expr);
-    Expression set(String name, Boolean value);
-    Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice);
+    Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
 }
+

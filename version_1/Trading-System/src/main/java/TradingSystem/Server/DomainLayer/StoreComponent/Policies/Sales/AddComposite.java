@@ -4,18 +4,17 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AddComposite extends CompositeSale{
     @Override
-    public Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products,Double finalPrice) {
+    public Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID) {
         return true;
     }
 
     @Override
-    public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale) {
+    public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         Double sale=0.0;
         for (Sale s:children
         ) {
-            Double tempSale=calculateSale(products,finalSale);
-            if(tempSale>sale)
-                sale=tempSale+sale;
+            Double tempSale=s.calculateSale(products,finalSale, userID,storeID );
+            sale=tempSale+sale;
         }
         return sale;
     }

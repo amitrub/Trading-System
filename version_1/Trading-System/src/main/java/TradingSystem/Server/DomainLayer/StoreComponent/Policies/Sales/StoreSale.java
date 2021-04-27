@@ -1,11 +1,11 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StoreSale implements Sale {
+
     Integer storeID;
     Double  discountPercentage;
     Expression expression;
@@ -17,14 +17,8 @@ public class StoreSale implements Sale {
     }
 
     @Override
-    public Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products,Double finalPrice) {
-
-        return expression.evaluate(products,finalPrice);
-    }
-
-    @Override
-    public Double calculateSale(ConcurrentHashMap<Integer,Integer> products,Double finalSale) {
-        if(checkEntitlement(products,finalSale)){
+    public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
+        if(expression.evaluate(products,finalSale, userID, storeID)){
             return  (discountPercentage/100)*finalSale;
         }
         return 0.0;
