@@ -1,9 +1,6 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
-import TradingSystem.Server.DomainLayer.StoreComponent.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
