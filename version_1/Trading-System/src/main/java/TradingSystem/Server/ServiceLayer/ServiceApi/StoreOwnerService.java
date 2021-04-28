@@ -308,8 +308,7 @@ public class StoreOwnerService {
      */
     @GetMapping("{userID}/store/{storeID}/remove_owner/{OwnerID}")
     public Response RemoveOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int OwnerID, @RequestHeader("connID") String connID)  {
-//        Response res = tradingSystem.RemoveOwner(userID, connID, storeID, OwnerID);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.RemoveOwnerByOwner(userID, connID, OwnerID, storeID);
         res.AddConnID(connID);
         return res;
     }

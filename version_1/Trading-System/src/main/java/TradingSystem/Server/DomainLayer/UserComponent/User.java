@@ -222,7 +222,6 @@ public  class User implements Observer {
         this.managerPermission.put(storeID, om);
     }
 
-
     public OwnerPermission getOwnerPermission(int storeID) {
         return this.ownerPermission.get(storeID);
     }
@@ -231,16 +230,22 @@ public  class User implements Observer {
         return this.managerPermission.get(storeID);
     }
 
-    public void removeStore(int storeID) {
+    public void removeManagedStore(int storeID) {
         int index=this.myManagedStoresIDs.indexOf(storeID);
         this.myManagedStoresIDs.remove(index);
         this.managerPermission.remove(storeID);
     }
 
+    public void removeOwnedStore(int storeID){
+        int index=this.myOwnedStoresIDs.indexOf(storeID);
+        this.myOwnedStoresIDs.remove(index);
+        this.ownerPermission.remove(storeID);
+    }
 
     public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
         return this.shoppingCart.editProductQuantityFromCart(storeID,productID, quantity);
 }
+
     public Response RemoveProductFromCart(int storeID, int productID) {
       return this.shoppingCart.RemoveProductFromCart(storeID, productID);
     }
@@ -253,9 +258,6 @@ public  class User implements Observer {
         }
         return false;
     }
-
-
-
 
     public Response AbleToAddOwner(int userID, int storeID) {
         if (this.checkOwner(storeID)) {
@@ -272,7 +274,6 @@ public  class User implements Observer {
     public boolean checkOwner(int storeID) {
     return this.myOwnedStoresIDs.contains(storeID);
     }
-
 
     public boolean checkManager(int storeID) {
     return this.myManagedStoresIDs.contains(storeID);
