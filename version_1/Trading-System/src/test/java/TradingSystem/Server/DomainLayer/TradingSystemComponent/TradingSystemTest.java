@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 
@@ -85,6 +86,7 @@ class TradingSystemTest {
                 ElinorStore=store1.getId();
             }
         }
+        Response response2= tradingSystem.AddNewOwner(userID,connID,storeid,ElinorID);
     }
 
     @Test
@@ -581,5 +583,26 @@ class TradingSystemTest {
     void ShowStoreWorkersEmpty(){
         Object res=tradingSystem.ShowStoreWorkers(ElinorID,EconnID,ElinorStore).getReturnObject().get("workers");
         assertNull(res);
+    }
+
+    @Test
+    void removeManagerByOwnerSuccess() {
+        Response response = tradingSystem.RemoveOwnerByOwner(userID,connID,ElinorID,storeid);
+        boolean exist = tradingSystem.stores.get(storeid).getOwnersIDs().containsKey(ElinorID);
+        assertTrue(!exist && !response.getIsErr());
+    }
+
+    @Test
+    void removeManagerNotByOwner() {
+        tradingSystem.AddNewOwner(userID, connID, storeid, ElinorID);
+        Response response = tradingSystem.RemoveOwnerByOwner(userID1, connID1, ElinorID, storeid);
+        boolean exist = tradingSystem.stores.get(storeid).getOwnersIDs().containsKey(ElinorID);
+        assertTrue(exist && response.getIsErr());
+    }
+
+    @Test
+    void removeOwnerFaliled() {
+        Response response = tradingSystem.RemoveOwnerByOwner(userID, connID, userID1, storeid);
+        assertTrue(response.getIsErr());
     }
 }
