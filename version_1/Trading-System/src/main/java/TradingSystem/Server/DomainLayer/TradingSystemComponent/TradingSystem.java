@@ -1345,11 +1345,14 @@ public class TradingSystem {
         }
     }
 
-    public Response RemoveManagerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
+    public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
         if (!ValidConnectedUser(ownerID, connID)) {
             return new Response(true, "Error in User details");
         }
-        if (!stores.get(storeID).checkOwner(removeOwnerID) || !stores.get(storeID).checkOwner(ownerID)) {
+        if(!stores.get(storeID).checkOwner(ownerID)){
+            return new Response(true, "the user that is not the owner of the store");
+        }
+        if (!stores.get(storeID).checkOwner(removeOwnerID)) {
             return new Response(true, "the user that we want to remove is not the owner of the store");
         }
         if (!stores.containsKey(storeID)) {
