@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
@@ -801,7 +800,7 @@ public class TradingSystem {
             MTR.unlockUser();
             return res2;
         }
-        MTR.removeStore(storeID);
+        MTR.removeManagedStore(storeID);
         stores.get(storeID).removeManager(ManagerToRemove);
         MTR.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
@@ -1347,7 +1346,10 @@ public class TradingSystem {
 
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
         if (!ValidConnectedUser(ownerID, connID)) {
-            return new Response(true, "Error in User details");
+            return new Response(true, "Error in User details!");
+        }
+        if (!stores.containsKey(storeID)) {
+            return new Response(true, "the store doesn't exist");
         }
         if(!stores.get(storeID).checkOwner(ownerID)){
             return new Response(true, "the user that is not the owner of the store");
@@ -1355,19 +1357,19 @@ public class TradingSystem {
         if (!stores.get(storeID).checkOwner(removeOwnerID)) {
             return new Response(true, "the user that we want to remove is not the owner of the store");
         }
-        if (!stores.containsKey(storeID)) {
-            return new Response(true, "the store doesn't exist");
-        }
         if (stores.get(storeID).getPermission(removeOwnerID).getAppointmentId()!=ownerID) {
             return new Response(true, "the user has no permissions to see this information");
         }
         else{
             stores.get(storeID).removeOwner(removeOwnerID);
+            subscribers.get(removeOwnerID).removeOwnedStore(storeID);
             ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
             ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
             for(OwnerPermission permission: ownerPermissionHashMap.values()){
-                if(permission.getAppointmentId()==removeOwnerID)
+                if(permission.getAppointmentId()==removeOwnerID) {
                     stores.get(storeID).removeOwner(permission.getUserId());
+                    subscribers.get(permission.getUserId()).removeOwnedStore(storeID);
+                }
             }
             for(ManagerPermission permission: managerPermissionHashMap.values()){
                 if(permission.getAppointmentId()==removeOwnerID)

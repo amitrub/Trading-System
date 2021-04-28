@@ -354,8 +354,6 @@ public class OwnerTests {
     @Test
     void HappyAddOwner() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -379,8 +377,6 @@ public class OwnerTests {
         client.Logout();
 
         Integer id1 = client.Register("elinor", "123");
-        client.Login("elinor", "123");
-        client.Logout();
 
         client.Register("roee", "123");
         client.Login("roee", "123");
@@ -409,8 +405,6 @@ public class OwnerTests {
     @Test
     void SadAddDoubleAppointmentOwner() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -431,8 +425,6 @@ public class OwnerTests {
     @Test
     void HappyRemoveOwner() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -451,12 +443,7 @@ public class OwnerTests {
     @Test
     void SadRemoveNotAppointment() {
         Integer newOwnerID1 = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
-
         Integer newOwnerID2 = client.Register("roee", "123");
-        client.Login("roee", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -478,14 +465,13 @@ public class OwnerTests {
     @Test
     void SadRemoveNotOwner1() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
         client.addOwner(storeID, newOwnerID);
+        client.Logout();
 
         client.Register("roee", "123");
         client.Login("roee", "123");
@@ -501,8 +487,6 @@ public class OwnerTests {
     @Test
     void SadRemoveNotOwner2() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -519,8 +503,6 @@ public class OwnerTests {
     @Test
     void HappyAddManager() {
         Integer newManagerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -544,8 +526,6 @@ public class OwnerTests {
         client.Logout();
 
         Integer id1 = client.Register("elinor", "123");
-        client.Login("elinor", "123");
-        client.Logout();
 
         client.Register("roee", "123");
         client.Login("roee", "123");
@@ -570,8 +550,6 @@ public class OwnerTests {
     @Test
     void SadAddDoubleAppointmentManager() {
         Integer id1 = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -795,8 +773,6 @@ public class OwnerTests {
     @Test
     void HappyRemoveManager() {
         Integer newManagerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -811,13 +787,7 @@ public class OwnerTests {
     @Test
     void SadRemoveManagerNoPermission() {
         Integer newManagerID1 = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
-
         Integer newManagerID2 = client.Register("roee", "123");
-        client.Login("roee", "123");
-        client.Logout();
-
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -835,8 +805,6 @@ public class OwnerTests {
     @Test
     void SadRemoveManagerNoManager() {
         Integer newManagerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -846,20 +814,13 @@ public class OwnerTests {
         boolean b1 = client.removeManager(storeID, newManagerID);
         assertTrue(b1);
     }
-
-
     //endregion
 
     //region requirement 4.9: Information on officials tests
     @Test
     void HappyShowOfficialsInfo() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
-
         Integer newManagerID = client.Register("hadas", "123");
-        client.Login("hadas", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -896,7 +857,6 @@ public class OwnerTests {
         Response res = client.showStoreWorkers(storeID+1);
         assertTrue(res.getIsErr());
     }
-
     //endregion
 
     //region requirement 4.11: Store history tests
