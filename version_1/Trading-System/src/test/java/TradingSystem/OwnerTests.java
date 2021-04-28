@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 public class OwnerTests {
 
     Client client;
-    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
