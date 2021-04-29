@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
@@ -551,6 +552,7 @@ public class TradingSystem extends Observable {
             for (ShoppingBag s:myGuest.getShoppingCart().getShoppingBags().values())
             {
                 Integer storeID = s.getStoreID();
+                //stores.get(storeID).getOwnersIDs().keys();
                 for (User u:subscribers.values()) {
                     for (Integer ownedStore:u.getMyOwnerStore()) {
                         if(ownedStore == storeID)

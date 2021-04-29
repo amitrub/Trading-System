@@ -345,6 +345,7 @@ public  class User implements Observer {
             for (Integer connectedUser : tradingSystem.getConnectedSubscribers().values()) {
                 if (connectedUser == this.id) {
                     isConnected = true;
+                    //TODO connect to client
                     System.out.println(arg);
                 }
             }
