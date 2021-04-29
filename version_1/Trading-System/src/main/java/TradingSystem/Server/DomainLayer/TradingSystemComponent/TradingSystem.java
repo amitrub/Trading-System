@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
@@ -15,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
 
-public class TradingSystem {
+public class TradingSystem extends Observable {
 
     public Validation validation;
 
@@ -27,6 +28,9 @@ public class TradingSystem {
     public ConcurrentHashMap<Integer, Store> stores;
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
+
+    //Observable Pattern
+    private List<Observer> observers = new ArrayList<>();
 
     //    Singleton
     private static TradingSystem tradingSystem = null;
@@ -274,7 +278,14 @@ public class TradingSystem {
         subscribers.get(response.returnUserID()).mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
-        Response res = new Response("Login was successful");
+        List<Object> messages = myGuest.getMessages();
+        for(int i=0; i<messages.size(); i++)
+        {
+            //TODO connect to client
+            System.out.println(messages.get(i));
+        }
+        myGuest.setMessages(new ArrayList<>());
+        Response res = new Response(false, "Login was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         return res;
@@ -544,7 +555,24 @@ public class TradingSystem {
         }
         else {
             User myGuest= guests.get(connID);
-            return myGuest.guestPurchase(name, credit_number, phone_number, address);
+            observers = new ArrayList<>();
+            for (ShoppingBag s:myGuest.getShoppingCart().getShoppingBags().values())
+            {
+                Integer storeID = s.getStoreID();
+                //stores.get(storeID).getOwnersIDs().keys();
+                for (User u:subscribers.values()) {
+                    for (Integer ownedStore:u.getMyOwnerStore()) {
+                        if(ownedStore == storeID)
+                            this.addObserver(myGuest);
+                    }
+                }
+            }
+            Response res = myGuest.guestPurchase(name, credit_number, phone_number, address);
+            if(!res.getIsErr())
+            {
+                this.notifyObservers("A product has been purchased from your store");
+            }
+            return res;
         }
     }
     public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
@@ -553,7 +581,23 @@ public class TradingSystem {
         }
         else {
             User user = subscribers.get(userID);
-            return user.subscriberPurchase(credit_number, phone_number, address);
+            observers = new ArrayList<>();
+            for (ShoppingBag s:user.getShoppingCart().getShoppingBags().values())
+            {
+                Integer storeID = s.getStoreID();
+                for (User u:subscribers.values()) {
+                    for (Integer ownedStore:u.getMyOwnerStore()) {
+                        if(ownedStore == storeID)
+                            this.addObserver(user);
+                    }
+                }
+            }
+            Response res = user.subscriberPurchase(credit_number, phone_number, address);
+            if(!res.getIsErr())
+            {
+                this.notifyObservers("A product has been purchased from your store!");
+            }
+            return res;
 
         }
     }
@@ -1369,6 +1413,11 @@ public class TradingSystem {
                 if(permission.getAppointmentId()==removeOwnerID) {
                     stores.get(storeID).removeOwner(permission.getUserId());
                     subscribers.get(permission.getUserId()).removeOwnedStore(storeID);
+                    User userToRemove = subscribers.get(removeOwnerID);
+                    String storeName = stores.get(storeID).getName();
+                    observers = new ArrayList<>();
+                    observers.add(userToRemove);
+                    this.notifyObservers("You are removed from owning the store: " + storeName);
                 }
             }
             for(ManagerPermission permission: managerPermissionHashMap.values()){
@@ -1378,4 +1427,22 @@ public class TradingSystem {
         }
         return new Response(false, "Successfully removed the owner");
     }
+
+    public ConcurrentHashMap<String, Integer> getConnectedSubscribers() {
+        return connectedSubscribers;
+    }
+
+    //Observable pattern
+    @Override
+    public void addObserver(Observer observer) {
+        this.observers.add(observer);
+    }
+
+
+    public void notifyObservers(Object object) {
+        for (Observer o : this.observers) {
+            o.update(this, object);
+        }
+    }
+
 }

@@ -906,5 +906,48 @@ public class OwnerTests {
     }
     //endregion
 
+    //region requirement 9.1 - Real time alert
+    @Test
+    void PurchaseAlert() {
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Sneakers");
+        client.Logout();
+
+        Integer newClient = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.addProductToCart(storeID, productID, 2);
+        client.subscriberPurchase("123456789", "0521234567","Tel Aviv");
+
+        //need to check that elinor got a message of buying a product from her store
+
+    }
+
+    @Test
+    void RemoveAlert() {
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addOwner(storeID, newOwnerID);
+        client.removeOwner(storeID, newOwnerID);
+
+        //need to check that nofet got a message of remove her from owning the store
+        //maybe add to response - list of messages
+    }
+
+    @Test
+    void EditPolicesAlert() {
+    }
+    //endregion
+
 
 }
