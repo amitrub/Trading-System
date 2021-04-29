@@ -1,8 +1,7 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.Limit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,12 +12,12 @@ public class BuyingPolicy {
     private static int nextLimitID=0;
     private ConcurrentHashMap<Integer, Limit> Limits;
 
-    public TradingSystem tradingSystem;
+    public TradingSystemImpl tradingSystemImpl;
 
     public void BuyingPolicy(Integer storeID){
         this.storeID=storeID;
         this.Limits =new ConcurrentHashMap<>();
-        this.tradingSystem=TradingSystem.getInstance();
+        this.tradingSystemImpl = TradingSystemImpl.getInstance();
     }
 
     private static synchronized int getNextLimitID() {
@@ -42,7 +41,7 @@ public class BuyingPolicy {
         Set<Integer> keySetProdects=products.keySet();
         for (Integer key:keySetProdects
         ) {
-            Double tmpPrice=tradingSystem.getProduct(storeID,key).getPrice();
+            Double tmpPrice= tradingSystemImpl.getProduct(storeID,key).getPrice();
             price=price+tmpPrice;
         }
 

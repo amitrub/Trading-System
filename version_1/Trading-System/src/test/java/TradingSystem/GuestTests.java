@@ -1,7 +1,7 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -22,7 +22,7 @@ import static org.junit.Assert.*;
 public class GuestTests {
 
     Client client;
-    TradingSystem tradingSystem = TradingSystem.getInstance();
+    TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -199,7 +199,7 @@ public class GuestTests {
     void showAllStores() {
         //case: no stores at all
         client.Register("Reut", "123");
-        tradingSystem.ClearSystem();
+        tradingSystemImpl.ClearSystem();
         client.Login("Reut", "123");
         List<DummyStore> stores1 = client.showAllStores();
         assertEquals(stores1.size(), 0);
@@ -215,7 +215,7 @@ public class GuestTests {
     void showAllStoresSadNoStores() {
         //case: no stores at all
         client.Register("Reut", "123");
-        tradingSystem.ClearSystem();
+        tradingSystemImpl.ClearSystem();
         client.Login("Reut", "123");
         List<DummyStore> stores1 = client.showAllStores();
         assertEquals(stores1.size(), 0);

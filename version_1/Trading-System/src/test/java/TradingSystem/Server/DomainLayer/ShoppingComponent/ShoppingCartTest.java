@@ -3,11 +3,9 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.junit.Before;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -20,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class ShoppingCartTest {
 
-    TradingSystem t=TradingSystem.getInstance();
+    TradingSystemImpl t= TradingSystemImpl.getInstance();
     String gust1=t.ConnectSystem().returnConnID();
     String NconnID;
     int NuserId ,storeID1,storeID2;

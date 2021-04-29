@@ -4,14 +4,13 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -37,7 +36,7 @@ public  class User {
         GetStoreHistory
     }
 
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
     private static int nextUserID = 0;
 
     private final Integer id;
@@ -342,8 +341,8 @@ public  class User {
 //        for(ShoppingBag shoppingBag: shoppingCart.shoppingBags()){
 //            List<Integer> products=shoppingBag.getProductsList();
 //            for(Integer i:products){
-//                List<DummySearch> dummySearches= this.tradingSystem.getStores().get(shoppingBag.getStoreID()).getAllProducts();
-//                shoppingBags.add(new DummySearch(shoppingBag.getStoreID(), this.tradingSystem.getStores().get(shoppingBag.getStoreID()).getName(),i,this.tradingSystem.ge,))
+//                List<DummySearch> dummySearches= this.tradingSystemImpl.getStores().get(shoppingBag.getStoreID()).getAllProducts();
+//                shoppingBags.add(new DummySearch(shoppingBag.getStoreID(), this.tradingSystemImpl.getStores().get(shoppingBag.getStoreID()).getName(),i,this.tradingSystemImpl.ge,))
 //            }
 //        }
 //    }

@@ -1,6 +1,6 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "api/admin")
 public class AdminService {
 
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     /**
      * @requirement 6.4
@@ -28,7 +28,7 @@ public class AdminService {
      */
     @GetMapping("{adminID}/users")
     public Response AdminAllUsers(@PathVariable int adminID, @RequestHeader("connID") String connID){
-        Response res = tradingSystem.AllUsersHistoryAdmin(adminID, connID);
+        Response res = tradingSystemImpl.AllUsersHistoryAdmin(adminID, connID);
         return res;
     }
 
@@ -49,7 +49,7 @@ public class AdminService {
      */
     @GetMapping("{adminID}/stores")
     public Response AdminAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
-        Response res = tradingSystem.AllStoresHistoryAdmin(adminID, connID);
+        Response res = tradingSystemImpl.AllStoresHistoryAdmin(adminID, connID);
         return res;
     }
 
@@ -81,7 +81,7 @@ public class AdminService {
      */
     @GetMapping("{adminID}/user_history_admin/{userID}")
     public Response AdminUserHistory(@PathVariable int adminID, @PathVariable int userID, @RequestHeader("connID") String connID){
-        Response res = tradingSystem.UserHistoryAdmin(adminID, userID ,connID);
+        Response res = tradingSystemImpl.UserHistoryAdmin(adminID, userID ,connID);
         return res;
     }
 
@@ -113,7 +113,7 @@ public class AdminService {
      */
     @GetMapping("{adminID}/store_history_admin/{storeID}")
     public Response AdminStoreHistory(@PathVariable int adminID, @PathVariable int storeID, @RequestHeader("connID") String connID){
-        return tradingSystem.StoreHistoryAdmin(adminID,storeID,connID);
+        return tradingSystemImpl.StoreHistoryAdmin(adminID,storeID,connID);
     }
 
 

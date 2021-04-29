@@ -1,7 +1,7 @@
 
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +10,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "api")
 public class GuestService {
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
     // 2.1 test
 
     @GetMapping("test")
@@ -21,7 +21,7 @@ public class GuestService {
     @GetMapping("clear_system")
     public Response ClearSystem(){
         System.out.println("777777777777777777777777777777");
-        this.tradingSystem.ClearSystem();
+        this.tradingSystemImpl.ClearSystem();
         return new Response();
     }
 
@@ -36,8 +36,8 @@ public class GuestService {
      */
     @GetMapping("home")
     public Response ConnectSystem(){
-        Response res = this.tradingSystem.ConnectSystem();
-        tradingSystem.printUsers();
+        Response res = this.tradingSystemImpl.ConnectSystem();
+        tradingSystemImpl.printUsers();
         return res;
     }
 
@@ -52,8 +52,8 @@ public class GuestService {
     //return connID
     @GetMapping("exit")
     public Response Exit(@RequestHeader("connID") String connID){
-        Response res = this.tradingSystem.Exit(connID);
-        tradingSystem.printUsers();
+        Response res = this.tradingSystemImpl.Exit(connID);
+        tradingSystemImpl.printUsers();
         return res;
     }
 
@@ -76,8 +76,8 @@ public class GuestService {
     public Response Register(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
-        Response res = this.tradingSystem.Register(connID, userName, password);
-        tradingSystem.printUsers();
+        Response res = this.tradingSystemImpl.Register(connID, userName, password);
+        tradingSystemImpl.printUsers();
         return res;
     }
 
@@ -100,8 +100,8 @@ public class GuestService {
     public Response Login(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
-        Response res = this.tradingSystem.Login(connID, userName, password);
-        tradingSystem.printUsers();
+        Response res = this.tradingSystemImpl.Login(connID, userName, password);
+        tradingSystemImpl.printUsers();
         return res;
     }
 
@@ -120,7 +120,7 @@ public class GuestService {
      */
     @GetMapping("stores")
     public Response ShowAllStores() {
-        Response res = this.tradingSystem.ShowAllStores();
+        Response res = this.tradingSystemImpl.ShowAllStores();
         return res;
     }
 
@@ -145,7 +145,7 @@ public class GuestService {
      */
     @GetMapping("store/{storeID}/products")
     public Response ShowStoreProducts(@PathVariable int storeID) {
-        Response res = this.tradingSystem.ShowStoreProducts(storeID);
+        Response res = this.tradingSystemImpl.ShowStoreProducts(storeID);
         return res;
     }
 
@@ -188,9 +188,9 @@ public class GuestService {
         int pRank = (int) obj.get("pRank");
         int sRank = (int) obj.get("sRank");
         if(productNameMode & !productCategoryMode)
-            return tradingSystem.SearchProduct(name, null, minPrice, maxPrice);
+            return tradingSystemImpl.SearchProduct(name, null, minPrice, maxPrice);
         else if(!productNameMode & productCategoryMode)
-            return tradingSystem.SearchProduct(null, name, minPrice, maxPrice);
+            return tradingSystemImpl.SearchProduct(null, name, minPrice, maxPrice);
         else
             return new Response(true, "Input Error");
     }
@@ -216,9 +216,9 @@ public class GuestService {
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
-        Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
+        Response res = tradingSystemImpl.AddProductToCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
-        tradingSystem.printUsers();
+        tradingSystemImpl.printUsers();
         return res;
     }
 
@@ -243,7 +243,7 @@ public class GuestService {
      */
     @GetMapping("shopping_cart")
     public Response ShowShoppingCart(@RequestHeader("connID") String connID){
-        Response res = this.tradingSystem.ShowShoppingCart(connID);
+        Response res = this.tradingSystemImpl.ShowShoppingCart(connID);
         res.AddConnID(connID);
         return res;
     }
@@ -267,7 +267,7 @@ public class GuestService {
     {
        int storeID = (int) obj.get("storeID");
        int productID = (int) obj.get("productID");
-       Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
+       Response res = tradingSystemImpl.RemoveProductFromCart(connID, storeID, productID);
        res.AddConnID(connID);
        return res;
     }
@@ -292,7 +292,7 @@ public class GuestService {
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
-        Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
+        Response res = tradingSystemImpl.editProductQuantityFromCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
         return res;
     }
@@ -319,7 +319,7 @@ public class GuestService {
         String credit_number = (String) obj.get("credit_number");
         String phone_number = (String) obj.get("phone_number");
         String address = (String) obj.get("address");
-        Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
+        Response res = tradingSystemImpl.guestPurchase(connID, name, credit_number, phone_number, address);
         return res;
     }
 

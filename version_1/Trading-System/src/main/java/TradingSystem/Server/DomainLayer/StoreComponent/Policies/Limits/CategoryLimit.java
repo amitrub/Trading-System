@@ -2,7 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +11,7 @@ public class CategoryLimit implements Limit{
 
     String category;
     Expression expression;
-    TradingSystem tradingSystem=TradingSystem.getInstance();
+    TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     public CategoryLimit(String category, Expression expression) {
         this.category = category;
@@ -24,7 +24,7 @@ public class CategoryLimit implements Limit{
         Set<Integer> keySet = products.keySet();
         for (Integer key : keySet
         ) {
-            Product p = tradingSystem.getProduct(storeID, key);
+            Product p = tradingSystemImpl.getProduct(storeID, key);
             if (p.getCategory().equals(category)) {
                 productToCheck.put(key, products.get(key));
 
