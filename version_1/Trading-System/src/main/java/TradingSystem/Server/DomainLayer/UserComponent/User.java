@@ -353,6 +353,14 @@ public  class User implements Observer {
                 messages.add(arg);
         }
     }
+
+    public List<Object> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Object> messages) {
+        this.messages = messages;
+    }
 }
 
 

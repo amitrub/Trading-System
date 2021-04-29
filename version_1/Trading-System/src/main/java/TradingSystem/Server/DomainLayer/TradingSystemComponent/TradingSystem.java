@@ -278,7 +278,14 @@ public class TradingSystem extends Observable {
         subscribers.get(response.returnUserID()).mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
-        Response res = new Response("Login was successful");
+        List<Object> messages = myGuest.getMessages();
+        for(int i=0; i<messages.size(); i++)
+        {
+            //TODO connect to client
+            System.out.println(messages.get(i));
+        }
+        myGuest.setMessages(new ArrayList<>());
+        Response res = new Response(false, "Login was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         return res;
