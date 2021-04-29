@@ -1413,6 +1413,11 @@ public class TradingSystem extends Observable {
                 if(permission.getAppointmentId()==removeOwnerID) {
                     stores.get(storeID).removeOwner(permission.getUserId());
                     subscribers.get(permission.getUserId()).removeOwnedStore(storeID);
+                    User userToRemove = subscribers.get(removeOwnerID);
+                    String storeName = stores.get(storeID).getName();
+                    observers = new ArrayList<>();
+                    observers.add(userToRemove);
+                    this.notifyObservers("You are removed from owning the store: " + storeName);
                 }
             }
             for(ManagerPermission permission: managerPermissionHashMap.values()){
