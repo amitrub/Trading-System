@@ -3,12 +3,15 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-@RequestMapping(path = "api")
+//@RequestMapping(path = "app")
 //server localhost is 8080 and react localhost is 3000 - we need to crossOrigin to communicate between the two.
 //but, if we think security its a problem because everybody can control and get our info.
 //todo: define who we want to cross origin
@@ -16,9 +19,11 @@ import java.util.Map;
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
     // 2.1 test
 
-    @GetMapping("test")
-    public String test(){
-        return "Hello Welcome to Trading System";
+    @MessageMapping("/test")
+    @SendTo("/topic/{connID}")
+    public Response test(@DestinationVariable("connID") String connID){
+        System.out.println("testtttt");
+        return new Response(false, "Hello Welcome to Trading System");
     }
 
     @GetMapping("clear_system")

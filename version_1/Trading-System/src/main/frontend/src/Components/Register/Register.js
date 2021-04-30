@@ -1,69 +1,70 @@
-import React, {useState} from "react";
-import createApiClient from "../../../src/ApiClient"
-import './Register.css'
+import React, { useState } from "react";
+import createApiClient from "../../../src/ApiClient";
+import "./Register.css";
 
 const api = createApiClient();
 
-function Register (props) {
+function Register(props) {
+  const [regConnID, setConnIDState] = useState("");
+  const [enteredName, setNameState] = useState("");
+  const [enteredPass, setPassState] = useState("");
 
-    const [regConnID, setConnIDState] = useState('');
-    const [enteredName, setNameState] = useState('');
-    const [enteredPass, setPassState] = useState('');
+  async function submitHandler(event) {
+    event.preventDefault();
 
-    async function submitHandler (event) {
-        event.preventDefault();
+    const registerData = {
+      name: enteredName,
+      pass: enteredPass,
+    };
+    setConnIDState(props.connID);
 
-        const registerData = {
-            name: enteredName, 
-            pass: enteredPass,
-        };
-        setConnIDState(props.connID);
+    props.onSubmitRegister(registerData);
+    setNameState("");
+    setPassState("");
 
-        props.onSubmitRegister(registerData);
-        setNameState('');
-        setPassState('');
+    // const res = await api.register(props.clientConnection);
+    const res2 = await api.getTest(props.clientConnection, props.response);
 
-        const response = await api.postRegister(registerData, regConnID);
-        console.log("after register post: \n" + response);
+    // console.log("after register post: \n");
+  }
 
-    }
+  function nameChangeHandler(event) {
+    setNameState(event.target.value);
+  }
 
-    function nameChangeHandler (event) {
-        setNameState(event.target.value);
-    }
+  function passChangeHandler(event) {
+    setPassState(event.target.value);
+  }
 
-    function passChangeHandler (event) {
-        setPassState(event.target.value);
-    }
-
-
-    return (
+  return (
     <div>
-        <p> Register Component</p>
-        <form onSubmit={submitHandler}>
-        <div className='new-expense__controls'>
-            <div className='new-expense__control'>
+      <p> Register Component</p>
+      <form onSubmit={submitHandler}>
+        <div className="new-expense__controls">
+          <div className="new-expense__control">
             <label>Name</label>
             <input
-                type='text'
-                value={enteredName}
-                onChange={nameChangeHandler}
+              type="text"
+              value={enteredName}
+              onChange={nameChangeHandler}
             />
-            </div>
-            <div className='new-expense__control'>
+          </div>
+          <div className="new-expense__control">
             <label>Password</label>
             <input
-                type='text'
-                value={enteredPass}
-                onChange={passChangeHandler}
+              type="text"
+              value={enteredPass}
+              onChange={passChangeHandler}
             />
-            </div>
+          </div>
         </div>
-        <div className='new-expense__actions'>
-            <button type='submit'>Register</button>
+        <div className="new-expense__actions">
+          <button type="submit">Register</button>
         </div>
-        </form>
+        <h1>{props.response.message}</h1>
+      </form>
     </div>
-    );}
+  );
+}
 
 export default Register;
