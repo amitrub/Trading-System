@@ -4,6 +4,7 @@ import TestComponent from "./Components/TestComponent/TestComponent";
 import Register from "./Components/Register/Register";
 import User from "./Components/User/User";
 import { Client } from "@stomp/stompjs";
+import MainPage from "./Components/MainPage/MainPage";
 
 const SOCKET_URL = "ws://localhost:8080/ws-message";
 
@@ -69,6 +70,7 @@ function App() {
   return (
     <div className="App">
       <h1>~ Trading System ~</h1>
+      <MainPage/>
       {/* <TestComponent/> */}
       {/* <User onUpdateConnID = {updateConnIDHandler}/> */}
       <Register

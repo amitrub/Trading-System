@@ -1,6 +1,7 @@
 
-import './MainPageDesign/style.css'
-import './MainPageDesign/grid.css'
+import "./MainPageDesign/style.css"
+import "./MainPageDesign/grid.css"
+// import './MainPageDesign/queries.css'
 import fashion from '../img/sadna-fashion.jpeg'
 import electronics from '../img/sadna-elctorincs.jpeg'
 import pets from '../img/sadna-dogs.jpeg'
@@ -30,7 +31,7 @@ function mainPage(){
         <link rel="stylesheet" type="text/css" href="resources/css/style.css"/> 
         <link rel="stylesheet" type="text/css" href="resources/css/queries.css"/> 
         <link href='http://fonts.googleapis.com/css?family=Lato:100,300,400,300italic' rel='stylesheet' type='text/css' /> 
-        <title>Omnifood</title>
+        <title>AliBamba</title>
         </head>
 
         {/* --------------------- HEADER ---------------------- */}
@@ -129,104 +130,105 @@ function mainPage(){
         {/* --------------------- PROGRAMERS PHOTOS ---------------------- */}
 
 
-        <section class="section-cities" id="cities">
-            <div class="row">
+        <section className="section-cities" id="cities">
+            <div className="row">
                 <h2>This system desigend by the greatest programers</h2>
             </div>
-            <div class="row js--wp-3">
-                <div class="col span-1-of-6 box">
+            <div className="row">
+                <h1>ddd</h1>
+                <div className="col span-1-of-7 box">
                     <img src={hadas} alt="Lisbon" />
                     <h3>Hadas</h3>
-                    <div class="city-feature">
-                        <i class="ion-ios-person icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-person icon-small"></i>
                         2400+ lines of code
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-ios-star icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-star icon-small"></i>
                         web desiner 
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-social-twitter icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-social-twitter icon-small"></i>
                         <a href="#">zeirah@post.bgu.ac.il</a>
                     </div>
                 </div>
-                <div class="col span-1-of-6 box">
+                <div className="col span-1-of-7 box">
                     <img src={roee} alt="San Francisco" />
                     <h3>Roee</h3>
-                    <div class="city-feature">
-                        <i class="ion-ios-person icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-person icon-small"></i>
                         3200+ lines of code
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-ios-star icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-star icon-small"></i>
                         client side
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-social-twitter icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-social-twitter icon-small"></i>
                         <a href="#">benhr@post.bgu.ac.il</a>
                     </div>
                 </div>
-                <div class="col span-1-of-6 box">
+                <div className="col span-1-of-7 box">
                     <img src={amit} alt="Berlin" />
                     <h3>Amit</h3>
-                    <div class="city-feature">
-                        <i class="ion-ios-person icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-person icon-small"></i>
                         3400+ lines of code
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-ios-star icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-star icon-small"></i>
                         communication 
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-social-twitter icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-social-twitter icon-small"></i>
                         <a href="#">amitrb@post.bgu.ac.il</a>
                     </div>
                 </div>
-                <div class="col span-1-of-6 box">
+                <div className="col span-1-of-7 box">
                     <img src={reut} alt="London" />
                     <h3>Reut</h3>
-                    <div class="city-feature">
-                        <i class="ion-ios-person icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-person icon-small"></i>
                         2600+ lines of code
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-ios-star icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-star icon-small"></i>
                         version manager
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-social-twitter icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-social-twitter icon-small"></i>
                         <a href="#">reutle@post.bgu.ac.il</a>
                     </div>
                 </div>
-                <div class="col span-1-of-6 box">
+                <div className="col span-1-of-7 box">
                     <img src={nofet} alt="London" />
                     <h3>Nofet</h3>
-                    <div class="city-feature">
-                        <i class="ion-ios-person icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-person icon-small"></i>
                         3100+ lines of code
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-ios-star icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-star icon-small"></i>
                         server side
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-social-twitter icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-social-twitter icon-small"></i>
                         <a href="#">nofetd@post.bgu.ac.il</a>
                     </div>
                 </div>
-                <div class="col span-1-of-6 box">
+                <div className="col span-1-of-7 box">
                     <img src={elinor} alt="London" />
                     <h3>Elinor</h3>
-                    <div class="city-feature">
-                        <i class="ion-ios-person icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-person icon-small"></i>
                         2400+ lines of code
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-ios-star icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-ios-star icon-small"></i>
                         testing and QA
                     </div>
-                    <div class="city-feature">
-                        <i class="ion-social-twitter icon-small"></i>
+                    <div className="city-feature">
+                        <i className="ion-social-twitter icon-small"></i>
                         <a href="#">elinor@post.bgu.ac.il</a>
                     </div>
                 </div>
