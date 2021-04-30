@@ -4,6 +4,8 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.handler.annotation.*;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
@@ -15,13 +17,21 @@ import java.util.Map;
 //server localhost is 8080 and react localhost is 3000 - we need to crossOrigin to communicate between the two.
 //but, if we think security its a problem because everybody can control and get our info.
 //todo: define who we want to cross origin
-@CrossOrigin("*") public class GuestService {
+@CrossOrigin("*") 
+public class GuestService {
+    
+  @Autowired
+  SimpMessagingTemplate template;
+
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
     // 2.1 test
-
-    @Autowired
-    SimpMessagingTemplate template;
-
+    @PostMapping("/send")
+    public ResponseEntity<Void> sendMessage(@RequestBody Map<String, Object> obj) {
+        template.convertAndSend("/topic/message", obj);
+        System.out.println("-------------------------------------------");
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+  
     @MessageMapping("/test")
     @SendTo("/topic/message")
     public void test(@Payload Map<String, Object> obj){
@@ -35,7 +45,6 @@ import java.util.Map;
 
     @GetMapping("clear_system")
     public Response ClearSystem(){
-        System.out.println("777777777777777777777777777777");
         this.tradingSystem.ClearSystem();
         return new Response();
     }
@@ -49,7 +58,7 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @GetMapping("home")
+    @GetMapping("app/home")
     public Response ConnectSystem(){
         Response res = this.tradingSystem.ConnectSystem();
         tradingSystem.printUsers();
@@ -75,8 +84,8 @@ import java.util.Map;
     /**
      * @requirement 2.3
      *
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "userName": String
      *  "password": String
      * }
@@ -87,20 +96,22 @@ import java.util.Map;
      *  "userID": int
      * }
      */
-    @PostMapping("register")
-    public Response Register(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("register")
+    public Response Register(@Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
         Response res = this.tradingSystem.Register(connID, userName, password);
         tradingSystem.printUsers();
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
     /**
      * @requirement 2.4
      *
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "userName": String
      *  "password": String
      * }
@@ -111,11 +122,13 @@ import java.util.Map;
      *  "userID": int
      * }
      */
-    @PostMapping("login")
-    public Response Login(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("login")
+    public Response Login(@Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
         Response res = this.tradingSystem.Login(connID, userName, password);
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         tradingSystem.printUsers();
         return res;
     }
@@ -123,6 +136,9 @@ import java.util.Map;
     /**
      * @requirement 2.5
      *
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response {
      *  "isErr: boolean
      *  "message": String
@@ -133,9 +149,11 @@ import java.util.Map;
      *  }]
      * }
      */
-    @GetMapping("stores")
-    public Response ShowAllStores() {
+    @MessageMapping("stores")
+    public Response ShowAllStores(@Payload Map<String, Object> obj) {
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowAllStores();
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
@@ -143,6 +161,9 @@ import java.util.Map;
      * @requirement 2.5
      *
      * @param storeID: int (path)
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response {
      *  "isErr: boolean
      *  "message": String
@@ -158,9 +179,11 @@ import java.util.Map;
      *  }]
      * }
      */
-    @GetMapping("store/{storeID}/products")
-    public Response ShowStoreProducts(@PathVariable int storeID) {
+    @MessageMapping("store/{storeID}/products")
+    public Response ShowStoreProducts(@DestinationVariable int storeID, @Payload Map<String, Object> obj) {
         Response res = this.tradingSystem.ShowStoreProducts(storeID);
+        String connID = (String) obj.get("connID");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
@@ -169,6 +192,7 @@ import java.util.Map;
      * @requirement 2.6
      *
      * @param obj:{
+     *  "connID": String
      *  "name": String
      *  "Product Name": boolean
      *  "Product Category": boolean
@@ -193,29 +217,33 @@ import java.util.Map;
      * }
      */
     //TODO: not check yet
-    @PostMapping("search")
-    public Response Search(@RequestBody Map<String, Object> obj){
+    @MessageMapping("search")
+    public Response Search(@Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         String name = (String) obj.get("name");
-        boolean productNameMode = (boolean) obj.get("Product Name");
-        boolean productCategoryMode = (boolean) obj.get("Product Category");
+        boolean productNameMode = (boolean) obj.get("ProductName");
+        boolean productCategoryMode = (boolean) obj.get("ProductCategory");
         int minPrice = (int) obj.get("minPrice");
         int maxPrice = (int) obj.get("maxPrice");
         int pRank = (int) obj.get("pRank");
         int sRank = (int) obj.get("sRank");
+        Response res;
         if(productNameMode & !productCategoryMode)
-            return tradingSystem.SearchProduct(name, null, minPrice, maxPrice);
+            res = tradingSystem.SearchProduct(name, null, minPrice, maxPrice);
         else if(!productNameMode & productCategoryMode)
-            return tradingSystem.SearchProduct(null, name, minPrice, maxPrice);
+            res = tradingSystem.SearchProduct(null, name, minPrice, maxPrice);
         else
-            return new Response(true, "Input Error");
+            res = new Response(true, "Input Error");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        return res;
     }
 
 
     /**
      * @requirement 2.7
      *
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "storeID": int
      *  "productID": int
      *  "quantity": int
@@ -226,21 +254,25 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @PostMapping("shopping_cart/add_product")
-    public Response AddProductToCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("shopping_cart/add_product")
+    public Response AddProductToCart(@Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
         tradingSystem.printUsers();
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
     /**
      * @requirement 2.8
      *
-     * @param connID: String (Header)
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response {
      *  "isErr: boolean
      *  "message": String
@@ -256,18 +288,20 @@ import java.util.Map;
      *  }]
      * }
      */
-    @GetMapping("shopping_cart")
-    public Response ShowShoppingCart(@RequestHeader("connID") String connID){
+    @MessageMapping("shopping_cart")
+    public Response ShowShoppingCart(@Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowShoppingCart(connID);
         res.AddConnID(connID);
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
     /**
      * @requirement 2.8
      *
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "storeID": int
      *  "productID": int
      * }
@@ -277,21 +311,22 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @PostMapping("shopping_cart/remove_product")
-    public Response RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)
-    {
+    @MessageMapping("shopping_cart/remove_product")
+    public Response RemoveProductFromCart(@Payload Map<String, Object> obj){
+       String connID = (String) obj.get("connID");
        int storeID = (int) obj.get("storeID");
        int productID = (int) obj.get("productID");
        Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
        res.AddConnID(connID);
+       template.convertAndSend(String.format("/topic/%s", connID), res);
        return res;
     }
 
     /**
      * @requirement 2.8
      *
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "storeID": int
      *  "productID": int
      *  "quantity": int
@@ -302,21 +337,23 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @PostMapping("shopping_cart/edit_product")
-    public Response EditProductQuantityFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("shopping_cart/edit_product")
+    public Response EditProductQuantityFromCart(@Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         int quantity = (int) obj.get("quantity");
         Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
     /**
      * @requirement 2.9
      *
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "name": String
      *  "credit_number": String
      *  "phone_number": String
@@ -328,13 +365,15 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @PostMapping("shopping_cart/purchase")
-    public Response guestPurchase(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("shopping_cart/purchase")
+    public Response guestPurchase(@Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         String name = (String) obj.get("name");
         String credit_number = (String) obj.get("credit_number");
         String phone_number = (String) obj.get("phone_number");
         String address = (String) obj.get("address");
         Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
