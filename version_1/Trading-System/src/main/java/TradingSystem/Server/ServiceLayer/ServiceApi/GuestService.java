@@ -58,8 +58,9 @@ public class GuestService {
      *  "connID": String
      * }
      */
-    @GetMapping("app/home")
+    @GetMapping("/home")
     public Response ConnectSystem(){
+        System.out.println("eeeeeeee");
         Response res = this.tradingSystem.ConnectSystem();
         tradingSystem.printUsers();
         return res;

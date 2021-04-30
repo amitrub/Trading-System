@@ -21,7 +21,7 @@ export const createApiClient = () => {
 
     connectSystem: () => {
       let path = guestURL.concat(`home`);
-      return axios.get(path).then((res) => {
+      return axios.get("http://localhost:8080/app/home").then((res) => {
         console.log("ApiClient:\n" + res);
         return res.data;
       });
@@ -271,7 +271,8 @@ export const createApiClient = () => {
       connID,
       userID,
       storeID,
-      productID
+      productID,
+      quantity
     ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/change_quantity_product/${productID}`
@@ -472,6 +473,7 @@ export const createApiClient = () => {
       DeleteProduct,
       EditProduct,
       AppointmentOwner,
+      AppointmentManager,
       EditManagerPermission,
       RemoveManager,
       GetInfoOfficials,

@@ -85,7 +85,7 @@ class App extends React.Component {
     return (
       <div className="App">
         <h1>~ Trading System ~</h1>
-            <MainPage/>
+        <MainPage />
         <Register
           onSubmitRegister={this.submitRegisterHandler}
           connID={this.state.connID}
