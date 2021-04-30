@@ -1344,4 +1344,9 @@ public class TradingSystem {
             return response;
         }
     }
+
+    //for the tests
+    public void AddStoreToList(Store store) {
+        this.stores.put(store.getId(), store);
+    }
 }

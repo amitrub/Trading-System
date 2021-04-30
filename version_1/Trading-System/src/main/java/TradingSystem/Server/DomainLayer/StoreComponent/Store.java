@@ -517,7 +517,7 @@ public class Store {
         return new PriceForGetSale(expId,price);
     }
 
-    public Expression createQuantityForGetSaleExp(Integer productID, Double quantityForSale){
+    public Expression createQuantityForGetSaleExp(Integer productID, Integer quantityForSale){
         int expId=getNextExpressionID();
         return new QuantityForGetSale(expId,productID,quantityForSale);
     }
