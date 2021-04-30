@@ -4,8 +4,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class OrComposite extends CompositeExpression {
 
+    public OrComposite(Integer exp) {
+        super(exp);
+    }
+
     public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
-        for(Expression expr : children) if(expr.evaluate(products, finalPrice, userID,storeID )) return true;
+        for(Expression expr : children)
+            if(expr.evaluate(products, finalPrice, userID,storeID))
+                return true;
         return false;
     }
 }

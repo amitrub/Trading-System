@@ -2,19 +2,16 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Conditioning implements Expression {
+public class Conditioning extends SimpleExpression{
 
     Expression cond;
     Expression condIf;
 
-    public Conditioning(Expression cond, Expression condIf) {
+
+    public Conditioning(Integer expID,Expression cond, Expression condIf) {
+        super(expID);
         this.cond = cond;
         this.condIf = condIf;
-    }
-
-    @Override
-    public Expression add(Expression expr) {
-        return this;
     }
 
     public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {

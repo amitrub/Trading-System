@@ -1,16 +1,18 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class QuantityLimit implements Expression {
+public class QuantityLimit extends SimpleExpression {
 
     Integer maxQuantity;
 
-    public QuantityLimit(Integer productID, Integer quantity) {
-        maxQuantity = quantity;
+    public QuantityLimit(Integer expId, Integer quantity) {
+       super(expId);
+       maxQuantity = quantity;
     }
 
     @Override

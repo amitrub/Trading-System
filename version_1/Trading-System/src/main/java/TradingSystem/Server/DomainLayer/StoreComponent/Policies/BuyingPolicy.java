@@ -15,20 +15,19 @@ public class BuyingPolicy {
 
     public TradingSystem tradingSystem;
 
-    public void BuyingPolicy(Integer storeID){
+    public BuyingPolicy(Integer storeID){
         this.storeID=storeID;
         this.Limits =new ConcurrentHashMap<>();
         this.tradingSystem=TradingSystem.getInstance();
     }
 
-    private static synchronized int getNextLimitID() {
+       public static synchronized int getNextLimitID() {
         nextLimitID++;
         return nextLimitID;
     }
 
     public void AddLimit(Limit limit){
-        int saleID=nextLimitID;
-        this.Limits.put(saleID,limit);
+        this.Limits.put(limit.getID(),limit);
     }
 
     public void RemoveLimit(Integer limitID){
@@ -36,20 +35,11 @@ public class BuyingPolicy {
     }
 
     //TODO check
-    public boolean checkEntitlement(ConcurrentHashMap<Integer,Integer> products,Integer userID){
-        Double price=0.0;
-
-        Set<Integer> keySetProdects=products.keySet();
-        for (Integer key:keySetProdects
-        ) {
-            Double tmpPrice=tradingSystem.getProduct(storeID,key).getPrice();
-            price=price+tmpPrice;
-        }
-
+    public boolean checkEntitlement(ConcurrentHashMap<Integer,Integer> products,Integer userID,Double finalPrice){
         Set<Integer> keySetSales= Limits.keySet();
         for (Integer key:keySetSales
         ) {
-            if(!this.Limits.get(key).checkEntitlement(products,price,userID,storeID ))
+            if(!this.Limits.get(key).checkEntitlement(products,finalPrice,userID,storeID))
                 return false;
         }
         return true;

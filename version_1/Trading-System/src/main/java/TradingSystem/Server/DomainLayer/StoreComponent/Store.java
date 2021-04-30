@@ -5,6 +5,20 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.AgeLimit;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.HourLimit;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimit;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.TimeLimit;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.CategoryLimit;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.ProductLimit;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.StoreLimit;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.CategorySale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.ProductSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.StoreSale;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -20,6 +34,8 @@ import java.util.concurrent.locks.Lock;
 public class Store {
 
     private static int nextStoreID=0;
+
+    private static int nextExpressionID=0;
 
     private Integer id;
     private String name;
@@ -62,6 +78,8 @@ public class Store {
         this.ownersIDs.add(founderID);
         this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
+        this.discountPolicy=new DiscountPolicy(this.id);
+        this.buyingPolicy=new BuyingPolicy(this.id);
     }
 
     public Integer getId() {
@@ -71,6 +89,11 @@ public class Store {
     private static synchronized int getNextStoreID() {
         nextStoreID++;
         return nextStoreID;
+    }
+
+    private static synchronized int getNextExpressionID() {
+        nextExpressionID++;
+        return nextExpressionID;
     }
 
     public static void ClearSystem() {
@@ -367,6 +390,31 @@ public class Store {
             return 2.0;
     }
 
+    public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        Double priceBeforeSale=0.0;
+
+        Set<Integer> keySetProdects=productsInTheBug.keySet();
+        for (Integer key:keySetProdects
+        ) {
+            Double tmpPrice=this.getProduct(key).getPrice();
+            priceBeforeSale=priceBeforeSale+tmpPrice;
+        }
+        return this.discountPolicy.calculatePrice(productsInTheBug,userId,priceBeforeSale);
+    }
+
+    public boolean checkEntitlement(Integer userId, ConcurrentHashMap<Integer, Integer> productsInTheBug){
+        Double priceBeforeSale=0.0;
+
+        Set<Integer> keySetProdects=productsInTheBug.keySet();
+        for (Integer key:keySetProdects
+        ) {
+            Double tmpPrice=this.getProduct(key).getPrice();
+            priceBeforeSale=priceBeforeSale+tmpPrice;
+        }
+        return this.buyingPolicy.checkEntitlement(productsInTheBug,userId,priceBeforeSale);
+    }
+
+
     public void addOwnerPermission(int newOwner, OwnerPermission op) {
         this.ownersPermission.put(newOwner,op);
     }
@@ -397,4 +445,102 @@ public class Store {
     public ConcurrentHashMap<Integer,ManagerPermission> getManagerIDs(){
         return this.managersPermission;
     }
+
+
+
+    //Todo add sale to response?
+    public Response addSaleToPolicy(String category, Integer productID, Double discount){
+    if(productID!=-1){
+        Integer saleId=this.discountPolicy.getNextSaleID();
+        ProductSale PS=new ProductSale(saleId,productID,discount);
+        this.discountPolicy.AddSale(PS);
+        return new Response(false,"new ProductSale added to store "+this.id);
+    }
+    else if(category!=null){
+        Integer saleId=this.discountPolicy.getNextSaleID();
+         CategorySale CS=new CategorySale(saleId,category,discount);
+        this.discountPolicy.AddSale(CS);
+        return new Response(false,"new CategorySale added to store "+this.id);
+    }
+        Integer saleId=this.discountPolicy.getNextSaleID();
+        StoreSale SS=new StoreSale(saleId,this.id,discount);
+        this.discountPolicy.AddSale(SS);
+        return new Response(false,"new StoreSale added to store "+this.id);
+    }
+
+    public Response addLimitToPolicy(String category, Integer productID, Expression exp){
+        if(productID!=-1){
+            Integer limitId=this.buyingPolicy.getNextLimitID();
+            ProductLimit PL=new ProductLimit(limitId,productID,exp);
+            this.buyingPolicy.AddLimit(PL);
+            return new Response(false,"new ProductLimit added to store "+this.id);
+        }
+        else if(category!=null){
+            Integer limitId=this.buyingPolicy.getNextLimitID();
+            CategoryLimit CL=new CategoryLimit(limitId,category,exp);
+            this.buyingPolicy.AddLimit(CL);
+            return new Response(false,"new CategoryLimit added to store "+this.id);
+        }
+        Integer limitId=this.buyingPolicy.getNextLimitID();
+        StoreLimit SL=new StoreLimit(limitId,this.id,exp);
+        this.buyingPolicy.AddLimit(SL);
+        return new Response(false,"new StoreLimit added to store "+this.id);
+    }
+
+    //Todo _ option with expression:
+    public Response addSaleToPolicy(String category, Integer productID, Double discount,Expression exp){
+        if(productID!=-1){
+            Integer saleId=this.discountPolicy.getNextSaleID();
+            ProductSale PS=new ProductSale(saleId,productID,discount);
+            this.discountPolicy.AddSale(PS);
+            return new Response(false,"new ProductSale added to store "+this.id);
+        }
+        else if(category!=null){
+            Integer saleId=this.discountPolicy.getNextSaleID();
+            CategorySale CS=new CategorySale(saleId,category,discount);
+            this.discountPolicy.AddSale(CS);
+            return new Response(false,"new CategorySale added to store "+this.id);
+        }
+        Integer saleId=this.discountPolicy.getNextSaleID();
+        StoreSale SS=new StoreSale(saleId,this.id,discount);
+        this.discountPolicy.AddSale(SS);
+        return new Response(false,"new StoreSale added to store "+this.id);
+    }
+
+    public Expression NumOfProductsForGetSaleExp(Integer num) {
+        int expId=getNextExpressionID();
+        return new NumOfProductsForGetSale(expId,num);
+    }
+
+    public Expression createPriceForGetSaleExp(Double price) {
+        int expId=getNextExpressionID();
+        return new PriceForGetSale(expId,price);
+    }
+
+    public Expression createQuantityForGetSaleExp(Integer productID, Double quantityForSale){
+        int expId=getNextExpressionID();
+        return new QuantityForGetSale(expId,productID,quantityForSale);
+    }
+
+    public Expression createAgeLimitExp(Integer minAge){
+        int expId=getNextExpressionID();
+        return new AgeLimit(expId,minAge);
+    }
+
+    public Expression createHourLimitExp(Integer productID,Date date){
+        int expId=getNextExpressionID();
+        return new HourLimit(expId,date);
+    }
+
+    public Expression createQuantityLimitExp(Integer productID,Integer quantity){
+        int expId=getNextExpressionID();
+        return new QuantityLimit(expId,quantity);
+    }
+
+    public Expression createTimeLimitExp(Date date){
+        int expId=getNextExpressionID();
+        return new TimeLimit(expId,date);
+    }
+
+
 }

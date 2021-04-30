@@ -4,16 +4,18 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expr
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class StoreSale implements Sale {
+public class StoreSale extends SimpleSale {
 
-    Integer storeID;
-    Double  discountPercentage;
-    Expression expression;
+   // private Integer saleID;
+    private Integer storeID;
+    private Double  discountPercentage;
+    private Expression expression;
 
-    public StoreSale(Integer storeID, Double discountPercentage, Expression exp) {
+    public StoreSale(Integer saleID, Integer storeID, Double discountPercentage) {
+        super(saleID);
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
-        this.expression = exp;
+       // this.saleID=saleID;
     }
 
     @Override
@@ -23,4 +25,71 @@ public class StoreSale implements Sale {
         }
         return 0.0;
     }
+
 }
+
+
+/*
+    @Override
+    public Expression setExpression(Expression exp) {
+        if(this.expression!=null){
+         this.expression.add(exp);
+        }
+        else{
+            this.expression=exp;
+        }
+        return this.expression;
+    }
+
+    @Override
+    public Expression getExpression() {
+        return this.expression;
+    }
+
+    @Override
+    public Sale setSale(Sale sale) {
+        return this;
+    }
+
+    @Override
+    public Sale getSale() {
+        return this;
+    }
+
+
+
+    @Override
+    public Sale setSale(Integer saleID, Sale sale) {
+        return this;
+    }
+
+    @Override
+    public Expression getExpression(Integer ID) {
+        if(this.expression!=null){
+            return this.expression.getExpression(ID);
+        }
+        return this.expression;
+    }
+
+    @Override
+    public Integer getID() {
+        return this.saleID;
+    }
+
+    @Override
+    public Sale getSale(Integer saleID) {
+        return this;
+    }
+
+
+    @Override
+    public Expression setExpression(Integer expID, Expression exp) {
+        if(this.expression!=null) {
+            this.expression.setExpression(expID, exp);
+        }
+        else{
+            this.expression=exp;
+        }
+        return this.expression;
+    }
+ */

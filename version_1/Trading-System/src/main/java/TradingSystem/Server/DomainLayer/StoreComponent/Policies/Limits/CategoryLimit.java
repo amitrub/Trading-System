@@ -9,11 +9,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class CategoryLimit implements Limit{
 
-    String category;
-    Expression expression;
-    TradingSystem tradingSystem=TradingSystem.getInstance();
+    private Integer limitId;
+    private String category;
+    private Expression expression;
+    private TradingSystem tradingSystem=TradingSystem.getInstance();
 
-    public CategoryLimit(String category, Expression expression) {
+    public CategoryLimit(Integer limitID, String category, Expression expression) {
+        this.limitId=limitID;
         this.category = category;
         this.expression = expression;
     }
@@ -31,5 +33,34 @@ public class CategoryLimit implements Limit{
             }
         }
             return expression.evaluate(productToCheck, finalPrice, userID, storeID);
+    }
+
+
+
+    @Override
+    public Integer getID() {
+        return this.limitId;
+    }
+
+    @Override
+    public Expression setExpression(Expression exp) {
+       this.expression=exp;
+       return this.expression;
+    }
+
+    @Override
+    public Expression addExpression(Expression exp) {
+        if (this.expression != null) {
+           return this.expression.add(exp);
+        } else {
+           this.expression = exp;
+           return this.expression;
+        }
+
+    }
+
+    @Override
+    public Expression setExpression(Integer expId, Expression exp) {
+        return null;
     }
 }

@@ -6,8 +6,15 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProductLimit implements Limit{
 
-    Integer productID;
-    Expression expression;
+    private Integer limitId;
+    private Integer productID;
+    private Expression expression;
+
+    public ProductLimit(Integer limitID,Integer productID, Expression expression) {
+        this.limitId=limitID;
+        this.productID = productID;
+        this.expression = expression;
+    }
 
     @Override
     public Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
@@ -16,5 +23,25 @@ public class ProductLimit implements Limit{
             productToCheck.put(productID,products.get(productID));
         }
         return expression.evaluate(productToCheck,finalPrice,userID, storeID);
+    }
+
+    @Override
+    public Integer getID() {
+        return this.limitId;
+    }
+
+    @Override
+    public Expression setExpression(Expression exp) {
+        return null;
+    }
+
+    @Override
+    public Expression addExpression(Expression exp) {
+        return null;
+    }
+
+    @Override
+    public Expression setExpression(Integer expId, Expression exp) {
+        return null;
     }
 }

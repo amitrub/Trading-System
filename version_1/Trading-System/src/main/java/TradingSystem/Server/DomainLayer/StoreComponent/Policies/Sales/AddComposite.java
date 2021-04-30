@@ -1,12 +1,10 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AddComposite extends CompositeSale{
-    @Override
-    public Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID) {
-        return true;
-    }
 
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
@@ -18,4 +16,5 @@ public class AddComposite extends CompositeSale{
         }
         return sale;
     }
+
 }
