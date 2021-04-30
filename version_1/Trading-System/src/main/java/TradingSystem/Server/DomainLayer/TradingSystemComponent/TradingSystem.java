@@ -16,7 +16,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
 
-public class TradingSystem {
+public class TradingSystem extends Observable {
 
     public Validation validation;
 
@@ -28,6 +28,9 @@ public class TradingSystem {
     public ConcurrentHashMap<Integer, Store> stores;
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
+
+    //Observable Pattern
+    private List<Observer> observers = new ArrayList<>();
 
     //    Singleton
     private static TradingSystem tradingSystem = null;
@@ -275,7 +278,14 @@ public class TradingSystem {
         subscribers.get(response.returnUserID()).mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
-        Response res = new Response("Login was successful");
+        List<Object> messages = myGuest.getMessages();
+        for(int i=0; i<messages.size(); i++)
+        {
+            //TODO connect to client
+            System.out.println(messages.get(i));
+        }
+        myGuest.setMessages(new ArrayList<>());
+        Response res = new Response(false, "Login was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         return res;
@@ -545,7 +555,24 @@ public class TradingSystem {
         }
         else {
             User myGuest= guests.get(connID);
-            return myGuest.guestPurchase(name, credit_number, phone_number, address);
+            observers = new ArrayList<>();
+            for (ShoppingBag s:myGuest.getShoppingCart().getShoppingBags().values())
+            {
+                Integer storeID = s.getStoreID();
+                //stores.get(storeID).getOwnersIDs().keys();
+                for (User u:subscribers.values()) {
+                    for (Integer ownedStore:u.getMyOwnerStore()) {
+                        if(ownedStore == storeID)
+                            this.addObserver(u);
+                    }
+                }
+            }
+            Response res = myGuest.guestPurchase(name, credit_number, phone_number, address);
+            if(!res.getIsErr())
+            {
+                this.notifyObservers("A product has been purchased from your store");
+            }
+            return res;
         }
     }
     public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
@@ -554,7 +581,23 @@ public class TradingSystem {
         }
         else {
             User user = subscribers.get(userID);
-            return user.subscriberPurchase(credit_number, phone_number, address);
+            observers = new ArrayList<>();
+            for (ShoppingBag s:user.getShoppingCart().getShoppingBags().values())
+            {
+                Integer storeID = s.getStoreID();
+                for (User u:subscribers.values()) {
+                    for (Integer ownedStore:u.getMyOwnerStore()) {
+                        if(ownedStore == storeID)
+                            this.addObserver(u);
+                    }
+                }
+            }
+            Response res = user.subscriberPurchase(credit_number, phone_number, address);
+            if(!res.getIsErr())
+            {
+                this.notifyObservers("A product has been purchased from your store!");
+            }
+            return res;
 
         }
     }
@@ -801,8 +844,8 @@ public class TradingSystem {
             MTR.unlockUser();
             return res2;
         }
-        MTR.removeStore(storeID);
-        stores.get(storeID).removeManager(userID, ManagerToRemove);
+        MTR.removeManagedStore(storeID);
+        stores.get(storeID).removeManager(ManagerToRemove);
         MTR.unlockUser();
         loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
         return new Response("The manager removed successfully");
@@ -895,7 +938,7 @@ public class TradingSystem {
     /**
      * @param userId
      * @param connID
-     * @param storeId
+     * @param storeID
      * @param productId
      * @param comment
      * @return Response{
@@ -904,13 +947,13 @@ public class TradingSystem {
      *      *  "connID": String
      *      * }
      */
-    public Response WriteComment(int userId, String connID, int storeId, int productId, String comment) {
-        if(!stores.containsKey(storeId)){
+    public Response WriteComment(int userId, String connID, int storeID, int productId, String comment) {
+        if(!stores.containsKey(storeID)){
             return new Response(true, "Store doesn't exist in the system");
         }
-        else if(stores.containsKey(storeId)){
-            Store store=stores.get(storeId);
-            if(!store.isProductExist(storeId)){
+        else if(stores.containsKey(storeID)){
+            Store store=stores.get(storeID);
+            if(!store.isProductExist(storeID)){
                 return new Response(true, "The product doesn't exist in the store anymore");
             }
         }
@@ -921,9 +964,17 @@ public class TradingSystem {
         if(!user.IsProductExist(productId)){
             return new Response(true, "User didn't buy this product");
         }
-        if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
+        if(stores.get(storeID).getProduct(productId).isUserComment(userId)){
             return new Response(true, "The user already wrote comment for this product");
         }
+        this.observers = new ArrayList<>();
+        for (User u:subscribers.values()) {
+            for (Integer ownedStore:u.getMyOwnerStore()) {
+                if(ownedStore == storeID)
+                    this.addObserver(u);
+            }
+        }
+        this.notifyObservers("There is a new comment on one of your store's products");
         return new Response(false, "the comment added successfully");
     }
 
@@ -1344,4 +1395,62 @@ public class TradingSystem {
             return response;
         }
     }
+
+    public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
+        if (!ValidConnectedUser(ownerID, connID)) {
+            return new Response(true, "Error in User details!");
+        }
+        if (!stores.containsKey(storeID)) {
+            return new Response(true, "the store doesn't exist");
+        }
+        if(!stores.get(storeID).checkOwner(ownerID)){
+            return new Response(true, "the user that is not the owner of the store");
+        }
+        if (!stores.get(storeID).checkOwner(removeOwnerID)) {
+            return new Response(true, "the user that we want to remove is not the owner of the store");
+        }
+        if (stores.get(storeID).getPermission(removeOwnerID).getAppointmentId()!=ownerID) {
+            return new Response(true, "the user has no permissions to see this information");
+        }
+        else{
+            stores.get(storeID).removeOwner(removeOwnerID);
+            subscribers.get(removeOwnerID).removeOwnedStore(storeID);
+            ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
+            ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
+            for(OwnerPermission permission: ownerPermissionHashMap.values()){
+                if(permission.getAppointmentId()==removeOwnerID) {
+                    stores.get(storeID).removeOwner(permission.getUserId());
+                    subscribers.get(permission.getUserId()).removeOwnedStore(storeID);
+                    User userToRemove = subscribers.get(removeOwnerID);
+                    String storeName = stores.get(storeID).getName();
+                    observers = new ArrayList<>();
+                    observers.add(userToRemove);
+                    this.notifyObservers("You are removed from owning the store: " + storeName);
+                }
+            }
+            for(ManagerPermission permission: managerPermissionHashMap.values()){
+                if(permission.getAppointmentId()==removeOwnerID)
+                    stores.get(storeID).removeManager(permission.getUserId());
+            }
+        }
+        return new Response(false, "Successfully removed the owner");
+    }
+
+    public ConcurrentHashMap<String, Integer> getConnectedSubscribers() {
+        return connectedSubscribers;
+    }
+
+    //Observable pattern
+    @Override
+    public void addObserver(Observer observer) {
+        this.observers.add(observer);
+    }
+
+
+    public void notifyObservers(Object object) {
+        for (Observer o : this.observers) {
+            o.update(this, object);
+        }
+    }
+
 }

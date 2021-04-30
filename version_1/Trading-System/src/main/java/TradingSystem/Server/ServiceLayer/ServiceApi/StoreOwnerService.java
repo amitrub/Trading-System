@@ -25,7 +25,7 @@ import java.util.Map;
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
 
     /**
-     * @requirement 4.1
+     * @requirement 4.1.1
      * 
      * @param userID: int (Path) 
      * @param storeID: int (Path)
@@ -61,7 +61,29 @@ import java.util.Map;
     }
 
     /**
-     * @requirement 4.1
+     * @requirement 4.1.2
+     *
+     * @param userID : int (Path)
+     * @param storeID: int (Path)
+     * @param productID: int (Path)
+     * @param connID: String (Header)
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
+    //TODO: not check yet
+    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
+        Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
+        System.out.println(res);
+        tradingSystem.printProducts();
+        return res;
+    }
+
+    /**
+     * @requirement 4.1.3
      *
      * @param userID : int (Path)
      * @param storeID: int (Path)
@@ -87,7 +109,7 @@ import java.util.Map;
     }
 
     /**
-     * @requirement 4.1
+     * @requirement 4.1.3
      *
      * @param userID : int (Path)
      * @param storeID: int (Path)
@@ -354,8 +376,6 @@ import java.util.Map;
         return res;
     }
 
-
-
     /**
      * @requirement 4.5
      *
@@ -396,7 +416,7 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not check yet
+
     @MessageMapping("{userID}/store/{storeID}/add_new_manager/{managerID}")
     public Response EditManagerPermissions(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int managerID, @Payload Map<String, Object> obj)  {
         String connID = (String) obj.get("connID");

@@ -21,7 +21,6 @@ import static org.junit.Assert.assertTrue;
 public class OwnerTests {
 
     Client client;
-    TradingSystem tradingSystem = TradingSystem.getInstance();
 
     @BeforeEach
     void setUp() {
@@ -354,8 +353,6 @@ public class OwnerTests {
     @Test
     void HappyAddOwner() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -379,8 +376,6 @@ public class OwnerTests {
         client.Logout();
 
         Integer id1 = client.Register("elinor", "123");
-        client.Login("elinor", "123");
-        client.Logout();
 
         client.Register("roee", "123");
         client.Login("roee", "123");
@@ -409,8 +404,6 @@ public class OwnerTests {
     @Test
     void SadAddDoubleAppointmentOwner() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -427,57 +420,88 @@ public class OwnerTests {
     }
     //endregion
 
-    //region requirement 4.4: Remove owner tests - version 2
+    //region requirement 4.4: Remove owner tests
     @Test
     void HappyRemoveOwner() {
-        /*
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+        Integer newOwnerID = client.Register("nofet", "123");
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addOwner(storeID, newOwnerID);
 
-        tradingSystem.AddNewManager(NofetId,NofetConnID,2,ElinorId);
-        Response res= tradingSystem.RemoveManager(NofetId,NofetConnID,2,ElinorId);
-        assertEquals(res.getMessage(), "The manager removed successfully");
-
-         */
+        Response res = client.removeOwner(storeID, newOwnerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> owners = client.showOwnerStores();
+        assertFalse(res.getIsErr());
+        assertEquals(owners.size(), 0);
     }
 
     @Test
-    void SadRemoveIsNotOwner() {
-        /*
-        String gust1 = tradingSystem.connectSystem().getConnID();
-        int NofetId=tradingSystem.Register(gust1, "nofet", "123").getUserID();
-        String NofetConnID=tradingSystem.Login(gust1, "nofet", "123").getConnID();
-        tradingSystem.AddStore(NofetId, NofetConnID, "NofetStore");
+    void SadRemoveNotAppointment() {
+        Integer newOwnerID1 = client.Register("nofet", "123");
+        Integer newOwnerID2 = client.Register("roee", "123");
 
-        String gust2 = tradingSystem.connectSystem().getConnID();
-        int ElinorId=tradingSystem.Register(gust2, "elinor", "123").getUserID();
-        String ElinorConnID = tradingSystem.Login(gust2, "elinor", "123").getConnID();
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addOwner(storeID, newOwnerID1);
+        client.addOwner(storeID, newOwnerID2);
+        client.Logout();
 
-        String gust3 = tradingSystem.connectSystem().getConnID();
-        int RoeeId=tradingSystem.Register(gust3, "Roee", "123").getUserID();
-        String RoeeConnID = tradingSystem.Login(gust3, "Roee", "123").getConnID();
-
-        tradingSystem.AddNewOwner(NofetId,NofetConnID,2,ElinorId);
-        tradingSystem.AddNewManager(NofetId,NofetConnID,2,RoeeId);
-
-        Response res= tradingSystem.RemoveManager(ElinorId,ElinorConnID,2,RoeeId);
-        assertEquals(res.getMessage(), "The user " + ElinorId + " is not the one who appointed the manager");
-         */
+        client.Login("nofet", "123");
+        Response res = client.removeOwner(storeID, newOwnerID2);
+        client.Logout();
+        client.Login("roee", "123");
+        List<DummyStore> owners = client.showOwnerStores();
+        assertTrue(res.getIsErr());
+        assertEquals(owners.size(), 1);
     }
+
+    @Test
+    void SadRemoveNotOwner1() {
+        Integer newOwnerID = client.Register("nofet", "123");
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addOwner(storeID, newOwnerID);
+        client.Logout();
+
+        client.Register("roee", "123");
+        client.Login("roee", "123");
+
+        Response res = client.removeOwner(storeID, newOwnerID);
+        client.Logout();
+        client.Login("nofet", "123");
+        List<DummyStore> owners = client.showOwnerStores();
+        assertTrue(res.getIsErr());
+        assertEquals(owners.size(), 1);
+    }
+
+    @Test
+    void SadRemoveNotOwner2() {
+        Integer newOwnerID = client.Register("nofet", "123");
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+
+        Response res = client.removeOwner(storeID, newOwnerID);
+        assertTrue(res.getIsErr());
+    }
+
     //endregion
 
     //region requirement 4.5: Add manager tests
     @Test
     void HappyAddManager() {
         Integer newManagerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -501,8 +525,6 @@ public class OwnerTests {
         client.Logout();
 
         Integer id1 = client.Register("elinor", "123");
-        client.Login("elinor", "123");
-        client.Logout();
 
         client.Register("roee", "123");
         client.Login("roee", "123");
@@ -527,8 +549,6 @@ public class OwnerTests {
     @Test
     void SadAddDoubleAppointmentManager() {
         Integer id1 = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -752,8 +772,6 @@ public class OwnerTests {
     @Test
     void HappyRemoveManager() {
         Integer newManagerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -768,13 +786,7 @@ public class OwnerTests {
     @Test
     void SadRemoveManagerNoPermission() {
         Integer newManagerID1 = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
-
         Integer newManagerID2 = client.Register("roee", "123");
-        client.Login("roee", "123");
-        client.Logout();
-
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -792,8 +804,6 @@ public class OwnerTests {
     @Test
     void SadRemoveManagerNoManager() {
         Integer newManagerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -803,20 +813,13 @@ public class OwnerTests {
         boolean b1 = client.removeManager(storeID, newManagerID);
         assertTrue(b1);
     }
-
-
     //endregion
 
-    //region requirement 4.9: Information on officials tests - TODO
+    //region requirement 4.9: Information on officials tests
     @Test
     void HappyShowOfficialsInfo() {
         Integer newOwnerID = client.Register("nofet", "123");
-        client.Login("nofet", "123");
-        client.Logout();
-
         Integer newManagerID = client.Register("hadas", "123");
-        client.Login("hadas", "123");
-        client.Logout();
 
         client.Register("elinor", "123");
         client.Login("elinor", "123");
@@ -853,7 +856,6 @@ public class OwnerTests {
         Response res = client.showStoreWorkers(storeID+1);
         assertTrue(res.getIsErr());
     }
-
     //endregion
 
     //region requirement 4.11: Store history tests
@@ -901,6 +903,49 @@ public class OwnerTests {
 
         List<DummyShoppingHistory> history = client.ownerStoreHistory(storeID+1);
         assertEquals(history.size(), 0);
+    }
+    //endregion
+
+    //region requirement 9.1 - Real time alert
+    @Test
+    void PurchaseAlert() {
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID = getProductID(storeProducts1,"Sneakers");
+        client.Logout();
+
+        Integer newClient = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.addProductToCart(storeID, productID, 2);
+        client.subscriberPurchase("123456789", "0521234567","Tel Aviv");
+
+        //need to check that elinor got a message of buying a product from her store
+
+    }
+
+    @Test
+    void RemoveAlert() {
+        Integer newOwnerID = client.Register("nofet", "123");
+        client.Login("nofet", "123");
+        client.Logout();
+
+        client.Register("elinor", "123");
+        client.Login("elinor", "123");
+        client.openStore("Store");
+        Integer storeID = getStoreID(client.showAllStores(), "Store");
+        client.addOwner(storeID, newOwnerID);
+        client.removeOwner(storeID, newOwnerID);
+
+        //need to check that nofet got a message of remove her from owning the store
+        //maybe add to response - list of messages
+    }
+
+    @Test
+    void EditPolicesAlert() {
     }
     //endregion
 
