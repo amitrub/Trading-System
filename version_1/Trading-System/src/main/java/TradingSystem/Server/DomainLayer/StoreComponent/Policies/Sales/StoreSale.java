@@ -9,7 +9,7 @@ public class StoreSale extends SimpleSale {
    // private Integer saleID;
     private Integer storeID;
     private Double  discountPercentage;
-    private Expression expression;
+    //private Expression expression;
 
     public StoreSale(Integer saleID, Integer storeID, Double discountPercentage) {
         super(saleID);
@@ -20,7 +20,7 @@ public class StoreSale extends SimpleSale {
 
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
-        if(expression.evaluate(products,finalSale, userID, storeID)){
+        if(this.getExpression().evaluate(products,finalSale, userID, storeID)){
             return  (discountPercentage/100)*finalSale;
         }
         return 0.0;

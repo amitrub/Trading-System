@@ -37,17 +37,17 @@ public class DiscountPolicy {
     }
 
    //TODO check
-    public Double calculatePrice(ConcurrentHashMap<Integer,Integer> products, Integer userID, Double priceBeforSale){
+    public Double calculatePrice(ConcurrentHashMap<Integer,Integer> products, Integer userID, Double priceBeforeSale){
         Double sale =0.0;
 
         Set<Integer> keySetSales=Sales.keySet();
         for (Integer key:keySetSales
         ) {
-            Double s=Sales.get(key).calculateSale(products,priceBeforSale, userID,storeID );
+            Double s=Sales.get(key).calculateSale(products,priceBeforeSale, userID,storeID );
             sale=s+sale;
         }
 
-        return priceBeforSale-sale;
+        return priceBeforeSale-sale;
     }
 
 }

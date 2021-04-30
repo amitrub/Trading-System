@@ -12,7 +12,7 @@ public class CategorySale extends SimpleSale {
     //Integer saleID;
     String category;
     Double  discountPercentage;
-    Expression expression;
+    //Expression expression;
     TradingSystem tradingSystem=TradingSystem.getInstance();
 
     public CategorySale(Integer saleID,String category, Double discountPercentage) {
@@ -24,13 +24,13 @@ public class CategorySale extends SimpleSale {
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         double priceForCategory=0.0;
-        if(expression.evaluate(products,finalSale,userID,storeID)){
+        if(this.getExpression().evaluate(products,finalSale,userID,storeID)){
             Set<Integer> keySet=products.keySet();
             for (Integer key:keySet
                  ) {
                 Product p=tradingSystem.getProduct(storeID,key);
                 if(p.getCategory().equals(category)){
-                    priceForCategory=priceForCategory+p.getPrice();
+                    priceForCategory=priceForCategory+p.getPrice()*products.get(p.getProductID());
                 }
             }
         }

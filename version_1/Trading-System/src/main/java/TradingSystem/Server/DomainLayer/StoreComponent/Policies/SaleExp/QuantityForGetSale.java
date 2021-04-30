@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class QuantityForGetSale extends SimpleExpression {
 
     private Integer productId;
-    private Double quantityForSale;
+    private Integer quantityForSale;
 
-    public QuantityForGetSale(Integer expId,Integer productId,  Double quantityForSale) {
+    public QuantityForGetSale(Integer expId,Integer productId,  Integer quantityForSale) {
         super(expId);
         this.productId=productId;
         this.quantityForSale = quantityForSale;

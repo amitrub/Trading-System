@@ -11,7 +11,7 @@ public class ProductSale extends SimpleSale {
     //Integer saleID;
     Integer productID;
     Double discountPercentage;
-    Expression expression;
+    //Expression expression;
     TradingSystem tradingSystem = TradingSystem.getInstance();
 
     public ProductSale(Integer saleID, Integer productID, Double discountPercentage) {
@@ -19,16 +19,17 @@ public class ProductSale extends SimpleSale {
         super(saleID);
         this.productID = productID;
         this.discountPercentage = discountPercentage;
-        this.expression = null;
+        this.setExpression(null);
     }
 
     //Add productID,Price,quantity
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         if (products.get(productID) != null) {
-            if (expression.evaluate(products, finalSale, userID, storeID)) {
+            if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
                 Product p = tradingSystem.getProduct(storeID, productID);
-                return (discountPercentage / 100) * p.getPrice();
+                Double ret = ((discountPercentage / 100) * p.getPrice())*products.get(productID);
+                return ret;
             }
         }
         return 0.0;
