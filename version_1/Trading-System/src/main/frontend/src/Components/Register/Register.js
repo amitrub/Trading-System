@@ -23,7 +23,7 @@ function Register(props) {
     setPassState("");
 
     // const res = await api.register(props.clientConnection);
-    const res2 = await api.getTest(props.clientConnection, props.response);
+    await api.getTest(props.clientConnection, props.connID);
 
     // console.log("after register post: \n");
   }
@@ -61,7 +61,6 @@ function Register(props) {
         <div className="new-expense__actions">
           <button type="submit">Register</button>
         </div>
-        <h1>{props.response.message}</h1>
       </form>
     </div>
   );

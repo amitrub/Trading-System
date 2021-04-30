@@ -9,18 +9,20 @@ export const createApiClient = () => {
 
   return {
     //Guest
-    getTest: (clientConnection, response) => {
-      let path = guestURL.concat(`/app/test`);
-      response = clientConnection.publish({
-        destination: "/app/test",
+    getTest: (clientConnection, connID) => {
+      let path = `/app/test`;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
-      return response;
     },
 
-    connectSystem: (clientConnection) => {
+    connectSystem: () => {
       let path = guestURL.concat(`home`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
+      return axios.get(path).then((res) => {
+        console.log("ApiClient:\n" + res);
         return res.data;
       });
     },
