@@ -3,15 +3,15 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.*;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 @RestController
-//@RequestMapping(path = "app")
+@RequestMapping(path = "app")
 //server localhost is 8080 and react localhost is 3000 - we need to crossOrigin to communicate between the two.
 //but, if we think security its a problem because everybody can control and get our info.
 //todo: define who we want to cross origin
@@ -19,11 +19,18 @@ import java.util.Map;
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
     // 2.1 test
 
+    @Autowired
+    SimpMessagingTemplate template;
+
     @MessageMapping("/test")
-    @SendTo("/topic/{connID}")
-    public Response test(@DestinationVariable("connID") String connID){
+    @SendTo("/topic/message")
+    public void test(@Payload Map<String, Object> obj){
         System.out.println("testtttt");
-        return new Response(false, "Hello Welcome to Trading System");
+        String connID = (String) obj.get("connID");
+        String path = String.format("/topic/%s", connID);
+        System.out.println(path);
+        template.convertAndSend(path, new Response(false, "Hello Welcome to Trading System"));
+//        return new Response(false, "Hello Welcome to Trading System");
     }
 
     @GetMapping("clear_system")

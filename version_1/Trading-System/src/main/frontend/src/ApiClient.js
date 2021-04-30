@@ -1,231 +1,373 @@
 import axios from "axios";
 
 export const createApiClient = () => {
-  const guestURL = "http://localhost:8080/app/";
-  const subscriberURL = "http://localhost:8080/app/subscriber";
-  const ownerURL = "http://localhost:8080/app/owner";
-  const managerURL = "http://localhost:8080/app/manager";
-  const adminURL = "http://localhost:8080/app/admin";
+  const guestURL = "/app/";
+  const subscriberURL = "/app/subscriber/";
+  const ownerURL = "/app/owner/";
+  const managerURL = "/app/manager/";
+  const adminURL = "/app/admin/";
 
   return {
     //Guest
-    getTest: (clientConnection, response) => {
-      let path = guestURL.concat(`/app/test`);
-      response = clientConnection.publish({
-        destination: "/app/test",
-      });
-      return response;
-    },
-
-    connectSystem: (clientConnection) => {
-      let path = guestURL.concat(`home`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
-      });
-    },
-
-    register: (clientConnection) => {
-      let path = guestURL.concat(`register`);
-      // const headers = {
-      //     'Content-Type': 'application/json; utf-8',
-      //     'Accept': 'application/json',
-      //     'connID': connID
-      //   }
-      const data = {
-        message: "test",
-      };
-
+    getTest: (clientConnection, connID) => {
+      let path = `/app/test`;
       clientConnection.publish({
-        destination: "/app/sendMessage",
-        body: JSON.stringify(data),
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    login: (clientConnection) => {
+    connectSystem: () => {
+      let path = guestURL.concat(`home`);
+      return axios.get(path).then((res) => {
+        console.log("ApiClient:\n" + res);
+        return res.data;
+      });
+    },
+
+    register: (clientConnection, connID, name, pass) => {
+      let path = guestURL.concat(`register`);
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          userName: name,
+          password: pass,
+        }),
+      });
+    },
+
+    login: (clientConnection, connID, name, pass) => {
       let path = guestURL.concat(`login`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          userName: name,
+          password: pass,
+        }),
       });
     },
 
-    getAllStores: (clientConnection) => {
+    getAllStores: (clientConnection, connID) => {
       let path = guestURL.concat(`stores`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    getAllProductsOfStore: (clientConnection, storeID) => {
+    getAllProductsOfStore: (clientConnection, connID, storeID) => {
       let path = guestURL.concat(`store/${storeID}/products`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    search: (clientConnection) => {
+    search: (
+      clientConnection,
+      connID,
+      name,
+      prodName,
+      prodCat,
+      min,
+      max,
+      prank,
+      srank
+    ) => {
       let path = guestURL.concat(`search`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          name: name,
+          ProductName: prodName,
+          ProductCategory: prodCat,
+          minPrice: min,
+          maxPrice: max,
+          pRank: prank,
+          sRank: srank,
+        }),
       });
     },
 
-    addProductToCart: (clientConnection) => {
+    addProductToCart: (
+      clientConnection,
+      connID,
+      storeID,
+      productID,
+      quantity
+    ) => {
       let path = guestURL.concat(`shopping_cart/add_product`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          storeID: storeID,
+          productID: productID,
+          quantity: quantity,
+        }),
       });
     },
 
-    showShoppingCart: (clientConnection) => {
+    showShoppingCart: (clientConnection, connID) => {
       let path = guestURL.concat(`shopping_cart`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    removeProductFromCart: (clientConnection) => {
+    removeProductFromCart: (clientConnection, connID, storeID, productID) => {
       let path = guestURL.concat(`shopping_cart/remove_product`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          storeID: storeID,
+          productID: productID,
+        }),
       });
     },
 
-    editProductQuantityFromCart: (clientConnection) => {
+    editProductQuantityFromCart: (
+      clientConnection,
+      connID,
+      storeID,
+      productID,
+      quantity
+    ) => {
       let path = guestURL.concat(`shopping_cart/edit_product`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          storeID: storeID,
+          productID: productID,
+          quantity: quantity,
+        }),
       });
     },
 
-    guestPurchase: (clientConnection) => {
+    guestPurchase: (
+      clientConnection,
+      connID,
+      name,
+      credit_number,
+      phone_number,
+      address
+    ) => {
       let path = guestURL.concat(`shopping_cart/purchase`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          name: name,
+          credit_number: credit_number,
+          phone_number: phone_number,
+          address: address,
+        }),
       });
     },
 
     //Subscriber
-    logout: (clientConnection, userID) => {
+    logout: (clientConnection, connID, userID) => {
       let path = subscriberURL.concat(`${userID}/logout`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    addStore: (clientConnection, userID) => {
+    addStore: (clientConnection, connID, userID, storeName) => {
       let path = subscriberURL.concat(`${userID}/add_store`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          storeName: storeName,
+        }),
       });
     },
 
-    writeComment: (clientConnection, userID) => {
+    writeComment: (clientConnection, connID, userID, storeID) => {
       let path = subscriberURL.concat(`${userID}/write_comment`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          storeID: storeID,
+        }),
       });
     },
 
-    showUserHistory: (clientConnection, userID) => {
+    showUserHistory: (clientConnection, connID, userID, productID, comment) => {
       let path = subscriberURL.concat(`${userID}/user_history`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          productID: productID,
+          comment: comment,
+        }),
       });
     },
 
-    subscriberPurchase: (clientConnection, userID) => {
+    subscriberPurchase: (
+      clientConnection,
+      connID,
+      userID,
+      credit_number,
+      phone_number,
+      address
+    ) => {
       let path = subscriberURL.concat(`${userID}/shopping_cart/purchase`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          credit_number: credit_number,
+          phone_number: phone_number,
+          address: address,
+        }),
       });
     },
 
     //Owner
-    addProductToStore: (clientConnection, userID, storeID) => {
+    addProductToStore: (
+      clientConnection,
+      connID,
+      userID,
+      storeID,
+      productName,
+      category,
+      quantity
+    ) => {
       let path = ownerURL.concat(`${userID}/store/${storeID}/add_new_product`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          productName: productName,
+          category: category,
+          quantity: quantity,
+        }),
       });
     },
 
-    changeQuantityProduct: (clientConnection, userID, storeID, productID) => {
+    changeQuantityProduct: (
+      clientConnection,
+      connID,
+      userID,
+      storeID,
+      productID
+    ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/change_quantity_product/${productID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          quantity: quantity,
+        }),
       });
     },
 
-    editProduct: (clientConnection, userID, storeID, productID) => {
+    editProduct: (
+      clientConnection,
+      connID,
+      userID,
+      storeID,
+      productID,
+      productName,
+      category,
+      price,
+      quantity
+    ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/edit_product/${productID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          productName: productName,
+          category: category,
+          price: price,
+          quantity: quantity,
+        }),
       });
     },
 
-    removeProduct: (clientConnection, userID, storeID, productID) => {
+    removeProduct: (clientConnection, connID, userID, storeID, productID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_product/${productID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    addBuyingPolicy: (clientConnection, userID, storeID) => {
+    addBuyingPolicy: (clientConnection, connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_buying_policy`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    addDiscountPolicy: (clientConnection, userID, storeID) => {
+    addDiscountPolicy: (clientConnection, connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_discount_policy`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    editBuyingPolicy: (clientConnection, userID, storeID, buyingPolicyID) => {
+    editBuyingPolicy: (
+      clientConnection,
+      connID,
+      userID,
+      storeID,
+      buyingPolicyID
+    ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/edit_buying_policy/${buyingPolicyID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
     editDiscountPolicy: (
       clientConnection,
+      connID,
       userID,
       storeID,
       discountPolicyID
@@ -233,24 +375,35 @@ export const createApiClient = () => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/edit_discount_policy/${discountPolicyID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    removeBuyingPolicy: (clientConnection, userID, storeID, buyingPolicyID) => {
+    removeBuyingPolicy: (
+      clientConnection,
+      connID,
+      userID,
+      storeID,
+      buyingPolicyID
+    ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_buying_policy/${buyingPolicyID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
     removeDiscountPolicy: (
       clientConnection,
+      connID,
       userID,
       storeID,
       discountPolicyID
@@ -258,101 +411,158 @@ export const createApiClient = () => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_discount_policy/${discountPolicyID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    addNewOwner: (clientConnection, userID, storeID, newOwnerID) => {
+    addNewOwner: (clientConnection, connID, userID, storeID, newOwnerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_new_owner/${newOwnerID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    removeOwner: (clientConnection, userID, storeID, OwnerID) => {
+    removeOwner: (clientConnection, connID, userID, storeID, OwnerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_owner/${OwnerID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    addNewManager: (clientConnection, userID, storeID, newManagerID) => {
+    addNewManager: (
+      clientConnection,
+      connID,
+      userID,
+      storeID,
+      newManagerID
+    ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_new_manager/${newManagerID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    editManagerPermissions: (clientConnection, userID, storeID, managerID) => {
+    editManagerPermissions: (
+      clientConnection,
+      connID,
+      userID,
+      storeID,
+      managerID,
+      AddProduct,
+      ReduceProduct,
+      DeleteProduct,
+      EditProduct,
+      AppointmentOwner,
+      EditManagerPermission,
+      RemoveManager,
+      GetInfoOfficials,
+      GetInfoRequests,
+      ResponseRequests,
+      GetStoreHistory
+    ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_new_manager/${managerID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+          AddProduct: AddProduct,
+          ReduceProduct: ReduceProduct,
+          DeleteProduct: DeleteProduct,
+          EditProduct: EditProduct,
+          AppointmentOwner: AppointmentOwner,
+          AppointmentManager: AppointmentManager,
+          EditManagerPermission: EditManagerPermission,
+          RemoveManager: RemoveManager,
+          GetInfoOfficials: GetInfoOfficials,
+          GetInfoRequests: GetInfoRequests,
+          ResponseRequests: ResponseRequests,
+          GetStoreHistory: GetStoreHistory,
+        }),
       });
     },
 
-    getPossiblePermissionsToManager: (clientConnection, userID) => {
+    getPossiblePermissionsToManager: (clientConnection, connID, userID) => {
       let path = ownerURL.concat(
         `${userID}/store/get_possible_permissions_to_manager`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    removeManager: (clientConnection, userID, storeID, managerID) => {
+    removeManager: (clientConnection, connID, userID, storeID, managerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_manager/${managerID}`
       );
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    showStoreWorkers: (clientConnection, userID, storeID) => {
+    showStoreWorkers: (clientConnection, connID, userID, storeID) => {
       let path = ownerURL.concat(`${userID}/store/${storeID}/workers`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    ownerStoreHistory: (clientConnection, userID, storeID) => {
+    ownerStoreHistory: (clientConnection, connID, userID, storeID) => {
       let path = ownerURL.concat(`${userID}/store_history_owner/${storeID}`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    showOwnerStores: (clientConnection, userID) => {
+    showOwnerStores: (clientConnection, connID, userID) => {
       let path = ownerURL.concat(`${userID}/stores_owner`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
 
-    showManagerStores: (clientConnection, userID) => {
+    showManagerStores: (clientConnection, connID, userID) => {
       let path = ownerURL.concat(`${userID}/stores_manager`);
-      return clientConnection.get(path).then((res) => {
-        console.log(res);
-        return res.data;
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
       });
     },
   };
