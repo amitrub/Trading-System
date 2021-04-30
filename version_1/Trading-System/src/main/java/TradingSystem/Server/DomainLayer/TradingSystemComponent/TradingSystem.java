@@ -563,7 +563,7 @@ public class TradingSystem extends Observable {
                 for (User u:subscribers.values()) {
                     for (Integer ownedStore:u.getMyOwnerStore()) {
                         if(ownedStore == storeID)
-                            this.addObserver(myGuest);
+                            this.addObserver(u);
                     }
                 }
             }
@@ -588,7 +588,7 @@ public class TradingSystem extends Observable {
                 for (User u:subscribers.values()) {
                     for (Integer ownedStore:u.getMyOwnerStore()) {
                         if(ownedStore == storeID)
-                            this.addObserver(user);
+                            this.addObserver(u);
                     }
                 }
             }
@@ -938,7 +938,7 @@ public class TradingSystem extends Observable {
     /**
      * @param userId
      * @param connID
-     * @param storeId
+     * @param storeID
      * @param productId
      * @param comment
      * @return Response{
@@ -947,13 +947,13 @@ public class TradingSystem extends Observable {
      *      *  "connID": String
      *      * }
      */
-    public Response WriteComment(int userId, String connID, int storeId, int productId, String comment) {
-        if(!stores.containsKey(storeId)){
+    public Response WriteComment(int userId, String connID, int storeID, int productId, String comment) {
+        if(!stores.containsKey(storeID)){
             return new Response(true, "Store doesn't exist in the system");
         }
-        else if(stores.containsKey(storeId)){
-            Store store=stores.get(storeId);
-            if(!store.isProductExist(storeId)){
+        else if(stores.containsKey(storeID)){
+            Store store=stores.get(storeID);
+            if(!store.isProductExist(storeID)){
                 return new Response(true, "The product doesn't exist in the store anymore");
             }
         }
@@ -964,9 +964,17 @@ public class TradingSystem extends Observable {
         if(!user.IsProductExist(productId)){
             return new Response(true, "User didn't buy this product");
         }
-        if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
+        if(stores.get(storeID).getProduct(productId).isUserComment(userId)){
             return new Response(true, "The user already wrote comment for this product");
         }
+        this.observers = new ArrayList<>();
+        for (User u:subscribers.values()) {
+            for (Integer ownedStore:u.getMyOwnerStore()) {
+                if(ownedStore == storeID)
+                    this.addObserver(u);
+            }
+        }
+        this.notifyObservers("There is a new comment on one of your store's products");
         return new Response(false, "the comment added successfully");
     }
 
