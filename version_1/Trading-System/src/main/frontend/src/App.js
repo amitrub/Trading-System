@@ -1,49 +1,48 @@
-import React, { useState, useEffect } from "react";
+import React, { setState } from "react";
 import "./App.css";
 import TestComponent from "./Components/TestComponent/TestComponent";
 import Register from "./Components/Register/Register";
 import User from "./Components/User/User";
 import { Client } from "@stomp/stompjs";
+import MainPage from "./Components/MainPage/MainPage";
+import createApiClient from "./ApiClient";
 
+const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
 
-function App() {
-  const [currUserConnID, setCurrUserConnID] = useState("");
-  // const [error, setErrorState] = useState('');
-  const [message, setMessage] = useState("You server message here.");
-  const [response, setResponse] = useState({
-    isErr: false,
-    message: "init",
-    returnObject: {},
-  });
-  const [clientConnection, setClientConnection] = useState([]);
+class App extends React.Component {
+  constructor() {
+    super();
+    this.state = {
+      connID: "connID",
+      response: {
+        isErr: false,
+        message: "init",
+        returnObject: {},
+      },
+      clientConnection: "",
+    };
+  }
 
-  let onMessageReceived = (msg) => {
-    setMessage(msg.message);
+  submitRegisterHandler = (regData) => {
+    console.log(regData);
   };
 
-  function submitRegisterHandler(regData) {
-    console.log(regData);
-  }
-
-  function updateConnIDHandler(connID) {
-    setCurrUserConnID(connID);
-  }
-
-  useEffect(() => {
+  async componentDidMount() {
     let currentComponent = this;
 
     let onConnected = () => {
       console.log("Connected!!");
-      client.subscribe("/topic/message", function (msg) {
+      console.log("--- check subscribe: " + `/topic/${this.state.connID}`);
+      client.subscribe(`/topic/${this.state.connID}`, function (msg) {
         if (msg.body) {
           var jsonBody = JSON.parse(msg.body);
           if (jsonBody.message) {
-            setMessage(jsonBody.message);
-          }
-          if (!jsonBody.isErr) {
-            console.log("dd");
-            setResponse(jsonBody);
+            // setResponse(jsonBody);
+            currentComponent.setState({
+              response: jsonBody,
+            });
+            console.log(jsonBody);
           }
         }
       });
@@ -62,26 +61,48 @@ function App() {
       onDisconnect: onDisconnected,
     });
 
-    client.activate();
-    setClientConnection(client);
-  }, []);
+    const connectionRespone = await api.connectSystem();
+    console.log(connectionRespone);
+    if (!connectionRespone) console.log("Error response is null!!!");
 
-  return (
-    <div className="App">
-      <h1>~ Trading System ~</h1>
-      {/* <TestComponent/> */}
-      {/* <User onUpdateConnID = {updateConnIDHandler}/> */}
-      <Register
-        onSubmitRegister={submitRegisterHandler}
-        connID={currUserConnID}
-        clientConnection={clientConnection}
-        response={response}
-      />
-      {/* <div>{client}</div> */}
-      <div>{message}</div>
-      <div>{response.message}</div>
-    </div>
-  );
+    this.setState(
+      (prevState) => ({
+        response: connectionRespone,
+        connID: connectionRespone.returnObject.connID,
+      }),
+      () => {
+        console.log(connectionRespone.returnObject.connID);
+        console.log(this.state.connID);
+        client.activate();
+        this.setState({
+          clientConnection: client,
+        });
+      }
+    );
+  }
+
+  render() {
+    return (
+      <div className="App">
+        <h1>~ Trading System ~</h1>
+            <MainPage/>
+        <Register
+          onSubmitRegister={this.submitRegisterHandler}
+          connID={this.state.connID}
+          clientConnection={this.state.clientConnection}
+          response={this.state.response}
+        />
+        <div>
+          <p>
+            response: (isErr={this.state.response.isErr ? "true" : "false"},
+            msg:
+            {this.state.response.message}){" "}
+          </p>
+          <p>connID: {this.state.connID}</p>
+        </div>
+      </div>
+    );
+  }
 }
 
 export default App;

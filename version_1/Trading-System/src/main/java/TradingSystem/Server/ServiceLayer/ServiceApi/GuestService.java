@@ -13,12 +13,15 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
+@RequestMapping(path = "app")
 //server localhost is 8080 and react localhost is 3000 - we need to crossOrigin to communicate between the two.
 //but, if we think security its a problem because everybody can control and get our info.
 //todo: define who we want to cross origin
-@CrossOrigin("*") public class GuestService {
-    @Autowired
-    SimpMessagingTemplate template;
+@CrossOrigin("*") 
+public class GuestService {
+    
+  @Autowired
+  SimpMessagingTemplate template;
 
     private final TradingSystem tradingSystem = TradingSystem.getInstance();
     // 2.1 test
@@ -28,11 +31,16 @@ import java.util.Map;
         System.out.println("-------------------------------------------");
         return new ResponseEntity<>(HttpStatus.OK);
     }
+  
     @MessageMapping("/test")
-    @SendTo("/topic/{connID}")
-    public Response test(@DestinationVariable("connID") String connID){
+    @SendTo("/topic/message")
+    public void test(@Payload Map<String, Object> obj){
         System.out.println("testtttt");
-        return new Response(false, "Hello Welcome to Trading System");
+        String connID = (String) obj.get("connID");
+        String path = String.format("/topic/%s", connID);
+        System.out.println(path);
+        template.convertAndSend(path, new Response(false, "Hello Welcome to Trading System"));
+//        return new Response(false, "Hello Welcome to Trading System");
     }
 
     @GetMapping("clear_system")
