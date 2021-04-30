@@ -4,6 +4,7 @@ import TestComponent from "./Components/TestComponent/TestComponent";
 import Register from "./Components/Register/Register";
 import User from "./Components/User/User";
 import { Client } from "@stomp/stompjs";
+import MainPage from "./Components/MainPage/MainPage";
 import createApiClient from "./ApiClient";
 
 const api = createApiClient();
@@ -22,14 +23,6 @@ class App extends React.Component {
       clientConnection: "",
     };
   }
-
-  // const [connID, setConnID] = useState("");
-  // const [response, setResponse] = useState({
-  //   isErr: false,
-  //   message: "init",
-  //   returnObject: {},
-  // });
-  // const [clientConnection, setClientConnection] = useState([]);
 
   submitRegisterHandler = (regData) => {
     console.log(regData);
@@ -71,7 +64,6 @@ class App extends React.Component {
     const connectionRespone = await api.connectSystem();
     console.log(connectionRespone);
     if (!connectionRespone) console.log("Error response is null!!!");
-    // setResponse(connectionRespone);
 
     this.setState(
       (prevState) => ({
@@ -87,20 +79,13 @@ class App extends React.Component {
         });
       }
     );
-
-    // setConnID((prevState) => {
-    //   connID: connectionRespone.returnObject.connID;
-    // });
-    // console.log(connectionRespone.returnObject.connID);
-    // console.log(connID);
-
-    // setClientConnection(client);
   }
 
   render() {
     return (
       <div className="App">
         <h1>~ Trading System ~</h1>
+            <MainPage/>
         <Register
           onSubmitRegister={this.submitRegisterHandler}
           connID={this.state.connID}
