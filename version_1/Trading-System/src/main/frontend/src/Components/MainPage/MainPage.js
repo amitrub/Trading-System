@@ -5,12 +5,6 @@ import fashion from "../img/sadna-fashion.jpeg";
 import electronics from "../img/sadna-elctorincs.jpeg";
 import pets from "../img/sadna-dogs.jpeg";
 import kitchen from "../img/sadna-kitchen.jpeg";
-import hadas from "../img/develops/hadas.jpeg";
-import roee from "../img/develops/roee.jpeg";
-import amit from "../img/develops/rubin.jpeg";
-import reut from "../img/develops/reut.jpeg";
-import nofet from "../img/develops/nofet.jpeg";
-import elinor from "../img/develops/elinor.jpeg";
 
 function mainPage() {
   return (
@@ -50,18 +44,18 @@ function mainPage() {
         <nav>
           <div className="row">
             {/* <img src="resources/img/online-shopping-logo.jpeg" alt="Omnifood logo" className="logo"> </img> */}
-            <ul className="main-nav js--main-nav">
+            <ul className="main-nav js--main-nav" id="home">
               <li>
-                <a href="#features">cooking classes</a>
+                <a href="#home">home</a>
               </li>
               <li>
-                <a href="#works">blog</a>
+                <a href="#sign">sign</a>
               </li>
               <li>
-                <a href="#cities">gellery</a>
+                <a href="#programers">about us</a>
               </li>
               <li>
-                <a href="#plans">recommanditions</a>
+                <a href="#recommanditions">recommanditions</a>
               </li>
             </ul>
             <a className="mobile-nav-icon js--nav-icon">
@@ -74,10 +68,10 @@ function mainPage() {
             <strong>welcome to Ali - Bamba.</strong>
           </h1>
           <h1>the best trading system for you</h1>
-          <a className="btn btn-full js--scroll-to-plans" href="#">
+          <a className="btn btn-full js--scroll-to-plans" href="#connect">
             Let's shop!
           </a>
-          <a className="btn btn-ghost js--scroll-to-start" href="#">
+          <a className="btn btn-ghost js--scroll-to-start" href="#connect">
             <strong>Connect</strong>
           </a>
         </div>
@@ -95,7 +89,7 @@ function mainPage() {
           </p>
         </div>
 
-        <div className="row js--wp-1">
+        <div className="row">
           <div className="col span-1-of-4 box">
             <i className="ion-ios-infinite-outline icon-big"></i>
             <h3>Up to 365 days/year</h3>
@@ -137,7 +131,40 @@ function mainPage() {
 
       {/* --------------------- PHOTOS ---------------------- */}
 
-      <section className="section-form">
+      <section className="section-meals">
+        <ul className="meals-showcase clearfix">
+          <li>
+            <figure className="fashion-photo">
+              <img
+                src={fashion}
+                alt="Korean bibimbap with egg and vegetables"
+              />
+            </figure>
+          </li>
+          <li>
+            <figure className="electronics-photo">
+              <img
+                src={electronics}
+                alt="Simple italian pizza with cherry tomatoes"
+              />
+            </figure>
+          </li>
+          <li>
+            <figure className="pets-photo">
+              <img src={pets} alt="Chicken breast steak with vegetables" />
+            </figure>
+          </li>
+          <li>
+            <figure className="kitchen-photo">
+              <img src={kitchen} alt="Autumn pumpkin soup" />
+            </figure>
+          </li>
+        </ul>
+      </section>
+
+      {/* --------------------- CONNECT ---------------------- */}
+      {/* <Register /> */}
+      {/* <section className="section-form" id="connect">
         <div className="row">
           <h2>We're happy to hear from you</h2>
         </div>
@@ -213,44 +240,48 @@ function mainPage() {
             </div>
           </form>
         </div>
-      </section>
+      </section> */}
 
-      {/* --------------------- PHOTOS ---------------------- */}
+      {/* --------------------- RECCOMADITIONS ---------------------- */}
 
-      <section className="section-meals">
-        <ul className="meals-showcase clearfix">
-          <li>
-            <figure className="fashion-photo">
-              <img
-                src={fashion}
-                alt="Korean bibimbap with egg and vegetables"
-              />
-            </figure>
-          </li>
-          <li>
-            <figure className="electronics-photo">
-              <img
-                src={electronics}
-                alt="Simple italian pizza with cherry tomatoes"
-              />
-            </figure>
-          </li>
-          <li>
-            <figure className="pets-photo">
-              <img src={pets} alt="Chicken breast steak with vegetables" />
-            </figure>
-          </li>
-          <li>
-            <figure className="kitchen-photo">
-              <img src={kitchen} alt="Autumn pumpkin soup" />
-            </figure>
-          </li>
-        </ul>
-      </section>
+      {/* <section className="section-testimonials" id="recommanditions">
+        <div className="row">
+          <h2>Our customers can't live without us</h2>
+        </div>
+        <div className="row">
+          <div className="col span-1-of-3">
+            <blockquote>
+              Omnifood is just awesome! I just launched a startup which leaves
+              me with no time for cooking, so Omnifood is a life-saver. Now that
+              I got used to it, I couldn't live without my daily meals!
+              <img src="resources/img/customer-1.jpg" />
+              Alberto Duncan
+            </blockquote>
+          </div>
+          <div className="col span-1-of-3">
+            <blockquote>
+              Inexpensive, healthy and great-tasting meals, delivered right to
+              my home. We have lots of food delivery here in Lisbon, but no one
+              comes even close to Omifood. Me and my family are so in love!
+              <img src="resources/img/customer-2.jpg" />
+              Joana Silva
+            </blockquote>
+          </div>
+          <div className="col span-1-of-3">
+            <blockquote>
+              I was looking for a quick and easy food delivery service in San
+              Franciso. I tried a lot of them and ended up with Omnifood. Best
+              food delivery service in the Bay Area. Keep up the great work!
+              <img src="resources/img/customer-3.jpg" />
+              Milton Chapman
+            </blockquote>
+          </div>
+        </div>
+      </section> */}
 
       {/* --------------------- PROGRAMERS PHOTOS ---------------------- */}
 
-      <section className="section-cities" id="cities">
+      {/* <section className="section-cities" id="programers">
         <div className="row">
           <h2>This system desigend by the greatest programers</h2>
         </div>
@@ -353,7 +384,8 @@ function mainPage() {
             </div>
           </div>
         </div>
-      </section>
+      </section> */}
+
       {/* </body> */}
     </div>
   );

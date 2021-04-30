@@ -1,11 +1,14 @@
-import React, { setState } from "react";
+import React from "react";
 import "./App.css";
-import TestComponent from "./Components/TestComponent/TestComponent";
-import Register from "./Components/Register/Register";
-import User from "./Components/User/User";
+import "./Components/MainPage/MainPageDesign/style.css";
+import "./Components/MainPage/MainPageDesign/grid.css";
+import Register from "./Components/MainPage/Register";
 import { Client } from "@stomp/stompjs";
 import MainPage from "./Components/MainPage/MainPage";
 import createApiClient from "./ApiClient";
+import Reccomaditions from "./Components/MainPage/Reccomaditions";
+import Programers from "./Components/MainPage/Programers";
+import Login from "./Components/MainPage/Login";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -14,18 +17,60 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
-      connID: "connID",
+      clientConnection: "",
       response: {
         isErr: false,
         message: "init",
         returnObject: {},
       },
-      clientConnection: "",
+      username: "guest",
+      pass: "",
+      userID: -1,
+      connID: "connID",
+      whoAreUser: {
+        guest: true,
+        subscriber: false,
+        manager: false,
+        owner: false,
+      },
     };
   }
 
-  submitRegisterHandler = (regData) => {
-    console.log(regData);
+  registerHandler = (name, pass) => {
+    console.log(name);
+    const currentComponent = this;
+    const registerResponse = this.state.response;
+
+    if (registerResponse.isErr) {
+      console.log(registerResponse.message);
+    } else {
+      const oldConnID = this.state.connID;
+      this.setState(
+        (prevState) => ({
+          username: name,
+          pass: pass,
+          userID: registerResponse.returnObject.userID,
+          connID: registerResponse.connID,
+        }),
+        () => {
+          //unsubscribe old id
+          this.state.clientConnection.subscribe(
+            `/topic/${this.state.connID}`,
+            (msg) => {
+              if (msg.body) {
+                var jsonBody = JSON.parse(msg.body);
+                if (jsonBody.message) {
+                  currentComponent.setState({
+                    response: jsonBody,
+                  });
+                  console.log(jsonBody);
+                }
+              }
+            }
+          );
+        }
+      );
+    }
   };
 
   async componentDidMount() {
@@ -34,17 +79,19 @@ class App extends React.Component {
     let onConnected = () => {
       console.log("Connected!!");
       console.log("--- check subscribe: " + `/topic/${this.state.connID}`);
-      client.subscribe(`/topic/${this.state.connID}`, function (msg) {
+      client.subscribe(`/topic/${this.state.connID}`, (msg) => {
         if (msg.body) {
           var jsonBody = JSON.parse(msg.body);
           if (jsonBody.message) {
-            // setResponse(jsonBody);
             currentComponent.setState({
               response: jsonBody,
             });
             console.log(jsonBody);
           }
         }
+      });
+      currentComponent.setState({
+        clientConnection: client,
       });
     };
 
@@ -74,9 +121,9 @@ class App extends React.Component {
         console.log(connectionRespone.returnObject.connID);
         console.log(this.state.connID);
         client.activate();
-        this.setState({
-          clientConnection: client,
-        });
+        // this.setState({
+        //   clientConnection: client,
+        // });
       }
     );
   }
@@ -84,14 +131,27 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <h1>~ Trading System ~</h1>
         <MainPage />
-        <Register
-          onSubmitRegister={this.submitRegisterHandler}
-          connID={this.state.connID}
-          clientConnection={this.state.clientConnection}
-          response={this.state.response}
-        />
+        <section className="row">
+          <div className="col span-1-of-2 box">
+            <Register
+              onSubmitRegister={this.registerHandler}
+              connID={this.state.connID}
+              clientConnection={this.state.clientConnection}
+              response={this.state.response}
+            />
+          </div>
+          <div className="col span-1-of-2 box">
+            <Login
+              onSubmitRegister={this.registerHandler}
+              connID={this.state.connID}
+              clientConnection={this.state.clientConnection}
+              response={this.state.response}
+            />
+          </div>
+        </section>
+        <Reccomaditions />
+        <Programers />
         <div>
           <p>
             response: (isErr={this.state.response.isErr ? "true" : "false"},
