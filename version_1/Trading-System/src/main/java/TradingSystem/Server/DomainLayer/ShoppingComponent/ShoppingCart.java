@@ -308,6 +308,7 @@ public class ShoppingCart {
         loggerController.WriteLogMsg("user "+userID+" change product quantity ("+productID+", from store "+storeID+"), to "+quantity+".");
         return new Response("The quantity of the product update successfully");
 }
+
       /**
      * @requirement 2.8
      *
