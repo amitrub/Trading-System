@@ -1,13 +1,10 @@
-import "./MainPageDesign/style.css";
 import "../Navbar/Navbar.css";
-import "./MainPageDesign/grid.css";
+import "../../Design/grid.css";
+import "../../Design/style.css";
 import fashion from "../img/sadna-fashion.jpeg";
 import electronics from "../img/sadna-elctorincs.jpeg";
 import pets from "../img/sadna-dogs.jpeg";
 import kitchen from "../img/sadna-kitchen.jpeg";
-import createApiClient from "../../ApiClient";
-
-const api = createApiClient();
 
 function mainPage(props) {
   return (
@@ -41,10 +38,7 @@ function mainPage(props) {
             {/* <img src="resources/img/online-shopping-logo.jpeg" alt="Omnifood logo" className="logo"> </img> */}
             <ul className="main-nav js--main-nav" id="home">
               <li>
-                <a href="">hello {props.username}</a>
-              </li>
-              <li>
-                <a href="#home">home</a>
+                <a href="#home">hello {props.username}</a>
               </li>
               <li>
                 <a href="#stores">stores</a>
@@ -59,7 +53,7 @@ function mainPage(props) {
                 <a href="#recommanditions">recommanditions</a>
               </li>
             </ul>
-            <a className="mobile-nav-icon js--nav-icon">
+            <a className="mobile-nav-icon js--nav-icon" href="//#region">
               <i className="ion-navicon-round"></i>
             </a>
           </div>

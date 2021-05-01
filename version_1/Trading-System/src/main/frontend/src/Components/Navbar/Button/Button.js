@@ -1,4 +1,4 @@
-import React, { Component } from "react";
+import React from "react";
 import "./Button.css";
 
 const STYLES = ["btnus--primary1", "btnus--outline1"];
@@ -6,7 +6,7 @@ const SIZES = ["btnus--primary1", "btnus--outline1"];
 
 export const Button = ({
   children,
-  type,
+  // type,
   onClick,
   buttonStyle,
   buttonSize,

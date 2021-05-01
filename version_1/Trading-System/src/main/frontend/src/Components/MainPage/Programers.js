@@ -1,5 +1,5 @@
-import "./MainPageDesign/style.css";
-import "./MainPageDesign/grid.css";
+import "../../Design/grid.css";
+import "../../Design/style.css";
 import hadas from "../img/develops/hadas.jpeg";
 import roee from "../img/develops/roee.jpeg";
 import amit from "../img/develops/rubin.jpeg";
@@ -28,7 +28,7 @@ function Programers() {
           </div>
           <div className="city-feature">
             <i className="ion-social-twitter icon-small"></i>
-            <a href="#">zeirah@post.bgu.ac.il</a>
+            <a href="#programers">zeirah@post.bgu.ac.il</a>
           </div>
         </div>
         <div className="col span-1-of-7 box">
@@ -44,7 +44,7 @@ function Programers() {
           </div>
           <div className="city-feature">
             <i className="ion-social-twitter icon-small"></i>
-            <a href="#">benhr@post.bgu.ac.il</a>
+            <a href="#programers">benhr@post.bgu.ac.il</a>
           </div>
         </div>
         <div className="col span-1-of-7 box">
@@ -60,7 +60,7 @@ function Programers() {
           </div>
           <div className="city-feature">
             <i className="ion-social-twitter icon-small"></i>
-            <a href="#">amitrb@post.bgu.ac.il</a>
+            <a href="#programers">amitrb@post.bgu.ac.il</a>
           </div>
         </div>
         <div className="col span-1-of-7 box">
@@ -76,7 +76,7 @@ function Programers() {
           </div>
           <div className="city-feature">
             <i className="ion-social-twitter icon-small"></i>
-            <a href="#">reutle@post.bgu.ac.il</a>
+            <a href="#programers">reutle@post.bgu.ac.il</a>
           </div>
         </div>
         <div className="col span-1-of-7 box">
@@ -92,7 +92,7 @@ function Programers() {
           </div>
           <div className="city-feature">
             <i className="ion-social-twitter icon-small"></i>
-            <a href="#">nofetd@post.bgu.ac.il</a>
+            <a href="#programers">nofetd@post.bgu.ac.il</a>
           </div>
         </div>
         <div className="col span-1-of-7 box">
@@ -108,7 +108,7 @@ function Programers() {
           </div>
           <div className="city-feature">
             <i className="ion-social-twitter icon-small"></i>
-            <a href="#">elinor@post.bgu.ac.il</a>
+            <a href="#programers">elinor@post.bgu.ac.il</a>
           </div>
         </div>
       </div>
