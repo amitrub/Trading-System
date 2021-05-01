@@ -4,8 +4,8 @@ export const createApiClient = () => {
   const guestURL = "/app/";
   const subscriberURL = "/app/subscriber/";
   const ownerURL = "/app/owner/";
-  const managerURL = "/app/manager/";
-  const adminURL = "/app/admin/";
+  // const managerURL = "/app/manager/";
+  // const adminURL = "/app/admin/";
 
   return {
     //Guest
@@ -20,9 +20,8 @@ export const createApiClient = () => {
     },
 
     connectSystem: () => {
-      let path = guestURL.concat(`home`);
+      // let path = guestURL.concat(`home`);
       return axios.get("http://localhost:8080/app/home").then((res) => {
-        console.log("ApiClient:\n" + res);
         return res.data;
       });
     },
