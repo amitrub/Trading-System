@@ -1,6 +1,6 @@
 import "./MainPageDesign/style.css";
+import "../Navbar/Navbar.css";
 import "./MainPageDesign/grid.css";
-// import './MainPageDesign/queries.css'
 import fashion from "../img/sadna-fashion.jpeg";
 import electronics from "../img/sadna-elctorincs.jpeg";
 import pets from "../img/sadna-dogs.jpeg";
@@ -12,34 +12,26 @@ const api = createApiClient();
 function mainPage(props) {
   return (
     <div>
-      {/* <head>
-        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      {/* <head> */}
+      {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-        <link
-          rel="stylesheet"
-          type="text/css"
-          href="vendors/css/normalize.css"
-        />
-        <link rel="stylesheet" type="text/css" href="vendors/css/grid.css" />
-        <link
-          rel="stylesheet"
-          type="text/css"
-          href="vendors/css/ionicons.min.css"
-        />
-        <link rel="stylesheet" type="text/css" href="vendors/css/animate.css" />
-        <link rel="stylesheet" type="text/css" href="resources/css/style.css" />
-        <link
-          rel="stylesheet"
-          type="text/css"
-          href="resources/css/queries.css"
-        />
-        <link
-          href="http://fonts.googleapis.com/css?family=Lato:100,300,400,300italic"
-          rel="stylesheet"
-          type="text/css"
-        />
-        <title>AliBamba</title>
-      </head> */}
+      <link rel="stylesheet" type="text/css" href="vendors/css/normalize.css" />
+      <link rel="stylesheet" type="text/css" href="vendors/css/grid.css" />
+      <link
+        rel="stylesheet"
+        type="text/css"
+        href="vendors/css/ionicons.min.css"
+      />
+      <link rel="stylesheet" type="text/css" href="vendors/css/animate.css" />
+      <link rel="stylesheet" type="text/css" href="resources/css/style.css" />
+      <link rel="stylesheet" type="text/css" href="resources/css/queries.css" />
+      <link
+        href="http://fonts.googleapis.com/css?family=Lato:100,300,400,300italic"
+        rel="stylesheet"
+        type="text/css"
+      />
+      <title>AliBamba</title> */}
+      {/* </head> */}
 
       {/* --------------------- HEADER ---------------------- */}
       {/* <body> */}
@@ -101,12 +93,6 @@ function mainPage(props) {
             take care of that, we're really good at it, we promise!
           </p>
         </div>
-
-        {/* <form onSubmit={submitLoadStores} method="post">
-          <div className="btn full">
-            <input type="submit" value="load our stores ..." />
-          </div>
-        </form> */}
 
         <div className="row">
           <div className="col span-1-of-4 box">
@@ -181,231 +167,14 @@ function mainPage(props) {
         </ul>
       </section>
 
-      {/* --------------------- CONNECT ---------------------- */}
-      {/* <Register /> */}
-      {/* <section className="section-form" id="connect">
-        <div className="row">
-          <h2>We're happy to hear from you</h2>
-        </div>
-        <div className="row">
-          <form method="post" action="#" className="contact-form">
-            <div className="row">
-              <div className="col span-1-of-3">
-                <label for="name">Name</label>
-              </div>
-              <div className="col span-2-of-3">
-                <input
-                  type="text"
-                  name="name"
-                  id="name"
-                  placeholder="Your name"
-                  required
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col span-1-of-3">
-                <label for="email">Email</label>
-              </div>
-              <div className="col span-2-of-3">
-                <input
-                  type="email"
-                  name="email"
-                  id="email"
-                  placeholder="Your email"
-                  required
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col span-1-of-3">
-                <label for="find-us">How did you find us?</label>
-              </div>
-              <div className="col span-2-of-3">
-                <select name="find-us" id="find-us">
-                  <option value="friends" selected>
-                    Friends
-                  </option>
-                  <option value="search">Search engine</option>
-                  <option value="ad">Advertisement</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col span-1-of-3">
-                <label>Newsletter?</label>
-              </div>
-              <div className="col span-2-of-3">
-                <input type="checkbox" name="news" id="news" checked /> Yes,
-                please
-              </div>
-            </div>
-            <div className="row">
-              <div className="col span-1-of-3">
-                <label>Drop us a line</label>
-              </div>
-              <div className="col span-2-of-3">
-                <textarea name="message" placeholder="Your message"></textarea>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col span-1-of-3">
-                <label>&nbsp;</label>
-              </div>
-              <div className="col span-2-of-3">
-                <input type="submit" value="Send it!" />
-              </div>
-            </div>
-          </form>
-        </div>
-      </section> */}
-
-      {/* --------------------- RECCOMADITIONS ---------------------- */}
-
-      {/* <section className="section-testimonials" id="recommanditions">
-        <div className="row">
-          <h2>Our customers can't live without us</h2>
-        </div>
-        <div className="row">
-          <div className="col span-1-of-3">
-            <blockquote>
-              Omnifood is just awesome! I just launched a startup which leaves
-              me with no time for cooking, so Omnifood is a life-saver. Now that
-              I got used to it, I couldn't live without my daily meals!
-              <img src="resources/img/customer-1.jpg" />
-              Alberto Duncan
-            </blockquote>
-          </div>
-          <div className="col span-1-of-3">
-            <blockquote>
-              Inexpensive, healthy and great-tasting meals, delivered right to
-              my home. We have lots of food delivery here in Lisbon, but no one
-              comes even close to Omifood. Me and my family are so in love!
-              <img src="resources/img/customer-2.jpg" />
-              Joana Silva
-            </blockquote>
-          </div>
-          <div className="col span-1-of-3">
-            <blockquote>
-              I was looking for a quick and easy food delivery service in San
-              Franciso. I tried a lot of them and ended up with Omnifood. Best
-              food delivery service in the Bay Area. Keep up the great work!
-              <img src="resources/img/customer-3.jpg" />
-              Milton Chapman
-            </blockquote>
-          </div>
-        </div>
-      </section> */}
-
-      {/* --------------------- PROGRAMERS PHOTOS ---------------------- */}
-
-      {/* <section className="section-cities" id="programers">
-        <div className="row">
-          <h2>This system desigend by the greatest programers</h2>
-        </div>
-        <div className="row">
-          <h1>ddd</h1>
-          <div className="col span-1-of-7 box">
-            <img src={hadas} alt="Lisbon" />
-            <h3>Hadas</h3>
-            <div className="city-feature">
-              <i className="ion-ios-person icon-small"></i>
-              2400+ lines of code
-            </div>
-            <div className="city-feature">
-              <i className="ion-ios-star icon-small"></i>
-              web desiner
-            </div>
-            <div className="city-feature">
-              <i className="ion-social-twitter icon-small"></i>
-              <a href="#">zeirah@post.bgu.ac.il</a>
-            </div>
-          </div>
-          <div className="col span-1-of-7 box">
-            <img src={roee} alt="San Francisco" />
-            <h3>Roee</h3>
-            <div className="city-feature">
-              <i className="ion-ios-person icon-small"></i>
-              3200+ lines of code
-            </div>
-            <div className="city-feature">
-              <i className="ion-ios-star icon-small"></i>
-              client side
-            </div>
-            <div className="city-feature">
-              <i className="ion-social-twitter icon-small"></i>
-              <a href="#">benhr@post.bgu.ac.il</a>
-            </div>
-          </div>
-          <div className="col span-1-of-7 box">
-            <img src={amit} alt="Berlin" />
-            <h3>Amit</h3>
-            <div className="city-feature">
-              <i className="ion-ios-person icon-small"></i>
-              3400+ lines of code
-            </div>
-            <div className="city-feature">
-              <i className="ion-ios-star icon-small"></i>
-              communication
-            </div>
-            <div className="city-feature">
-              <i className="ion-social-twitter icon-small"></i>
-              <a href="#">amitrb@post.bgu.ac.il</a>
-            </div>
-          </div>
-          <div className="col span-1-of-7 box">
-            <img src={reut} alt="London" />
-            <h3>Reut</h3>
-            <div className="city-feature">
-              <i className="ion-ios-person icon-small"></i>
-              2600+ lines of code
-            </div>
-            <div className="city-feature">
-              <i className="ion-ios-star icon-small"></i>
-              version manager
-            </div>
-            <div className="city-feature">
-              <i className="ion-social-twitter icon-small"></i>
-              <a href="#">reutle@post.bgu.ac.il</a>
-            </div>
-          </div>
-          <div className="col span-1-of-7 box">
-            <img src={nofet} alt="London" />
-            <h3>Nofet</h3>
-            <div className="city-feature">
-              <i className="ion-ios-person icon-small"></i>
-              3100+ lines of code
-            </div>
-            <div className="city-feature">
-              <i className="ion-ios-star icon-small"></i>
-              server side
-            </div>
-            <div className="city-feature">
-              <i className="ion-social-twitter icon-small"></i>
-              <a href="#">nofetd@post.bgu.ac.il</a>
-            </div>
-          </div>
-          <div className="col span-1-of-7 box">
-            <img src={elinor} alt="London" />
-            <h3>Elinor</h3>
-            <div className="city-feature">
-              <i className="ion-ios-person icon-small"></i>
-              2400+ lines of code
-            </div>
-            <div className="city-feature">
-              <i className="ion-ios-star icon-small"></i>
-              testing and QA
-            </div>
-            <div className="city-feature">
-              <i className="ion-social-twitter icon-small"></i>
-              <a href="#">elinor@post.bgu.ac.il</a>
-            </div>
-          </div>
-        </div>
-      </section> */}
-
       {/* </body> */}
+
+      {/* <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+      <script src="//cdn.jsdelivr.net/respond/1.4.2/respond.min.js"></script>
+      <script src="//cdn.jsdelivr.net/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="//cdn.jsdelivr.net/selectivizr/1.0.3b/selectivizr.min.js"></script>
+      <script src="vendors/js/jquery.waypoints.min.js"></script>
+      <script src="resources/js/script.js"></script> */}
     </div>
   );
 }

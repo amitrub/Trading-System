@@ -9,8 +9,10 @@ import createApiClient from "./ApiClient";
 import Reccomaditions from "./Components/MainPage/Reccomaditions";
 import Programers from "./Components/MainPage/Programers";
 import Login from "./Components/MainPage/Login";
-import Store from "./Components/MainPage/Store";
 import Stores from "./Components/MainPage/Stores";
+import Navbar from "./Components/Navbar/Navbar";
+import "./Components/Navbar/Navbar.css";
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -31,7 +33,6 @@ class App extends React.Component {
       connID: "connID",
       whoAreUser: {
         guest: true,
-        subscriber: false,
         manager: false,
         owner: false,
       },
@@ -110,7 +111,6 @@ class App extends React.Component {
           connID: loginResponse.returnObject.connID,
           whoAreUser: {
             guest: false,
-            subscriber: true,
             manager: false,
             owner: false,
           },
@@ -209,47 +209,47 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <MainPage
-          username={this.state.username}
-          loadSys={this.loadStores}
-          connID={this.state.connID}
-          clientConnection={this.state.clientConnection}
-        />
-        <Stores
-          loadSys={this.loadStores}
-          connID={this.state.connID}
-          clientConnection={this.state.clientConnection}
-          stores={this.state.stores}
-          products={this.state.products}
-        />
-        <section className="row">
-          <div className="col span-1-of-2 box">
-            <Register
-              onSubmitRegister={this.registerHandler}
-              connID={this.state.connID}
-              clientConnection={this.state.clientConnection}
-              response={this.state.response}
-            />
+        <BrowserRouter>
+          <div className="AppTry">
+            <Navbar />
+            <Switch>
+              <Route path="/">
+                <MainPage username={this.state.username} />
+                <Stores
+                  loadSys={this.loadStores}
+                  connID={this.state.connID}
+                  clientConnection={this.state.clientConnection}
+                  stores={this.state.stores}
+                  products={this.state.products}
+                />
+                <section className="row">
+                  <div className="col span-1-of-2 box">
+                    <Register
+                      onSubmitRegister={this.registerHandler}
+                      connID={this.state.connID}
+                      clientConnection={this.state.clientConnection}
+                      response={this.state.response}
+                    />
+                  </div>
+                  <div className="col span-1-of-2 box">
+                    <Login
+                      onSubmitLogin={this.loginHandler}
+                      connID={this.state.connID}
+                      clientConnection={this.state.clientConnection}
+                      response={this.state.response}
+                    />
+                  </div>
+                </section>
+                <Reccomaditions />
+                <Programers />
+              </Route>
+
+              <Route path="/app">
+                <MainPage />
+              </Route>
+            </Switch>
           </div>
-          <div className="col span-1-of-2 box">
-            <Login
-              onSubmitLogin={this.loginHandler}
-              connID={this.state.connID}
-              clientConnection={this.state.clientConnection}
-              response={this.state.response}
-            />
-          </div>
-        </section>
-        <Reccomaditions />
-        <Programers />
-        {/* <div>
-          <p>
-            response: (isErr={this.state.response.isErr ? "true" : "false"},
-            msg:
-            {this.state.response.message}){" "}
-          </p>
-          <p>connID: {this.state.connID}</p>
-        </div> */}
+        </BrowserRouter>
       </div>
     );
   }
