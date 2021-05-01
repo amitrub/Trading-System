@@ -56,6 +56,7 @@ import java.util.Map;
             price = new Double(price_int);
         }
         Response res = tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
+        res.AddTag("AddProductToStore");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -79,6 +80,8 @@ import java.util.Map;
         Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
         System.out.println(res);
         tradingSystem.printProducts();
+        res.AddTag("RemoveProduct");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
@@ -104,6 +107,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
         int quantity  = (int) obj.get("quantity");
         Response res = tradingSystem.ChangeQuantityProduct(userID,connID,storeID,productID,quantity);
+        res.AddTag("ChangeQuantityProduct");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -143,6 +147,7 @@ import java.util.Map;
         }
         int quantity  = (int) obj.get("quantity");
         Response res = tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price,quantity);
+        res.AddTag("EditProduct");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -169,6 +174,7 @@ import java.util.Map;
         Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
         System.out.println(res);
         tradingSystem.printProducts();
+        res.AddTag("RemoveProduct");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -194,6 +200,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.AddBuyingPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("AddBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -219,6 +226,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.AddDiscountPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("AddDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -245,6 +253,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.EditBuyingPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("EditBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -271,6 +280,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.EditDiscountPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("EditDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -297,6 +307,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("RemoveBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -323,6 +334,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("RemoveDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -347,6 +359,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
         Response res = tradingSystem.AddNewOwner(userID, connID, storeID, newOwnerID);
         res.AddConnID(connID);
+        res.AddTag("AddNewOwner");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -372,6 +385,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
 //        Response res = tradingSystem.RemoveOwner(userID, connID, storeID, newOwnerID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("RemoveOwner");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -396,6 +410,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
         Response res=tradingSystem.AddNewManager(userID, connID, storeID,newManagerID);
         res.AddConnID(connID);
+        res.AddTag("AddNewManager");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -452,6 +467,7 @@ import java.util.Map;
 
         Response res = tradingSystem.EditManagerPermissions(userID, connID, storeID, managerID, Permissions);
         res.AddConnID(connID);
+        res.AddTag("EditManagerPermissions");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -475,6 +491,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
         Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID);
         res.AddConnID(connID);
+        res.AddTag("GetPossiblePermissionsToManager");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -499,6 +516,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
         Response res=tradingSystem.RemoveManager(userID, connID, storeID,managerID);
         res.AddConnID(connID);
+        res.AddTag("RemoveManager");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -527,6 +545,7 @@ import java.util.Map;
     public Response ShowStoreWorkers(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj)  {
         String connID = (String) obj.get("connID");
         Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
+        res.AddTag("ShowStoreWorkers");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -563,6 +582,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
         Response res = tradingSystem.StoreHistoryOwner(userID,storeID,connID);
         res.AddConnID(connID);
+        res.AddTag("OwnerStoreHistory");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -588,6 +608,7 @@ import java.util.Map;
     public Response ShowOwnerStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
         String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowOwnerStores(userID, connID);
+        res.AddTag("ShowOwnerStores");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -596,6 +617,7 @@ import java.util.Map;
     public Response ShowManagerStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
         String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowManagerStores(userID, connID);
+        res.AddTag("ShowManagerStores");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
