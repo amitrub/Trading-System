@@ -1,5 +1,7 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.AgeLimit;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimit;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.ProductLimit;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -130,10 +132,40 @@ class BuyingPolicyTest {
     //region Assembly of buying rules tests
     @Test
     void HappyAndBuying() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        QuantityLimit exp1 = new QuantityLimit(1, 4);
+        AgeLimit exp2 = new AgeLimit(2, 20);
+        AndComposite andExpression = new AndComposite(1);
+        andExpression.add(exp1);
+        andExpression.add(exp2);
+        store.addLimitToPolicy(null,-1,andExpression);
+        tradingSystem.AddStoreToList(store);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 1);
+        products.put(productID2, 3);
+        //TODO check age
+        Boolean isLegal = store.checkEntitlement(2, products);
+        assertTrue(isLegal);
     }
 
     @Test
     void SadAndBuying() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        QuantityLimit exp1 = new QuantityLimit(1, 4);
+        AgeLimit exp2 = new AgeLimit(2, 20);
+        AndComposite andExpression = new AndComposite(1);
+        andExpression.add(exp1);
+        andExpression.add(exp2);
+        store.addLimitToPolicy(null,-1,andExpression);
+        tradingSystem.AddStoreToList(store);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 2);
+        products.put(productID2, 3);
+        //TODO check age
+        Boolean isLegal = store.checkEntitlement(2, products);
+        assertTrue(isLegal);
     }
 
     @Test

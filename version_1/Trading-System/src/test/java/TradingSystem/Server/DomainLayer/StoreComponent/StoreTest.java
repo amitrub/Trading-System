@@ -17,8 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class StoreTest {
     Store s=new Store("store1",1,null,null);
     @Test
-    void searchProduct()
-    {
+    void searchProduct() {
         s.AddProductToStore( "computer", 3000.0, "Technology",0);
         s.AddProductToStore("Bag" ,100.0, "Beauty",0);
         s.AddProductToStore("IPed",  2500.0, "Technology", 0);
