@@ -191,6 +191,40 @@ input[type="submit"]:active {
   color: #fff;
 }
 
+.buttonus {
+  background-color: #ce4b46;
+  border: 1px solid #ce4b46;
+  color: #fff;
+  font-size: 20;
+  margin-right: 15px;
+  height: 30px;
+  width: 120px;
+  cursor: pointer;
+}
+/* .buttonus-ghost:link,
+.buttonus-ghost:visited {
+  border: px solid #ce4b46;
+  color: #ce4b46;
+}
+
+.buttonus:hover,
+.buttonus:active,
+input[type="submit"]:hover,
+input[type="submit"]:active {
+  background-color: #ce4b46;
+}
+
+.buttonus-full:hover,
+.buttonus-full:active {
+  border: 1px solid #ce4b46;
+}
+
+.buttonus-ghost:hover,
+.buttonus-ghost:active {
+  border: 1px solid #ce4b46;
+  color: #fff;
+} */
+
 /* ----------------------------------------------- */
 /* HEADER */
 /* ----------------------------------------------- */

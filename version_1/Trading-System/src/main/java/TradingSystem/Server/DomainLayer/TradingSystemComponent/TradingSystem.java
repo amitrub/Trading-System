@@ -185,6 +185,21 @@ public class TradingSystem extends Observable {
                 canExit = true;
             }
         }
+        Store store1 = new Store("Mar y juana", 1);
+        store1.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
+        store1.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
+        store1.AddProductToStore("Sneakers24", 80.0, "Shoes", 25);
+        store1.AddProductToStore( "Sneak23", 840.0, "bloo", 25);
+        store1.AddProductToStore("Sneakers", 80.0, "Shoes", 25);
+        Store store2 = new Store("Roee Hadas", 1);
+        store2.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
+        store2.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
+        store2.AddProductToStore("Sneakers24", 80.0, "Shoes", 25);
+        store2.AddProductToStore( "Sneak23", 840.0, "bloo", 25);
+        store2.AddProductToStore("Sneakers", 80.0, "Shoes", 25);
+        this.stores.put(store1.getId(), store1);
+        this.stores.put(store2.getId(), store2);
+
         return uniqueID;
     }
 

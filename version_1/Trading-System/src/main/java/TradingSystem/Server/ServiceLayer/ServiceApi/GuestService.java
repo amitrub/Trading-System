@@ -153,8 +153,10 @@ public class GuestService {
      */
     @MessageMapping("stores")
     public Response ShowAllStores(@Payload Map<String, Object> obj) {
+        System.out.println("Enterrrrr ShowAllStores");
         String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowAllStores();
+        System.out.println(res);
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }

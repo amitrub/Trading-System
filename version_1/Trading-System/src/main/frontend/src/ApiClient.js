@@ -22,7 +22,6 @@ export const createApiClient = () => {
     connectSystem: () => {
       let path = guestURL.concat(`home`);
       return axios.get("http://localhost:8080/app/home").then((res) => {
-        console.log("ApiClient:\n" + res);
         return res.data;
       });
     },

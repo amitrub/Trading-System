@@ -5,8 +5,11 @@ import fashion from "../img/sadna-fashion.jpeg";
 import electronics from "../img/sadna-elctorincs.jpeg";
 import pets from "../img/sadna-dogs.jpeg";
 import kitchen from "../img/sadna-kitchen.jpeg";
+import createApiClient from "../../ApiClient";
 
-function mainPage() {
+const api = createApiClient();
+
+function mainPage(props) {
   return (
     <div>
       {/* <head>
@@ -46,7 +49,13 @@ function mainPage() {
             {/* <img src="resources/img/online-shopping-logo.jpeg" alt="Omnifood logo" className="logo"> </img> */}
             <ul className="main-nav js--main-nav" id="home">
               <li>
+                <a href="">hello {props.username}</a>
+              </li>
+              <li>
                 <a href="#home">home</a>
+              </li>
+              <li>
+                <a href="#stores">stores</a>
               </li>
               <li>
                 <a href="#sign">sign</a>
@@ -68,10 +77,14 @@ function mainPage() {
             <strong>welcome to Ali - Bamba.</strong>
           </h1>
           <h1>the best trading system for you</h1>
-          <a className="btn btn-full js--scroll-to-plans" href="#connect">
+          <a
+            className="btn btn-full js--scroll-to-plans"
+            href="#stores"
+            // onSubmit={getStores()}
+          >
             Let's shop!
           </a>
-          <a className="btn btn-ghost js--scroll-to-start" href="#connect">
+          <a className="btn btn-ghost js--scroll-to-start" href="#sign">
             <strong>Connect</strong>
           </a>
         </div>
@@ -88,6 +101,12 @@ function mainPage() {
             take care of that, we're really good at it, we promise!
           </p>
         </div>
+
+        {/* <form onSubmit={submitLoadStores} method="post">
+          <div className="btn full">
+            <input type="submit" value="load our stores ..." />
+          </div>
+        </form> */}
 
         <div className="row">
           <div className="col span-1-of-4 box">

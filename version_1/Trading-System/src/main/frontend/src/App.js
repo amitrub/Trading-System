@@ -9,6 +9,8 @@ import createApiClient from "./ApiClient";
 import Reccomaditions from "./Components/MainPage/Reccomaditions";
 import Programers from "./Components/MainPage/Programers";
 import Login from "./Components/MainPage/Login";
+import Store from "./Components/MainPage/Store";
+import Stores from "./Components/MainPage/Stores";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -33,11 +35,30 @@ class App extends React.Component {
         manager: false,
         owner: false,
       },
+      stores: [],
+      products: [],
     };
   }
 
+  loadStores = () => {
+    const storeResponse = this.state.response.returnObject;
+    this.setState({
+      stores: storeResponse.stores,
+    });
+  };
+
+  loadProducts = () => {
+    const productResponse = this.state.response.returnObject;
+    console.log(productResponse);
+    const products = productResponse.products;
+    console.log(products);
+    this.setState({
+      products: products,
+    });
+  };
+
   registerHandler = (name, pass) => {
-    console.log(name);
+    console.log("RegisterHandler:" + name);
     const currentComponent = this;
     const registerResponse = this.state.response;
 
@@ -47,10 +68,8 @@ class App extends React.Component {
       const oldConnID = this.state.connID;
       this.setState(
         (prevState) => ({
-          username: name,
-          pass: pass,
           userID: registerResponse.returnObject.userID,
-          connID: registerResponse.connID,
+          connID: registerResponse.returnObject.connID,
         }),
         () => {
           //unsubscribe old id
@@ -71,6 +90,52 @@ class App extends React.Component {
         }
       );
     }
+    console.log("End Register Handler! connID: " + this.state.connID);
+  };
+
+  loginHandler = (name, pass) => {
+    console.log("LoginHandler:" + name);
+    const currentComponent = this;
+    const loginResponse = this.state.response;
+
+    if (loginResponse.isErr) {
+      console.log(loginResponse.message);
+    } else {
+      const oldConnID = this.state.connID;
+      this.setState(
+        (prevState) => ({
+          username: name,
+          pass: pass,
+          userID: loginResponse.returnObject.userID,
+          connID: loginResponse.returnObject.connID,
+          whoAreUser: {
+            guest: false,
+            subscriber: true,
+            manager: false,
+            owner: false,
+          },
+          // whoAreUser: loginResponse.returnObject.whoAreUser
+        }),
+        () => {
+          //unsubscribe old id
+          this.state.clientConnection.subscribe(
+            `/topic/${this.state.connID}`,
+            (msg) => {
+              if (msg.body) {
+                var jsonBody = JSON.parse(msg.body);
+                if (jsonBody.message) {
+                  currentComponent.setState({
+                    response: jsonBody,
+                  });
+                  console.log(jsonBody);
+                }
+              }
+            }
+          );
+        }
+      );
+    }
+    console.log("End Login Handler! connID: " + this.state.connID);
   };
 
   async componentDidMount() {
@@ -83,9 +148,22 @@ class App extends React.Component {
         if (msg.body) {
           var jsonBody = JSON.parse(msg.body);
           if (jsonBody.message) {
-            currentComponent.setState({
-              response: jsonBody,
-            });
+            currentComponent.setState(
+              {
+                response: jsonBody,
+              },
+              () => {
+                //get All Stores
+                if (jsonBody.returnObject.stores) {
+                  this.loadStores();
+                }
+
+                //get All products in store
+                if (jsonBody.returnObject.products) {
+                  this.loadProducts();
+                }
+              }
+            );
             console.log(jsonBody);
           }
         }
@@ -131,7 +209,19 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <MainPage />
+        <MainPage
+          username={this.state.username}
+          loadSys={this.loadStores}
+          connID={this.state.connID}
+          clientConnection={this.state.clientConnection}
+        />
+        <Stores
+          loadSys={this.loadStores}
+          connID={this.state.connID}
+          clientConnection={this.state.clientConnection}
+          stores={this.state.stores}
+          products={this.state.products}
+        />
         <section className="row">
           <div className="col span-1-of-2 box">
             <Register
@@ -143,7 +233,7 @@ class App extends React.Component {
           </div>
           <div className="col span-1-of-2 box">
             <Login
-              onSubmitRegister={this.registerHandler}
+              onSubmitLogin={this.loginHandler}
               connID={this.state.connID}
               clientConnection={this.state.clientConnection}
               response={this.state.response}
@@ -152,14 +242,14 @@ class App extends React.Component {
         </section>
         <Reccomaditions />
         <Programers />
-        <div>
+        {/* <div>
           <p>
             response: (isErr={this.state.response.isErr ? "true" : "false"},
             msg:
             {this.state.response.message}){" "}
           </p>
           <p>connID: {this.state.connID}</p>
-        </div>
+        </div> */}
       </div>
     );
   }
