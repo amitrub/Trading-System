@@ -1,4 +1,5 @@
-package TradingSystem.Server.ServiceLayer.WebSocket;
+package TradingSystem.Server.ServiceLayer.ServiceApi;
+
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
