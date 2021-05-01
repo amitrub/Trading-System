@@ -141,7 +141,7 @@ class DiscountPolicyTest {
     }
     //endregion
 
-    //region Discount rules - tests
+    //region Discount rules tests
     @Test
     void HappyAndRule() {
         Integer productID1 = store.getProductID("computer");
@@ -220,10 +220,40 @@ class DiscountPolicyTest {
 
     @Test
     void HappyXorRule() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        StoreSale sale = new StoreSale(1, store.getId(), 50.0);
+        PriceForGetSale exp1 = new PriceForGetSale(1, 8000.0);
+        QuantityForGetSale exp2 = new QuantityForGetSale(2,productID1,2);
+        XorComposite xorComposite = new XorComposite(1);
+        xorComposite.add(exp1);
+        xorComposite.add(exp2);
+        sale.setExpression(xorComposite);
+        DC.AddSale(sale);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 2);
+        products.put(productID2, 1);
+        Double newPrice = DC.calculatePrice(products,2,6100.0);
+        assertEquals(3050.0, newPrice,0);
     }
 
     @Test
     void SadXorRule() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        StoreSale sale = new StoreSale(1, store.getId(), 50.0);
+        PriceForGetSale exp1 = new PriceForGetSale(1, 1000.0);
+        QuantityForGetSale exp2 = new QuantityForGetSale(2,productID1,2);
+        XorComposite xorComposite = new XorComposite(1);
+        xorComposite.add(exp1);
+        xorComposite.add(exp2);
+        sale.setExpression(xorComposite);
+        DC.AddSale(sale);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 2);
+        products.put(productID2, 1);
+        Double newPrice = DC.calculatePrice(products,2,6100.0);
+        assertEquals(6100.0, newPrice,0);
     }
 
     //endregion
