@@ -1,6 +1,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.Permission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -22,7 +23,7 @@ import java.util.Map;
     @Autowired
     SimpMessagingTemplate template;
 
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
 
     /**
      * @requirement 4.1.1
