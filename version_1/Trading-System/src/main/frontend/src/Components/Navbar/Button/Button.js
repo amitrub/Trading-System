@@ -1,12 +1,12 @@
-import React, { Component } from "react";
+import React from "react";
 import "./Button.css";
 
-const STYLES = ["btn--primary1", "btn--outline1"];
-const SIZES = ["btn--primary1", "btn--outline1"];
+const STYLES = ["btnus--primary1", "btnus--outline1"];
+const SIZES = ["btnus--primary1", "btnus--outline1"];
 
 export const Button = ({
   children,
-  type,
+  // type,
   onClick,
   buttonStyle,
   buttonSize,
@@ -17,7 +17,7 @@ export const Button = ({
   const checkButtonSize = SIZES.includes(buttonSize) ? buttonSize : SIZES[0];
   return (
     <button
-      className={`btn ${checkButtonStyle} ${checkButtonSize}`}
+      className={`btnus ${checkButtonStyle} ${checkButtonSize}`}
       onClick={onClick}
     >
       {children}

@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Button } from "./Button";
+import { Button } from "./Button/Button";
 import { MenuItems } from "./MenuItems";
 import "./Navbar.css";
 
@@ -30,21 +30,21 @@ class Navbar extends Component {
     }
     return (
       <nav className="NavbarItems">
-        <h1 className="navbar-logo">
+        <myh1 className="navbar-logo">
           React<i className="fab fa-react"></i>
-        </h1>
+        </myh1>
         <div className="menu-icon" onClick={this.handleClick}>
-          <i
+          <myi
             className={this.state.clicked ? "fas fa-times" : "fas fa-bars"}
-          ></i>
+          ></myi>
         </div>
         <ul className={this.state.clicked ? "nav-menu active" : "nav-menu"}>
           {MenuItems.map((item, index) => {
             return (
               <li key={index}>
-                <a className={item.cName} href={item.url}>
+                <mya className={item.cName} href={item.url}>
                   {item.title}
-                </a>
+                </mya>
               </li>
             );
           })}

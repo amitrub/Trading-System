@@ -1,8 +1,7 @@
-import React, { useState } from "react";
+import React from "react";
 import createApiClient from "../../ApiClient";
-import "./MainPageDesign/style.css";
-import "./MainPageDesign/grid.css";
-import Product from "./Product";
+import "../../Design/grid.css";
+import "../../Design/style.css";
 import Store from "./Store";
 
 const api = createApiClient();

@@ -1,19 +1,11 @@
-import React, { useState } from "react";
+import React from "react";
 import createApiClient from "../../ApiClient";
-import "./MainPageDesign/style.css";
-import "./MainPageDesign/grid.css";
+import "../../Design/grid.css";
+import "../../Design/style.css";
 
 const api = createApiClient();
 
 function Product(props) {
-  const [storeID, setStoreID] = useState(-1);
-  const [storeName, setStoreName] = useState("storeName");
-  const [productID, setProductID] = useState(-1);
-  const [productName, setProductName] = useState("productName");
-  const [price, setPrice] = useState(0);
-  const [category, setCategory] = useState("category");
-  const [quantity, setQuantity] = useState(0);
-
   const product = props.currProduct;
 
   async function submitBuyProductHandler(event) {

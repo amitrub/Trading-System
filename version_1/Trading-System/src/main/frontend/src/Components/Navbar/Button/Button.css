@@ -1,14 +1,15 @@
 :root {
   --primary: #929596;
 }
-.btn {
+.btnus {
   padding: 8px 20px;
   border-radius: 4px;
   outline: none;
   border: none;
   cursor: pointer;
+  height: 30px;
 }
-.btn:hover {
+.btnus:hover {
   padding: 8px 20px;
   transition: all 0.3s ease-out;
   background: #fff;
@@ -16,10 +17,10 @@
   transition: 250ms;
 }
 
-.btn--primary1 {
+.btnus--primary1 {
   background-color: var(--primary);
 }
-.btn--outline {
+.btnus--outline {
   background-color: transparent;
   color: #fff;
   padding: 8px 20px;
@@ -27,13 +28,13 @@
   border: 1px solid var(--primary);
   transition: all 0.3s ease-out;
 }
-.btn--medium {
+.btnus--medium {
   padding: 8px 20px;
   border-radius: 4px;
   font-size: 18px;
   color: #fff;
 }
-.btn--large {
+.btnus--large {
   padding: 12px 20px;
   border-radius: 4px;
   font-size: 20px;

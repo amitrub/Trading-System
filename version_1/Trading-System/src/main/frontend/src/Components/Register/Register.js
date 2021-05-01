@@ -1,11 +1,11 @@
 import React, { useState } from "react";
 import createApiClient from "../../ApiClient";
-import "./MainPageDesign/style.css";
-import "./MainPageDesign/grid.css";
+import "../../Design/grid.css";
+import "../../Design/style.css";
 
 const api = createApiClient();
 
-function Login(props) {
+function Register(props) {
   // const [regConnID, setConnIDState] = useState("");
   const [enteredName, setNameState] = useState("");
   const [enteredPass, setPassState] = useState("");
@@ -14,14 +14,14 @@ function Login(props) {
     event.preventDefault();
     // setConnIDState(props.connID);
 
-    await api.login(
+    await api.register(
       props.clientConnection,
       props.connID,
       enteredName,
       enteredPass
     );
 
-    props.onSubmitLogin(enteredName, enteredPass);
+    props.onSubmitRegister(enteredName, enteredPass);
     setNameState("");
     setPassState("");
   }
@@ -35,9 +35,9 @@ function Login(props) {
   }
 
   return (
-    <section className="section-form" id="login">
+    <section className="section-form" id="sign">
       <div className="row">
-        <h2>not your first time?</h2>
+        <h2>Join Us!</h2>
       </div>
       <div className="row">
         <form
@@ -81,7 +81,7 @@ function Login(props) {
               <label>&nbsp;</label>
             </div>
             <div className="col span-1-of-3">
-              <input type="submit" value="Login" />
+              <input type="submit" value="Register" />
             </div>
           </div>
         </form>
@@ -90,4 +90,4 @@ function Login(props) {
   );
 }
 
-export default Login;
+export default Register;
