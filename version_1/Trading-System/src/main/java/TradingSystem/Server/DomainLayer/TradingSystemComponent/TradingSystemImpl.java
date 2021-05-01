@@ -9,11 +9,11 @@ import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 
-import static TradingSystem.Server.ServiceLayer.Configuration.*;
-
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
+
+import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 
 public class TradingSystemImpl extends Observable implements TradingSystem {
@@ -96,6 +96,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         this.subscribers.put(userID, user1);
         connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
         this.connectedSubscribers.put(connID, userID);
+
+        ConnectSystem();
         printUsers();
     }
 
@@ -169,10 +171,12 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
 
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
+    //    guests.put(connID,newGuest);
         Response res = new Response("Connect system was successful");
         res.AddConnID(connID);
         return res;
     }
+
     public synchronized String connectGuestToSystemConnID(User newGuest) {
         String uniqueID = "";
         boolean canExit = false;

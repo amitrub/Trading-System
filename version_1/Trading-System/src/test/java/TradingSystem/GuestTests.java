@@ -55,7 +55,6 @@ public class GuestTests {
     void connectionTest() {
         // setUp
         // this.client = new Client();
-        // client.connectSystem();
         assertNotEquals(this.client.getConnID(), "");
     }
 

@@ -62,7 +62,7 @@ public class GuestService {
      */
     @GetMapping("/home")
     public Response ConnectSystem(){
-        System.out.println("eeeeeeee");
+        System.out.println("HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLo");
         Response res = this.tradingSystem.ConnectSystem();
         tradingSystem.printUsers();
         return res;

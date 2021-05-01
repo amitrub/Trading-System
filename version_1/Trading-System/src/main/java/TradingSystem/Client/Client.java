@@ -1,6 +1,5 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
 
@@ -53,6 +52,7 @@ public class Client {
      */
     public void connectSystem() {
         String path = "home";
+
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         if(!response.returnConnID().equals("") && !response.getIsErr()) { //because its guest
@@ -61,6 +61,20 @@ public class Client {
             System.out.println(errMsgGenerator("Client", "Client", "38", "connect system error"));
         }
     }
+
+    public void connectSystemNew(int port) {
+        String path = "home";
+        String ip = "localhost";
+        String urlbaseGuest = "http://localhost:"+port+"/app/";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        if(!response.returnConnID().equals("") && !response.getIsErr()) { //because its guest
+            this.connID = response.returnConnID();
+        } else {
+            System.out.println(errMsgGenerator("Client", "Client", "38", "connect system error"));
+        }
+    }
+
 
     /**
      * @requirement 2.2
