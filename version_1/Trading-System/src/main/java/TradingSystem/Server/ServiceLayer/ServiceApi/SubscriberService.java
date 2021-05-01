@@ -37,6 +37,7 @@ import java.util.Map;
         String connID = (String) obj.get("connID");
         Response res = tradingSystem.Logout(connID);
         tradingSystem.printUsers();
+        res.AddTag("Logout");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -62,6 +63,7 @@ import java.util.Map;
         Response res = tradingSystem.AddStore(userID, connID, storeName);
         tradingSystem.printUsers();
         tradingSystem.printStores();
+        res.AddTag("AddStore");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -91,6 +93,7 @@ import java.util.Map;
         String review = (String) obj.get("comment");
         Response res = tradingSystem.WriteComment(userID,connID,storeID,productID,review);
         tradingSystem.printCommentForProduct(storeID,productID);
+        res.AddTag("WriteComment");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -125,7 +128,10 @@ import java.util.Map;
     @MessageMapping("{userID}/user_history")
     public Response ShowUserHistory(@DestinationVariable int userID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
-        return tradingSystem.ShowSubscriberHistory(userID, connID);
+        Response res = tradingSystem.ShowSubscriberHistory(userID, connID);
+        res.AddTag("ShowUserHistory");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        return res;
     }
 
 
@@ -152,6 +158,7 @@ import java.util.Map;
         String phone_number = (String) obj.get("phone_number");
         String address = (String) obj.get("address");
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
+        res.AddTag("subscriberPurchase");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }

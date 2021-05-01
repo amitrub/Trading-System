@@ -31,9 +31,9 @@ class App extends React.Component {
       connID: "connID",
       whoAreUser: {
         guest: true,
-        subscriber: false,
         manager: false,
         owner: false,
+        founder: false,
       },
       stores: [],
       products: [],
@@ -209,12 +209,12 @@ class App extends React.Component {
   render() {
     return (
       <div className="App">
-        <MainPage
+        {/* <MainPage
           username={this.state.username}
           loadSys={this.loadStores}
           connID={this.state.connID}
           clientConnection={this.state.clientConnection}
-        />
+        /> */}
         <Stores
           loadSys={this.loadStores}
           connID={this.state.connID}
