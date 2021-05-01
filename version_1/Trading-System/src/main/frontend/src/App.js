@@ -36,6 +36,7 @@ class App extends React.Component {
         guest: true,
         manager: false,
         owner: false,
+        founder: false,
       },
       stores: [],
       products: [],

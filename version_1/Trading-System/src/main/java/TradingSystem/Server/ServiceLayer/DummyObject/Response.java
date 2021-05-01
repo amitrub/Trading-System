@@ -23,8 +23,30 @@ public class Response {
         this.message = message;
     }
 
+    public void AddUserGuest(){
+        this.returnObject.put("guest", true);
+        this.returnObject.put("manager", false);
+        this.returnObject.put("owner", false);
+        this.returnObject.put("founder", false);
+    }
+    public void AddUserSubscriber(boolean isManager, boolean isOwner, boolean isFounder){
+        this.returnObject.put("guest", false);
+        this.returnObject.put("manager", isManager);
+        this.returnObject.put("owner", isOwner);
+        this.returnObject.put("founder", isFounder);
+    }
+    public void AddUserSubscriber(boolean isManager, boolean isOwner, boolean isFounder,boolean isAdmin){
+        this.returnObject.put("guest", false);
+        this.returnObject.put("manager", isManager);
+        this.returnObject.put("owner", isOwner);
+        this.returnObject.put("founder", isFounder);
+        this.returnObject.put("admin", isAdmin);
+    }
     public void AddPair(String key, Object value){
         this.returnObject.put(key, value);
+    }
+    public void AddTag(String value){
+        this.returnObject.put("tag", value);
     }
     public void AddConnID(String value){
         this.returnObject.put("connID", value);

@@ -64,6 +64,7 @@ public class GuestService {
         System.out.println("eeeeeeee");
         Response res = this.tradingSystem.ConnectSystem();
         tradingSystem.printUsers();
+        res.AddTag("ConnectSystem");
         return res;
     }
 
@@ -80,6 +81,7 @@ public class GuestService {
     public Response Exit(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.Exit(connID);
         tradingSystem.printUsers();
+        res.AddTag("Exit");
         return res;
     }
 
@@ -105,6 +107,7 @@ public class GuestService {
         String password = (String) obj.get("password");
         Response res = this.tradingSystem.Register(connID, userName, password);
         tradingSystem.printUsers();
+        res.AddTag("Register");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -130,6 +133,7 @@ public class GuestService {
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
         Response res = this.tradingSystem.Login(connID, userName, password);
+        res.AddTag("Login");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         tradingSystem.printUsers();
         return res;
@@ -157,6 +161,7 @@ public class GuestService {
         String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowAllStores();
         System.out.println(res);
+        res.AddTag("ShowAllStores");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -187,6 +192,7 @@ public class GuestService {
     public Response ShowStoreProducts(@DestinationVariable int storeID, @Payload Map<String, Object> obj) {
         Response res = this.tradingSystem.ShowStoreProducts(storeID);
         String connID = (String) obj.get("connID");
+        res.AddTag("ShowStoreProducts");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -238,6 +244,7 @@ public class GuestService {
             res = tradingSystem.SearchProduct(null, name, minPrice, maxPrice);
         else
             res = new Response(true, "Input Error");
+        res.AddTag("Search");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -267,6 +274,7 @@ public class GuestService {
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
         tradingSystem.printUsers();
+        res.AddTag("AddProductToCart");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -297,6 +305,7 @@ public class GuestService {
         String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowShoppingCart(connID);
         res.AddConnID(connID);
+        res.AddTag("ShowShoppingCart");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -322,6 +331,7 @@ public class GuestService {
        int productID = (int) obj.get("productID");
        Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
        res.AddConnID(connID);
+       res.AddTag("RemoveProductFromCart");
        template.convertAndSend(String.format("/topic/%s", connID), res);
        return res;
     }
@@ -349,6 +359,7 @@ public class GuestService {
         int quantity = (int) obj.get("quantity");
         Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
+        res.AddTag("EditProductQuantityFromCart");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
@@ -377,6 +388,7 @@ public class GuestService {
         String phone_number = (String) obj.get("phone_number");
         String address = (String) obj.get("address");
         Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
+        res.AddTag("guestPurchase");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
