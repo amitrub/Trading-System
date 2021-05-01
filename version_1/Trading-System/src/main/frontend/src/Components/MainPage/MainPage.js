@@ -10,24 +10,28 @@ function mainPage(props) {
   return (
     <div>
       {/* <head> */}
-      {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-      <link rel="stylesheet" type="text/css" href="vendors/css/normalize.css" />
-      <link rel="stylesheet" type="text/css" href="vendors/css/grid.css" />
+      <link
+        rel="stylesheet"
+        type="text/css"
+        href="../../Design/normalize.css"
+      />
+      <link rel="stylesheet" type="text/css" href="../../Design/grid.css" />
       <link
         rel="stylesheet"
         type="text/css"
         href="vendors/css/ionicons.min.css"
       />
-      <link rel="stylesheet" type="text/css" href="vendors/css/animate.css" />
-      <link rel="stylesheet" type="text/css" href="resources/css/style.css" />
-      <link rel="stylesheet" type="text/css" href="resources/css/queries.css" />
+      <link rel="stylesheet" type="text/css" href="../../Design/animate.css" />
+      <link rel="stylesheet" type="text/css" href="../../Design/style.css" />
+      <link rel="stylesheet" type="text/css" href="../../Design/queries.css" />
       <link
         href="http://fonts.googleapis.com/css?family=Lato:100,300,400,300italic"
         rel="stylesheet"
         type="text/css"
       />
-      <title>AliBamba</title> */}
+      <title>AliBamba</title>
       {/* </head> */}
 
       {/* --------------------- HEADER ---------------------- */}
@@ -60,7 +64,7 @@ function mainPage(props) {
         </nav>
         <div className="hero-text-box">
           <h1>
-            <strong>welcome to Ali - Bamba.</strong>
+            <strong>Welcome to AliBamba.</strong>
           </h1>
           <h1>the best trading system for you</h1>
           <a

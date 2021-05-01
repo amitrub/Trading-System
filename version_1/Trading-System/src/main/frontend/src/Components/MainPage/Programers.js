@@ -14,7 +14,6 @@ function Programers() {
         <h2>This system desigend by the greatest programers</h2>
       </div>
       <div className="row">
-        <h1>ddd</h1>
         <div className="col span-1-of-7 box">
           <img src={hadas} alt="Lisbon" />
           <h3>Hadas</h3>
