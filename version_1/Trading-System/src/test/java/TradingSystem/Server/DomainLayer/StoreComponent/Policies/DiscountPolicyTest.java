@@ -58,7 +58,7 @@ class DiscountPolicyTest {
         products.put(productID1, 1);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,3100.0);
-        assertEquals(2790.0, newPrice);
+        assertEquals(2790.0, newPrice, 0);
     }
 
     @Test
@@ -73,7 +73,7 @@ class DiscountPolicyTest {
         products.put(productID1, 1);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,3100.0);
-        assertEquals(3100.0, newPrice);
+        assertEquals(3100.0, newPrice, 0);
     }
 
     @Test
@@ -89,7 +89,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products, 2 , 6100.0);
-        assertEquals(4900.0, newPrice);
+        assertEquals(4900.0, newPrice,0);
     }
 
     @Test
@@ -105,7 +105,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products, 2 , 6100.0);
-        assertEquals(6100.0, newPrice);
+        assertEquals(6100.0, newPrice,0);
     }
 
     @Test
@@ -121,7 +121,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products, 2, 220.0);
-        assertEquals(160.0, newPrice);
+        assertEquals(160.0, newPrice,0);
     }
 
     @Test
@@ -137,7 +137,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products, 2, 220.0);
-        assertEquals(220.0, newPrice);
+        assertEquals(220.0, newPrice,0);
     }
     //endregion
 
@@ -158,7 +158,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,6100.0);
-        assertEquals(3050.0, newPrice);
+        assertEquals(3050.0, newPrice,0);
     }
 
     @Test
@@ -177,7 +177,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,6100.0);
-        assertEquals(6100.0, newPrice);
+        assertEquals(6100.0, newPrice,0);
     }
 
     @Test
@@ -196,7 +196,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,6100.0);
-        assertEquals(3050.0, newPrice);
+        assertEquals(3050.0, newPrice,0);
     }
 
     @Test
@@ -215,7 +215,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,6100.0);
-        assertEquals(6100.0, newPrice);
+        assertEquals(6100.0, newPrice,0);
     }
 
     @Test
