@@ -43,8 +43,8 @@ public class DiscountPolicy {
         Set<Integer> keySetSales=Sales.keySet();
         for (Integer key:keySetSales
         ) {
-            Double s=Sales.get(key).calculateSale(products,priceBeforeSale, userID,storeID );
-            sale=s+sale;
+            Double s=Sales.get(key).calculateSale(products,priceBeforeSale, userID,storeID);
+            sale=sale + s;
         }
 
         return priceBeforeSale-sale;

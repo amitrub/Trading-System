@@ -397,7 +397,7 @@ public class Store {
         for (Integer key:keySetProdects
         ) {
             Double tmpPrice=this.getProduct(key).getPrice();
-            priceBeforeSale=priceBeforeSale+tmpPrice;
+            priceBeforeSale=priceBeforeSale+tmpPrice*productsInTheBug.get(key);
         }
         return this.discountPolicy.calculatePrice(productsInTheBug,userId,priceBeforeSale);
     }
@@ -492,17 +492,20 @@ public class Store {
         if(productID!=-1){
             Integer saleId=this.discountPolicy.getNextSaleID();
             ProductSale PS=new ProductSale(saleId,productID,discount);
+            PS.setExpression(exp);
             this.discountPolicy.AddSale(PS);
             return new Response(false,"new ProductSale added to store "+this.id);
         }
         else if(category!=null){
             Integer saleId=this.discountPolicy.getNextSaleID();
             CategorySale CS=new CategorySale(saleId,category,discount);
+            CS.setExpression(exp);
             this.discountPolicy.AddSale(CS);
             return new Response(false,"new CategorySale added to store "+this.id);
         }
         Integer saleId=this.discountPolicy.getNextSaleID();
         StoreSale SS=new StoreSale(saleId,this.id,discount);
+        SS.setExpression(exp);
         this.discountPolicy.AddSale(SS);
         return new Response(false,"new StoreSale added to store "+this.id);
     }
