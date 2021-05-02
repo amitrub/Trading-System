@@ -6,15 +6,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class SimpleSale implements Sale {
 
-    private Integer saleID;
+   // private Integer saleID;
     private Expression expression;
 
-    public SimpleSale(Integer saleID){
-        this.saleID=saleID;
+    public SimpleSale(Expression exp){
+        this.expression=exp;
     }
 
-    public Integer getID(){
-        return this.saleID;
+    public SimpleSale(){
     }
 
     public abstract Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID);
@@ -25,6 +24,28 @@ public abstract class SimpleSale implements Sale {
 
     public Sale getSale() {
         return this;
+    }
+
+    public Expression setExpression(Expression exp){
+            this.expression=exp;
+            return this.expression;
+    }
+
+    public Expression getExpression(){
+        return this.expression;
+    }
+
+    public Sale setSale(Integer saleID, Sale sale) { return this; }
+
+    /*
+    public Sale getSale(Integer saleID) {
+        if(this.saleID==saleID){
+            return this;
+         }
+        return null;
+    }
+    public Integer getID(){
+        return this.saleID;
     }
 
     @Override
@@ -41,28 +62,6 @@ public abstract class SimpleSale implements Sale {
         return null;
     }
 
-    public Sale setSale(Integer saleID, Sale sale) { return this; }
-
-    public Sale getSale(Integer saleID) {
-        if(this.saleID==saleID){
-            return this;
-         }
-        return null;
-    }
-
-    public Expression setExpression(Expression exp){
-        if(this.expression!=null){
-            this.expression.add(exp);
-        }
-        else{
-            this.expression=exp;
-        }
-        return this.expression;
-    }
-
-    public Expression getExpression(){
-        return this.expression;
-    }
 
     public Expression setExpression(Integer expID, Expression exp){
         if(this.expression!=null) {
@@ -80,5 +79,7 @@ public abstract class SimpleSale implements Sale {
         }
         return this.expression;
     }
+
+     */
 
 }

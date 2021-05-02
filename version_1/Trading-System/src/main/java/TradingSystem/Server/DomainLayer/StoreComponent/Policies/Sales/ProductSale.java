@@ -14,12 +14,19 @@ public class ProductSale extends SimpleSale {
     //Expression expression;
     TradingSystem tradingSystem = TradingSystem.getInstance();
 
-    public ProductSale(Integer saleID, Integer productID, Double discountPercentage) {
+    public ProductSale(Expression exp, Integer productID, Double discountPercentage) {
         //this.saleID = saleID;
-        super(saleID);
+        super(exp);
         this.productID = productID;
         this.discountPercentage = discountPercentage;
-        this.setExpression(null);
+      //  this.setExpression(null);
+    }
+
+    public ProductSale(Integer productID, Double discountPercentage) {
+        //this.saleID = saleID;
+       // super(exp);
+        this.productID = productID;
+        this.discountPercentage = discountPercentage;
     }
 
     //Add productID,Price,quantity

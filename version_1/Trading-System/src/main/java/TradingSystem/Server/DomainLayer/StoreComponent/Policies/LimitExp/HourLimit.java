@@ -13,7 +13,7 @@ public class HourLimit extends SimpleExpression {
     Date date;
 
     public HourLimit(Integer expID, Date date) {
-        super(expID);
+      //  super(expID);
         this.date = date;
     }
 

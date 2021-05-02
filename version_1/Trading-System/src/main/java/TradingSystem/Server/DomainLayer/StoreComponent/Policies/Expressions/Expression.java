@@ -8,10 +8,10 @@ public interface Expression {
 
     public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
 
-    public Expression setExpression(Integer expID, Expression exp);
+   // public Expression setExpression(Integer expID, Expression exp);
 
-    public Expression getExpression(Integer id);
+    //public Expression getExpression(Integer id);
 
-    public Integer getExpressionId();
+//    public Integer getExpressionId();
 }
 

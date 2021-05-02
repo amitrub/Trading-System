@@ -6,11 +6,11 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class NumOfProductsForGetSale extends SimpleExpression {
 
-    private Integer numOfProductsForSale;
+   private Integer numOfProductsForSale;
 
-    public NumOfProductsForGetSale(Integer expressionID, Integer numOfProductForSale) {
-        super(expressionID);
-        this.numOfProductsForSale=numOfProductForSale;
+    public NumOfProductsForGetSale(Integer numOfProductForSale) {
+        //super(expressionID);
+      this.numOfProductsForSale=numOfProductForSale;
     }
 
     @Override

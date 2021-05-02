@@ -5,20 +5,6 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.AgeLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.HourLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.TimeLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.CategoryLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.ProductLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.StoreLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.CategorySale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.ProductSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.StoreSale;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -78,8 +64,8 @@ public class Store {
         this.ownersIDs.add(founderID);
         this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
-        this.discountPolicy=new DiscountPolicy(this.id);
-        this.buyingPolicy=new BuyingPolicy(this.id);
+        this.discountPolicy=new DiscountPolicy(this.id,null);
+        this.buyingPolicy=new BuyingPolicy(this.id,null);
     }
 
     public Integer getId() {
@@ -389,7 +375,7 @@ public class Store {
         else
             return 2.0;
     }
-
+/*
     public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
         Double priceBeforeSale=0.0;
 
@@ -414,6 +400,8 @@ public class Store {
         return this.buyingPolicy.checkEntitlement(productsInTheBug,userId,priceBeforeSale);
     }
 
+
+ */
 
     public void addOwnerPermission(int newOwner, OwnerPermission op) {
         this.ownersPermission.put(newOwner,op);
@@ -446,7 +434,14 @@ public class Store {
         return this.managersPermission;
     }
 
+    public void setDiscountPolicy(DiscountPolicy d){
+        this.discountPolicy=d;
+    }
 
+    public void setBuyingPolicy(BuyingPolicy buyingPolicy) {
+        this.buyingPolicy = buyingPolicy;
+    }
+    /*
 
     //Todo add sale to response?
     public Response addSaleToPolicy(String category, Integer productID, Double discount){
@@ -543,4 +538,6 @@ public class Store {
     }
 
 
+
+ */
 }

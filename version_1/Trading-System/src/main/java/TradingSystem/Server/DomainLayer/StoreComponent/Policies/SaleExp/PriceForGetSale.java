@@ -9,8 +9,8 @@ public class PriceForGetSale extends SimpleExpression {
 
     Double priceForSale;
 
-    public PriceForGetSale(Integer expId, Double priceForSale) {
-        super(expId);
+    public PriceForGetSale(Double priceForSale) {
+     //   super(expId);
         this.priceForSale = priceForSale;
     }
 

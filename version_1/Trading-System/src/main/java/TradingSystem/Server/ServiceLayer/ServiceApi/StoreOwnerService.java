@@ -131,6 +131,7 @@ public class StoreOwnerService {
         return tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price,quantity);
     }
 
+
     /**
      * @requirement 4.2
      *

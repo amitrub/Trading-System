@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StoreSale extends SimpleSale {
@@ -11,11 +12,18 @@ public class StoreSale extends SimpleSale {
     private Double  discountPercentage;
     //private Expression expression;
 
-    public StoreSale(Integer saleID, Integer storeID, Double discountPercentage) {
-        super(saleID);
+    public StoreSale(Expression exp,Integer storeID, Double discountPercentage) {
+        super(exp);
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
        // this.saleID=saleID;
+    }
+
+    public StoreSale(Integer storeID, Double discountPercentage) {
+        //super(exp);
+        this.storeID = storeID;
+        this.discountPercentage = discountPercentage;
+        // this.saleID=saleID;
     }
 
     @Override

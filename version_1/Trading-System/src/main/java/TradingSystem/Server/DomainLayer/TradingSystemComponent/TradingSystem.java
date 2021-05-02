@@ -1,8 +1,15 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
@@ -328,7 +335,7 @@ public class TradingSystem {
                 return new Response(true, "Error Store name is taken");
             }
             else {
-                Store newStore = new Store(storeName, userID);
+                Store newStore = new Store(storeName, userID,null,null);
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
@@ -1343,6 +1350,293 @@ public class TradingSystem {
             response.AddPair("workers", workers);
             return response;
         }
+    }
+
+    public Response createSalePolicy(int userID, String connID, int storeID, Map<String, Object> obj ){
+       if (!ValidConnectedUser(userID, connID)) {
+           loggerController.WriteErrorMsg("User " + userID + "try to get permissions for store and failed. The err message: Error in User details");
+           return new Response(true, "Error in User details");
+        }
+        //todo add another checks
+        Store s=this.stores.get(storeID);
+        if(obj.size()==1) {
+            Iterator it = obj.entrySet().iterator();
+            Map.Entry pair = (Map.Entry) it.next();
+            String saleName = (String) pair.getKey();
+            Map<String, Object> value=( Map<String, Object>) pair.getValue();
+            Sale res = this.createSale(storeID,saleName, value);
+            DiscountPolicy d=new DiscountPolicy(storeID,res);
+            s.setDiscountPolicy(d);
+        }
+        return new Response("");
+    }
+
+    private Sale createSale(Integer storeID,String saleName, Map<String, Object> o) {
+        Sale s=null;
+
+        if(saleName.equals("AddComposite")){
+            LinkedList<Sale> list=new LinkedList<Sale>();
+            AddComposite sale=new AddComposite(list);
+            for (String mapKey:o.keySet()
+            ) {
+                Map<String, Object> tosend = new HashMap<>();
+                tosend.put(mapKey,(Map<String, Object>) o.get(mapKey));
+                createSalePolicy(storeID,sale,tosend);
+            }
+            s=sale;
+        }
+        if(saleName.equals("MaxComposite")){
+            LinkedList<Sale> list=new LinkedList<Sale>();
+            MaxComposite sale=new MaxComposite(list);
+            for (String mapKey:o.keySet()
+            ) {
+                Map<String, Object> tosend = new HashMap<>();
+                tosend.put(mapKey,(Map<String, Object>) o.get(mapKey));
+                createSalePolicy(storeID,sale,tosend);
+            }
+            s=sale;
+        }
+        return s;
+    }
+
+    private Sale createSalePolicy(Integer storeID,Sale sale, Map<String, Object> o) {
+        Response res=new Response("");
+        for (String key:o.keySet()
+             ) {
+            switch (key){
+                case "AddComposite":
+                     AddComposite addComposite=new AddComposite();
+                     Map<String, Object> map1=(Map<String, Object>)o.get("AddComposite");
+                    for (String mapKey:map1.keySet()
+                         ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey,(Map<String, Object>) map1.get(mapKey));
+                        createSalePolicy(storeID,addComposite,tosend);
+                    }
+                    sale.setSale(addComposite);
+                    return sale;
+                case "MaxComposite":
+                    MaxComposite maxComposite=new MaxComposite();
+                    Map<String, Object> map2=(Map<String, Object>)o.get("MaxComposite");
+                    for (String mapKey:map2.keySet()
+                    ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey,(Map<String, Object>) map2.get(mapKey));
+                        createSalePolicy(storeID,maxComposite,tosend);
+                    }
+                    sale.setSale(maxComposite);
+                    return sale;
+                case "StoreSale":
+                    Map<String, Object> map3=(Map<String, Object>)o.get("StoreSale");
+                    Double discount1=(Double)map3.get("discount");
+                    Map<String, Object> exp1= (Map<String, Object>)map3.get("expression");
+                    StoreSale storeSale=new StoreSale(storeID,discount1);
+                    Expression e1=createSaleExp(storeID,exp1);
+                    storeSale.setExpression(e1);
+                    sale.setSale(storeSale);
+                    return sale;
+                case "ProductSale":
+                    Map<String, Object> map4=(Map<String, Object>)o.get("ProductSale");
+                    Integer productID=(Integer)map4.get("productID");
+                    Double discoun2=(Double)map4.get("discount");
+                    Map<String, Object> exp2= (Map<String, Object>)map4.get("expression");
+                    ProductSale productSale=new ProductSale(productID,discoun2);
+                    Expression e2=createSaleExp(storeID,exp2);
+                    productSale.setExpression(e2);
+                    sale.setSale(productSale);
+                    return sale;
+                case "CategorySale":
+                    Map<String, Object> map5=(Map<String, Object>)o.get("CategorySale");
+                    String category=(String) map5.get("category");
+                    Double discoun3=(Double)map5.get("discount");
+                    Map<String, Object> exp3= (Map<String, Object>)map5.get("expression");
+                    CategorySale categorySale=new CategorySale(category,discoun3);
+                    Expression e3=createSaleExp(storeID,exp3);
+                    categorySale.setExpression(e3);
+                    sale.setSale(categorySale);
+                    return sale;
+            }
+        }
+        return sale;
+    }
+
+    private Expression createSaleExp(Integer storeID, Map<String, Object> exp) {
+        for (String key : exp.keySet()
+        ) {
+            switch (key) {
+                case "AndComposite":
+                    AndComposite andComposite = new AndComposite();
+                    Map<String, Object> map1 = (Map<String, Object>) exp.get("AndComposite");
+                    for (String mapKey:map1.keySet()
+                    ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey,(Map<String, Object>) map1.get(mapKey));
+                        Expression tmp=createSaleExp(storeID, tosend);
+                        andComposite.add(tmp);
+                    }
+                    return andComposite;
+                case "OrComposite":
+                    OrComposite orComposite = new OrComposite();
+                    Map<String, Object> map2 = (Map<String, Object>) exp.get("OrComposite");
+                    for (String mapKey:map2.keySet()
+                    ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey,(Map<String, Object>) map2.get(mapKey));
+                        Expression tmp=createSaleExp(storeID, tosend);
+                        orComposite.add(tmp);
+                    }
+                    return orComposite;
+                case "XorComposite":
+                    XorComposite xorComposite = new XorComposite();
+                    Map<String, Object> map3 = (Map<String, Object>) exp.get("XorComposite");
+                    for (String mapKey:map3.keySet()
+                    ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey,(Map<String, Object>) map3.get(mapKey));
+                        Expression tmp=createSaleExp(storeID, tosend);
+                        xorComposite.add(tmp);
+                    }
+                    return xorComposite;
+                case "Conditioning":
+                    Conditioning conditioning = new Conditioning();
+                    Map<String, Object> map4 = (Map<String, Object>) exp.get("Conditioning");
+                    Map<String, Object> cond = (Map<String, Object>) map4.get("cond");
+                    Expression e1 = createSaleExp(storeID, cond);
+                    Map<String, Object> condIf = (Map<String, Object>) map4.get("condIf");
+                    Expression e2 = createSaleExp(storeID, condIf);
+                    conditioning.setCond(e1);
+                    conditioning.setCondIf(e2);
+                    return conditioning;
+                case "NumOfProductsForGetSale":
+                    Map<String, Object> map5 = (Map<String, Object>) exp.get("NumOfProductsForGetSale");
+                    Integer num = (Integer) map5.get("numOfProductsForSale");
+                    NumOfProductsForGetSale numOfProductsForSale = new NumOfProductsForGetSale(num);
+                    return numOfProductsForSale;
+                case "PriceForGetSale":
+                    Map<String, Object> map6 = (Map<String, Object>) exp.get("PriceForGetSale");
+                    Double price = (Double) map6.get("priceForSale");
+                    PriceForGetSale priceForGetSale = new PriceForGetSale(price);
+                    return priceForGetSale;
+                case "QuantityForGetSale":
+                    Map<String, Object> map7 = (Map<String, Object>) exp.get("QuantityForGetSale");
+                    Integer productId = (Integer) map7.get("productID");
+                    Integer quantity = (Integer) map7.get("quantityForSale");
+                    QuantityForGetSale quantityForGetSale = new QuantityForGetSale(productId, quantity);
+                    return quantityForGetSale;
+            }
+        }
+        return null;
+    }
+
+    public Response createLimitPolicy(int userID, String connID, int storeID, Map<String, Object> obj ){
+        // if (!ValidConnectedUser(userID, connID)) {
+        // loggerController.WriteErrorMsg("User " + userID + "try to get permissions for store and failed. The err message: Error in User details");
+        //   return new Response(true, "Error in User details");
+        //}
+        //todo add another checks
+        Store s=this.stores.get(storeID);
+        AndComposite exp=new AndComposite();
+            Iterator it = obj.entrySet().iterator();
+            while (it.hasNext()) {
+                Map.Entry pair = (Map.Entry) it.next();
+                String limitName = (String) pair.getKey();
+                Map<String, Object> value = (Map<String, Object>) pair.getValue();
+                Map<String, Object> tosend=new HashMap<>();
+                tosend.put(limitName,value);
+                Expression res = this.createLimitExp(storeID, tosend);
+                exp.add(res);
+            }
+            BuyingPolicy b=new BuyingPolicy(storeID,exp);
+            s.setBuyingPolicy(b);
+
+        return new Response("");
+    }
+
+    private Expression createLimitExp(int storeID, Map<String, Object> exp) {
+
+        for (String key : exp.keySet()
+        ) {
+            switch (key) {
+                case "AndComposite":
+                    AndComposite andComposite = new AndComposite();
+                    Map<String, Object> map1 = (Map<String, Object>) exp.get("AndComposite");
+                    for (String mapKey : map1.keySet()
+                    ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey, (Map<String, Object>) map1.get(mapKey));
+                        Expression tmp = createLimitExp(storeID, tosend);
+                        andComposite.add(tmp);
+                    }
+                    return andComposite;
+                case "OrComposite":
+                    OrComposite orComposite = new OrComposite();
+                    Map<String, Object> map2 = (Map<String, Object>) exp.get("OrComposite");
+                    for (String mapKey : map2.keySet()
+                    ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey, (Map<String, Object>) map2.get(mapKey));
+                        Expression tmp = createLimitExp(storeID, tosend);
+                        orComposite.add(tmp);
+                    }
+                    return orComposite;
+                case "XorComposite":
+                    XorComposite xorComposite = new XorComposite();
+                    Map<String, Object> map3 = (Map<String, Object>) exp.get("XorComposite");
+                    for (String mapKey : map3.keySet()
+                    ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey, (Map<String, Object>) map3.get(mapKey));
+                        Expression tmp = createLimitExp(storeID, tosend);
+                        xorComposite.add(tmp);
+                    }
+                    return xorComposite;
+                case "Conditioning":
+                    Conditioning conditioning = new Conditioning();
+                    Map<String, Object> map4 = (Map<String, Object>) exp.get("Conditioning");
+                    Map<String, Object> cond = (Map<String, Object>) map4.get("cond");
+                    Expression e1 = createLimitExp(storeID, cond);
+                    Map<String, Object> condIf = (Map<String, Object>) map4.get("condIf");
+                    Expression e2 = createLimitExp(storeID, condIf);
+                    conditioning.setCond(e1);
+                    conditioning.setCondIf(e2);
+                    return conditioning;
+                case "AgeLimitForCategory":
+                    Map<String, Object> map5 = (Map<String, Object>) exp.get("AgeLimitForCategory");
+                    Integer minAgec= (Integer) map5.get("minAge");
+                    String category= (String) map5.get("category");
+                    AgeLimitForCategory ageLimitForCategory = new AgeLimitForCategory(minAgec,category);
+                    return ageLimitForCategory;
+                case "AgeLimitForProduct":
+                    Map<String, Object> map6 = (Map<String, Object>) exp.get("AgeLimitForProduct");
+                    Integer minAgep= (Integer) map6.get("minAge");
+                    Integer productID= (Integer) map6.get("productID");
+                    AgeLimitForProduct ageLimitForProduct = new AgeLimitForProduct(minAgep,productID);
+                    return ageLimitForProduct;
+                case "AgeLimitForStore":
+                    Map<String, Object> map7 = (Map<String, Object>) exp.get("AgeLimitForStore");
+                    Integer minAges= (Integer) map7.get("minAge");
+                    AgeLimitForStore ageLimitForStore = new AgeLimitForStore(minAges,storeID);
+                    return ageLimitForStore;
+                case "QuantityLimitForProduct":
+                    Map<String, Object> map8 = (Map<String, Object>) exp.get("QuantityLimitForProduct");
+                    Integer maxQuantityp= (Integer) map8.get("maxQuantity");
+                    Integer productIDq= (Integer) map8.get("productID");
+                    QuantityLimitForProduct quantityLimitForProduct = new QuantityLimitForProduct(maxQuantityp,productIDq);
+                    return quantityLimitForProduct;
+                case "QuantityLimitForCategory":
+                    Map<String, Object> map9 = (Map<String, Object>) exp.get("QuantityLimitForCategory");
+                    Integer maxQuantityc= (Integer) map9.get("maxQuantity");
+                    String categoryq= (String) map9.get("category");
+                    QuantityLimitForCategory quantityLimitForCategory = new QuantityLimitForCategory(maxQuantityc,categoryq);
+                    return quantityLimitForCategory;
+                case "QuantityLimitForStore":
+                    Map<String, Object> map10 = (Map<String, Object>) exp.get("QuantityLimitForStore");
+                    Integer maxQuantitys= (Integer) map10.get("maxQuantity");
+                    QuantityLimitForStore quantityLimitForStore = new QuantityLimitForStore(maxQuantitys,storeID);
+                    return quantityLimitForStore;
+            }
+        }
+        return null;
     }
 
     //for the tests

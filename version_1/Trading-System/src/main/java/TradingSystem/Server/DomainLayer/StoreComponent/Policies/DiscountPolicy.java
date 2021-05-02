@@ -3,25 +3,20 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
 public class DiscountPolicy {
 
     private Integer storeID;
-    private static int nextSaleID=0;
-    private  ConcurrentHashMap<Integer,Sale> Sales;
+   // private static int nextSaleID=0;
+    private Sale sale;
 
     public TradingSystem tradingSystem;
 
-    public DiscountPolicy(Integer storeID){
+    public DiscountPolicy(Integer storeID,Sale s){
      this.storeID=storeID;
-     this.Sales=new ConcurrentHashMap<>();
+     this.sale=s;
      this.tradingSystem=TradingSystem.getInstance();
     }
-
+/*
     public static synchronized int getNextSaleID() {
         nextSaleID++;
         return nextSaleID;
@@ -49,5 +44,8 @@ public class DiscountPolicy {
 
         return priceBeforeSale-sale;
     }
+
+
+ */
 
 }

@@ -8,9 +8,20 @@ public class Conditioning extends SimpleExpression{
     Expression condIf;
 
 
-    public Conditioning(Integer expID,Expression cond, Expression condIf) {
-        super(expID);
+    public Conditioning(Expression cond, Expression condIf) {
+      //  super(expID);
         this.cond = cond;
+        this.condIf = condIf;
+    }
+
+    public Conditioning(){
+    }
+
+    public void setCond(Expression cond) {
+        this.cond = cond;
+    }
+
+    public void setCondIf(Expression condIf) {
         this.condIf = condIf;
     }
 

@@ -11,8 +11,8 @@ public class QuantityForGetSale extends SimpleExpression {
     private Integer productId;
     private Integer quantityForSale;
 
-    public QuantityForGetSale(Integer expId,Integer productId,  Integer quantityForSale) {
-        super(expId);
+    public QuantityForGetSale(Integer productId,  Integer quantityForSale) {
+        //super(expId);
         this.productId=productId;
         this.quantityForSale = quantityForSale;
     }

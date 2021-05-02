@@ -9,10 +9,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class CompositeSale implements Sale{
 
     public List<Sale> children;
-    private Integer ID;
+  //  private Integer ID;
+
+    public CompositeSale(List<Sale> S)
+    { this.children= S ;}
 
     public CompositeSale()
-    { this.children = new LinkedList<>(); }
+    {this.children=new LinkedList<Sale>();}
+
 
     public Sale add(Sale sale){
         children.add(sale); return this;
@@ -30,7 +34,7 @@ public abstract class CompositeSale implements Sale{
     public Sale getSale() {
         return this;
     }
-
+/*
     @Override
     public Expression setExpression(Integer saleID, Integer expID, Expression exp) {
         if(exp!=null) {
@@ -81,6 +85,8 @@ public abstract class CompositeSale implements Sale{
         return this;
     }
 
+
+ */
     public Boolean hasChildren()
     { return !children.isEmpty(); }
 

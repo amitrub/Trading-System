@@ -4,17 +4,26 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.CategorySale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.ProductSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.SimpleSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.StoreSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.JsonSerializer;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.internal.matchers.Or;
+import java.io.Serializable;
 
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.JSONObject;
+import org.json.JSONString;
+import org.json.*;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,6 +34,37 @@ class DiscountPolicyTest {
     Store store;
     DiscountPolicy DC;
     BuyingPolicy BP;
+
+/*
+    @Test
+    void test(){
+    QuantityForGetSale QFGS1 =new QuantityForGetSale(3,5);
+    QuantityForGetSale QFGS2 =new QuantityForGetSale(2,3);
+    List<Expression> L1=new LinkedList<>();
+    L1.add(QFGS1);
+    L1.add(QFGS2);
+    OrComposite OC=new OrComposite(L1);
+    CategorySale CS=new CategorySale(OC,"blabla",13.5);
+    NumOfProductsForGetSale NOPFGS=new NumOfProductsForGetSale(10);
+    ProductSale PS=new ProductSale(NOPFGS,10,10.0);
+    PriceForGetSale PFGS=new PriceForGetSale(100.0);
+    StoreSale SS=new StoreSale(PFGS,1,15.0);
+    List<Sale> L2=new LinkedList<Sale>();
+    L2.add(CS);
+    L2.add(PS);
+    L2.add(SS);
+    MaxComposite MC=new MaxComposite(L2);
+    DiscountPolicy DP=new DiscountPolicy(1,MC);
+    //new Gson().fromJson(json,
+    JSONObject json = new JSONObject();
+     ObjectMapper mapper = new ObjectMapper();
+     //mapper.readValue(json,DiscountPolicy.class);
+    // String output = JsonConvert.SerializeObject(DP);
+        // JsonNode productNode = new ObjectMapper().readTree(SOURCE_JSON);
+    //JsonSerializer serializer = new JsonSerializer();
+    //JsonConvert jc=new JsonSerializer<>();
+    }
+
 
     @BeforeEach
     void setUp() {
@@ -227,4 +267,5 @@ class DiscountPolicyTest {
     }
 
     //endregion
+  */
 }

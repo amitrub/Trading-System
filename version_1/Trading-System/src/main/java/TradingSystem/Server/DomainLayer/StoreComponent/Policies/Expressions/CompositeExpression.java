@@ -7,11 +7,16 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class CompositeExpression implements Expression {
 
     public List<Expression> children;
-    private Integer expressionID;
+ //   private Integer expressionID;
+
+    public CompositeExpression(List<Expression> c){
+        this.children=c;
+    }
 
     public CompositeExpression(Integer exp)
-    { this.children = new LinkedList<>();
-    this.expressionID = exp;
+    {
+        this.children = new LinkedList<>();
+    //this.expressionID = exp;
     }
 
     public Expression add(Expression expr){
@@ -36,7 +41,7 @@ public abstract class CompositeExpression implements Expression {
     /**
      *implement with ID
      **/
-
+/*
     @Override
     public Expression setExpression(Integer expID, Expression exp) {
         if(this.expressionID==expID){
@@ -78,4 +83,6 @@ public abstract class CompositeExpression implements Expression {
     }
 
 
+
+ */
 }

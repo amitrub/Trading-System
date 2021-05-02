@@ -1,11 +1,17 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class XorComposite extends CompositeExpression {
 
-    public XorComposite(Integer exp) {
-        super(exp);
+    public XorComposite(List<Expression> c) {
+        super(c);
+    }
+
+    public XorComposite(){
+        super(new LinkedList<Expression>());
     }
 
     @Override

@@ -14,7 +14,7 @@ public class TimeLimit extends SimpleExpression {
 
     public TimeLimit(Integer expID,Date date)
     {
-        super(expID);
+       // super(expID);
         this.date = date;
     }
 

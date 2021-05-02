@@ -4,12 +4,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class SimpleExpression  implements Expression{
 
-    private Integer expressionID;
+    //private Integer expressionID;
 
-    public SimpleExpression(Integer expressionID) {
+   /* public SimpleExpression(Integer expressionID) {
         this.expressionID = expressionID;
     }
-
+*/
     public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
 
     @Override
@@ -22,7 +22,7 @@ public abstract class SimpleExpression  implements Expression{
     /**
      *implement with ID
      **/
-
+/*
     @Override
     public Expression setExpression(Integer expID, Expression exp) {
        if(this.expressionID==expID){
@@ -43,4 +43,6 @@ public abstract class SimpleExpression  implements Expression{
     public Integer getExpressionId() {
         return this.expressionID;
     }
+
+ */
 }

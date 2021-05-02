@@ -9,14 +9,16 @@ public interface Sale {
      public Sale setSale(Sale sale);
      public Sale getSale();
 
+
      /**
       *option with Id
       */
+     /*
      public Expression setExpression(Integer saleID, Integer expID, Expression exp);
      public Sale setSale(Integer saleID, Sale sale);
      public Sale getSale(Integer saleID);
      public Integer getID();
-
+     */
     // public Expression setExpression(Expression exp);
     // public Expression getExpression();
     // public Expression setExpression(Integer expID, Expression exp);
