@@ -10,7 +10,7 @@ function mainPage(props) {
   return (
     <div>
       {/* <head> */}
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      {/* <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
       <link
         rel="stylesheet"
@@ -31,7 +31,7 @@ function mainPage(props) {
         rel="stylesheet"
         type="text/css"
       />
-      <title>AliBamba</title>
+      <title>AliBamba</title> */}
       {/* </head> */}
 
       {/* --------------------- HEADER ---------------------- */}

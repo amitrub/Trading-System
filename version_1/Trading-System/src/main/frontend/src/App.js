@@ -32,14 +32,14 @@ class App extends React.Component {
       pass: "",
       userID: -1,
       connID: "connID",
-      whoAreUser: {
-        guest: true,
-        manager: false,
-        owner: false,
-        founder: false,
-      },
+      guest: true,
+      manager: false,
+      owner: false,
+      founder: false,
+      admin: false,
       stores: [],
       products: [],
+      searchedProducts: [],
     };
   }
 
@@ -57,6 +57,16 @@ class App extends React.Component {
     console.log(products);
     this.setState({
       products: products,
+    });
+  };
+
+  loadSearchedProducts = () => {
+    const productResponse = this.state.response.returnObject;
+    console.log(productResponse);
+    const products = productResponse.products;
+    console.log(products);
+    this.setState({
+      searchedProducts: products,
     });
   };
 
@@ -111,12 +121,11 @@ class App extends React.Component {
           pass: pass,
           userID: loginResponse.returnObject.userID,
           connID: loginResponse.returnObject.connID,
-          whoAreUser: {
-            guest: false,
-            manager: false,
-            owner: false,
-          },
-          // whoAreUser: loginResponse.returnObject.whoAreUser
+          guest: loginResponse.returnObject.guest,
+          manager: loginResponse.returnObject.manager,
+          owner: loginResponse.returnObject.owner,
+          founder: loginResponse.returnObject.founder,
+          admin: loginResponse.returnObject.admin,
         }),
         () => {
           //unsubscribe old id
@@ -156,13 +165,16 @@ class App extends React.Component {
               },
               () => {
                 //get All Stores
-                if (jsonBody.returnObject.stores) {
+                if (jsonBody.returnObject.tag === "ShowAllStores") {
                   this.loadStores();
                 }
-
                 //get All products in store
-                if (jsonBody.returnObject.products) {
+                if (jsonBody.returnObject.tag === "ShowStoreProducts") {
                   this.loadProducts();
+                }
+                //Search
+                if (jsonBody.returnObject.tag === "Search") {
+                  this.loadSearchedProducts();
                 }
               }
             );
@@ -213,7 +225,7 @@ class App extends React.Component {
       <div className="App">
         <BrowserRouter>
           <div className="AppTry">
-            <Navbar />
+            {/* <Navbar /> */}
             <Switch>
               <Route path="/">
                 <MainPage username={this.state.username} />
@@ -223,6 +235,7 @@ class App extends React.Component {
                   clientConnection={this.state.clientConnection}
                   stores={this.state.stores}
                   products={this.state.products}
+                  searchedProducts={this.state.searchedProducts}
                 />
                 <section className="row">
                   <div className="col span-1-of-2 box">
@@ -246,9 +259,9 @@ class App extends React.Component {
                 <Programers />
                 <DownPage />
               </Route>
-              <Route path="/app">
-                <MainPage />
-              </Route>
+              <Route path="/services"></Route>
+              <Route path="/admin"></Route>
+              <Route path="/cart"></Route>
             </Switch>
           </div>
         </BrowserRouter>

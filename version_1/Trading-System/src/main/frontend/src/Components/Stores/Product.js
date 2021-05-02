@@ -1,9 +1,6 @@
 import React from "react";
-import createApiClient from "../../ApiClient";
 import "../../Design/grid.css";
 import "../../Design/style.css";
-
-const api = createApiClient();
 
 function Product(props) {
   const product = props.currProduct;

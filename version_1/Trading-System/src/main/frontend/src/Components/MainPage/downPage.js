@@ -25,8 +25,8 @@ function DownPage() {
             </li>
           </ul>
         </div>
-        <div class="col span-1-of-2">
-          <ul class="social-links">
+        <div className="col span-1-of-2">
+          <ul className="social-links">
             <li>
               <a href="#downpage">
                 <i className="ion-social-facebook"></i>
