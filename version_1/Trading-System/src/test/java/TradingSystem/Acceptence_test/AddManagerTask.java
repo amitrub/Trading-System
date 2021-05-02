@@ -1,14 +1,12 @@
-package TradingSystem;
+package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.Client;
-import TradingSystem.Result;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
-import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_GREEN;
 
 public class AddManagerTask implements Callable<Result> {
 

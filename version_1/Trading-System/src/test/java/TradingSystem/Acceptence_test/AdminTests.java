@@ -1,4 +1,4 @@
-package TradingSystem;
+package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.Client;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -8,11 +8,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
-
-
 import java.util.List;
+
+import static org.junit.Assert.assertEquals;
 
 public class AdminTests {
 

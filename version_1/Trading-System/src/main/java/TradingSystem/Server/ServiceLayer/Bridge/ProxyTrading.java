@@ -1,4 +1,4 @@
-package TradingSystem.Bridge;
+package TradingSystem.Server.ServiceLayer.Bridge;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
@@ -7,7 +7,6 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.checkerframework.checker.units.qual.A;
 
 import java.util.Collection;
 import java.util.List;
@@ -467,6 +466,8 @@ public class ProxyTrading implements TradingSystem {
 
     @Override
     public Response ShowAllMyStores(String connID, int userID, boolean founder, boolean owner, boolean manager) {
+        if(connID!=null && userID!=-1)
+            return real.ShowAllMyStores(connID,userID,founder,owner,manager);
         return null;
     }
 }

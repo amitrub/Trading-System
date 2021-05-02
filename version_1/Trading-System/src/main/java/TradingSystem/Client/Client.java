@@ -9,7 +9,7 @@ import java.util.List;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
-public class Client {
+public class Client implements Client_Interface {
 
     public int getUserID() {
         return userID;

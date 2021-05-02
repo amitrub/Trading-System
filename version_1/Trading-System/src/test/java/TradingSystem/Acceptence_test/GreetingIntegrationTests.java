@@ -1,4 +1,4 @@
-package TradingSystem;
+package TradingSystem.Acceptence_test;
 
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;

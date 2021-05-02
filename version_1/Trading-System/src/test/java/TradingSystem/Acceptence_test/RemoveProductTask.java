@@ -1,4 +1,4 @@
-package TradingSystem;
+package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.Client;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -6,8 +6,8 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
 
-import static TradingSystem.Server.ServiceLayer.Configuration.*;
-import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_GREEN;
+import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_RESET;
+import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_YELLOW;
 
 public class RemoveProductTask implements Callable<Result> {
 

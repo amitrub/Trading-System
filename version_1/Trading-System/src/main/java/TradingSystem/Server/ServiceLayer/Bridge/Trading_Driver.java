@@ -1,9 +1,8 @@
-package TradingSystem.Bridge;
+package TradingSystem.Server.ServiceLayer.Bridge;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 
-public abstract class Driver {
+public abstract class Trading_Driver {
 
     public static TradingSystem getTradingSystem() {
         ProxyTrading bridge = new ProxyTrading();
