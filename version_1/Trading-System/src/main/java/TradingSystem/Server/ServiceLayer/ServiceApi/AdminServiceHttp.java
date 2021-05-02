@@ -1,6 +1,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -8,7 +9,7 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping(path = "api/admin")
 public class AdminServiceHttp {
 
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
 
     /**
      * @requirement 6.4

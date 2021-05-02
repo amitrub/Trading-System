@@ -1,6 +1,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.Permission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -17,7 +18,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "api/owner")
 public class StoreOwnerServiceHttp {
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
 
 
     /**
@@ -307,9 +308,7 @@ public class StoreOwnerServiceHttp {
      * @param storeID: int (Path)
      * @param buyingPolicyID : int (Path)
      * @param connID: String (Header)
-     * @param obj:{
-     *  TODO: Think what values should be in Buying Policy
-     * }
+
      * @return Response{
      *  "isErr: boolean
      *  "message": String
@@ -331,9 +330,7 @@ public class StoreOwnerServiceHttp {
      * @param storeID: int (Path)
      * @param discountPolicyID : int (Path)
      * @param connID: String (Header)
-     * @param obj:{
-     *  TODO: Think what values should be in Discount Policy
-     * }
+
      * @return Response{
      *  "isErr: boolean
      *  "message": String

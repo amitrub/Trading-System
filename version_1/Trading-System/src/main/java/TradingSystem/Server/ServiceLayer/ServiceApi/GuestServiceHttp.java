@@ -2,6 +2,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.web.bind.annotation.*;
 
@@ -10,7 +11,7 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "api")
 public class GuestServiceHttp {
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     // 2.1 test
 
     @GetMapping("test")
