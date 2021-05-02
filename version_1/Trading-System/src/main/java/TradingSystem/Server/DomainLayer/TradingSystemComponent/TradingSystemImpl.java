@@ -673,13 +673,13 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         this.observers = new ArrayList<>();
         for (User u:subscribers.values()) {
             for (Integer ownedStore:u.getMyOwnerStore()) {
-                if(ownedStore == storeID)
+                if(ownedStore == storeId)
                     this.addObserver(u);
             }
          }
         this.notifyObservers("There is a new comment on one of your store's products");
         Response res = new Response(false, "WriteComment: The comment added successfully to product " + productId);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userId));
         return res; 
     }
 
@@ -1293,8 +1293,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
         Response res = new Response(false,"StoreHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
-        User user=subscribers.get(adminID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
+        User user=subscribers.get(AdminID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(AdminID));
         return res;
     }
 
@@ -1363,7 +1363,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         }
         Response res = new Response(false,"AllStoresHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
+        User user=subscribers.get(AdminID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(AdminID));
         return res;
     }
 
@@ -1395,7 +1396,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         }
         Response res = new Response(false, "AllUsersHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
+        User user=subscribers.get(AdminID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(AdminID));
         return res;
     }
 
@@ -1466,7 +1468,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         if(!this.hasPermission(userID,storeID,permission)) {
             return new Response(true, "User " + userID + " is not allowed to "+permission.toString());
         }
-        return new Response(false,"Sys OK");
+        Response res = new Response(false,"Sys OK");
         User user = subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
