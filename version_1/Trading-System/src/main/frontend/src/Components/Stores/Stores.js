@@ -32,6 +32,10 @@ function Stores(props) {
     setSearch(false);
   }
 
+  function onAddToCart(product, quantity) {
+    props.onAddToCart(product, quantity);
+  }
+
   return (
     <section className="section-form" id="stores">
       <div className="row">
@@ -78,6 +82,7 @@ function Stores(props) {
                 products={props.products.filter(
                   (prod) => prod.storeID === currStore.id
                 )}
+                onAddToCart={onAddToCart}
               ></Store>
             </li>
           ))

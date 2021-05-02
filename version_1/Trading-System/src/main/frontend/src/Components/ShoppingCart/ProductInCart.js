@@ -5,11 +5,11 @@ import createApiClient from "../../ApiClient";
 
 const apiHtml = createApiClient();
 
-function Product(props) {
+function ProductInCart(props) {
   const [quantityToBuy, setQuantityToBuy] = useState(0);
   const product = props.currProduct;
 
-  function insertQuantity(event) {
+  function insertQuantityToEdit(event) {
     setQuantityToBuy(event.target.value);
   }
 
@@ -62,11 +62,20 @@ function Product(props) {
               placeholder="enter quantity"
               required
               min="1"
-              onChange={insertQuantity}
+              onChange={insertQuantityToEdit}
             />
           </div>
-          <div className="btn btn-ghost">
-            <input type="submit" value="Add to cart!" />
+          <div className={"row"}>
+            <div className={"col span-1-of-2"}>
+              <div className="btn btn-ghost">
+                <input type="submit" value="Remove from cart" />
+              </div>
+            </div>
+            <div className={"col span-2-of-2"}>
+              <div className="btn btn-ghost">
+                <input type="submit" value="Edit quantity" />
+              </div>
+            </div>
           </div>
         </form>
       </div>
@@ -74,4 +83,4 @@ function Product(props) {
   );
 }
 
-export default Product;
+export default ProductInCart;

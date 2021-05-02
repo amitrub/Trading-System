@@ -14,6 +14,7 @@ import Navbar from "./Components/Navbar/Navbar";
 import "./Components/Navbar/Navbar.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import DownPage from "./Components/MainPage/DownPage";
+import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -40,8 +41,24 @@ class App extends React.Component {
       stores: [],
       products: [],
       searchedProducts: [],
+      shoppingCart: [],
     };
   }
+
+  onAddToCart = (product, quantity) => {
+    const productToBuy = {
+      storeID: product.storeID,
+      storeName: product.storeName,
+      productID: product.productID,
+      productName: product.productName,
+      price: product.price,
+      category: product.category,
+      quantity: quantity,
+    };
+    this.setState((prevState) => ({
+      shoppingCart: [...prevState.shoppingCart, productToBuy],
+    }));
+  };
 
   loadStores = () => {
     const storeResponse = this.state.response.returnObject;
@@ -236,6 +253,7 @@ class App extends React.Component {
                   stores={this.state.stores}
                   products={this.state.products}
                   searchedProducts={this.state.searchedProducts}
+                  onAddToCart={this.onAddToCart}
                 />
                 <section className="row">
                   <div className="col span-1-of-2 box">
@@ -258,6 +276,13 @@ class App extends React.Component {
                 <Recommendations />
                 <Programers />
                 <DownPage />
+                {/* <ShoppingCart
+                  connID={this.state.connID}
+                  clientConnection={this.state.clientConnection}
+                  response={this.state.response}
+                  username={this.state.username}
+                  shoppingCart={this.state.shoppingCart}
+                /> */}
               </Route>
               <Route path="/services"></Route>
               <Route path="/admin"></Route>

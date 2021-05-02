@@ -26,6 +26,10 @@ function Store(props) {
     setShowStore(false);
   }
 
+  function onAddToCart(product, quantity) {
+    props.onAddToCart(product, quantity);
+  }
+
   return (
     <section className="section-plans js--section-plans" id="store">
       <div className="row">
@@ -55,6 +59,7 @@ function Store(props) {
                     currProduct={currProduct}
                     clientConnection={props.clientConnection}
                     connID={props.connID}
+                    onAddToCart={onAddToCart}
                   ></Product>
                 </li>
               </div>
