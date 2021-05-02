@@ -3,20 +3,11 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Map;
-
 @RestController
-@MessageMapping("admin")
-@CrossOrigin("*") public class AdminService {
-    @Autowired
-    SimpMessagingTemplate template;
+@RequestMapping(path = "api/admin")
+public class AdminServiceHttp {
 
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
 
@@ -24,9 +15,7 @@ import java.util.Map;
      * @requirement 6.4
      *
      * @param adminID: int (Path)
-     * @param obj:{
-     *  "connID": String
-     * }
+     * @param connID: String (Header)
      * @return @return Response{
      *  "isErr: boolean
      *  "message": String
@@ -38,12 +27,9 @@ import java.util.Map;
      *  }]
      * }
      */
-    @MessageMapping("{adminID}/users")
-    public Response AdminAllUsers(@DestinationVariable int adminID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
+    @GetMapping("{adminID}/users")
+    public Response AdminAllUsers(@PathVariable int adminID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.AllUsersHistoryAdmin(adminID, connID);
-        res.AddTag("AdminAllUsers");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
@@ -51,9 +37,7 @@ import java.util.Map;
      * @requirement 6.4
      *
      * @param adminID: int (Path)
-     * @param obj:{
-     *  "connID": String
-     * }
+     * @param connID: String (Header)
      * @return @return Response{
      *  "isErr: boolean
      *  "message": String
@@ -64,12 +48,9 @@ import java.util.Map;
      *  }]
      * }
      */
-    @MessageMapping("{adminID}/stores")
-    public Response AdminAllStores(@DestinationVariable int adminID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
+    @GetMapping("{adminID}/stores")
+    public Response AdminAllStores(@PathVariable int adminID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.AllStoresHistoryAdmin(adminID, connID);
-        res.AddTag("AdminAllStores");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
@@ -79,9 +60,7 @@ import java.util.Map;
      *
      * @param adminID: int (Path)
      * @param userID: int (Path)
-     * @param obj:{
-     *  "connID": String
-     * }
+     * @param connID: String (Header)
      * @return Response {
      *  "isErr: boolean
      *  "message": String
@@ -101,12 +80,9 @@ import java.util.Map;
      *  }]
      * }
      */
-    @MessageMapping("{adminID}/user_history_admin/{userID}")
-    public Response AdminUserHistory(@DestinationVariable int adminID, @DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
+    @GetMapping("{adminID}/user_history_admin/{userID}")
+    public Response AdminUserHistory(@PathVariable int adminID, @PathVariable int userID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.UserHistoryAdmin(adminID, userID ,connID);
-        res.AddTag("AdminUserHistory");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
@@ -116,9 +92,7 @@ import java.util.Map;
      *
      * @param adminID: int (Path)
      * @param storeID: int (Path)
-     * @param obj:{
-     *  "connID": String
-     * }
+     * @param connID: String (Header)
      * @return Response {
      *  "isErr: boolean
      *  "message": String
@@ -138,13 +112,9 @@ import java.util.Map;
      *  }]
      * }
      */
-    @MessageMapping("{adminID}/store_history_admin/{storeID}")
-    public Response AdminStoreHistory(@DestinationVariable int adminID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        Response res = tradingSystem.StoreHistoryAdmin(adminID,storeID,connID);
-        res.AddTag("AdminStoreHistory");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
-        return res;
+    @GetMapping("{adminID}/store_history_admin/{storeID}")
+    public Response AdminStoreHistory(@PathVariable int adminID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        return tradingSystem.StoreHistoryAdmin(adminID,storeID,connID);
     }
 
 

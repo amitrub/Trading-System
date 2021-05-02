@@ -1,11 +1,5 @@
 package TradingSystem.Server.DomainLayer.ExternalServices;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.Validation;
-import TradingSystem.Server.ServiceLayer.LoggerController;
-
-import java.util.concurrent.ConcurrentHashMap;
-
 public class PaymentSystem implements ExternalServices {
 
     //Singleton

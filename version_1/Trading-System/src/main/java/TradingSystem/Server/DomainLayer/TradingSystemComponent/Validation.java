@@ -8,7 +8,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Validation {
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     public Validation() {
     }
@@ -16,9 +16,9 @@ public class Validation {
     //User functions
     //return true if user name is exist in the system
     public boolean IsUserNameExist(String userName) {
-        Set<Integer> userSet = tradingSystem.subscribers.keySet();
+        Set<Integer> userSet = tradingSystemImpl.subscribers.keySet();
         for (Integer id : userSet) {
-            User user = tradingSystem.subscribers.get(id);
+            User user = tradingSystemImpl.subscribers.get(id);
             if (userName.equals(user.getUserName()))
                 return true;
         }
@@ -27,9 +27,9 @@ public class Validation {
     //if valid return Response(userId, "", false, "")
     //if not valid return Response(isErr: true, "Error Message")
     public Response ValidPassword(String userName, String password) {
-        Set<Integer> userSet = tradingSystem.subscribers.keySet();
+        Set<Integer> userSet = tradingSystemImpl.subscribers.keySet();
         for (Integer id : userSet) {
-            User user = tradingSystem.subscribers.get(id);
+            User user = tradingSystemImpl.subscribers.get(id);
             if (userName.equals(user.getUserName())) {
                 if (password.equals(user.getPassword())){
                     Response res = new Response();
@@ -37,10 +37,10 @@ public class Validation {
                     return res;
                 }
                 else
-                    return new Response(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "122", "Incorrect password"));
+                    return new Response(true, tradingSystemImpl.errMsgGenerator("Server", "TradingSystem", "122", "Incorrect password"));
             }
         }
-        return new Response(true, tradingSystem.errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
+        return new Response(true, tradingSystemImpl.errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
     }
 
     //TODO- implement the function
@@ -51,9 +51,9 @@ public class Validation {
 
     //Store functions
     public synchronized boolean IsStoreNameExist(String storeName) {
-        Set<Integer> storeSet = tradingSystem.stores.keySet();
+        Set<Integer> storeSet = tradingSystemImpl.stores.keySet();
         for (Integer id : storeSet) {
-            Store store = tradingSystem.stores.get(id);
+            Store store = tradingSystemImpl.stores.get(id);
             if (storeName.equals(store.getName()))
                 return true;
         }
@@ -62,11 +62,11 @@ public class Validation {
 
     //Shopping Cart functions
     public boolean checkBuyingPolicy(Integer productID, Integer storeID, Integer quantity, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        return tradingSystem.stores.get(storeID).checkBuyingPolicy(productID,quantity,productsInTheBug);
+        return tradingSystemImpl.stores.get(storeID).checkBuyingPolicy(productID,quantity,productsInTheBug);
     }
     public boolean checkProductsExistInTheStore(Integer storeID, Integer productID,  Integer quantity) {
-        if (tradingSystem.stores.containsKey(storeID))
-            return tradingSystem.stores.get(storeID).checkProductsExistInTheStore(productID,quantity);
+        if (tradingSystemImpl.stores.containsKey(storeID))
+            return tradingSystemImpl.stores.get(storeID).checkProductsExistInTheStore(productID,quantity);
         else
             return false;
     }

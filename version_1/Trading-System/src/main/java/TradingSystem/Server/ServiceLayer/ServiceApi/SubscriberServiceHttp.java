@@ -3,43 +3,31 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.DestinationVariable;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
 
 @RestController
-@MessageMapping("subscriber")
-@CrossOrigin("*") public class SubscriberService {
-    @Autowired
-    SimpMessagingTemplate template;
+@RequestMapping(path = "api/subscriber")
+public class SubscriberServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
 
     /**
      * @requirement 3.1
      *
      * @param userID: int (Path)
-     * @param obj:{
-     *  "connID": String
-     * }
+     * @param connID: String (Header)
      * @return Response{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
-    @MessageMapping("{userID}/logout")
-    public Response Logout(@DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
+    @GetMapping("{userID}/logout")
+    public Response Logout(@PathVariable int userID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.Logout(connID);
         tradingSystem.printUsers();
-        res.AddTag("Logout");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
@@ -47,34 +35,28 @@ import java.util.Map;
      * @requirement 3.2
      *
      * @param userID: int (Path)
-     * @param obj:{
-     *  "connID": String
-     *  "storeName": String
-     * }
+     * @param connID: String (Header)
+     * @param storeName: String (Body)
      * @return Response{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
-    @MessageMapping("{userID}/add_store")
-    public Response AddStore(@DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        String storeName = (String) obj.get("storeName");
+    @PostMapping("{userID}/add_store")
+    public Response AddStore(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody String storeName){
         Response res = tradingSystem.AddStore(userID, connID, storeName);
         tradingSystem.printUsers();
         tradingSystem.printStores();
-        res.AddTag("AddStore");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
     /**
      * @requirement 3.3
      *
-     * @param userID: int (Path)     
+     * @param userID: int (Path)
+     * @param connID: String (Header)
      * @param obj:{
-     *  "connID": String
      *  "storeID": int
      *  "productID": int
      *  "comment": String
@@ -86,16 +68,13 @@ import java.util.Map;
      * }
      */
     //TODO: not check yet
-    @MessageMapping("{userID}/write_comment")
-    public Response WriteComment(@DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
+    @PostMapping("{userID}/write_comment")
+    public Response WriteComment(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID = (int) obj.get("storeID");
         int productID = (int) obj.get("productID");
         String review = (String) obj.get("comment");
         Response res = tradingSystem.WriteComment(userID,connID,storeID,productID,review);
         tradingSystem.printCommentForProduct(storeID,productID);
-        res.AddTag("WriteComment");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
@@ -103,9 +82,7 @@ import java.util.Map;
      * @requirement 3.7
      *
      * @param userID: int (Path)
-     * @param obj:{
-     *  "connID": String
-     * }
+     * @param connID: String (Header)
      * @return Response {
      *  "isErr: boolean
      *  "message": String
@@ -126,22 +103,18 @@ import java.util.Map;
      * }
      */
     //TODO: fix DummyShoppingHistory
-    @MessageMapping("{userID}/user_history")
-    public Response ShowUserHistory(@DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        Response res = tradingSystem.ShowSubscriberHistory(userID, connID);
-        res.AddTag("ShowUserHistory");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
-        return res;
+    @GetMapping("{userID}/user_history")
+    public Response ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
+        return tradingSystem.ShowSubscriberHistory(userID, connID);
     }
 
 
     /**
      * @requirement 2.9
      *
-     * @param userID: int (Path)     
+     * @param userID: int (Path)
+     * @param connID: String (Header)
      * @param obj:{
-     *  "connID": String
      *  "credit_number": String
      *  "phone_number": String
      *  "address": String
@@ -152,15 +125,12 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @MessageMapping("{userID}/shopping_cart/purchase")
-    public Response subscriberPurchase(@DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
+    @PostMapping("{userID}/shopping_cart/purchase")
+    public Response subscriberPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String credit_number = (String) obj.get("credit_number");
         String phone_number = (String) obj.get("phone_number");
         String address = (String) obj.get("address");
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
-        res.AddTag("subscriberPurchase");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 }

@@ -244,6 +244,36 @@ export const createApiClient = () => {
     },
 
     //Owner
+    getAllFoundedStores: (clientConnection, connID, userID) => {
+      let path = ownerURL.concat(`${userID}/founded_stores`);
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
+      });
+    },
+
+    getAllOwnedStores: (clientConnection, connID, userID) => {
+      let path = ownerURL.concat(`${userID}/owned_stores`);
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
+      });
+    },
+
+    getAllManagedStores: (clientConnection, connID, userID) => {
+      let path = ownerURL.concat(`${userID}/managed_stores`);
+      clientConnection.publish({
+        destination: path,
+        body: JSON.stringify({
+          connID: connID,
+        }),
+      });
+    },
+
     addProductToStore: (
       clientConnection,
       connID,
