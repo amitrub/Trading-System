@@ -10,6 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api")
+@CrossOrigin("*")
 public class GuestServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     // 2.1 test
@@ -214,11 +215,22 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/add_product")
     public Response AddProductToCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID = (int) obj.get("storeID");
-        int productID = (int) obj.get("productID");
-        int quantity = (int) obj.get("quantity");
+        System.out.println("add to cart");
+        int storeID, productID, quantity;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            quantity = (int) obj.get("quantity");
+        } catch (Exception e) {
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AddProductToCart");
+            res.AddConnID(connID);
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
+        System.out.println(res);
         tradingSystem.printUsers();
         return res;
     }

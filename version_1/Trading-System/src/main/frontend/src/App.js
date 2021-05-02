@@ -46,6 +46,9 @@ class App extends React.Component {
   }
 
   onAddToCart = (product, quantity) => {
+    console.log("App.js onAddToCart:");
+    console.log(product);
+    console.log(quantity);
     const productToBuy = {
       storeID: product.storeID,
       storeName: product.storeName,
@@ -55,9 +58,15 @@ class App extends React.Component {
       category: product.category,
       quantity: quantity,
     };
-    this.setState((prevState) => ({
-      shoppingCart: [...prevState.shoppingCart, productToBuy],
-    }));
+    this.setState(
+      (prevState) => ({
+        shoppingCart: [...prevState.shoppingCart, productToBuy],
+      }),
+      () => {
+        console.log("ufter shopping cart update:");
+        console.log(this.state.shoppingCart);
+      }
+    );
   };
 
   loadStores = () => {
@@ -276,13 +285,13 @@ class App extends React.Component {
                 <Recommendations />
                 <Programers />
                 <DownPage />
-                {/* <ShoppingCart
+                <ShoppingCart
                   connID={this.state.connID}
                   clientConnection={this.state.clientConnection}
                   response={this.state.response}
                   username={this.state.username}
                   shoppingCart={this.state.shoppingCart}
-                /> */}
+                />
               </Route>
               <Route path="/services"></Route>
               <Route path="/admin"></Route>

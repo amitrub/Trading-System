@@ -563,7 +563,7 @@ export const createApiClientHttp = () => {
       GetStoreHistory
     ) => {
       let path = ownerURL.concat(
-        `${userID}/store/${storeID}/edit_discount_policy/${discountPolicyID}`
+        `${userID}/store/${storeID}/edit_discount_policy/${managerID}`
       );
       const headers = {
         "Content-Type": "application/json; utf-8",

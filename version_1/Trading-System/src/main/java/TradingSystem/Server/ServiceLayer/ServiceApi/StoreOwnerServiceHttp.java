@@ -17,6 +17,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/owner")
+@CrossOrigin("*")
 public class StoreOwnerServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
 
