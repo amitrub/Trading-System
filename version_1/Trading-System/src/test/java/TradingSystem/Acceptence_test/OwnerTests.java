@@ -360,6 +360,7 @@ public class OwnerTests {
 
         boolean b1 = client.addOwner(storeID, newOwnerID);
         client.Logout();
+        client.connectSystem();
         client.Login("nofet", "123");
         List<DummyStore> owners = client.showOwnerStores();
         assertFalse(b1);
@@ -432,6 +433,7 @@ public class OwnerTests {
 
         Response res = client.removeOwner(storeID, newOwnerID);
         client.Logout();
+        client.connectSystem();
         client.Login("nofet", "123");
         List<DummyStore> owners = client.showOwnerStores();
         assertFalse(res.getIsErr());
@@ -794,6 +796,7 @@ public class OwnerTests {
         client.addManager(storeID, newManagerID1);
         client.addManager(storeID, newManagerID2);
         client.Logout();
+        client.connectSystem();
 
         client.Login("roee", "123");
         boolean b1 = client.removeManager(storeID, newManagerID1);
