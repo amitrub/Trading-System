@@ -16,6 +16,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import DownPage from "./Components/MainPage/DownPage";
 import StoresOwner from "./Components/StoresOwner/StoresOwner";
 import { Typography } from "@material-ui/core";
+import LoginHttp from "./Components/LoginHttp/LoginHttp";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -46,8 +47,19 @@ class App extends React.Component {
       ownerStores: [],
       managerStores: [],
       products: [],
+      refresh: false,
     };
   }
+
+  refresHandler = () => {
+    this.setState((prevState) => ({
+      refresh: !prevState.refresh,
+    }));
+  };
+
+  closeModal = () => {
+    this.setState({ openModal: false });
+  };
 
   loadStores = () => {
     const storeResponse = this.state.response.returnObject;
@@ -123,15 +135,18 @@ class App extends React.Component {
     console.log("End Register Handler! connID: " + this.state.connID);
   };
 
-  loginHandler = (name, pass) => {
+  loginHandler = (name, pass, res) => {
     console.log("LoginHandler:" + name);
+    console.log("LoginHandler:" + pass);
+    console.log(res);
     const currentComponent = this;
-    const loginResponse = this.state.response;
+    const loginResponse = res;
 
     if (loginResponse.isErr) {
       console.log(loginResponse.message);
     } else {
       // const oldConnID = this.state.connID;
+      console.log("7777777777777");
       this.setState(
         (prevState) => ({
           username: name,
@@ -157,6 +172,14 @@ class App extends React.Component {
                     response: jsonBody,
                   });
                   console.log(jsonBody);
+
+                  //get All Stores
+                  if (jsonBody.returnObject.founder) {
+                    const founder = jsonBody.returnObject.founder;
+                    currentComponent.setState({
+                      whoAreUser: { founder: founder },
+                    });
+                  }
                 }
               }
             }
@@ -283,24 +306,12 @@ class App extends React.Component {
       </Fragment>
     ) : (
       <Fragment>
-        {whoAreUser.founder || founderStores.length > 0 ? (
-          <StoresOwner
-            loadSys={this.loadFounderStores}
-            connID={this.state.connID}
-            userID={this.state.userID}
-            clientConnection={this.state.clientConnection}
-            founderStores={this.state.founderStores}
-            ownerStores={this.state.ownerStores}
-            managerStores={this.state.managerStores}
-            products={this.state.products}
-          />
+        {userID != -1 ? (
+          <StoresOwner connID={connID} userID={userID}></StoresOwner>
         ) : (
           this.guestContent()
         )}
         <Switch>
-          <Route path="/owner">
-            <OwnerPage connID={this.state.connID} userID={this.state.userID} />
-          </Route>
           <Route path="/app">
             <MainPage />
           </Route>
@@ -324,30 +335,22 @@ class App extends React.Component {
           <div className="col span-1-of-2 box">
             <Register
               onSubmitRegister={this.registerHandler}
+              refresh={this.refreshandler}
               connID={this.state.connID}
               clientConnection={this.state.clientConnection}
               response={this.state.response}
             />
           </div>
           <div className="col span-1-of-2 box">
-            <Login
+            <LoginHttp
               onSubmitLogin={this.loginHandler}
               connID={this.state.connID}
               clientConnection={this.state.clientConnection}
               response={this.state.response}
+              refresHandler={this.refresHandler}
             />
           </div>
         </section>
-        <StoresOwner
-          loadSys={this.loadFounderStores}
-          connID={this.state.connID}
-          userID={this.state.userID}
-          clientConnection={this.state.clientConnection}
-          founderStores={this.state.founderStores}
-          ownerStores={this.state.ownerStores}
-          managerStores={this.state.managerStores}
-          products={this.state.products}
-        />
         <Recommendations />
         <Programers />
         <DownPage />
