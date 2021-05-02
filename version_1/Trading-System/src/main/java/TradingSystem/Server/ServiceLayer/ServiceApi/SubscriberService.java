@@ -15,7 +15,7 @@ import java.util.Map;
 
 
 @RestController
-@MessageMapping("api/subscriber")
+@MessageMapping("subscriber")
 @CrossOrigin("*") public class SubscriberService {
     @Autowired
     SimpMessagingTemplate template;

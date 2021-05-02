@@ -85,6 +85,10 @@ public class Store {
         return this.ownersIDs.contains(userID);
     }
 
+    public boolean checkManager(int newOwner) {
+        return this.managersIDs.contains(newOwner);
+    }
+
     public List<DummyProduct> ShowStoreProducts(){
         return inventory.ShowStoreProducts();
     }
@@ -354,9 +358,7 @@ public class Store {
     public void pay(Double finalPrice) {
     }
 
-    public boolean checkManager(int newOwner) {
-        return this.managersIDs.contains(newOwner);
-    }
+
 
     public boolean isProductExist(int id){
         return inventory.checkProductsExistInTheStore(id,1);

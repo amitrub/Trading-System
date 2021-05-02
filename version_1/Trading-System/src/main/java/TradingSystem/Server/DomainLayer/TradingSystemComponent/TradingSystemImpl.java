@@ -7,7 +7,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
-import TradingSystem.Server.ServiceLayer.LoggerController;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -17,6 +16,7 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 
 public class TradingSystemImpl extends Observable implements TradingSystem {
+
 
     public Validation validation;
 
@@ -29,10 +29,11 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
 
-    //    Singleton
-    private static TradingSystemImpl tradingSystemImpl = null;
-    private static final LoggerController loggerController=LoggerController.getInstance();
+    //Observable Pattern
     private List<Observer> observers = new ArrayList<>();
+
+    //    Singleton
+    private static TradingSystemImpl tradingSystem = null;
 
     private TradingSystemImpl() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
@@ -44,17 +45,16 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     }
 
     public static TradingSystemImpl getInstance() {
-        if (tradingSystemImpl == null) {
-            tradingSystemImpl = new TradingSystemImpl();
-            tradingSystemImpl.validation = new Validation();
-            tradingSystemImpl.ClearSystem();
-//            tradingSystemImpl.Initialization();
+        if (tradingSystem == null) {
+            tradingSystem = new TradingSystemImpl();
+            tradingSystem.validation = new Validation();
+            tradingSystem.ClearSystem();
+            tradingSystem.Initialization();
         }
-        return tradingSystemImpl;
+        return tradingSystem;
     }
 
     public void ClearSystem() {
-        System.out.println("/////////////////////////////////");
         User.ClearSystem();
         Store.ClearSystem();
         this.connectedSubscribers = new ConcurrentHashMap<>();
@@ -73,22 +73,14 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     }
 
     public void Initialization() {
-        this.connectedSubscribers = new ConcurrentHashMap<>();
-        this.subscribers = new ConcurrentHashMap<>();
-        this.guests = new ConcurrentHashMap<>();
-        this.stores = new ConcurrentHashMap<>();
-        this.systemAdmins = new ConcurrentHashMap<>();
-        this.systemManagerPermissions=new ConcurrentHashMap<>();
-
-        User defaultAdmin = new User("amit", "qweasd");
-        int userID = defaultAdmin.getId();
-        this.systemAdmins.put(userID, userID);
-        this.subscribers.put(userID, defaultAdmin);
-        this.systemManagerPermissions.put(userID,new SystemManagerPermission());
+        int userID = 1;
+        User defaultAdmin = this.subscribers.get(userID);
         //TODO: to delete after
         String connID = "479f239c-797c-4bdb-8175-980acaabf070";
         this.connectedSubscribers.put(connID, userID);
         AddStore(userID, connID, "store1");
+        AddStore(userID, connID, "store2");
+        AddStore(userID, connID, "store3");
         AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
 
         User user1 = new User("hadass", "1234");
@@ -97,7 +89,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
         this.connectedSubscribers.put(connID, userID);
 
-        ConnectSystem();
+        this.connectedSubscribers = new ConcurrentHashMap<>();
         printUsers();
     }
 
@@ -153,7 +145,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                 int quantity= this.stores.get(id).getQuantity(p.getProductID());
                 System.out.println(ANSI_WHITE + p + " with quantity of: "+ quantity + ":\n" + ANSI_WHITE);
             }
-            }
+        }
         System.out.println("-----------------------------------------------");
     }
 
@@ -170,12 +162,11 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
 
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
-    //    guests.put(connID,newGuest);
         Response res = new Response(false, "Connect system was successful");
         res.AddConnID(connID);
+        res.AddUserGuest();
         return res;
     }
-
     public synchronized String connectGuestToSystemConnID(User newGuest) {
         String uniqueID = "";
         boolean canExit = false;
@@ -186,6 +177,21 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                 canExit = true;
             }
         }
+        Store store1 = new Store("Mar y juana", 1);
+        store1.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
+        store1.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
+        store1.AddProductToStore("Sneakers24", 80.0, "Shoes", 25);
+        store1.AddProductToStore( "Sneak23", 840.0, "bloo", 25);
+        store1.AddProductToStore("Sneakers", 80.0, "Shoes", 25);
+        Store store2 = new Store("Roee Hadas", 1);
+        store2.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
+        store2.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
+        store2.AddProductToStore("Sneakers24", 80.0, "Shoes", 25);
+        store2.AddProductToStore( "Sneak23", 840.0, "bloo", 25);
+        store2.AddProductToStore("Sneakers", 80.0, "Shoes", 25);
+        this.stores.put(store1.getId(), store1);
+        this.stores.put(store2.getId(), store2);
+
         return uniqueID;
     }
 
@@ -226,9 +232,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
             return new Response(true, "Register: Error in connID");
         }
-        else{    
-            if (validation.IsUserNameExist(userName)) {
-                loggerController.WriteErrorMsg("User "+userName+" try to register to the system and failed");
+        else{
+            if (validation.IsUserNameExist(userName)) { 
                 return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
             }
             if(!validation.VerifyPassword(password)){
@@ -239,7 +244,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             Response res = new Response("Register: Registration of " + userName + " was successful");
             res.AddConnID(connID);
             res.AddUserID(newUser.getId());
-
+            res.AddUserGuest();
             return res;
         }
     }
@@ -269,18 +274,27 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
      *  "connID: String
      *  "userID": int
      * }
-     */    
+     */
     public Response Login(String guestConnID, String userName, String password) {
         Response response = validation.ValidPassword(userName, password);
         if (response.getIsErr())
             return response;
         User myGuest = guests.get(guestConnID);
-        subscribers.get(response.returnUserID()).mergeToMyCart(myGuest.getShoppingCart());
+        User myUser = subscribers.get(response.returnUserID());
+        myUser.mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
+        List<Object> messages = myGuest.getMessages();
+        for(int i=0; i<messages.size(); i++)
+        {
+            //TODO connect to client
+            System.out.println(messages.get(i));
+        }
+        myGuest.setMessages(new ArrayList<>());
         Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
+        res.AddUserSubscriber(myUser.isManaged(), myUser.isOwner(), myUser.isFounder(),systemAdmins.containsKey(myUser.getId()));
         return res;
     }
 
@@ -349,8 +363,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
      *      "price": double
      *      "category": String
      *      "quantity": int
-     *  }]
-     *
+     *  
      */
     public Response SearchProduct(String name, String category, int minprice, int maxprice){
         List<DummyProduct> dummyProducts = new ArrayList<>();
@@ -374,11 +387,17 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     public Response AddProductToCart(String connID, int StoreId, int productId, int quantity){
         if(guests.containsKey(connID)){
             User myGuest= guests.get(connID);
-            return myGuest.AddProductToCart(StoreId,productId,quantity);
+            Response res = myGuest.AddProductToCart(StoreId,productId,quantity);
+            res.AddUserGuest();
+            return res;
+
         }
         else if(connectedSubscribers.containsKey(connID)){
             int userID= connectedSubscribers.get(connID);
-            return subscribers.get(userID).AddProductToCart(StoreId,productId,quantity);
+            User user = subscribers.get(userID);
+            Response res = user.AddProductToCart(StoreId,productId,quantity);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+            return res;
         }
         else {
             return new Response(true, "AddProductToCart: The user is not connected to the system");
@@ -399,13 +418,16 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             List<DummyProduct> list = guests.get(connID).ShowShoppingCart();
             Response res = new Response(false, "ShowShoppingCart: Num of products in my Shopping Cart is " + list.size());
             res.AddPair("products", list);
+            res.AddUserGuest();
             return res;
         }
         else if(connectedSubscribers.containsKey(connID)) {
             int userID = connectedSubscribers.get(connID);
-            List<DummyProduct> list = subscribers.get(userID).ShowShoppingCart();
+            User user = subscribers.get(userID);
+            List<DummyProduct> list = user.ShowShoppingCart();
             Response res = new Response(false, "ShowShoppingCart: Num of products in my Shopping Cart is " + list.size());
             res.AddPair("products", list);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
         else {
@@ -428,11 +450,16 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     public Response editProductQuantityFromCart(String connID, int storeID, int productID, int quantity) {
         if(guests.containsKey(connID)){
             User myGuest= guests.get(connID);
-            return myGuest.editProductQuantityFromCart(storeID, productID, quantity);
+            Response res = myGuest.editProductQuantityFromCart(storeID, productID, quantity);
+            res.AddUserGuest();
+            return res;
         }
         else if(connectedSubscribers.containsKey(connID)){
             int userID= connectedSubscribers.get(connID);
-            return subscribers.get(userID).editProductQuantityFromCart(storeID, productID, quantity);
+            Response res = subscribers.get(userID).editProductQuantityFromCart(storeID, productID, quantity);
+            User user=subscribers.get(userID);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+            return res;
         }
         else {
             return new Response(true, "EditCart: : The user is not connected");
@@ -453,11 +480,14 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     public Response RemoveProductFromCart(String connID, int storeID, int productID) {
         if(guests.containsKey(connID)) {
             Response res =guests.get(connID).RemoveProductFromCart(storeID,productID);
+            res.AddUserGuest();
             return res;
         }
         else if(connectedSubscribers.containsKey(connID)) {
             int userID = connectedSubscribers.get(connID);
-            Response res = subscribers.get(userID).RemoveProductFromCart(storeID,productID);
+            User user=subscribers.get(userID);
+            Response res = user.RemoveProductFromCart(storeID,productID);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
         else {
@@ -501,6 +531,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             {
                 this.notifyObservers("A product has been purchased from your store");
             }
+            res.AddUserGuest();
             return res;
         }
     }
@@ -540,6 +571,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             {
                 this.notifyObservers("A product has been purchased from your store!");
             }
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
 
         }
@@ -565,6 +597,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             String guestConnID = connectGuestToSystemConnID(newGuest);
             Response res = new Response(false, "Logout: Logout of " + myUser.getUserName() + " was successful");
             res.AddConnID(guestConnID);
+            res.AddUserGuest();
             return res;
         }
         else {
@@ -597,7 +630,9 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
-                return new Response( "AddStore: Add store " + storeName + " was successful");
+                Response res = new Response( "AddStore: Add store " + storeName + " was successful");
+                res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+                return res; 
             }
         }
     }
@@ -635,7 +670,17 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
             return new Response(true, "WriteComment: The user already wrote comment for this product");
         }
-        return new Response(false, "WriteComment: The comment added successfully to product " + productId);
+        this.observers = new ArrayList<>();
+        for (User u:subscribers.values()) {
+            for (Integer ownedStore:u.getMyOwnerStore()) {
+                if(ownedStore == storeID)
+                    this.addObserver(u);
+            }
+         }
+        this.notifyObservers("There is a new comment on one of your store's products");
+        Response res = new Response(false, "WriteComment: The comment added successfully to product " + productId);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res; 
     }
 
     /**
@@ -672,6 +717,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             }
             Response res = new Response(false, "ShowSubscriberHistory: Num of history buying of the user is " + list.size());
             res.AddPair("history", list);
+            User user = subscribers.get(userID);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
         else{
@@ -712,6 +759,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                     else{
                         Response res = stores.get(storeID).AddProductToStore(productName, price, category, quantity);
                         printProducts();
+                        User user = subscribers.get(userID);
+                        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                         return res;
                     }
                 }
@@ -743,6 +792,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             else {
                 Response res = stores.get(storeID).deleteProduct(productID);
                 printProducts();
+                User user = subscribers.get(userID);
+                res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                 return res;
             }
         }
@@ -776,6 +827,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                 else {
                     Response res = stores.get(storeID).addProductToInventory(productId, quantity);
                     printProducts();
+                    User user = subscribers.get(userID);
+                    res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                     return res;
                 }
             }
@@ -817,6 +870,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                     else{
                         Response res = stores.get(storeID).editProductDetails(userID, productID, productName, price, category, quantity);
                         printProducts();
+                        User user=subscribers.get(userID);
+                        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                         return res;
                     }
                 }
@@ -876,7 +931,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         stores.get(storeID).addOwnerPermission(newOwner,OP);
         //this.subscribers.get(newOwner).unlockUser();
         NO.unlockUser();
-        return new Response(false, "AddNewOwner: The owner Added successfully");
+        Response res = new Response(false, "AddNewOwner: The owner Added successfully");
+        User user = subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res; 
     }
 
     /**
@@ -916,6 +974,11 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                 if(permission.getAppointmentId()==removeOwnerID) {
                     stores.get(storeID).removeOwner(permission.getUserId());
                     subscribers.get(permission.getUserId()).removeOwnedStore(storeID);
+                    User userToRemove = subscribers.get(removeOwnerID);
+                    String storeName = stores.get(storeID).getName();
+                    observers = new ArrayList<>();
+                    observers.add(userToRemove);
+                    this.notifyObservers("You are removed from owning the store: " + storeName);
                 }
             }
             for(ManagerPermission permission: managerPermissionHashMap.values()){
@@ -923,7 +986,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                     stores.get(storeID).removeManager(permission.getUserId());
             }
         }
-        return new Response(false, "RemoveOwnerByOwner: Successfully removed the owner " + removeOwnerID);
+        Response res = new Response(false, "RemoveOwnerByOwner: Successfully removed the owner " + removeOwnerID);
+        User user=subscribers.get(ownerID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(ownerID));
+        return res; 
     }
 
     /**
@@ -976,7 +1042,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         stores.get(storeID).addNewManager(userID, newManager);
         stores.get(storeID).addManagerPermission(MP);
         NM.unlockUser();
-        return new Response(false, "AddNewManager: The manager Added successfully");
+        Response res = new Response(false, "AddNewManager: The manager Added successfully");
+        User user = subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res; 
     }
 
     /**
@@ -1016,7 +1085,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         MTE.editPermissions(userID,storeID,permissions);
         stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
         //NM.unlockUser();
-        return new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
+        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
+        User user=subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res; 
     }
 
     /**
@@ -1062,7 +1134,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         MTR.removeManagedStore(storeID);
         stores.get(storeID).removeManager(ManagerToRemove);
         MTR.unlockUser();
-        return new Response(false, "RemoveManager: The manager removed successfully");
+        Response res = new Response(false, "RemoveManager: The manager removed successfully");
+        User user = subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res;
     }
 
     /**
@@ -1118,6 +1193,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             Response response = new Response(false, "ShowStoreWorkers: Num of workers in the store: " + workers.size());
             response.AddPair("ConnId",connID);
             response.AddPair("workers", workers);
+            User user=subscribers.get(userID);
+            response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return response;
         }
     }
@@ -1144,6 +1221,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         }
         Response res = new Response(false, "GetPossiblePermissionsToManager: Viewing permissions was successful");
         res.AddPair("permissions", permissions);
+        User user=subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
     }
 
@@ -1178,6 +1257,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
         Response res = new Response(false,"StoreHistoryOwner: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
+        User user=subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
     }
 
@@ -1212,6 +1293,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
         Response res = new Response(false,"StoreHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
+        User user=subscribers.get(adminID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
         return res;
     }
 
@@ -1247,6 +1330,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         List<DummyShoppingHistory> list = user.ShowUserHistory();
         Response res = new Response(false,"UserHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
     }
 
@@ -1279,6 +1363,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         }
         Response res = new Response(false,"AllStoresHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
         return res;
     }
 
@@ -1310,6 +1395,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         }
         Response res = new Response(false, "AllUsersHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
         return res;
     }
 
@@ -1381,6 +1467,9 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             return new Response(true, "User " + userID + " is not allowed to "+permission.toString());
         }
         return new Response(false,"Sys OK");
+        User user = subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res;
     }
 
     public boolean productIsLock(int productID, int storeID) {
@@ -1424,18 +1513,18 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     }
 
     public void printCommentForProduct(int storeID, int productID) {
-       System.out.println("-----------------------------------------------");
-       List<String> comments= this.stores.get(storeID).getCommentsForProduct(productID);
-       if(comments!=null){
-           System.out.println(ANSI_YELLOW+"The comments for products "+productID+" in store "+storeID+" is:"+ANSI_YELLOW);
-           for (String s:comments) {
-                 System.out.println(ANSI_YELLOW+s+ANSI_YELLOW);
-           }
-       }
-       else {
-           System.out.println(ANSI_YELLOW+"There is no comments for this product " + productID+ANSI_YELLOW);
-       }
-       System.out.println("-----------------------------------------------");
+        System.out.println("-----------------------------------------------");
+        List<String> comments= this.stores.get(storeID).getCommentsForProduct(productID);
+        if(comments!=null){
+            System.out.println(ANSI_YELLOW+"The comments for products "+productID+" in store "+storeID+" is:"+ANSI_YELLOW);
+            for (String s:comments) {
+                System.out.println(ANSI_YELLOW+s+ANSI_YELLOW);
+            }
+        }
+        else {
+            System.out.println(ANSI_YELLOW+"There is no comments for this product " + productID+ANSI_YELLOW);
+        }
+        System.out.println("-----------------------------------------------");
     }
 
     public void PayToTheSellers(Double finalPrice, Integer storeID) {
@@ -1443,10 +1532,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     }
 
     public Double calculateBugPrice(int userID, int storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-       if(this.subscribers.contains(userID))
-       return this.stores.get(storeID).calculateBugPrice(true,productsInTheBug);
-       else
-       return this.stores.get(storeID).calculateBugPrice(false,productsInTheBug);
+        if(this.subscribers.contains(userID))
+            return this.stores.get(storeID).calculateBugPrice(true,productsInTheBug);
+        else
+            return this.stores.get(storeID).calculateBugPrice(false,productsInTheBug);
     }
 
     public Response ShowOwnerStores(int userID, String connID) {
@@ -1469,6 +1558,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             }
             Response res = new Response(false, "ShowOwnerStores: Num of owned stores of the user is " + list.size());
             res.AddPair("stores", list);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
     }
@@ -1493,6 +1583,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             }
             Response res = new Response(false, "ShowManagerStores: num of managed stores of the user is " + list.size());
             res.AddPair("stores", list);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
     }
@@ -1511,6 +1602,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             }
             Response res = new Response(false, "ShowAllUsers: Num of users in the system is " + list.size());
             res.AddPair("users", list);
+            User user=subscribers.get(adminID);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID) );
             return res;
         }
     }
@@ -1561,5 +1654,28 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         for (Observer o : this.observers) {
             o.update(this, object);
         }
+    }
+
+    public Response ShowAllMyStores(String connID, int userID, boolean founder,boolean owner,boolean manager) {
+        if(!ValidConnectedUser(userID,connID)){
+            return new Response(true, "Error in User details");
+        }
+        List<DummyStore> list = new ArrayList<>();
+        for (Integer storeID: stores.keySet()){
+            Store store = stores.get(storeID);
+            if((founder && store.checkFounder(userID))||(owner && store.checkOwner(userID))||(manager && store.checkManager(userID)))
+                list.add(new DummyStore(store));
+        }
+        if(list.isEmpty()){
+            new Response(true,"There are no stores in the system");
+        }
+        Response res = new Response("num of stores in the system is " + list.size());
+        if(founder)
+            res.AddPair("founderStores", list);
+        else if(owner)
+            res.AddPair("ownerStores", list);
+        if(manager)
+            res.AddPair("managerStores", list);
+        return res;
     }
 }

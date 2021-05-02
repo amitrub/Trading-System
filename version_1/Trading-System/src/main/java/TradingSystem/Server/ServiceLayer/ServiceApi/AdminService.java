@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 
 @RestController
-@MessageMapping("api/admin")
+@MessageMapping("admin")
 @CrossOrigin("*") public class AdminService {
     @Autowired
     SimpMessagingTemplate template;

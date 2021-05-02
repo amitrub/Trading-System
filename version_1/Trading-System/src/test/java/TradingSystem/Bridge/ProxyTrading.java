@@ -464,4 +464,9 @@ public class ProxyTrading implements TradingSystem {
             return real.RemoveOwnerByOwner(ownerID,connID,removeOwnerID,storeID);
         return null;
     }
+
+    @Override
+    public Response ShowAllMyStores(String connID, int userID, boolean founder, boolean owner, boolean manager) {
+        return null;
+    }
 }

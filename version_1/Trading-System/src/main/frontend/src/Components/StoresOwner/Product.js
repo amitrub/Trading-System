@@ -1,41 +1,24 @@
-import React, { useState } from "react";
+import React from "react";
+import createApiClient from "../../ApiClient";
 import "../../Design/grid.css";
 import "../../Design/style.css";
-import createApiClient from "../../ApiClient";
 
-const apiHtml = createApiClient();
+const api = createApiClient();
 
 function Product(props) {
-  const [quantityToBuy, setQuantityToBuy] = useState(0);
   const product = props.currProduct;
-
-  function insertQuantity(event) {
-    setQuantityToBuy(event.target.value);
-  }
 
   async function submitBuyProductHandler(event) {
     event.preventDefault();
-    console.log(
-      "Product: " +
-        product.productName +
-        " added to Cart! quantity added: " +
-        quantityToBuy +
-        "prodID=" +
-        product.productID +
-        " storeID=" +
-        product.storeID
-    );
+    console.log("gjkbj");
+    // setConnIDState(props.connID);
 
-    const responseAddProductToCart = await apiHtml.addProductToCart(
-      props.clientConnection,
-      props.connID,
-      product.storeID,
-      product.productID,
-      quantityToBuy
-    );
-
-    console.log(responseAddProductToCart);
-    props.onAddToCart(product, quantityToBuy);
+    // await api.register(
+    //   props.clientConnection,
+    //   props.connID,
+    //   enteredName,
+    //   enteredPass
+    // );
 
     // props.onSubmitAddToCart();
   }
@@ -62,11 +45,10 @@ function Product(props) {
               placeholder="enter quantity"
               required
               min="1"
-              onChange={insertQuantity}
             />
           </div>
           <div className="btn btn-ghost">
-            <input type="submit" value="Add to cart!" />
+            <input type="submit" value="Buy" />
           </div>
         </form>
       </div>
