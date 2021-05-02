@@ -16,7 +16,7 @@ import { BrowserRouter, Route, Switch } from "react-router-dom";
 import DownPage from "./Components/MainPage/DownPage";
 import StoresOwner from "./Components/StoresOwner/StoresOwner";
 import { Typography } from "@material-ui/core";
-import LoginHttp from "./Components/LoginHttp/LoginHttp";
+import LoginHttp from "./Components/Login/Login";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";

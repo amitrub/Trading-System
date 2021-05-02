@@ -54,24 +54,34 @@ class StoresOwner extends Component {
       managerStores,
     } = this.state;
     return (
-      <section className="section-form" id="stores2">
+      <section className="section-form" id="owners">
         <div className="row">
-          <h2>Stores</h2>
+          <h2>
+            <strong>My Stores</strong>
+          </h2>
         </div>
-        <div className="row"></div>
-        <button
-          className="buttonus"
-          value="load our stores..."
-          onClick={this.click1}
-        >
-          Show Stores
-        </button>
-        {founderStores.map((store) => (
-          <li key={store.id} className="curr store">
-            <Store connID={connID} userID={userID} store={store}></Store>
-            <h3>{userID}</h3>
-          </li>
-        ))}
+        {userID !== -1 ? (
+          <div>
+            <div className="row"></div>
+            <button
+              className="buttonus"
+              value="load our stores..."
+              onClick={this.click1}
+            >
+              Show Stores
+            </button>
+            {founderStores.map((store) => (
+              <li key={store.id} className="curr store">
+                <Store connID={connID} userID={userID} store={store}></Store>
+                <h3>{userID}</h3>
+              </li>
+            ))}
+          </div>
+        ) : (
+          <div>
+            <p>You are guest, login for owner permissions!</p>
+          </div>
+        )}
       </section>
     );
   }

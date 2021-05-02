@@ -33,7 +33,7 @@ function Stores(props) {
   }
 
   return (
-    <section className="section-form" id="stores">
+    <section className="section-plans js--section-plans" id="stores">
       <div className="row">
         <h2>Stores</h2>
       </div>

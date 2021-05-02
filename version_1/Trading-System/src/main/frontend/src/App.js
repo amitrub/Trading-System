@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Fragment } from "react";
 import "./App.css";
 import "./Design/grid.css";
 import "./Design/style.css";
@@ -15,6 +15,8 @@ import "./Components/Navbar/Navbar.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
 import DownPage from "./Components/MainPage/DownPage";
 import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
+import { Typography } from "@material-ui/core";
+import StoresOwner from "./Components/StoresOwner/StoresOwner";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -24,7 +26,7 @@ class App extends React.Component {
     super();
     this.state = {
       refresh: true,
-      clientConnection: "",
+      clientConnection: null,
       response: {
         isErr: false,
         message: "init",
@@ -89,51 +91,55 @@ class App extends React.Component {
       // const oldConnID = this.state.connID;
       this.setState(
         (prevState) => ({
-          userID: registerResponse.returnObject.userID,
-          connID: registerResponse.returnObject.connID,
+          // userID: registerResponse.returnObject.userID,
+          // connID: registerResponse.returnObject.connID,
         }),
         () => {
           //unsubscribe old id
-          this.state.clientConnection.subscribe(
-            `/topic/${this.state.connID}`,
-            (msg) => {
-              if (msg.body) {
-                var jsonBody = JSON.parse(msg.body);
-                if (jsonBody.message) {
-                  currentComponent.setState({
-                    response: jsonBody,
-                  });
-                  console.log(jsonBody);
-                }
-              }
-            }
-          );
+          // this.state.clientConnection.subscribe(
+          //   `/topic/${this.state.connID}`,
+          //   (msg) => {
+          //     if (msg.body) {
+          //       var jsonBody = JSON.parse(msg.body);
+          //       if (jsonBody.message) {
+          //         currentComponent.setState({
+          //           response: jsonBody,
+          //         });
+          //         console.log(jsonBody);
+          //       }
+          //     }
+          //   }
+          // );
         }
       );
     }
     console.log("End Register Handler! connID: " + this.state.connID);
   };
 
-  loginHandler = (name, pass) => {
+  loginHandler = (name, pass, res) => {
     console.log("LoginHandler:" + name);
+    console.log("LoginHandler:" + pass);
+    console.log(res);
     const currentComponent = this;
-    const loginResponse = this.state.response;
+    const loginResponse = res;
 
     if (loginResponse.isErr) {
       console.log(loginResponse.message);
     } else {
       // const oldConnID = this.state.connID;
+      console.log("7777777777777");
       this.setState(
         (prevState) => ({
           username: name,
           pass: pass,
           userID: loginResponse.returnObject.userID,
           connID: loginResponse.returnObject.connID,
-          guest: loginResponse.returnObject.guest,
-          manager: loginResponse.returnObject.manager,
-          owner: loginResponse.returnObject.owner,
-          founder: loginResponse.returnObject.founder,
-          admin: loginResponse.returnObject.admin,
+          whoAreUser: {
+            guest: false,
+            manager: false,
+            owner: false,
+          },
+          // whoAreUser: loginResponse.returnObject.whoAreUser
         }),
         () => {
           //unsubscribe old id
@@ -147,6 +153,14 @@ class App extends React.Component {
                     response: jsonBody,
                   });
                   console.log(jsonBody);
+
+                  //get All Stores
+                  if (jsonBody.returnObject.founder) {
+                    const founder = jsonBody.returnObject.founder;
+                    currentComponent.setState({
+                      whoAreUser: { founder: founder },
+                    });
+                  }
                 }
               }
             }
@@ -229,63 +243,147 @@ class App extends React.Component {
   }
 
   render() {
-    return (
+    const {
+      refresh,
+      clientConnection,
+      response,
+      username,
+      pass,
+      userID,
+      connID,
+      guest,
+      manager,
+      owner,
+      founder,
+      admin,
+      stores,
+      products,
+      searchedProducts,
+    } = this.state;
+    return !this.state.clientConnection ? (
+      <Fragment>
+        {/* <Typography>Connecting To System...</Typography> */}
+        <h3>Connecting To System...</h3>
+      </Fragment>
+    ) : (
       <div className="App">
-        <BrowserRouter>
-          <div className="AppTry">
-            {/* <Navbar /> */}
-            <Switch>
-              <Route path="/">
-                <MainPage username={this.state.username} />
-                <Stores
-                  refresh={this.state.refresh}
-                  onRefresh={this.onRefresh}
-                  loadSys={this.loadStores}
-                  connID={this.state.connID}
-                  clientConnection={this.state.clientConnection}
-                  stores={this.state.stores}
-                  products={this.state.products}
-                  searchedProducts={this.state.searchedProducts}
-                />
-                <section className="row">
-                  <div className="col span-1-of-2 box">
-                    <Register
-                      onSubmitRegister={this.registerHandler}
-                      connID={this.state.connID}
-                      clientConnection={this.state.clientConnection}
-                      response={this.state.response}
-                    />
-                  </div>
-                  <div className="col span-1-of-2 box">
-                    <Login
-                      onSubmitLogin={this.loginHandler}
-                      connID={this.state.connID}
-                      clientConnection={this.state.clientConnection}
-                      response={this.state.response}
-                    />
-                  </div>
-                </section>
-                <Recommendations />
-                <Programers />
-                <DownPage />
-                <ShoppingCart
-                  refresh={this.state.refresh}
-                  onRefresh={this.onRefresh}
-                  connID={this.state.connID}
-                  clientConnection={this.state.clientConnection}
-                  response={this.state.response}
-                  username={this.state.username}
-                />
-              </Route>
-              <Route path="/services"></Route>
-              <Route path="/admin"></Route>
-              <Route path="/cart"></Route>
-            </Switch>
-          </div>
-        </BrowserRouter>
+        {this.guestContent()}
+        {/* {!this.state.guest &&  */}
+        {this.subscriberContent()}
+        {/* {this.state.owner ? ( */}
+        {this.ownerContent(connID, userID)}
+        {this.endOfPage()}
       </div>
     );
   }
+
+  guestContent = () => {
+    const {
+      refresh,
+      clientConnection,
+      response,
+      username,
+      pass,
+      userID,
+      connID,
+      guest,
+      manager,
+      owner,
+      founder,
+      admin,
+      stores,
+      products,
+      searchedProducts,
+    } = this.state;
+    return (
+      <Fragment>
+        <MainPage username={username} />
+        <section className="row">
+          <div className="col span-1-of-2 box">
+            <Register
+              onSubmitRegister={this.registerHandler}
+              connID={connID}
+              clientConnection={clientConnection}
+              response={response}
+            />
+          </div>
+          <div className="col span-1-of-2 box">
+            <Login
+              onSubmitLogin={this.loginHandler}
+              connID={connID}
+              clientConnection={clientConnection}
+              response={response}
+              refresHandler={this.onRefresh}
+            />
+          </div>
+        </section>
+        <Stores
+          refresh={refresh}
+          onRefresh={this.onRefresh}
+          loadSys={this.loadStores}
+          connID={connID}
+          clientConnection={clientConnection}
+          stores={stores}
+          products={products}
+          searchedProducts={searchedProducts}
+        />
+        <ShoppingCart
+          refresh={refresh}
+          onRefresh={this.onRefresh}
+          connID={connID}
+          clientConnection={clientConnection}
+          response={response}
+          username={username}
+        />
+      </Fragment>
+    );
+  };
+
+  subscriberContent = () => {
+    return (
+      <Fragment>
+        <section className="section-plans js--section-plans" id="stores">
+          <div className="row">
+            <h2>
+              <strong>Subscriber Services</strong>
+            </h2>
+          </div>
+          {this.state.userID ? (
+            <div>
+              <p>Will be subscriber services</p>
+            </div>
+          ) : (
+            <p>You are guest, login for subscriber permissions!</p>
+          )}
+        </section>
+      </Fragment>
+    );
+  };
+
+  ownerContent = (connID, userID) => {
+    return (
+      <Fragment>
+        <StoresOwner connID={connID} userID={userID}></StoresOwner>
+      </Fragment>
+    );
+  };
+
+  endOfPage = () => {
+    return (
+      <Fragment>
+        <Recommendations />
+        <Programers />
+        <DownPage />
+      </Fragment>
+    );
+  };
+  // managerContent = () => {
+  //   return <Fragment></Fragment>;
+  // };
+
+  // adminContent = () => {
+  //   return <Fragment></Fragment>;
+  // };
 }
 
 export default App;

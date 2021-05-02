@@ -39,7 +39,7 @@ function ShoppingCart(props) {
   // }
 
   return (
-    <section className="section-plans js--section-plans" id="shoppingcart">
+    <section className="section-form" id="shoppingcart">
       {/* Shopping Cart header */}
       <div className="row">
         <h2>
@@ -47,16 +47,6 @@ function ShoppingCart(props) {
         </h2>
       </div>
 
-      {/* Show/Hide Cart */}
-      {/* <button
-        className="buttonus"
-        value="show/hide cart"
-        onClick={showCart ? onShowCart : onHideCart}
-      >
-        {showCart ? "Hide cart" : "Show cart"}
-      </button> */}
-
-      {/* Show shopping Cart */}
       <div className="row">
         {shoppingCart.length > 0 ? (
           <div>
