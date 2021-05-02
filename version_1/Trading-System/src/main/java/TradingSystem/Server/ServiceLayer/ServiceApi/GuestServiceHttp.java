@@ -102,6 +102,10 @@ public class GuestServiceHttp {
     public Response Login(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
+        System.out.println("--------------");
+        System.out.println(userName);
+        System.out.println(password);
+        System.out.println("--------------");
         Response res = this.tradingSystem.Login(connID, userName, password);
         tradingSystem.printUsers();
         return res;
@@ -148,6 +152,7 @@ public class GuestServiceHttp {
     @GetMapping("store/{storeID}/products")
     public Response ShowStoreProducts(@PathVariable int storeID) {
         Response res = this.tradingSystem.ShowStoreProducts(storeID);
+        System.out.println(res);
         return res;
     }
 
