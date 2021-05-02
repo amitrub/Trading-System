@@ -99,6 +99,16 @@ public  class User implements Observer {
         this.managerPermission=new ConcurrentHashMap<>();
     }
 
+    public boolean isFounder(){
+        return myFoundedStoresIDs!=null && myFoundedStoresIDs.size()>0;
+    }
+    public boolean isOwner(){
+        return myOwnedStoresIDs!=null && myOwnedStoresIDs.size()>0;
+    }
+    public boolean isManaged(){
+        return myManagedStoresIDs!=null && myManagedStoresIDs.size()>0;
+    }
+
     private static synchronized int getNextUserID() {
         nextUserID++;
         return nextUserID;
