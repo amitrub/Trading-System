@@ -61,7 +61,7 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        name: name,
+        userName: name,
         password: pass,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
@@ -278,6 +278,9 @@ export const createApiClientHttp = () => {
     },
     //Owner
     ShowAllFoundedStores: (connID, userID) => {
+      console.log("ShowAllFoundedStores");
+      console.log(connID);
+      console.log(userID);
       let path = ownerURL.concat(`${userID}/founded_stores`);
       const headers = {
         "Content-Type": "application/json; utf-8",
@@ -563,7 +566,7 @@ export const createApiClientHttp = () => {
       GetStoreHistory
     ) => {
       let path = ownerURL.concat(
-        `${userID}/store/${storeID}/edit_discount_policy/${discountPolicyID}`
+        `${userID}/store/${storeID}/edit_discount_policy/${managerID}`
       );
       const headers = {
         "Content-Type": "application/json; utf-8",

@@ -1,9 +1,9 @@
 import React, { useState } from "react";
-import createApiClient from "../../ApiClient";
+import createApiClientHttp from "../../ApiClientHttp";
 import "../../Design/grid.css";
 import "../../Design/style.css";
 
-const api = createApiClient();
+const api = createApiClientHttp();
 
 function Login(props) {
   // const [regConnID, setConnIDState] = useState("");
@@ -13,17 +13,15 @@ function Login(props) {
   async function submitHandler(event) {
     event.preventDefault();
     // setConnIDState(props.connID);
+    console.log(enteredName);
+    console.log(enteredPass);
 
-    await api.login(
-      props.clientConnection,
-      props.connID,
-      enteredName,
-      enteredPass
-    );
-
-    props.onSubmitLogin(enteredName, enteredPass);
-    setNameState("");
-    setPassState("");
+    await api.Login(props.connID, enteredName, enteredPass).then((res) => {
+      props.onSubmitLogin(enteredName, enteredPass, res);
+      setNameState("");
+      setPassState("");
+      props.refresHandler();
+    });
   }
 
   function nameChangeHandler(event) {

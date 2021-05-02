@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import "../../Design/grid.css";
 import "../../Design/style.css";
-import createApiClient from "../../ApiClient";
+import createApiClientHttp from "../../ApiClientHttp";
 
-const apiHtml = createApiClient();
+const apiHtml = createApiClientHttp();
 
 function Product(props) {
   const [quantityToBuy, setQuantityToBuy] = useState(0);
@@ -26,18 +26,18 @@ function Product(props) {
         product.storeID
     );
 
-    const responseAddProductToCart = await apiHtml.addProductToCart(
-      props.clientConnection,
+    const quantityToBuyInt = parseInt(quantityToBuy);
+    const responseAddProductToCart = await apiHtml.AddProductToCart(
       props.connID,
       product.storeID,
       product.productID,
-      quantityToBuy
+      quantityToBuyInt
     );
 
+    console.log("Product.js:");
     console.log(responseAddProductToCart);
-    props.onAddToCart(product, quantityToBuy);
 
-    // props.onSubmitAddToCart();
+    props.onRefresh();
   }
 
   return (
@@ -58,7 +58,6 @@ function Product(props) {
             <input
               type="number"
               name="quantity"
-              id="quantity"
               placeholder="enter quantity"
               required
               min="1"

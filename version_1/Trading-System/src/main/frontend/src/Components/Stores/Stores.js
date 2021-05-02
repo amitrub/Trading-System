@@ -32,12 +32,8 @@ function Stores(props) {
     setSearch(false);
   }
 
-  function onAddToCart(product, quantity) {
-    props.onAddToCart(product, quantity);
-  }
-
   return (
-    <section className="section-form" id="stores">
+    <section className="section-plans js--section-plans" id="stores">
       <div className="row">
         <h2>Stores</h2>
       </div>
@@ -73,16 +69,17 @@ function Stores(props) {
       )}
 
       {stores
-        ? props.stores.map((currStore) => (
-            <li key={currStore.id} className="curr store">
+        ? props.stores.map((currStore, index) => (
+            <li key={index} className="curr store">
               <Store
+                refresh={props.refresh}
+                onRefresh={props.onRefresh}
                 currStore={currStore}
                 clientConnection={props.clientConnection}
                 connID={props.connID}
                 products={props.products.filter(
                   (prod) => prod.storeID === currStore.id
                 )}
-                onAddToCart={onAddToCart}
               ></Store>
             </li>
           ))

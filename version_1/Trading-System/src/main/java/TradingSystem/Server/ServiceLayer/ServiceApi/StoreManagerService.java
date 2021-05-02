@@ -9,6 +9,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/manager")
+@CrossOrigin("*")
 public class StoreManagerService {
     private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();

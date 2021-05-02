@@ -10,6 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api")
+@CrossOrigin("*")
 public class GuestServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     // 2.1 test
@@ -101,6 +102,10 @@ public class GuestServiceHttp {
     public Response Login(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
+        System.out.println("--------------");
+        System.out.println(userName);
+        System.out.println(password);
+        System.out.println("--------------");
         Response res = this.tradingSystem.Login(connID, userName, password);
         tradingSystem.printUsers();
         return res;
@@ -147,6 +152,7 @@ public class GuestServiceHttp {
     @GetMapping("store/{storeID}/products")
     public Response ShowStoreProducts(@PathVariable int storeID) {
         Response res = this.tradingSystem.ShowStoreProducts(storeID);
+        System.out.println(res);
         return res;
     }
 
@@ -214,11 +220,22 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/add_product")
     public Response AddProductToCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID = (int) obj.get("storeID");
-        int productID = (int) obj.get("productID");
-        int quantity = (int) obj.get("quantity");
+        System.out.println("add to cart");
+        int storeID, productID, quantity;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            quantity = (int) obj.get("quantity");
+        } catch (Exception e) {
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AddProductToCart");
+            res.AddConnID(connID);
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
+        System.out.println(res);
         tradingSystem.printUsers();
         return res;
     }
@@ -290,10 +307,21 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/edit_product")
     public Response EditProductQuantityFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID = (int) obj.get("storeID");
-        int productID = (int) obj.get("productID");
-        int quantity = (int) obj.get("quantity");
+        System.out.println("EditProductQuantityFromCart");
+        int storeID, productID, quantity;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            quantity = (int) obj.get("quantity");
+        } catch (Exception e) {
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : EditProductQuantityFromCart");
+            res.AddConnID(connID);
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
+        System.out.println(res);
         res.AddConnID(connID);
         return res;
     }
