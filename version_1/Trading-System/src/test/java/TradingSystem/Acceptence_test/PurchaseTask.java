@@ -1,19 +1,12 @@
-package TradingSystem;
+package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.Client;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.concurrent.Callable;
 
-import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_GREEN;
-import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_RESET;
-import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_YELLOW;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class PurchaseTask implements Callable<Result> {
 

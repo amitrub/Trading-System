@@ -1,6 +1,8 @@
-package TradingSystem;
+package TradingSystem.Acceptence_test;
 
-import TradingSystem.Client.Client;
+import TradingSystem.Client.Client_Driver;
+import TradingSystem.Client.Client_Interface;
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -11,19 +13,18 @@ import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 public class OwnerTests {
 
-    Client client;
+    Client_Interface client = Client_Driver.getClient();
 
     @BeforeEach
     void setUp() {
-        this.client = new Client();
         client.clearSystem();
         client.connectSystem();
     }
@@ -53,6 +54,39 @@ public class OwnerTests {
                 return storeProducts.get(i).getProductID();
         }
         return -1;
+    }
+
+    private List<User.Permission> makePermissions (HashMap<String, Boolean> permissionToGive){
+        List<User.Permission> Permissions=new LinkedList<>();
+        try {
+            if((boolean) permissionToGive.get("AddProduct"))
+                Permissions.add(User.Permission.AddProduct);
+            if((boolean) permissionToGive.get("ReduceProduct"))
+                Permissions.add(User.Permission.ReduceProduct);
+            if((boolean) permissionToGive.get("DeleteProduct"))
+                Permissions.add(User.Permission.DeleteProduct);
+            if((boolean) permissionToGive.get("EditProduct"))
+                Permissions.add(User.Permission.EditProduct);
+            if((boolean) permissionToGive.get("AppointmentOwner"))
+                Permissions.add(User.Permission.AppointmentOwner);
+            if((boolean) permissionToGive.get("AppointmentManager"))
+                Permissions.add(User.Permission.AppointmentManager);
+            if((boolean) permissionToGive.get("EditManagerPermission"))
+                Permissions.add(User.Permission.EditManagerPermission);
+            if((boolean) permissionToGive.get("RemoveManager"))
+                Permissions.add(User.Permission.RemoveManager);
+            if((boolean) permissionToGive.get("GetInfoOfficials"))
+                Permissions.add(User.Permission.GetInfoOfficials);
+            if((boolean) permissionToGive.get("GetInfoRequests"))
+                Permissions.add(User.Permission.GetInfoRequests);
+            if((boolean) permissionToGive.get("ResponseRequests"))
+                Permissions.add(User.Permission.ResponseRequests);
+            if((boolean) permissionToGive.get("GetStoreHistory"))
+                Permissions.add(User.Permission.GetStoreHistory);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return Permissions;
     }
     //endregion
 
@@ -123,7 +157,8 @@ public class OwnerTests {
         client.Register("Oriya", "123");
         client.Login("Oriya", "123");
         client.openStore("Ran Sport");
-        Integer storeID = getStoreID(client.showAllStores(), "Ran Sport");
+        List<DummyStore> stores=client.showAllStores();
+        Integer storeID = getStoreID(stores, "Ran Sport");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
         List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
@@ -139,7 +174,7 @@ public class OwnerTests {
     @Test
     void BadRemove() {
         client.Register("Oriyan", "123");
-        client.Login("Oriyaמ", "123");
+        client.Login("Oriyan", "123");
         client.openStore("Mega Sport");
         Integer storeID = getStoreID(client.showAllStores(), "Mega Sport");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
@@ -360,6 +395,7 @@ public class OwnerTests {
 
         boolean b1 = client.addOwner(storeID, newOwnerID);
         client.Logout();
+        client.connectSystem();
         client.Login("nofet", "123");
         List<DummyStore> owners = client.showOwnerStores();
         assertFalse(b1);
@@ -432,6 +468,7 @@ public class OwnerTests {
 
         Response res = client.removeOwner(storeID, newOwnerID);
         client.Logout();
+        client.connectSystem();
         client.Login("nofet", "123");
         List<DummyStore> owners = client.showOwnerStores();
         assertFalse(res.getIsErr());
@@ -652,18 +689,12 @@ public class OwnerTests {
 //        assertFalse(b1);
 //        assertEquals(managers.size(), 1);
     }
-
     //endregion
 
     //region requirement 4.6: Edit manager Permissions tests
-
-    //case 4.6.1 edit permissions
-    //owner edits manager permissions
     @Test
     void HappyAddPermissions() {
         Integer managerId = client.Register("manager", "123");
-        client.Login("manager", "123");
-        client.Logout();
 
         client.Register("owner", "123");
         client.Login("owner", "123");
@@ -671,14 +702,15 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores(), "Store");
         client.addManager(storeID, managerId);
 
-        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
-        for (String per : optionalPermissionsForMannager) {
+        for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
-        Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);
+        List<User.Permission> Permissions = makePermissions(permissionToGive);
+        Response responseEditPer = client.editManagerPermissions(storeID, managerId, Permissions);
         client.Logout();
         assertFalse(responseEditPer.getIsErr());
     }
@@ -691,14 +723,15 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
-        for (String per : optionalPermissionsForMannager) {
+        for (String per : optionalPermissionsForMannager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
-        Response responseEditPer = client.editManagerPermissions(storeID, 6, permissionToGive);
+        List<User.Permission> Permissions = makePermissions(permissionToGive);
+        Response responseEditPer = client.editManagerPermissions(storeID, 6, Permissions);
         client.Logout();
         assertTrue(responseEditPer.getIsErr());
     }
@@ -720,14 +753,15 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
-        for (String per : optionalPermissionsForMannager) {
+        for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
-        Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);
+        List<User.Permission> Permissions = makePermissions(permissionToGive);
+        Response responseEditPer = client.editManagerPermissions(storeID, managerId, Permissions);
         client.Logout();
         assertTrue(responseEditPer.getIsErr());
     }
@@ -752,15 +786,15 @@ public class OwnerTests {
         client.Logout();
 
         client.Login("NewOwnerId", "123");
-
-        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
-        for (String per : optionalPermissionsForMannager) {
+        for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
-        Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);
+        List<User.Permission> Permissions = makePermissions(permissionToGive);
+        Response responseEditPer = client.editManagerPermissions(storeID, managerId, Permissions);
         client.Logout();
         assertTrue(responseEditPer.getIsErr());
     }
@@ -794,6 +828,7 @@ public class OwnerTests {
         client.addManager(storeID, newManagerID1);
         client.addManager(storeID, newManagerID2);
         client.Logout();
+        client.connectSystem();
 
         client.Login("roee", "123");
         boolean b1 = client.removeManager(storeID, newManagerID1);
@@ -823,6 +858,7 @@ public class OwnerTests {
         client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Store");
+        System.out.println("enter to client" +client.showAllStores());
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         client.addOwner(storeID, newOwnerID);
@@ -947,6 +983,5 @@ public class OwnerTests {
     void EditPolicesAlert() {
     }
     //endregion
-
 
 }

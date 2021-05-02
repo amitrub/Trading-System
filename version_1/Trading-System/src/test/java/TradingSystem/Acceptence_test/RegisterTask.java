@@ -1,7 +1,6 @@
-package TradingSystem;
+package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.Client;
-
 
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
