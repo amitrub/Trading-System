@@ -50,7 +50,7 @@ public class TradingSystem extends Observable {
             tradingSystem = new TradingSystem();
             tradingSystem.validation = new Validation();
             tradingSystem.ClearSystem();
-//            tradingSystem.Initialization();
+            tradingSystem.Initialization();
         }
         return tradingSystem;
     }
@@ -74,15 +74,14 @@ public class TradingSystem extends Observable {
     }
 
     public void Initialization() {
-        User defaultAdmin = new User("amit", "qweasd");
-        int userID = defaultAdmin.getId();
-        this.systemAdmins.put(userID, userID);
-        this.subscribers.put(userID, defaultAdmin);
-        this.systemManagerPermissions.put(userID,new SystemManagerPermission());
+        int userID = 1;
+        User defaultAdmin = this.subscribers.get(userID);
         //TODO: to delete after
         String connID = "479f239c-797c-4bdb-8175-980acaabf070";
         this.connectedSubscribers.put(connID, userID);
         AddStore(userID, connID, "store1");
+        AddStore(userID, connID, "store2");
+        AddStore(userID, connID, "store3");
         AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
 
         User user1 = new User("hadass", "1234");
@@ -90,6 +89,8 @@ public class TradingSystem extends Observable {
         this.subscribers.put(userID, user1);
         connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
         this.connectedSubscribers.put(connID, userID);
+
+        this.connectedSubscribers = new ConcurrentHashMap<>();
         printUsers();
     }
 
@@ -1527,4 +1528,26 @@ public class TradingSystem extends Observable {
         }
     }
 
+    public Response ShowAllMyStores(String connID, int userID, boolean founder,boolean owner,boolean manager) {
+        if(!ValidConnectedUser(userID,connID)){
+            return new Response(true, "Error in User details");
+        }
+        List<DummyStore> list = new ArrayList<>();
+        for (Integer storeID: stores.keySet()){
+            Store store = stores.get(storeID);
+            if((founder && store.checkFounder(userID))||(owner && store.checkOwner(userID))||(manager && store.checkManager(userID)))
+                list.add(new DummyStore(store));
+        }
+        if(list.isEmpty()){
+            new Response(true,"There are no stores in the system");
+        }
+        Response res = new Response("num of stores in the system is " + list.size());
+        if(founder)
+            res.AddPair("founderStores", list);
+        else if(owner)
+            res.AddPair("ownerStores", list);
+        if(manager)
+            res.AddPair("managerStores", list);
+        return res;
+    }
 }
