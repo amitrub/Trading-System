@@ -1,0 +1,239 @@
+import React, { useState } from "react";
+import createApiClient from "../../ApiClient";
+import "../../Design/grid.css";
+import "../../Design/style.css";
+import Product from "../Stores/Product";
+
+const api = createApiClient();
+
+function Search(props) {
+  const [ProductName, setProductName] = useState(true);
+  const [ProductCategory, setProductCategory] = useState(false);
+  const [searchData, setSearchData] = useState("");
+  const [searchMinPrice, setSearchMinPrice] = useState(-1);
+  const [searchMaxPrice, setSearchMaxPrice] = useState(-1);
+  const [searchPRank, setSearchPRank] = useState(-1);
+  const [searchSRank, setSearchSRank] = useState(-1);
+
+  let prodKey = 1;
+
+  function submitSwitchVis() {
+    setProductName(ProductName ? false : true);
+    setProductCategory(ProductCategory ? false : true);
+  }
+  function updateSearchData(event) {
+    setSearchData(event.target.value);
+  }
+  function updateSearchMinPrice(event) {
+    const min = event.target.value;
+    const minFloat = parseFloat(min);
+    if (minFloat) {
+      setSearchMinPrice(minFloat);
+    } else {
+      setSearchMinPrice(-1);
+    }
+  }
+  function updateSearchMaxPrice(event) {
+    const max = event.target.value;
+    const maxFloat = parseFloat(max);
+    if (maxFloat) {
+      setSearchMaxPrice(maxFloat);
+    } else {
+      setSearchMaxPrice(-1);
+    }
+  }
+  function updateSearchPRank(event) {
+    setSearchPRank(event.target.value);
+  }
+  function updateSearchSRank(event) {
+    setSearchSRank(event.target.value);
+  }
+
+  async function submitHandler(event) {
+    console.log("submitSearchHandler");
+    event.preventDefault();
+
+    await api.search(
+      props.clientConnection,
+      props.connID,
+      searchData,
+      ProductName,
+      ProductCategory,
+      searchMinPrice,
+      searchMaxPrice,
+      searchPRank,
+      searchSRank
+    );
+
+    // props.onSubmitRegister(enteredName, enteredPass);
+    // setNameState("");
+    // setPassState("");
+  }
+
+  return (
+    <section className="section-form">
+      <div className="row">
+        <h2>Search mode</h2>
+      </div>
+      <div className="row">
+        <form
+          method="post"
+          action="#"
+          className="contact-form"
+          onSubmit={submitHandler}
+        >
+          {/* Checkbox Search By */}
+          <div className="row">
+            <div className="col span-1-of-3">
+              <label>Search By ...</label>
+            </div>
+            <div className="col span-2-of-3">
+              <input
+                type="checkbox"
+                name="ProductName"
+                id="ProductName"
+                checked={ProductName}
+                onChange={submitSwitchVis}
+              />{" "}
+              Name?{"      "}
+              <input
+                type="checkbox"
+                name="ProductName"
+                id="ProductName"
+                checked={ProductName ? false : true}
+                onChange={submitSwitchVis}
+              />{" "}
+              Category?
+            </div>
+          </div>
+          {/* input search */}
+          <div className="row">
+            <div className="col span-1-of-3">
+              <label htmlFor="name">Name / Category</label>
+            </div>
+            <div className="col span-2-of-3">
+              <input
+                type="text"
+                name="search"
+                id="search"
+                required
+                onChange={updateSearchData}
+                value={searchData}
+              />
+            </div>
+          </div>
+          {/* min price search */}
+          <div className="row">
+            <div className="col span-1-of-3">
+              <label htmlFor="name">min price</label>
+            </div>
+            <div className="col span-2-of-3">
+              <input
+                type="text"
+                name="minPrice"
+                id="minPrice"
+                placeholder="type positive number or leave empty. etc 2.7"
+                onChange={updateSearchMinPrice}
+                value={searchMinPrice}
+              />
+            </div>
+          </div>
+          {/* max price search */}
+          <div className="row">
+            <div className="col span-1-of-3">
+              <label htmlFor="name">max price</label>
+            </div>
+            <div className="col span-2-of-3">
+              <input
+                type="text"
+                name="maxPrice"
+                id="maxPrice"
+                placeholder="type positive number or leave empty. etc 10.5"
+                onChange={updateSearchMaxPrice}
+                value={searchMaxPrice}
+              />
+            </div>
+          </div>
+          {/* product rank search */}
+          <div className="row">
+            <div className="col span-1-of-3">
+              <label htmlFor="name">product rank</label>
+            </div>
+            {/* <div className="col span-2-of-3">
+              <input
+                type="float"
+                name="prank"
+                id="prank"
+                onChange={updateSearchPRank}
+                value={searchPRank}
+              />
+            </div> */}
+            <div className="col span-2-of-3">
+              <select
+                name="product-rank"
+                id="product-rank"
+                onChange={updateSearchPRank}
+              >
+                <option value="">none</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+          </div>
+          {/* store rank search */}
+          <div className="row">
+            <div className="col span-1-of-3">
+              <label htmlFor="name">store rank</label>
+            </div>
+            <div className="col span-2-of-3">
+              <select
+                name="product-rank"
+                id="product-rank"
+                onChange={updateSearchSRank}
+              >
+                <option value="">none</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
+                <option value="5">5</option>
+              </select>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col span-1-of-3">
+              <label>&nbsp;</label>
+            </div>
+            <div className="col span-2-of-3">
+              <input type="submit" value="search" />
+            </div>
+          </div>
+        </form>
+      </div>
+
+      {/* Show Searched Product */}
+      {props.searchedProducts.length === 0 ? (
+        props.searchedProducts.map((currProduct) => (
+          <div className="col span-1-of-4">
+            <li key={prodKey++} className="curr product">
+              <Product
+                currProduct={currProduct}
+                clientConnection={props.clientConnection}
+                connID={props.connID}
+              ></Product>
+            </li>
+          </div>
+        ))
+      ) : (
+        <div className="row">
+          <h2>Search mode</h2>
+        </div>
+      )}
+    </section>
+  );
+}
+
+export default Search;
