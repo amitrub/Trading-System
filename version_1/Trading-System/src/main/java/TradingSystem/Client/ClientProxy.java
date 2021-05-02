@@ -215,7 +215,8 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public Response editManagerPermissions(int storeID, int managerID, HashMap<String, Boolean> permissions) {
-       return tradingSystem.EditManagerPermissions(userID,ConnID,storeID,managerID,permissions);
+       //return tradingSystem.EditManagerPermissions(userID,ConnID,storeID,managerID,permissions);
+        return null;
     }
 
     @Override
