@@ -157,7 +157,10 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public Response Logout() {
-        return tradingSystem.Logout(ConnID);
+        Response response=tradingSystem.Logout(this.ConnID);
+        this.ConnID=response.returnConnID();
+        this.userID=-1;
+        return response;
     }
 
     @Override
