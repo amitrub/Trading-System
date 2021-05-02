@@ -43,10 +43,52 @@ function Search(props) {
     }
   }
   function updateSearchPRank(event) {
-    setSearchPRank(event.target.value);
+    let val = -1;
+    switch (event.target.value) {
+      case "1":
+        val = 1;
+        break;
+      case "2":
+        val = 2;
+        break;
+      case "3":
+        val = 3;
+        break;
+      case "4":
+        val = 4;
+        break;
+      case "5":
+        val = 5;
+        break;
+      default:
+        val = -1;
+        break;
+    }
+    setSearchPRank(val);
   }
   function updateSearchSRank(event) {
-    setSearchSRank(event.target.value);
+    let val = -1;
+    switch (event.target.value) {
+      case "1":
+        val = 1;
+        break;
+      case "2":
+        val = 2;
+        break;
+      case "3":
+        val = 3;
+        break;
+      case "4":
+        val = 4;
+        break;
+      case "5":
+        val = 5;
+        break;
+      default:
+        val = -1;
+        break;
+    }
+    setSearchSRank(val);
   }
 
   async function submitHandler(event) {
