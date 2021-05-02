@@ -10,6 +10,14 @@ function ShoppingCart(props) {
   const [showCart, setshowCart] = useState(false);
   let prodKey = 1;
 
+  function onShowCart() {
+    setshowCart(false);
+  }
+
+  function onHideCart() {
+    setshowCart(true);
+  }
+
   //   async function submitLoadProducts() {
   //     console.log("submit Load Products");
   //     await api.getAllProductsOfStore(
@@ -29,13 +37,13 @@ function ShoppingCart(props) {
       </div>
 
       {/* Show/Hide Cart */}
-      {/* <button
+      <button
         className="buttonus"
         value="show/hide cart"
-        onClick={showCart ? setshowCart(false) : setshowCart(true)}
+        onClick={showCart ? onShowCart : onHideCart}
       >
         {showCart ? "Hide cart" : "Show cart"}
-      </button> */}
+      </button>
 
       {/* Show shopping Cart */}
       <div className="row">
@@ -58,7 +66,7 @@ function ShoppingCart(props) {
                 </li>
               </div>
             ))
-          : ""}
+          : "No products, Go Shop bitch! (Or press show cart :)"}
       </div>
     </section>
   );
