@@ -23,6 +23,7 @@ class App extends React.Component {
   constructor() {
     super();
     this.state = {
+      refresh: true,
       clientConnection: "",
       response: {
         isErr: false,
@@ -41,32 +42,13 @@ class App extends React.Component {
       stores: [],
       products: [],
       searchedProducts: [],
-      shoppingCart: [],
     };
   }
 
-  onAddToCart = (product, quantity) => {
-    console.log("App.js onAddToCart:");
-    console.log(product);
-    console.log(quantity);
-    const productToBuy = {
-      storeID: product.storeID,
-      storeName: product.storeName,
-      productID: product.productID,
-      productName: product.productName,
-      price: product.price,
-      category: product.category,
-      quantity: quantity,
-    };
-    this.setState(
-      (prevState) => ({
-        shoppingCart: [...prevState.shoppingCart, productToBuy],
-      }),
-      () => {
-        console.log("ufter shopping cart update:");
-        console.log(this.state.shoppingCart);
-      }
-    );
+  onRefresh = () => {
+    this.setState((prevState) => ({
+      refresh: prevState.refresh ? false : true,
+    }));
   };
 
   loadStores = () => {
@@ -256,13 +238,14 @@ class App extends React.Component {
               <Route path="/">
                 <MainPage username={this.state.username} />
                 <Stores
+                  refresh={this.state.refresh}
+                  onRefresh={this.onRefresh}
                   loadSys={this.loadStores}
                   connID={this.state.connID}
                   clientConnection={this.state.clientConnection}
                   stores={this.state.stores}
                   products={this.state.products}
                   searchedProducts={this.state.searchedProducts}
-                  onAddToCart={this.onAddToCart}
                 />
                 <section className="row">
                   <div className="col span-1-of-2 box">
@@ -286,11 +269,12 @@ class App extends React.Component {
                 <Programers />
                 <DownPage />
                 <ShoppingCart
+                  refresh={this.state.refresh}
+                  onRefresh={this.onRefresh}
                   connID={this.state.connID}
                   clientConnection={this.state.clientConnection}
                   response={this.state.response}
                   username={this.state.username}
-                  shoppingCart={this.state.shoppingCart}
                 />
               </Route>
               <Route path="/services"></Route>

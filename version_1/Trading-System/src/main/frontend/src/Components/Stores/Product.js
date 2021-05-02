@@ -28,7 +28,6 @@ function Product(props) {
 
     const quantityToBuyInt = parseInt(quantityToBuy);
     const responseAddProductToCart = await apiHtml.AddProductToCart(
-      props.clientConnection,
       props.connID,
       product.storeID,
       product.productID,
@@ -37,9 +36,8 @@ function Product(props) {
 
     console.log("Product.js:");
     console.log(responseAddProductToCart);
-    props.onAddToCart(product, quantityToBuy);
 
-    // props.onSubmitAddToCart();
+    props.onRefresh();
   }
 
   return (
@@ -60,7 +58,6 @@ function Product(props) {
             <input
               type="number"
               name="quantity"
-              id="quantity"
               placeholder="enter quantity"
               required
               min="1"

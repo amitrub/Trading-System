@@ -302,10 +302,21 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/edit_product")
     public Response EditProductQuantityFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID = (int) obj.get("storeID");
-        int productID = (int) obj.get("productID");
-        int quantity = (int) obj.get("quantity");
+        System.out.println("EditProductQuantityFromCart");
+        int storeID, productID, quantity;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            quantity = (int) obj.get("quantity");
+        } catch (Exception e) {
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : EditProductQuantityFromCart");
+            res.AddConnID(connID);
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
+        System.out.println(res);
         res.AddConnID(connID);
         return res;
     }

@@ -9,7 +9,6 @@ const api = createApiClient();
 function Store(props) {
   const [showStore, setShowStore] = useState(false);
   const store = props.currStore;
-  let prodKey = 1;
 
   async function submitLoadProducts() {
     console.log("submit Load Products");
@@ -24,10 +23,6 @@ function Store(props) {
   async function sumbitHideProducts() {
     console.log("submit hide Products");
     setShowStore(false);
-  }
-
-  function onAddToCart(product, quantity) {
-    props.onAddToCart(product, quantity);
   }
 
   return (
@@ -47,19 +42,15 @@ function Store(props) {
 
       <div className="row">
         {showStore
-          ? props.products.map((currProduct) => (
+          ? props.products.map((currProduct, index) => (
               <div className="col span-1-of-4">
-                <li
-                  key={currProduct.productID
-                    .toString()
-                    .concat((prodKey++).toString())}
-                  className="curr product"
-                >
+                <li key={index} className="curr product">
                   <Product
+                    refresh={props.refresh}
+                    onRefresh={props.onRefresh}
                     currProduct={currProduct}
                     clientConnection={props.clientConnection}
                     connID={props.connID}
-                    onAddToCart={onAddToCart}
                   ></Product>
                 </li>
               </div>

@@ -81,9 +81,20 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         String connID = "479f239c-797c-4bdb-8175-980acaabf070";
         this.connectedSubscribers.put(connID, userID);
         AddStore(userID, connID, "store1");
-        AddStore(userID, connID, "store2");
-        AddStore(userID, connID, "store3");
+        AddStore(userID, connID, "Mar y juana");
+        AddStore(userID, connID, "Bali Pizza");
         AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
+        AddProductToStore(userID, connID,1, "Sneakers2", "Shoes",50.0, 25);
+        AddProductToStore(userID, connID, 1,"Sneaker3", "bla" ,80.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers24",  "Shoes", 80.0,25);
+        AddProductToStore(userID, connID, 2, "Sneak23", "bloo", 840.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes",80.0, 25);
+        AddProductToStore(userID, connID, 3,"Sneakers2", "Shoes", 50.0, 25);
+        AddProductToStore(userID, connID, 3,"Sneaker3", "bla" , 80.0,25);
+        AddProductToStore(userID, connID, 3,"Sneakers24",  "Shoes", 80.0,25);
+        AddProductToStore(userID, connID, 1, "Sneak23",  "bloo",840.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes", 80.0,25);
+
 
         User user1 = new User("hadass", "1234");
         userID = user1.getId();
@@ -180,20 +191,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                 canExit = true;
             }
         }
-        Store store1 = new Store("Mar y juana", 1);
-        store1.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
-        store1.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
-        store1.AddProductToStore("Sneakers24", 80.0, "Shoes", 25);
-        store1.AddProductToStore( "Sneak23", 840.0, "bloo", 25);
-        store1.AddProductToStore("Sneakers", 80.0, "Shoes", 25);
-        Store store2 = new Store("Roee Hadas", 1);
-        store2.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
-        store2.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
-        store2.AddProductToStore("Sneakers24", 80.0, "Shoes", 25);
-        store2.AddProductToStore( "Sneak23", 840.0, "bloo", 25);
-        store2.AddProductToStore("Sneakers", 80.0, "Shoes", 25);
-        this.stores.put(store1.getId(), store1);
-        this.stores.put(store2.getId(), store2);
+
 
         return uniqueID;
     }
