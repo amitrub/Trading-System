@@ -1,10 +1,8 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -14,12 +12,12 @@ public class DiscountPolicy {
     private static int nextSaleID=0;
     private  ConcurrentHashMap<Integer,Sale> Sales;
 
-    public TradingSystem tradingSystem;
+    public TradingSystemImpl tradingSystemImpl;
 
     public void DiscountPolicy(Integer storeID){
      this.storeID=storeID;
      this.Sales=new ConcurrentHashMap<>();
-     this.tradingSystem=TradingSystem.getInstance();
+     this.tradingSystemImpl = TradingSystemImpl.getInstance();
     }
 
     private static synchronized int getNextSaleID() {
@@ -43,7 +41,7 @@ public class DiscountPolicy {
         Set<Integer> keySetProdects=products.keySet();
         for (Integer key:keySetProdects
              ) {
-            Double tmpPrice=tradingSystem.getProduct(storeID,key).getPrice();
+            Double tmpPrice= tradingSystemImpl.getProduct(storeID,key).getPrice();
             price=price+tmpPrice;
         }
 

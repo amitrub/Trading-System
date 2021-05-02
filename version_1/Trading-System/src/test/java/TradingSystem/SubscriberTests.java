@@ -1,7 +1,7 @@
 package TradingSystem;
 
 import TradingSystem.Client.Client;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -17,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 public class SubscriberTests {
 
     Client client;
-    TradingSystem tradingSystem = TradingSystem.getInstance();
+    TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     @BeforeEach
     void setUp() {

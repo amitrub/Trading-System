@@ -2,7 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,7 +11,7 @@ public class CategorySale implements Sale {
     String category;
     Double  discountPercentage;
     Expression expression;
-    TradingSystem tradingSystem=TradingSystem.getInstance();
+    TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     public CategorySale(String category, Double discountPercentage, Expression exception) {
         this.category = category;
@@ -26,7 +26,7 @@ public class CategorySale implements Sale {
             Set<Integer> keySet=products.keySet();
             for (Integer key:keySet
                  ) {
-                Product p=tradingSystem.getProduct(storeID,key);
+                Product p= tradingSystemImpl.getProduct(storeID,key);
                 if(p.getCategory().equals(category)){
                     priceForCategory=priceForCategory+p.getPrice();
                 }
