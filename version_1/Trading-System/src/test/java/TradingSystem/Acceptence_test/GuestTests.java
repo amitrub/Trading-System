@@ -244,8 +244,7 @@ public class GuestTests {
         client.Login("Shani", "123");
         client.openStore("H&M");
         List<DummyStore> store = client.showAllStores();
-        DummyStore currStore = store.get(0);
-        Integer storeID = currStore.getId();
+        Integer storeID = getStoreID(store, "H&M");
         client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
         client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
@@ -253,11 +252,11 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.1 Search by product name exist
-        List<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50.0","100.0","1","5");
+        List<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50","100","1","5");
         assertEquals(searchProducts1.size(),1);
 
         //2.6.2 Search by product name doesnt exist
-        List<DummyProduct> searchNoProducts = client.Search("Product Name","blabla", "50.0","100.0","1","5");
+        List<DummyProduct> searchNoProducts = client.Search("Product Name","blabla", "50","100","1","5");
         assertEquals(searchNoProducts.size(),0);
     }
     @Test
@@ -266,7 +265,7 @@ public class GuestTests {
         client.Login("Shalom", "123");
         client.openStore("H&O");
         List<DummyStore> store = client.showAllStores();
-        Integer storeID = store.get(0).getId();
+        Integer storeID = getStoreID(store, "H&O");
         client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
         client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);
@@ -287,7 +286,7 @@ public class GuestTests {
         client.Login("Shaya", "123");
         client.openStore("H&L");
         List<DummyStore> store = client.showAllStores();
-        Integer storeID = store.get(0).getId();
+        Integer storeID = getStoreID(store, "H&L");
         client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
         client.addProduct(storeID, "Jeans Dress", "Dress", 90.0, 50);

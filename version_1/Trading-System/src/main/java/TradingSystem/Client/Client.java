@@ -1,5 +1,6 @@
 package TradingSystem.Client;
 
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
 
@@ -500,12 +501,12 @@ public class Client implements Client_Interface {
      * @param permissions permissions
      * @return Response
      */
-    public Response editManagerPermissions(int storeID, int managerID, HashMap<String, Boolean> permissions) {
+    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions) {
         String path = String.format("%s/store/%s/edit_manager_permissions/%s", this.userID, storeID, managerID);
         JSONObject jsonPost = new JSONObject();
         try {
-            for (String permissionKey : permissions.keySet()) {
-                jsonPost.put(permissionKey, permissions.get(permissionKey));
+            for (User.Permission permissionKey : permissions) {
+                jsonPost.put("Permission", permissionKey);
             }
         } catch (Exception e) {
             e.printStackTrace();

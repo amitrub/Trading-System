@@ -1,5 +1,6 @@
 package TradingSystem.Client;
 
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -194,7 +195,7 @@ public interface Client_Interface {
      * @param permissions permissions
      * @return Response
      */
-    public Response editManagerPermissions(int storeID, int managerID, HashMap<String, Boolean> permissions);
+    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions);
     public Response GetPossiblePermissionsToManager();
 
     /**

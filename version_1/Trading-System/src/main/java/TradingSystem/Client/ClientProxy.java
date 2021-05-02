@@ -1,12 +1,14 @@
 package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -124,10 +126,17 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public List<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
-        if(mode.equals("Product Name"))
-            return tradingSystem.SearchProduct(name, null, Integer.parseInt(minPrice), Integer.parseInt(maxPrice)).returnProductList();
-        else
-            return tradingSystem.SearchProduct(null, null, Integer.parseInt(minPrice), Integer.parseInt(maxPrice)).returnProductList();
+        try {
+            Integer min = Integer.parseInt(minPrice);
+            Integer max = Integer.parseInt(maxPrice);
+            if (mode.equals("Product Name")) {
+                return tradingSystem.SearchProduct(name, null, min, max).returnProductList();
+            } else {
+                return tradingSystem.SearchProduct(null, name, min, max).returnProductList();
+            }
+        } catch (Exception ex){
+            return new ArrayList<>();
+        }
     }
 
     @Override
@@ -214,9 +223,9 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response editManagerPermissions(int storeID, int managerID, HashMap<String, Boolean> permissions) {
-       //return tradingSystem.EditManagerPermissions(userID,ConnID,storeID,managerID,permissions);
-        return null;
+    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions) {
+       return tradingSystem.EditManagerPermissions(userID,ConnID,storeID,managerID,permissions);
+        //return null;
     }
 
     @Override
@@ -256,7 +265,7 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public List<DummyShoppingHistory> adminUserHistory(int userToShow) {
-        return tradingSystem.UserHistoryAdmin(userToShow,userID,ConnID).returnHistoryList();
+        return tradingSystem.UserHistoryAdmin(userID,userToShow,ConnID).returnHistoryList();
     }
 
     @Override

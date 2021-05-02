@@ -241,7 +241,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
-            Response res = new Response("Register: Registration of " + userName + " was successful");
+            Response res = new Response(false,"Register: Registration of " + userName + " was successful");
             res.AddConnID(connID);
             res.AddUserID(newUser.getId());
             res.AddUserGuest();
