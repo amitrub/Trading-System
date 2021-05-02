@@ -658,14 +658,9 @@ public class OwnerTests {
     //endregion
 
     //region requirement 4.6: Edit manager Permissions tests
-
-    //case 4.6.1 edit permissions
-    //owner edits manager permissions
     @Test
     void HappyAddPermissions() {
         Integer managerId = client.Register("manager", "123");
-        client.Login("manager", "123");
-        client.Logout();
 
         client.Register("owner", "123");
         client.Login("owner", "123");
@@ -673,11 +668,11 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores(), "Store");
         client.addManager(storeID, managerId);
 
-        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
-        for (String per : optionalPermissionsForMannager) {
+        for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
         Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);
@@ -693,11 +688,11 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
-        for (String per : optionalPermissionsForMannager) {
+        for (String per : optionalPermissionsForMannager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
         Response responseEditPer = client.editManagerPermissions(storeID, 6, permissionToGive);
@@ -722,11 +717,11 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
-        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
-        for (String per : optionalPermissionsForMannager) {
+        for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
         Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);
@@ -755,11 +750,11 @@ public class OwnerTests {
 
         client.Login("NewOwnerId", "123");
 
-        List<String> optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
-        for (String per : optionalPermissionsForMannager) {
+        for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
         Response responseEditPer = client.editManagerPermissions(storeID, managerId, permissionToGive);

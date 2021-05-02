@@ -137,7 +137,7 @@ public class Client implements Client_Interface {
         String path = "stores";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyStore> dummySearchResponeArr = response.returnStoreList();
+        List<DummyStore> dummySearchResponeArr = response.getStores();
         return dummySearchResponeArr;
     }
     public List<DummyProduct> showStoreProducts(int storeID) {
@@ -515,16 +515,16 @@ public class Client implements Client_Interface {
         System.out.println(ANSI_YELLOW + "(editManagerPermissions) response: " + response + ANSI_RESET);
         return response;
     }
-    public List<String> GetPossiblePermissionsToManager() {
+    public Response GetPossiblePermissionsToManager() {
         String path = String.format("%s/store/get_possible_permissions_to_manager", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        if(response.getIsErr()) {
-            System.out.println("(GetPossiblePermissionsToManager) response: " + response);
-            return new LinkedList<>();
-        }
-        List<String> dummyPermissionsList = response.returnPermissionList();
-        return dummyPermissionsList;
+        //if(response.getIsErr()) {
+        //    System.out.println("(GetPossiblePermissionsToManager) response: " + response);
+        //    return response;
+        //}
+        //List<String> dummyPermissionsList = response.returnPermissionList();
+        return response;
     }
 
     /**
@@ -544,14 +544,14 @@ public class Client implements Client_Interface {
         String path = String.format("%s/stores_owner", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyStore> dummySearchResponeArr = response.returnStoreList();
+        List<DummyStore> dummySearchResponeArr = response.getStores();
         return dummySearchResponeArr;
     }
     public List<DummyStore> showManagerStores() {
         String path = String.format("%s/stores_manager", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyStore> dummySearchResponeArr = response.returnStoreList();
+        List<DummyStore> dummySearchResponeArr = response.getStores();
         return dummySearchResponeArr;
     }
 

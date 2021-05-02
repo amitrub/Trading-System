@@ -195,7 +195,7 @@ public interface Client_Interface {
      * @return Response
      */
     public Response editManagerPermissions(int storeID, int managerID, HashMap<String, Boolean> permissions);
-    public List<String> GetPossiblePermissionsToManager();
+    public Response GetPossiblePermissionsToManager();
 
     /**
      * @requirement 4.7

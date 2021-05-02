@@ -215,12 +215,12 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public Response editManagerPermissions(int storeID, int managerID, HashMap<String, Boolean> permissions) {
-       return null;
+       return tradingSystem.EditManagerPermissions(userID,ConnID,storeID,managerID,permissions);
     }
 
     @Override
-    public List<String> GetPossiblePermissionsToManager() {
-        return null;
+    public Response GetPossiblePermissionsToManager() {
+        return tradingSystem.GetPossiblePermissionsToManager(userID,ConnID);
     }
 
     @Override
@@ -230,12 +230,12 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public List<DummyStore> showOwnerStores() {
-        return tradingSystem.ShowOwnerStores(userID,ConnID).returnStoreList();
+        return tradingSystem.ShowOwnerStores(userID,ConnID).getStores();
     }
 
     @Override
     public List<DummyStore> showManagerStores() {
-        return tradingSystem.ShowManagerStores(userID,ConnID).returnStoreList();
+        return tradingSystem.ShowManagerStores(userID,ConnID).getStores();
     }
 
     @Override

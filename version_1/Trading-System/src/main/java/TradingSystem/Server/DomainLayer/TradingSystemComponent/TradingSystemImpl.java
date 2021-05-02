@@ -1213,14 +1213,15 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "GetPossiblePermissionsToManager: The user " + userID + " is not connected");
         }
-        List<String> permissions = new ArrayList<>();
+        //List<String> permissions = new ArrayList<>();
         OwnerPermission OP = new OwnerPermission(userID, -1);
-        for (User.Permission P : OP.getPermissions()
-        ) {
-            permissions.add(P.toString());
-        }
+        //for (User.Permission P : OP.getPermissions()
+        //) {
+        //    permissions.add(P.toString());
+        //}
         Response res = new Response(false, "GetPossiblePermissionsToManager: Viewing permissions was successful");
-        res.AddPair("permissions", permissions);
+        //res.AddPair("permissions", permissions);
+        res.AddPair("permissions", OP.getPermissions());
         User user=subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;

@@ -397,7 +397,7 @@ public class ProxyTrading implements TradingSystem {
     @Override
     public Response ShowManagerStores(int userID, String connID) {
         if(real!=null)
-            return ShowManagerStores(userID,connID);
+            return real.ShowManagerStores(userID,connID);
         return null;
     }
 

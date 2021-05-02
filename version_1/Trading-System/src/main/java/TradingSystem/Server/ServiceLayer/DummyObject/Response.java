@@ -76,12 +76,12 @@ public class Response {
         List<DummyStore> hashMap= (List<DummyStore>)this.returnObject.get("stores");
         return hashMap;
     }
-
+/*
     public List<DummyStore> returnStoreList(){
         if(!this.isErr){
+            //List
             List<HashMap<String, DummyStore>> storeList = (List<HashMap<String, DummyStore>>) this.returnObject.get("stores");
             System.out.println(Arrays.asList(storeList));
-            System.out.println("hhhhhhhhhhhhhhhhhhhi "+(storeList.get(0)));
             List<DummyStore> output = new ArrayList<>();
             for (HashMap<String, DummyStore> map: storeList){
                 output.add(map.get("Store"));
@@ -91,6 +91,7 @@ public class Response {
         else
             return new ArrayList<>();
     }
+ */
 
     public List<DummyProduct> returnProductList(){
 //        if(!this.isErr){
