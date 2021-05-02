@@ -3,6 +3,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -19,6 +20,7 @@ import java.util.Map;
     SimpMessagingTemplate template;
 
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
     /**
      * @requirement 6.4
@@ -44,6 +46,7 @@ import java.util.Map;
         Response res = tradingSystem.AllUsersHistoryAdmin(adminID, connID);
         res.AddTag("AdminAllUsers");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -70,6 +73,7 @@ import java.util.Map;
         Response res = tradingSystem.AllStoresHistoryAdmin(adminID, connID);
         res.AddTag("AdminAllStores");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -107,6 +111,7 @@ import java.util.Map;
         Response res = tradingSystem.UserHistoryAdmin(adminID, userID ,connID);
         res.AddTag("AdminUserHistory");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -144,10 +149,18 @@ import java.util.Map;
         Response res = tradingSystem.StoreHistoryAdmin(adminID,storeID,connID);
         res.AddTag("AdminStoreHistory");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
-
+    private void WriteToLogger(Response res){
+        if(res.getIsErr()) {
+            loggerController.WriteErrorMsg("Admin Error: " + res.getMessage());
+        }
+        else{
+            loggerController.WriteLogMsg("Admin: " + res.getMessage());
+        }
+    }
 
 
 }

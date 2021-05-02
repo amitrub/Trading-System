@@ -3,6 +3,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -18,7 +19,10 @@ import java.util.Map;
 @CrossOrigin("*") public class SubscriberService {
     @Autowired
     SimpMessagingTemplate template;
+
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    private static final LoggerController loggerController=LoggerController.getInstance();
+
 
     /**
      * @requirement 3.1
@@ -40,6 +44,7 @@ import java.util.Map;
         tradingSystem.printUsers();
         res.AddTag("Logout");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -66,6 +71,7 @@ import java.util.Map;
         tradingSystem.printStores();
         res.AddTag("AddStore");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -96,6 +102,7 @@ import java.util.Map;
         tradingSystem.printCommentForProduct(storeID,productID);
         res.AddTag("WriteComment");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -125,16 +132,15 @@ import java.util.Map;
      *  }]
      * }
      */
-    //TODO: fix DummyShoppingHistory
     @MessageMapping("{userID}/user_history")
     public Response ShowUserHistory(@DestinationVariable int userID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
         Response res = tradingSystem.ShowSubscriberHistory(userID, connID);
         res.AddTag("ShowUserHistory");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
-
 
     /**
      * @requirement 2.9
@@ -161,6 +167,16 @@ import java.util.Map;
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
         res.AddTag("subscriberPurchase");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
+    }
+
+    private void WriteToLogger(Response res){
+        if(res.getIsErr()) {
+            loggerController.WriteErrorMsg("Subscriber Error: " + res.getMessage());
+        }
+        else{
+            loggerController.WriteLogMsg("Subscriber: " + res.getMessage());
+        }
     }
 }

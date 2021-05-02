@@ -51,9 +51,9 @@ public class Inventory {
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());
-            return new Response("Add Product was successful");
+            return new Response(false, "AddProductToStore: Add Product " + productName + " was successful");
         } else
-            return new Response(true, "Error Product name is taken");
+            return new Response(true, "AddProductToStore: Product name " + productName + " is taken");
 
     }
 
@@ -77,20 +77,19 @@ public class Inventory {
             Product product = this.products.get(productId);
             Integer oldQuantity = product.getQuantity();
             product.setQuantity(quantity + oldQuantity);
-            return new Response("Add Product to Inventory was successful");
+            return new Response("ChangeQuantityProduct: Add Product " + product.getProductName() + " to Inventory was successful");
         } else
-            return new Response(true, "The product does not exist in the system");
+            return new Response(true, "ChangeQuantityProduct: The product with id " + productId + "  does not exist in the system");
     }
 
     public Response deleteProduct(Integer productID) {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
             this.products.remove(productID);
-            System.out.println("TEST------------>");
 //            this.productLock.remove(productID);
-            return new Response("Remove Product from the Inventory was successful");
+            return new Response(false, "RemoveProduct: Remove product " + productID + " from the Inventory was successful");
         } else
-            return new Response(true, "The product does not exist in the system");
+            return new Response(true, "RemoveProduct: The product " + productID + " does not exist in the system");
     }
 
     public Product getProduct(Integer productId) {
@@ -107,16 +106,16 @@ public class Inventory {
                 int quantity = product.getQuantity();
                 int newQuantity = quantity - quantityToReduce;
                 if (newQuantity < 0) {
-                    return new Response(true, "There are not enough units from a product " + PID + " In store " + storeID);
+                    return new Response(true, "Purchase: There are not enough units from a product " + PID + " In store " + storeID);
                 }
                 product.setQuantity(newQuantity);
 //                this.productQuantity.remove(PID);
 //                this.productQuantity.put(PID, newQuantity);
             } else {
-                return new Response(true, "The product " + PID + " In store " + storeID + " does not exist in the system");
+                return new Response(true, "Purchase: The product " + PID + " In store " + storeID + " does not exist in the system");
             }
         }
-        return new Response("Product inventory successfully updated");
+        return new Response(false, "Purchase: Product inventory successfully updated");
     }
 
     public Response addCommentToProduct(Integer productId, Integer userID, String comment) {
@@ -192,10 +191,10 @@ public class Inventory {
                 Product p = new Product(productId, productName, category, price, quantity);
                 this.products.remove(productId);
                 this.products.put(id, p);
-                return new Response(false, "The product update successfully");
+                return new Response(false, "EditProduct: The product " + productName + " update successfully");
             }
         }
-        return new Response(true, "The product does not exist in the system");
+        return new Response(true, "EditProduct: The product " + productName + " does not exist in the system");
     }
 
     public List<Integer> SearchProduct(String name, String category, int minprice, int maxprice) {

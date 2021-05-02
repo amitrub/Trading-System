@@ -101,8 +101,7 @@ public class Store {
         return inventory.deleteProduct(productId);
     }
 
-    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity)
-    {
+    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity) {
         return inventory.editProductDetails(productId,productName,price,category,quantity);
     }
 
