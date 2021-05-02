@@ -13,6 +13,7 @@ import java.util.concurrent.locks.Lock;
 
 public interface TradingSystem {
 
+
     public void ClearSystem();
 
     public void Initialization();
@@ -82,6 +83,7 @@ public interface TradingSystem {
     public Response ShowOwnerStores(int userID, String connID);
     public Response ShowManagerStores(int userID, String connID);
     //Admin
+
     public Response StoreHistoryAdmin(int AdminID, int storeID, String connID);
     public Response UserHistoryAdmin(int AdminID, int userID, String connID);
     public Response AllStoresHistoryAdmin(int AdminID, String connID);
@@ -91,4 +93,5 @@ public interface TradingSystem {
     public Response GetPossiblePermissionsToManager(int userID, String connID);
     public Response ShowStoreWorkers(int userID, String connID, int storeID);
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID);
+
 }
