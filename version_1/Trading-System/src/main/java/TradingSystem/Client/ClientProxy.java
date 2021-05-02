@@ -6,15 +6,20 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.Bridge.*;
+import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
+
+import static TradingSystem.Server.ServiceLayer.Configuration.urlbaseGuest;
 
 public class ClientProxy implements Client_Interface {
 
     TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
     String ConnID;
     int userID;
+    private String userName;
+    private String pass;
 
     private Client real;
 
@@ -49,6 +54,31 @@ public class ClientProxy implements Client_Interface {
 //    }
 
     @Override
+    public String getUserName() {
+        return userName;
+    }
+
+    @Override
+    public boolean isSubscriber() {
+        return this.userID != -1 && !this.ConnID.equals("");
+    }
+
+    @Override
+    public boolean isOwner() {
+        return true;
+    }
+
+    @Override
+    public String getConnID() {
+        return ConnID;
+    }
+
+    @Override
+    public int getUserID(){
+        return userID;
+    }
+
+    @Override
     public void clearSystem() {
         tradingSystem.ClearSystem();
     }
@@ -80,12 +110,16 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public List<DummyStore> showAllStores() {
-        return tradingSystem.ShowAllStores().returnStoreList();
+        return tradingSystem.ShowAllStores().getStores();
     }
 
     @Override
     public List<DummyProduct> showStoreProducts(int storeID) {
-        return tradingSystem.ShowStoreProducts(storeID).returnProductList();
+        String path = String.format("store/%s/products", storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path,ConnID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
+        return dummyProductResponeArr;
     }
 
     @Override

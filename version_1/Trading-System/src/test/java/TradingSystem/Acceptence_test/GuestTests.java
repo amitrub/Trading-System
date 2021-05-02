@@ -1,6 +1,7 @@
 package TradingSystem.Acceptence_test;
 
-import TradingSystem.Client.Client;
+import TradingSystem.Client.Client_Driver;
+import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -20,12 +21,12 @@ import static org.junit.Assert.*;
 
 public class GuestTests {
 
-    Client client;
+    Client_Interface client = Client_Driver.getClient();
     TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     @BeforeEach
     void setUp() {
-        this.client = new Client();
+       // this.client = new Client();
         client.clearSystem();
         client.connectSystem();
     }

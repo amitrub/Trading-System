@@ -1,6 +1,7 @@
 package TradingSystem.Acceptence_test;
 
-import TradingSystem.Client.Client;
+import TradingSystem.Client.Client_Driver;
+import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -15,15 +16,13 @@ import java.util.List;
 import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
-import static org.junit.Assert.assertTrue;
 
 public class OwnerTests {
 
-    Client client;
+    Client_Interface client = Client_Driver.getClient();
 
     @BeforeEach
     void setUp() {
-        this.client = new Client();
         client.clearSystem();
         client.connectSystem();
     }
@@ -123,7 +122,8 @@ public class OwnerTests {
         client.Register("Oriya", "123");
         client.Login("Oriya", "123");
         client.openStore("Ran Sport");
-        Integer storeID = getStoreID(client.showAllStores(), "Ran Sport");
+        List<DummyStore> stores=client.showAllStores();
+        Integer storeID = getStoreID(stores, "Ran Sport");
         client.addProduct(storeID, "Arma Heels", "Heels", 80.0, 25);
         List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
         Integer productID = getProductID(storeProducts1,"Arma Heels");
@@ -823,6 +823,7 @@ public class OwnerTests {
         client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Store");
+        System.out.println("enter to client" +client.showAllStores());
         Integer storeID = getStoreID(client.showAllStores(), "Store");
 
         client.addOwner(storeID, newOwnerID);

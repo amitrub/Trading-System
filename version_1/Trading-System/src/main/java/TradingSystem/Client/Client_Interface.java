@@ -11,10 +11,11 @@ import java.util.List;
 public interface Client_Interface {
 
 
-//    public String getUserName();
-//    public boolean isSubscriber();
-//    public boolean isOwner();
-//    public String getConnID();
+    public int getUserID();
+    public String getUserName();
+    public boolean isSubscriber();
+    public boolean isOwner();
+    public String getConnID();
 
     public void clearSystem();
     /**

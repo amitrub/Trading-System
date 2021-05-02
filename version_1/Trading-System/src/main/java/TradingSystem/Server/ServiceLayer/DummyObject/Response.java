@@ -71,18 +71,27 @@ public class Response {
         else
             return "";
     }
+
+    public List<DummyStore> getStores(){
+        List<DummyStore> hashMap= (List<DummyStore>)this.returnObject.get("stores");
+        return hashMap;
+    }
+
     public List<DummyStore> returnStoreList(){
         if(!this.isErr){
-            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("stores");
+            List<HashMap<String, DummyStore>> storeList = (List<HashMap<String, DummyStore>>) this.returnObject.get("stores");
+            System.out.println(Arrays.asList(storeList));
+            System.out.println("hhhhhhhhhhhhhhhhhhhi "+(storeList.get(0)));
             List<DummyStore> output = new ArrayList<>();
-            for (Map<String, Object> map: storeList){
-                output.add(new DummyStore(map));
+            for (HashMap<String, DummyStore> map: storeList){
+                output.add(map.get("Store"));
             }
             return output;
         }
         else
             return new ArrayList<>();
     }
+
     public List<DummyProduct> returnProductList(){
         if(!this.isErr){
             List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("products");

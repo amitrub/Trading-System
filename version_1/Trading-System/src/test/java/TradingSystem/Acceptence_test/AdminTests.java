@@ -1,6 +1,7 @@
 package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.Client;
+import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -14,17 +15,16 @@ import static org.junit.Assert.assertEquals;
 
 public class AdminTests {
 
-    Client client;
+    Client_Interface client;
     Integer storeID;
     Integer userID;
 
 
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         client = new Client();
         client.clearSystem();
         client.connectSystem();
-
         client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Store");
@@ -71,7 +71,7 @@ public class AdminTests {
     //region requirement 6.4: Purchase history
     @Test
     void HappyStoreHistory() {
-        client.Login("amit", "qweasd");
+        this.client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.adminStoreHistory(storeID);
         assertEquals(history.size(), 1);
     }
