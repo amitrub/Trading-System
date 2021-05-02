@@ -204,8 +204,8 @@ public class GuestService {
      * @param obj:{
      *  "connID": String
      *  "name": String
-     *  "Product Name": boolean
-     *  "Product Category": boolean
+     *  "ProductName": boolean
+     *  "ProductCategory": boolean
      *  "minPrice": int
      *  "maxPrice": int
      *  "pRank": int
@@ -229,6 +229,7 @@ public class GuestService {
     //TODO: not check yet
     @MessageMapping("search")
     public Response Search(@Payload Map<String, Object> obj){
+        System.out.println("Searchhhh");
         String connID = (String) obj.get("connID");
         String name = (String) obj.get("name");
         boolean productNameMode = (boolean) obj.get("ProductName");
@@ -238,6 +239,10 @@ public class GuestService {
         int pRank = (int) obj.get("pRank");
         int sRank = (int) obj.get("sRank");
         Response res;
+        System.out.println("minPrice" + minPrice);
+        System.out.println("maxPrice" + maxPrice);
+        System.out.println("pRank" + pRank);
+        System.out.println("sRank" + sRank);
         if(productNameMode & !productCategoryMode)
             res = tradingSystem.SearchProduct(name, null, minPrice, maxPrice);
         else if(!productNameMode & productCategoryMode)
@@ -245,6 +250,7 @@ public class GuestService {
         else
             res = new Response(true, "Input Error");
         res.AddTag("Search");
+        System.out.println("Search!!!\n " + res);
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }

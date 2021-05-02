@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import createApiClient from "../../ApiClient";
 import "../../Design/grid.css";
 import "../../Design/style.css";
@@ -7,8 +7,13 @@ import Product from "./Product";
 const api = createApiClient();
 
 function Store(props) {
+  const [showStore, setShowStore] = useState(false);
+  const store = props.currStore;
+  let prodKey = 1;
+
   async function submitLoadProducts() {
     console.log("submit Load Products");
+    setShowStore(true);
     await api.getAllProductsOfStore(
       props.clientConnection,
       props.connID,
@@ -16,7 +21,14 @@ function Store(props) {
     );
   }
 
-  const store = props.currStore;
+  async function sumbitHideProducts() {
+    console.log("submit hide Products");
+    setShowStore(false);
+  }
+
+  function onAddToCart(product, quantity) {
+    props.onAddToCart(product, quantity);
+  }
 
   return (
     <section className="section-plans js--section-plans" id="store">
@@ -28,23 +40,31 @@ function Store(props) {
       <button
         className="buttonus"
         value="load our stores..."
-        onClick={submitLoadProducts}
+        onClick={showStore ? sumbitHideProducts : submitLoadProducts}
       >
-        Show me products
+        {showStore ? "Hide products" : "Show me products"}
       </button>
 
       <div className="row">
-        {props.products.map((currProduct) => (
-          <div className="col span-1-of-4">
-            <li key={currProduct.productID} className="curr product">
-              <Product
-                currProduct={currProduct}
-                clientConnection={props.clientConnection}
-                connID={props.connID}
-              ></Product>
-            </li>
-          </div>
-        ))}
+        {showStore
+          ? props.products.map((currProduct) => (
+              <div className="col span-1-of-4">
+                <li
+                  key={currProduct.productID
+                    .toString()
+                    .concat((prodKey++).toString())}
+                  className="curr product"
+                >
+                  <Product
+                    currProduct={currProduct}
+                    clientConnection={props.clientConnection}
+                    connID={props.connID}
+                    onAddToCart={onAddToCart}
+                  ></Product>
+                </li>
+              </div>
+            ))
+          : ""}
       </div>
     </section>
   );
