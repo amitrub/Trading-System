@@ -4,6 +4,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -24,6 +25,8 @@ public class GuestService {
   SimpMessagingTemplate template;
 
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    private static final LoggerController loggerController=LoggerController.getInstance();
+
     // 2.1 test
     @PostMapping("/send")
     public ResponseEntity<Void> sendMessage(@RequestBody Map<String, Object> obj) {
@@ -61,10 +64,11 @@ public class GuestService {
      */
     @GetMapping("/home")
     public Response ConnectSystem(){
-        System.out.println("HELLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLo");
+        System.out.println("--------------HELLO--------------");
         Response res = this.tradingSystem.ConnectSystem();
         tradingSystem.printUsers();
         res.AddTag("ConnectSystem");
+        WriteToLogger(res);
         return res;
     }
 
@@ -76,12 +80,12 @@ public class GuestService {
      *  "isErr: boolean
      *  "message": String
      */
-    //return connID
     @GetMapping("exit")
     public Response Exit(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.Exit(connID);
         tradingSystem.printUsers();
         res.AddTag("Exit");
+        WriteToLogger(res);
         return res;
     }
 
@@ -109,6 +113,7 @@ public class GuestService {
         tradingSystem.printUsers();
         res.AddTag("Register");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -135,6 +140,7 @@ public class GuestService {
         Response res = this.tradingSystem.Login(connID, userName, password);
         res.AddTag("Login");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         tradingSystem.printUsers();
         return res;
     }
@@ -163,6 +169,7 @@ public class GuestService {
         System.out.println(res);
         res.AddTag("ShowAllStores");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -194,9 +201,9 @@ public class GuestService {
         String connID = (String) obj.get("connID");
         res.AddTag("ShowStoreProducts");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
-
 
     /**
      * @requirement 2.6
@@ -226,7 +233,6 @@ public class GuestService {
      *  }]
      * }
      */
-    //TODO: not check yet
     @MessageMapping("search")
     public Response Search(@Payload Map<String, Object> obj){
         System.out.println("Searchhhh");
@@ -252,9 +258,9 @@ public class GuestService {
         res.AddTag("Search");
         System.out.println("Search!!!\n " + res);
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
-
 
     /**
      * @requirement 2.7
@@ -282,6 +288,7 @@ public class GuestService {
         tradingSystem.printUsers();
         res.AddTag("AddProductToCart");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -313,6 +320,7 @@ public class GuestService {
         res.AddConnID(connID);
         res.AddTag("ShowShoppingCart");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -339,6 +347,7 @@ public class GuestService {
        res.AddConnID(connID);
        res.AddTag("RemoveProductFromCart");
        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
        return res;
     }
 
@@ -367,6 +376,7 @@ public class GuestService {
         res.AddConnID(connID);
         res.AddTag("EditProductQuantityFromCart");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -396,8 +406,16 @@ public class GuestService {
         Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
         res.AddTag("guestPurchase");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
-
+    private void WriteToLogger(Response res){
+        if(res.getIsErr()) {
+            loggerController.WriteErrorMsg("Guest Error: " + res.getMessage());
+        }
+        else{
+            loggerController.WriteLogMsg("Guest: " + res.getMessage());
+        }
+    }
 }

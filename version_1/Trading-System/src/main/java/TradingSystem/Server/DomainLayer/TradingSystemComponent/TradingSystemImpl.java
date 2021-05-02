@@ -7,7 +7,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
-import TradingSystem.Server.ServiceLayer.LoggerController;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -35,7 +34,6 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
 
     //    Singleton
     private static TradingSystemImpl tradingSystem = null;
-    private static final LoggerController loggerController=LoggerController.getInstance();
 
     private TradingSystemImpl() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
@@ -160,12 +158,11 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
      *  "connID": String
      * }
      */
-    //User functions
     public Response ConnectSystem() {
 
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
-        Response res = new Response("Connect system was successful");
+        Response res = new Response(false, "Connect system was successful");
         res.AddConnID(connID);
         res.AddUserGuest();
         return res;
@@ -209,17 +206,18 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
      */
     public Response Exit(String connID) {
         if(!connectedSubscribers.containsKey(connID) && !guests.containsKey(connID))
-            return new Response(true, "User not connect to system");
+            return new Response(true, "Exit: The user is not connected to the system");
         else if (connectedSubscribers.containsKey(connID)) {
             connectedSubscribers.remove(connID);
-            return new Response("Exit System was successful");
+            return new Response(false, "Exit: Exit system was successful");
         } else  {
             guests.remove(connID);
-            return new Response("Exit System was successful");
+            return new Response(false, "Exit: Exit system was successful");
         }
     }
 
     /**
+     * @requirement 2.3
      * @param connID
      * @param userName
      * @param password
@@ -232,11 +230,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
      */
     public Response Register(String connID, String userName, String password) {
         if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
-            return new Response(true, "Error in connID");
+            return new Response(true, "Register: Error in connID");
         }
         else{
-            if (validation.IsUserNameExist(userName)) {
-                loggerController.WriteErrorMsg("User "+userName+" try to register to the system and failed");
+            if (validation.IsUserNameExist(userName)) { 
                 return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
             }
             if(!validation.VerifyPassword(password)){
@@ -244,9 +241,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
-            loggerController.WriteErrorMsg("User "+userName+" register to the system successfully");
-
-            Response res = new Response("Registration was successful");
+            Response res = new Response("Register: Registration of " + userName + " was successful");
             res.AddConnID(connID);
             res.AddUserID(newUser.getId());
             res.AddUserGuest();
@@ -268,8 +263,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         return uniqueID;
     }
 
-
     /**
+     * @requirement 2.4
      * @param guestConnID
      * @param userName
      * @param password
@@ -296,75 +291,15 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             System.out.println(messages.get(i));
         }
         myGuest.setMessages(new ArrayList<>());
-        Response res = new Response(false, "Login was successful");
+        Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         res.AddUserSubscriber(myUser.isManaged(), myUser.isOwner(), myUser.isFounder(),systemAdmins.containsKey(myUser.getId()));
         return res;
     }
 
-
     /**
-     * @param connID
-     * @return Response {
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID: String
-     *  "userID": int
-     * }
-     */
-    public Response Logout(String connID) {
-        if (connectedSubscribers.containsKey(connID)) {
-            User myUser = subscribers.get(connectedSubscribers.get(connID));
-            connectedSubscribers.remove(connID);
-            User newGuest = new User();
-            newGuest.setShoppingCart(new ShoppingCart( myUser.getShoppingCart()));
-            String guestConnID = connectGuestToSystemConnID(newGuest);
-            Response res = new Response("Logout was successful");
-            res.AddConnID(guestConnID);
-            res.AddUserGuest();
-            return res;
-        } else {
-            return new Response(true, "User not login");
-        }
-    }
-
-    /**
-     * @requirement 3.2
-     *
-     * @param userID: int (Path)
-     * @param connID: String (Header)
-     * @param storeName: String (Body)
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
-    public Response AddStore(int userID, String connID, String storeName){
-        if(!ValidConnectedUser(userID,connID)){
-            return new Response(true, "Error in User details");
-        }
-        else{
-            if (validation.IsStoreNameExist(storeName)){
-                loggerController.WriteErrorMsg("User "+userID+" try to add store to the system and failed");
-                return new Response(true, "Error Store name is taken");
-            }
-            else {
-                Store newStore = new Store(storeName, userID);
-                User user = subscribers.get(userID);
-                user.AddStore(newStore.getId());
-                stores.put(newStore.getId(),newStore);
-                loggerController.WriteErrorMsg("User "+userID+" add store to the system "+ storeName+" successfully");
-                Response res =new Response( "Add Store was successful");
-                res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-                return res;
-            }
-        }
-    }
-
-    /**
-     * @requirement 2.5
+     * @requirement 2.5.1
      *
      * @return Response {
      *  "isErr: boolean
@@ -382,168 +317,80 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             list.add(new DummyStore(currStore.getValue()));
         }
         if(list.isEmpty()){
-            new Response(true,"There are no stores in the system");
+            new Response(true,"ShowAllStores: There are no stores in the system");
         }
-        Response res = new Response("num of stores in the system is " + list.size());
+        Response res = new Response(false, "ShowAllStores: Num of stores in the system is " + list.size());
         res.AddPair("stores", list);
         return res;
     }
 
-
     /**
-     * @param userID
-     * @param connID
+     * @requirement 2.5.2
      * @param storeID
-     * @param productName
-     * @param category
-     * @param price
-     * @param quantity
      * @return Response{
-     *      *  "isErr: boolean
-     *      *  "message": String
-     *      *  "connID": String
-     *      * }
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
      */
-    public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity){
-        if(ValidConnectedUser(userID, connID)){
-            if(!this.hasPermission(userID,storeID,User.Permission.AddProduct)){
-                return new Response(true, "The User is not allowed to add a product");
-            }
-            else {
-                if(price<0) {
-                    return new Response(true, "The price of the product can't be negative");
-                }
-                else{
-                    if(quantity<0) {
-                        return new Response(true, "The quantity of the product can't be negative");
-
-                    }
-                    else{
-                        Response res = stores.get(storeID).AddProductToStore(productName, price, category, quantity);
-                        printProducts();
-                        loggerController.WriteLogMsg("User " + userID + " add product " + productName + " to store " + storeID + " successfully");
-                        User user = subscribers.get(userID);
-                        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-                        return res;
-                    }
-                }
-            }
-        }
-        else{
-            return new Response(true, "Error in User details");
-        }
-    }
-
-    public boolean hasPermission(int userID, int storeID, User.Permission p) {
-        if(this.subscribers.containsKey(userID)){
-            User u=this.subscribers.get(userID);
-            if(u.getOwnerPermission(storeID)!=null){
-                return u.getOwnerPermission(storeID).hasPermission(p);
-            }
-            if (u.getManagerPermission(storeID)!=null){
-                return u.getManagerPermission(storeID).hasPermission(p);
-            }
-            if(this.systemManagerPermissions.get(userID)!=null){
-                return this.systemManagerPermissions.get(userID).hasPermission(p);
-            }
-        }
-        return false;
-    }
-
-    public boolean hasPermission(int userID, User.Permission p) {
-        if (this.subscribers.containsKey(userID)) {
-            User u = this.subscribers.get(userID);
-            if (this.systemManagerPermissions.get(userID) != null) {
-                return this.systemManagerPermissions.get(userID).hasPermission(p);
-            }
-        }
-        return false;
-    }
-
-
-    /**
-     * @param userID
-     * @param connID
-     * @param storeID
-     * @param productId
-     * @param quantity
-     *  @return Response{
-     *        "isErr: boolean
-     *        "message": String
-     *        "connID": String
-     *       }
-     */
-    public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity){
-        if(ValidConnectedUser(userID, connID)){
-            if(!hasPermission(userID,storeID,User.Permission.AddProduct)){
-                return new Response(true, "The User is not allowed to add products to the inventory");
-            }
-            else {
-                if(quantity<0){
-                    return new Response(true, "The quantity of the product can't be negative");
-                }
-                else {
-                    Response res = stores.get(storeID).addProductToInventory(productId, quantity);
-                    printProducts();
-                    User user = subscribers.get(userID);
-                    res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-                    return res;
-                }
-            }
-        }
-        else{
-            return new Response(true, "Error in User details");
-        }
-    }
-
-    /**
-     * @requirement 4.1
-     *
-     * @param userID : int (Path)
-     * @param storeID: int (Path)
-     * @param productID: int (Path)
-     * @param connID: String (Header)
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
-    public Response RemoveProduct(int userID, int storeID, int productID, String connID) {
-        if(ValidConnectedUser(userID, connID)){
-            if(!hasPermission(userID,storeID,User.Permission.DeleteProduct)){
-                return new Response(true, "The User is not allowed to remove products from the inventory");
-            }
-            else {
-                Response res = stores.get(storeID).deleteProduct(productID);
-                printProducts();
-                User user = subscribers.get(userID);
-                res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-                return res;
-            }
-        }
-        else{
-            return new Response(true, "Error in User details");
-        }
-    }
     public Response ShowStoreProducts(int storeID) {
         if(stores.containsKey(storeID)){
             List<DummyProduct> list = stores.get(storeID).ShowStoreProducts();
-            Response res = new Response("num of products in the store is " + list.size());
+            Response res = new Response(false, "ShowStoreProducts: Num of products in the store is " + list.size());
             res.AddPair("products", list);
             return res;
         }
         else
-            return new Response(true, "store not found");
+            return new Response(true, "ShowStoreProducts: The store with id " + storeID + " doesn't exist in the system");
     }
 
-    //Shopping Cart functions
+    /**
+     * @requirement 2.6
+     *
+     * @param name
+     * @param category
+     * @param minprice
+     * @param maxprice
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "products": List [{
+     *      "storeID": int
+     *      "storeName": String
+     *      "productID": int
+     *      "productName": String
+     *      "price": double
+     *      "category": String
+     *      "quantity": int
+     *  
+     */
+    public Response SearchProduct(String name, String category, int minprice, int maxprice){
+        List<DummyProduct> dummyProducts = new ArrayList<>();
+        for(Store store: stores.values()){
+            // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
+            dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
+        }
+        Response res = new Response(false, "Search: Num of products from search is " + dummyProducts.size());
+        res.AddPair("products", dummyProducts);
+        return res;
+    }
+
+    /**
+     * @requirement 2.7
+     * @param connID
+     * @param StoreId
+     * @param productId
+     * @param quantity
+     * @return
+     */
     public Response AddProductToCart(String connID, int StoreId, int productId, int quantity){
         if(guests.containsKey(connID)){
             User myGuest= guests.get(connID);
             Response res = myGuest.AddProductToCart(StoreId,productId,quantity);
             res.AddUserGuest();
             return res;
+
         }
         else if(connectedSubscribers.containsKey(connID)){
             int userID= connectedSubscribers.get(connID);
@@ -553,13 +400,23 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             return res;
         }
         else {
-            return new Response(true, "User not connect to system");
+            return new Response(true, "AddProductToCart: The user is not connected to the system");
         }
     }
+
+    /**
+     * @requirement 2.8.1
+     * @param connID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *     }
+     */
     public Response ShowShoppingCart(String connID){
         if(guests.containsKey(connID)) {
             List<DummyProduct> list = guests.get(connID).ShowShoppingCart();
-            Response res = new Response("num of products in my Shopping Cart is " + list.size());
+            Response res = new Response(false, "ShowShoppingCart: Num of products in my Shopping Cart is " + list.size());
             res.AddPair("products", list);
             res.AddUserGuest();
             return res;
@@ -568,19 +425,92 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             int userID = connectedSubscribers.get(connID);
             User user = subscribers.get(userID);
             List<DummyProduct> list = user.ShowShoppingCart();
-            Response res = new Response("num of products in my Shopping Cart is " + list.size());
+            Response res = new Response(false, "ShowShoppingCart: Num of products in my Shopping Cart is " + list.size());
             res.AddPair("products", list);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
         else {
-            return new Response(true, "user not Exist");
+            return new Response(true, "ShowShoppingCart: The user doesn't Exist");
         }
     }
 
+    /**
+     * @requirement 2.8.2
+     * @param connID
+     * @param storeID
+     * @param productID
+     * @param quantity
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response editProductQuantityFromCart(String connID, int storeID, int productID, int quantity) {
+        if(guests.containsKey(connID)){
+            User myGuest= guests.get(connID);
+            Response res = myGuest.editProductQuantityFromCart(storeID, productID, quantity);
+            res.AddUserGuest();
+            return res;
+        }
+        else if(connectedSubscribers.containsKey(connID)){
+            int userID= connectedSubscribers.get(connID);
+            Response res = subscribers.get(userID).editProductQuantityFromCart(storeID, productID, quantity);
+            User user=subscribers.get(userID);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+            return res;
+        }
+        else {
+            return new Response(true, "EditCart: : The user is not connected");
+        }
+    }
+
+    /**
+     * @requirement 2.8.3
+     * @param connID
+     * @param storeID
+     * @param productID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response RemoveProductFromCart(String connID, int storeID, int productID) {
+        if(guests.containsKey(connID)) {
+            Response res =guests.get(connID).RemoveProductFromCart(storeID,productID);
+            res.AddUserGuest();
+            return res;
+        }
+        else if(connectedSubscribers.containsKey(connID)) {
+            int userID = connectedSubscribers.get(connID);
+            User user=subscribers.get(userID);
+            Response res = user.RemoveProductFromCart(storeID,productID);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+            return res;
+        }
+        else {
+            return new Response(true, "RemoveFromCart: The user is not Exist");
+        }
+    }
+
+    /**
+     * @requirement 2.9.1
+     * @param connID
+     * @param name
+     * @param credit_number
+     * @param phone_number
+     * @param address
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
     public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address){
         if(!guests.containsKey(connID)){
-            return new Response(true, "User not connect to system");
+            return new Response(true, "guestPurchase: The user is not connected to the system");
         }
         else {
             User myGuest= guests.get(connID);
@@ -605,9 +535,23 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             return res;
         }
     }
+
+    /**
+     * @requirement 2.9.2
+     * @param userID
+     * @param connID
+     * @param credit_number
+     * @param phone_number
+     * @param address
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
     public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
         if(!ValidConnectedUser(userID, connID)){
-            return new Response(true, "User not connect to system");
+            return new Response(true, "subscriberPurchase: The user is not connected to the system");
         }
         else {
             User user = subscribers.get(userID);
@@ -633,299 +577,110 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         }
     }
 
-    //History Cart functions
-    public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
-        this.stores.get(sh.getStoreID()).addHistory(sh);
-        if (!isGuest)
-            this.subscribers.get(sh.getUserID()).addHistory(sh);
-    }
 
     /**
-     * @requirement 2.6
-     *
-     * @param name
-     * @param category
-     * @param minprice
-     * @param maxprice
+     * @requirement 3.1
+     * @param connID
      * @return Response {
      *  "isErr: boolean
      *  "message": String
      *  "connID: String
-     *  "products": List [{
-     *      "storeID": int
-     *      "storeName": String
-     *      "productID": int
-     *      "productName": String
-     *      "price": double
-     *      "category": String
-     *      "quantity": int
-     *  }]
-     *
+     *  "userID": int
+     * }
      */
-    //TODO: to check
-    public Response SearchProduct(String name, String category, int minprice, int maxprice){
-        List<DummyProduct> dummyProducts = new ArrayList<>();
-        for(Store store: stores.values()){
-            // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
-            dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
+    public Response Logout(String connID) {
+        if (connectedSubscribers.containsKey(connID)) {
+            User myUser = subscribers.get(connectedSubscribers.get(connID));
+            connectedSubscribers.remove(connID);
+            User newGuest = new User();
+            newGuest.setShoppingCart(new ShoppingCart( myUser.getShoppingCart()));
+            String guestConnID = connectGuestToSystemConnID(newGuest);
+            Response res = new Response(false, "Logout: Logout of " + myUser.getUserName() + " was successful");
+            res.AddConnID(guestConnID);
+            res.AddUserGuest();
+            return res;
         }
-        Response res = new Response("num of products from search is " + dummyProducts.size());
-        res.AddPair("products", dummyProducts);
-        return res;
-    }
-
-    //TODO: to move?
-    public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
-        List<DummyProduct> dummyProducts = new ArrayList<>();
-        for(Store store: stores.values()){
-            if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
-                dummyProducts.addAll(store.SearchByName(name, minprice, maxprice,prank));
-            }
+        else {
+            return new Response(true, "Logout: User is not login");
         }
-        return dummyProducts;
-    }
-    //TODO: to move?
-    public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
-        List<DummyProduct> dummyProducts = new ArrayList<>();
-        for(Store store: stores.values()){
-            if(!store.SearchByCategory(category, minprice, maxprice,prank).isEmpty()){
-                dummyProducts.addAll(store.SearchByCategory(category, minprice, maxprice,prank));
-            }
-        }
-        return dummyProducts;
     }
 
     /**
+     * @requirement 3.2
      *
-     * @requirement 4.3
-     *
-     * @param userID
-     * @param connID
-     * @param storeID
-     * @param newOwner
-     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @param storeName: String (Body)
      * @return Response{
      *  "isErr: boolean
      *  "message": String
+     *  "connID": String
      * }
      */
-    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner){
-        if (!ValidConnectedUser(userID, connID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add owner to store " + storeID + " and failed. The err message: Error in User details");
-            return new Response(true, "Error in User details");
+    public Response AddStore(int userID, String connID, String storeName){
+        if(!ValidConnectedUser(userID,connID)){
+            return new Response(true, "AddStore: The user is not connected");
         }
-        if (this.subscribers.get(newOwner) == null) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add " + newOwner + " to be the owner of store " + storeID + " and failed. " + newOwner + " is not subscriber");
-            return new Response(true, "The user " + newOwner + " is not subscriber, so he can not be owner for store");
-        }
-
-        User NO = this.subscribers.get(newOwner);
-//        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
-        boolean succeededToLock = false;
-        while (!succeededToLock) {
-            synchronized (this) {
-//                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
-                succeededToLock = NO.tryToLock();
+        else{
+            if (validation.IsStoreNameExist(storeName)){
+                return new Response(true, "AddStore: The store name is taken");
+            }
+            else {
+                Store newStore = new Store(storeName, userID);
+                User user = subscribers.get(userID);
+                user.AddStore(newStore.getId());
+                stores.put(newStore.getId(),newStore);
+                Response res = new Response( "AddStore: Add store " + storeName + " was successful");
+                res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+                return res; 
             }
         }
-
-        Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
-        if (res1.getIsErr()) {
-            NO.unlockUser();
-            return res1;
-        }
-        Response res2 =NO.AbleToAddOwner(userID, storeID);
-        if (res2.getIsErr()) {
-            NO.unlockUser();
-            return res2;
-        }
-
-        OwnerPermission OP = new OwnerPermission(newOwner, storeID);
-        OP.setAppointmentId(userID);
-        NO.AddStoreInOwner(storeID, OP);
-        stores.get(storeID).addNewOwner(userID, newOwner);
-        stores.get(storeID).addOwnerPermission(newOwner,OP);
-        //this.subscribers.get(newOwner).unlockUser();
-        loggerController.WriteLogMsg("User " + userID + " add owner " + newOwner + " to store " + storeID + " successfully");
-        NO.unlockUser();
-        Response res = new Response("The owner Added successfully");
-        User user = subscribers.get(userID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res;
     }
-
-    public Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission){
-        if (!this.subscribers.containsKey(userID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString()+" "+newRole+"  of store "+storeID + " and failed. "+ userID+" is not not subscriber");
-            return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
-        }
-        if (!this.subscribers.containsKey(newRole)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. "+ newRole+" is not subscriber");
-            return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
-        }
-        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. "+ userID+" is not the owner of the store");
-            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
-        }
-        if(!this.hasPermission(userID,storeID,permission)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to "+permission.toString() +" the user "+newRole +" to store "+storeID + " and failed. " + userID + " is not allowed to do that");
-            return new Response(true, "User " + userID + " is not allowed to "+permission.toString());
-        }
-        Response res = new Response(false,"Sys OK");
-        User user = subscribers.get(userID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res;
-    }
-
 
     /**
-     /**
-     * @requirement 4.5
-     *
-     * @param userID
+     * @requirement 3.3
+     * @param userId
      * @param connID
-     * @param storeID
-     * @param newManager
-     *
+     * @param storeId
+     * @param productId
+     * @param comment
      * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     * }
-     *
+     *      *  "isErr: boolean
+     *      *  "message": String
+     *      *  "connID": String
+     *      * }
      */
-    public Response AddNewManager(int userID, String connID, int storeID, int newManager){
-        if (!ValidConnectedUser(userID, connID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to add manager to store " + storeID + " and failed. The err message: Error in User details");
-            return new Response(true, "Error in User details");
+    public Response WriteComment(int userId, String connID, int storeId, int productId, String comment) {
+        if(!stores.containsKey(storeId)){
+            return new Response(true, "WriteComment: Store " + storeId + " doesn't exist in the system");
         }
-        if (this.subscribers.get(newManager) == null) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the manager of store "+storeID + " and failed. "+ newManager+" is not subscriber");
-            return new Response(true, "The user "+newManager+" is not subscriber, so he can not be manager for store");
-        }
-
-        User NM = this.subscribers.get(newManager);
-        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
-        boolean succeededToLock = false;
-        while (!succeededToLock) {
-            synchronized (this) {
-                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
-                succeededToLock = NM.tryToLock();
+        else if(stores.containsKey(storeId)){
+            Store store=stores.get(storeId);
+            if(!store.isProductExist(storeId)){
+                return new Response(true, "WriteComment: The product " + productId + " doesn't exist in the store anymore");
             }
         }
-
-        Response res1 = this.systemRoleChecks(userID, storeID, newManager, User.Permission.AppointmentManager);
-        if (res1.getIsErr()) {
-            NM.unlockUser();
-            return res1;
+        else if(!ValidConnectedUser(userId, connID)) {
+            return new Response(true, "WriteComment: The user " + userId + " is not connected");
         }
-
-        Response res2 = NM.AbleToAddManager(userID, storeID, newManager);
-        if (res2.getIsErr()) {
-            NM.unlockUser();
-            return res2;
+        User user=subscribers.get(userId);
+        if(!user.IsProductExist(productId)){
+            return new Response(true, "WriteComment: User didn't buy this product");
         }
-
-        ManagerPermission MP = new ManagerPermission(newManager, storeID);
-        MP.setAppointmentId(userID);
-        NM.AddStoreInManager(storeID, MP);
-        stores.get(storeID).addNewManager(userID, newManager);
-        stores.get(storeID).addManagerPermission(MP);
-        NM.unlockUser();
-        loggerController.WriteLogMsg("User " + userID + " add manager " + newManager + " to store " + storeID + " successfully");
-        Response res = new Response( "The manager Added successfully");
-        User user = subscribers.get(userID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res;
-    }
-
-
-    /**
-     * @requirement 4.7
-     *
-     * @param userID
-     * @param connID
-     * @param storeID
-     * @param ManagerToRemove
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     * }
-     */
-    public Response RemoveManager(int userID, String connID, int storeID, int ManagerToRemove)  {
-        if (!ValidConnectedUser(userID, connID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to remove manager from store " + storeID + " and failed. The err message: Error in User details");
-            return new Response(true, "Error in User details");
+        if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
+            return new Response(true, "WriteComment: The user already wrote comment for this product");
         }
-        if (this.subscribers.get(ManagerToRemove) == null) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Remove " + ManagerToRemove + " from management the store " + storeID + " and failed. " + ManagerToRemove + " is not subscriber");
-            return new Response(true, "The user " + ManagerToRemove + " is not subscriber, so it impossible to remove him from management the store");
-        }
-
-        User MTR = this.subscribers.get(ManagerToRemove);
-//        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
-        boolean succeededToLock = false;
-        while (!succeededToLock) {
-            synchronized (this) {
-//                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
-                succeededToLock = MTR.tryToLock();
+        this.observers = new ArrayList<>();
+        for (User u:subscribers.values()) {
+            for (Integer ownedStore:u.getMyOwnerStore()) {
+                if(ownedStore == storeID)
+                    this.addObserver(u);
             }
-        }
-
-        Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, User.Permission.RemoveManager);
-        if (res1.getIsErr()) {
-            MTR.unlockUser();
-            return res1;
-        }
-        Response res2 =MTR.AbleToRemoveManager(userID, storeID);
-        if (res2.getIsErr()) {
-            MTR.unlockUser();
-            return res2;
-        }
-        MTR.removeManagedStore(storeID);
-        stores.get(storeID).removeManager(ManagerToRemove);
-        MTR.unlockUser();
-        loggerController.WriteLogMsg("User " + userID + " remove manager " + ManagerToRemove + " from store " + storeID + " successfully");
-        Response res = new Response("The manager removed successfully");
-        User user = subscribers.get(userID);
+         }
+        this.notifyObservers("There is a new comment on one of your store's products");
+        Response res = new Response(false, "WriteComment: The comment added successfully to product " + productId);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res;
-    }
-
-
-    public boolean productIsLock(int productID, int storeID) {
-        return this.stores.get(storeID).productIsLock(productID);
-    }
-    public void lockProduct(int storeID, int productID) {
-        this.stores.get(storeID).lockProduct(productID);
-    }
-    public Lock getProductLock(int storeID, int productID) {
-        return this.stores.get(storeID).getProductLock(productID);
-    }
-
-    public String getStoreName(int storeID) {
-        return this.stores.get(storeID).getName();
-    }
-
-    public String getProductName(int storeID, int productID) {
-        return this.stores.get(storeID).getProductName(productID);
-    }
-
-    public void unLockProducts(Collection<Integer> values, int storeID) {
-        this.stores.get(storeID).unLockProducts(values);
-    }
-
-    public Product getProduct(int storeID, int productID) {
-        return this.stores.get(storeID).getProduct(productID);
-    }
-
-
-
-    public boolean ValidConnectedUser(int userID, String connID){
-        return connectedSubscribers.containsKey(connID) && connectedSubscribers.get(connID).equals(userID);
-    }
-
-    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
-        return this.stores.get(storeID).reduceProducts(products);
+        return res; 
     }
 
     /**
@@ -956,74 +711,135 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         if (ValidConnectedUser(userID,connID)){
             List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
             if(list.isEmpty()){
-                Response res = new Response(true,"There are no older shopping in the history");
+                Response res = new Response(true,"ShowSubscriberHistory: There are no older shopping in the history of user with id " + userID);
                 res.AddPair("history", list);
                 return res;
             }
-            Response res = new Response("num of history buying of the user is " + list.size());
+            Response res = new Response(false, "ShowSubscriberHistory: Num of history buying of the user is " + list.size());
             res.AddPair("history", list);
             User user = subscribers.get(userID);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
         else{
-            return new Response(true, "Error in User details");
+            return new Response(true, "ShowSubscriberHistory: The user " + userID + " is not connected");
         }
-    }
-
-    //show the history for some store
-    public List<DummyShoppingHistory> ShowStoreHistory(int storeId){
-        return stores.get(storeId).ShowStoreHistory();
     }
 
 
     /**
+     * @requirement 4.1.1
      * @param userID
      * @param connID
      * @param storeID
-     * @param productId
-     * @param comment
+     * @param productName
+     * @param category
+     * @param price
+     * @param quantity
      * @return Response{
      *      *  "isErr: boolean
      *      *  "message": String
      *      *  "connID": String
      *      * }
      */
-    public Response WriteComment(int userID, String connID, int storeID, int productId, String comment) {
-        if(!stores.containsKey(storeID)){
-            return new Response(true, "Store doesn't exist in the system");
-        }
-        else if(stores.containsKey(storeID)){
-            Store store=stores.get(storeID);
-            if(!store.isProductExist(storeID)){
-                return new Response(true, "The product doesn't exist in the store anymore");
+    public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity){
+        if(ValidConnectedUser(userID, connID)){
+            if(!this.hasPermission(userID,storeID,User.Permission.AddProduct)){
+                return new Response(true, "AddProductToStore: The User " + userID + " is not allowed to add a product");
+            }
+            else {
+                if(price<0) {
+                    return new Response(true, "AddProductToStore: The price of the product can't be negative");
+                }
+                else{
+                    if(quantity<0) {
+                        return new Response(true, "AddProductToStore: The quantity of the product can't be negative");
+
+                    }
+                    else{
+                        Response res = stores.get(storeID).AddProductToStore(productName, price, category, quantity);
+                        printProducts();
+                        User user = subscribers.get(userID);
+                        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+                        return res;
+                    }
+                }
             }
         }
-        else if(!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "Error in User details");
+        else{
+            return new Response(true, "AddProductToStore: The user is not connected");
         }
-        User user=subscribers.get(userID);
-        if(!user.IsProductExist(productId)){
-            return new Response(true, "User didn't buy this product");
-        }
-        if(stores.get(storeID).getProduct(productId).isUserComment(userID)){
-            return new Response(true, "The user already wrote comment for this product");
-        }
-        this.observers = new ArrayList<>();
-        for (User u:subscribers.values()) {
-            for (Integer ownedStore:u.getMyOwnerStore()) {
-                if(ownedStore == storeID)
-                    this.addObserver(u);
-            }
-        }
-        this.notifyObservers("There is a new comment on one of your store's products");
-        Response res = new Response(false, "the comment added successfully");
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res;
     }
 
+    /**
+     * @requirement 4.1.2
+     *
+     * @param userID : int (Path)
+     * @param storeID: int (Path)
+     * @param productID: int (Path)
+     * @param connID: String (Header)
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
+    public Response RemoveProduct(int userID, int storeID, int productID, String connID) {
+        if(ValidConnectedUser(userID, connID)){
+            if(!hasPermission(userID,storeID,User.Permission.DeleteProduct)){
+                return new Response(true, "RemoveProduct: The User " + userID + " is not allowed to remove products from the inventory");
+            }
+            else {
+                Response res = stores.get(storeID).deleteProduct(productID);
+                printProducts();
+                User user = subscribers.get(userID);
+                res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+                return res;
+            }
+        }
+        else{
+            return new Response(true, "RemoveProduct: The user " + userID + "is not connected");
+        }
+    }
 
     /**
+     * @requirement 4.1.3
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param productId
+     * @param quantity
+     *  @return Response{
+     *        "isErr: boolean
+     *        "message": String
+     *        "connID": String
+     *       }
+     */
+    public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity){
+        if(ValidConnectedUser(userID, connID)){
+            if(!hasPermission(userID,storeID,User.Permission.AddProduct)){
+                return new Response(true, "ChangeQuantityProduct: The user " + userID + " is not allowed to add products to the inventory");
+            }
+            else {
+                if(quantity<0){
+                    return new Response(true, "ChangeQuantityProduct: The quantity of the product can't be negative");
+                }
+                else {
+                    Response res = stores.get(storeID).addProductToInventory(productId, quantity);
+                    printProducts();
+                    User user = subscribers.get(userID);
+                    res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+                    return res;
+                }
+            }
+        }
+        else{
+            return new Response(true, "ChangeQuantityProduct: The user " + userID + "is not connected");
+        }
+    }
+
+    /**
+     * @requirement 4.1.3
      * @param userID
      * @param connID
      * @param storeID
@@ -1039,24 +855,21 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
      *       }
      */
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
-        System.out.println("TEST------------->");
         if(ValidConnectedUser(userID, connID)){
             if(!hasPermission(userID,storeID, User.Permission.AddProduct)){
-                return new Response(true, "The Edit is not allowed to Edit products");
+                return new Response(true, "EditProduct: The Edit is not allowed");
             }
             else {
                 if(price<0){
-                    return new Response(true, "The product price can't be negative");
+                    return new Response(true, "EditProduct: The product price can't be negative");
                 }
                 else {
                     if(quantity<0){
-                        return new Response(true, "The product quantity can't be negative");
+                        return new Response(true, "EditProduct: The product quantity can't be negative");
                     }
                     else{
-                        //todo change quantity of product
                         Response res = stores.get(storeID).editProductDetails(userID, productID, productName, price, category, quantity);
                         printProducts();
-                        loggerController.WriteLogMsg("User " + userID + " edit product " + productID + " successfully");
                         User user=subscribers.get(userID);
                         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                         return res;
@@ -1065,37 +878,639 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             }
         }
         else{
-            loggerController.WriteErrorMsg("User "+userID+" try to edit product "+ productID+" and failed");
-            return new Response(true, "Error in User details");
+            return new Response(true, "EditProduct: The user " + userID + " is not connected");
         }
     }
 
-    public Response StoreHistoryOwner(int userID, int storeID, String connID) {
+    /**
+     * @requirement 4.3
+     *
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param newOwner
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     * }
+     */
+    public Response AddNewOwner(int userID, String connID, int storeID, int newOwner) {
         if (!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "Error in User details");
+            return new Response(true, "AddNewOwner: The user " + userID + "is not connected");
+        }
+        if (this.subscribers.get(newOwner) == null) {
+            return new Response(true, "AddNewOwner: The user " + newOwner + " is not subscriber, so he can not be owner for store");
         }
 
+        User NO = this.subscribers.get(newOwner);
+//        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+//                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
+                succeededToLock = NO.tryToLock();
+            }
+        }
+
+        Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
+        if (res1.getIsErr()) {
+            NO.unlockUser();
+            return res1;
+        }
+        Response res2 =NO.AbleToAddOwner(userID, storeID);
+        if (res2.getIsErr()) {
+            NO.unlockUser();
+            return res2;
+        }
+
+        OwnerPermission OP = new OwnerPermission(newOwner, storeID);
+        OP.setAppointmentId(userID);
+        NO.AddStoreInOwner(storeID, OP);
+        stores.get(storeID).addNewOwner(userID, newOwner);
+        stores.get(storeID).addOwnerPermission(newOwner,OP);
+        //this.subscribers.get(newOwner).unlockUser();
+        NO.unlockUser();
+        Response res = new Response(false, "AddNewOwner: The owner Added successfully");
+        User user = subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res; 
+    }
+
+    /**
+     * @requirement 4.4
+     * @param ownerID
+     * @param connID
+     * @param removeOwnerID
+     * @param storeID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
+        if (!ValidConnectedUser(ownerID, connID)) {
+            return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " is not connected");
+        }
+        if (!stores.containsKey(storeID)) {
+            return new Response(true, "RemoveOwnerByOwner: The store doesn't exist in the system");
+        }
+        if(!stores.get(storeID).checkOwner(ownerID)){
+            return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " is not the owner of the store");
+        }
+        if (!stores.get(storeID).checkOwner(removeOwnerID)) {
+            return new Response(true, "RemoveOwnerByOwner: The user " + removeOwnerID + " that we want to remove is not the owner of the store");
+        }
+        if (stores.get(storeID).getPermission(removeOwnerID).getAppointmentId()!=ownerID) {
+            return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " has no permissions to do this operation");
+        }
+        else{
+            stores.get(storeID).removeOwner(removeOwnerID);
+            subscribers.get(removeOwnerID).removeOwnedStore(storeID);
+            ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
+            ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
+            for(OwnerPermission permission: ownerPermissionHashMap.values()){
+                if(permission.getAppointmentId()==removeOwnerID) {
+                    stores.get(storeID).removeOwner(permission.getUserId());
+                    subscribers.get(permission.getUserId()).removeOwnedStore(storeID);
+                    User userToRemove = subscribers.get(removeOwnerID);
+                    String storeName = stores.get(storeID).getName();
+                    observers = new ArrayList<>();
+                    observers.add(userToRemove);
+                    this.notifyObservers("You are removed from owning the store: " + storeName);
+                }
+            }
+            for(ManagerPermission permission: managerPermissionHashMap.values()){
+                if(permission.getAppointmentId()==removeOwnerID)
+                    stores.get(storeID).removeManager(permission.getUserId());
+            }
+        }
+        Response res = new Response(false, "RemoveOwnerByOwner: Successfully removed the owner " + removeOwnerID);
+        User user=subscribers.get(ownerID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(ownerID));
+        return res; 
+    }
+
+    /**
+     * @requirement 4.5
+     *
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param newManager
+     *
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     * }
+     *
+     */
+    public Response AddNewManager(int userID, String connID, int storeID, int newManager) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "AddNewManager: The user " + userID + "is not connected");
+        }
+        if (this.subscribers.get(newManager) == null) {
+            return new Response(true, "AddNewManager: The user "+newManager+" is not subscriber, so he can not be manager for store");
+        }
+
+        User NM = this.subscribers.get(newManager);
+        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
+                succeededToLock = NM.tryToLock();
+            }
+        }
+
+        Response res1 = this.systemRoleChecks(userID, storeID, newManager, User.Permission.AppointmentManager);
+        if (res1.getIsErr()) {
+            NM.unlockUser();
+            return res1;
+        }
+
+        Response res2 = NM.AbleToAddManager(userID, storeID, newManager);
+        if (res2.getIsErr()) {
+            NM.unlockUser();
+            return res2;
+        }
+
+        ManagerPermission MP = new ManagerPermission(newManager, storeID);
+        MP.setAppointmentId(userID);
+        NM.AddStoreInManager(storeID, MP);
+        stores.get(storeID).addNewManager(userID, newManager);
+        stores.get(storeID).addManagerPermission(MP);
+        NM.unlockUser();
+        Response res = new Response(false, "AddNewManager: The manager Added successfully");
+        User user = subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res; 
+    }
+
+    /**
+     * @requirement 4.6
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param managerID
+     * @param permissions
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "EditManagerPermissions: The user" + userID + "is not connected");
+        }
+        if (this.subscribers.get(managerID) == null) {
+            return new Response(true, "EditManagerPermissions: The user " + managerID + " is not subscriber, so it impossible to edit his Permissions");
+        }
+
+        //TODO add synchronize
+        User MTE = this.subscribers.get(managerID);
+        Response res1 = this.systemRoleChecks(userID, storeID, managerID, User.Permission.EditManagerPermission);
+        if (res1.getIsErr()) {
+            //MTR.unlockUser();
+            return res1;
+        }
+        Response res2 =MTE.AbleToEditPermissions(userID, storeID);
+        if (res2.getIsErr()) {
+            //MTR.unlockUser();
+            return res2;
+        }
+
+        MTE.editPermissions(userID,storeID,permissions);
+        stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
+        //NM.unlockUser();
+        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
+        User user=subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res; 
+    }
+
+    /**
+     * @requirement 4.7
+     *
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @param ManagerToRemove
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     * }
+     */
+    public Response RemoveManager(int userID, String connID, int storeID, int ManagerToRemove)  {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "RemoveManager: The user " + userID + "is not connected");
+        }
+        if (this.subscribers.get(ManagerToRemove) == null) {
+            return new Response(true, "RemoveManager: The user " + ManagerToRemove + " is not subscriber, so it impossible to remove him from management the store");
+        }
+
+        User MTR = this.subscribers.get(ManagerToRemove);
+//        System.out.println(ANSI_BLUE + "???? userID BEFORE lock: " + userID + ANSI_RESET);
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+//                System.out.println(ANSI_BLUE + "???? userID try to lock: " + userID + ANSI_RESET);
+                succeededToLock = MTR.tryToLock();
+            }
+        }
+
+        Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, User.Permission.RemoveManager);
+        if (res1.getIsErr()) {
+            MTR.unlockUser();
+            return res1;
+        }
+        Response res2 =MTR.AbleToRemoveManager(userID, storeID);
+        if (res2.getIsErr()) {
+            MTR.unlockUser();
+            return res2;
+        }
+        MTR.removeManagedStore(storeID);
+        stores.get(storeID).removeManager(ManagerToRemove);
+        MTR.unlockUser();
+        Response res = new Response(false, "RemoveManager: The manager removed successfully");
+        User user = subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res;
+    }
+
+    /**
+     * @requirement 4.9.1
+     * @param userID
+     * @param connID
+     * @param storeID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response ShowStoreWorkers(int userID, String connID, int storeID){
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "ShowStoreWorkers: The user " + userID + " is not connected");
+        }
+        if(!stores.containsKey(storeID)){
+            return new Response(true, "ShowStoreWorkers: The store " + storeID + " doesn't exist in the system");
+        }
+        if(!stores.get(storeID).checkOwner(userID)){
+            return new Response(true, "ShowStoreWorkers: The user " + userID + " has no permissions to see this information");
+        }
+        else{
+            List<String> list=new LinkedList<>();
+            ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
+            ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
+            if(ownerPermissionHashMap.size()==0 && managerPermissionHashMap.size()==0){
+                return new Response(true,"There are no users with permmissions in the store");
+            }
+            HashMap<Integer,List<Permission>> union= new HashMap<>();
+            for(Integer key:ownerPermissionHashMap.keySet()){
+                Permission permission=ownerPermissionHashMap.get(key);
+                List<Permission> lst = new LinkedList<>();
+                lst.add(ownerPermissionHashMap.get(key));
+                union.put(key,lst);
+            }
+            for(Integer key:managerPermissionHashMap.keySet()){
+                List<Permission> lst = union.getOrDefault(key, new LinkedList<>());
+                lst.add(managerPermissionHashMap.get(key));
+                union.put(key,lst);
+            }
+            List<String> workers=new LinkedList<>();
+            for(Integer key: union.keySet()){
+                List<Permission> value= union.get(key);
+                String permmision="";
+                for(int i=0;i<value.size();i++){
+                    permmision+= value.get(i).toString();
+                }
+                String res= "Id = "+key+", name ="+subscribers.get(key).getUserName()+", permissions= "+ permmision+"\n";
+                workers.add(res);
+            }
+            Response response = new Response(false, "ShowStoreWorkers: Num of workers in the store: " + workers.size());
+            response.AddPair("ConnId",connID);
+            response.AddPair("workers", workers);
+            User user=subscribers.get(userID);
+            response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+            return response;
+        }
+    }
+
+    /**
+     * @requirement 4.9.2
+     * @param userID
+     * @param connID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response GetPossiblePermissionsToManager(int userID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "GetPossiblePermissionsToManager: The user " + userID + " is not connected");
+        }
+        List<String> permissions = new ArrayList<>();
+        OwnerPermission OP = new OwnerPermission(userID, -1);
+        for (User.Permission P : OP.getPermissions()
+        ) {
+            permissions.add(P.toString());
+        }
+        Response res = new Response(false, "GetPossiblePermissionsToManager: Viewing permissions was successful");
+        res.AddPair("permissions", permissions);
+        User user=subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res;
+    }
+
+    /**
+     * @requirement 4.11
+     * @param userID
+     * @param storeID
+     * @param connID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response StoreHistoryOwner(int userID, int storeID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "StoreHistoryOwner: The user " + userID + "is not connected");
+        }
         if (!hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "user has no permission to watch the history");
+            Response res = new Response(true, "StoreHistoryOwner: The user has no permission to watch the history");
             res.AddPair("history", list);
             return res;
         }
         if (!stores.containsKey(storeID)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "Owner - wrong store ID");
+            Response res = new Response(true, "StoreHistoryOwner: wrong store ID");
             res.AddPair("history", list);
             return res;
         }
 
         List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
-        Response res = new Response(false,"num of history buying in the store is " + list.size());
+        Response res = new Response(false,"StoreHistoryOwner: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         User user=subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
     }
 
+    /**
+     * @requirement 6.4.1
+     * @param AdminID
+     * @param storeID
+     * @param connID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response StoreHistoryAdmin(int AdminID, int storeID, String connID){
+        if (!ValidConnectedUser(AdminID, connID)) {
+            return new Response(true, "StoreHistory: User is not connected");
+        }
+        if (!hasPermission(AdminID, storeID, User.Permission.GetHistoryPurchasing)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "StoreHistory: User has no permission to watch the history");
+            res.AddPair("history", list);
+            return res;
+        }
+        if (!stores.containsKey(storeID)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "StoreHistory: The store doesn't exist in the system");
+            res.AddPair("history", list);
+            return res;
+        }
+
+        List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
+        Response res = new Response(false,"StoreHistory: Num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        User user=subscribers.get(adminID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
+        return res;
+    }
+
+    /**
+     * @requirement 6.4.2
+     * @param AdminID
+     * @param userID
+     * @param connID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response UserHistoryAdmin(int AdminID, int userID, String connID){
+        if (!ValidConnectedUser(AdminID, connID)) {
+            return new Response(true, "UserHistory: User is not connected");
+        }
+        if (!hasPermission(AdminID, userID, User.Permission.GetHistoryPurchasing)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "UserHistory: User has no permission to watch the history");
+            res.AddPair("history", list);
+            return res;
+        }
+        if (!subscribers.containsKey(userID)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "UserHistory: The user doesn't exist in the system");
+            res.AddPair("history", list);
+            return res;
+        }
+
+        User user = subscribers.get(userID);
+        List<DummyShoppingHistory> list = user.ShowUserHistory();
+        Response res = new Response(false,"UserHistory: Num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res;
+    }
+
+    /**
+     * @requirement 6.4.3
+     * @param AdminID
+     * @param connID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response AllStoresHistoryAdmin(int AdminID, String connID){
+        if (!ValidConnectedUser(AdminID, connID)) {
+            return new Response(true, "AllStoresHistory: User is not connected");
+        }
+        if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "AllStoresHistory: User has no permission to watch the history");
+            res.AddPair("history", list);
+            return res;
+        }
+        List<DummyShoppingHistory> list = new ArrayList<>();
+        for(Store s: stores.values())
+        {
+            for(DummyShoppingHistory e : s.ShowStoreHistory()) {
+                list.add(e);
+            }
+        }
+        Response res = new Response(false,"AllStoresHistory: Num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
+        return res;
+    }
+
+    /**
+     * @requirement 6.4.4
+     * @param AdminID
+     * @param connID
+     * @return Response{
+     *      "isErr: boolean
+     *      "message": String
+     *      "connID": String
+     *      }
+     */
+    public Response AllUsersHistoryAdmin(int AdminID, String connID) {
+        if (!ValidConnectedUser(AdminID, connID)) {
+            return new Response(true, "AllUsersHistory: User is not connected");
+        }
+        if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
+            List<DummyShoppingHistory> list = new ArrayList<>();
+            Response res = new Response(true, "AllUsersHistory: User has no permission to watch the history");
+            res.AddPair("history", list);
+            return res;
+        }
+        List<DummyShoppingHistory> list = new ArrayList<>();
+        for (User u : subscribers.values()) {
+            for (DummyShoppingHistory e : u.ShowUserHistory()) {
+                list.add(e);
+            }
+        }
+        Response res = new Response(false, "AllUsersHistory: Num of history buying in the store is " + list.size());
+        res.AddPair("history", list);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
+        return res;
+    }
+
+
+    //other functions
+    public boolean hasPermission(int userID, int storeID, User.Permission p) {
+        if(this.subscribers.containsKey(userID)){
+            User u=this.subscribers.get(userID);
+            if(u.getOwnerPermission(storeID)!=null){
+                return u.getOwnerPermission(storeID).hasPermission(p);
+            }
+            if (u.getManagerPermission(storeID)!=null){
+                return u.getManagerPermission(storeID).hasPermission(p);
+            }
+            if(this.systemManagerPermissions.get(userID)!=null){
+                return this.systemManagerPermissions.get(userID).hasPermission(p);
+            }
+        }
+        return false;
+    }
+
+    public boolean hasPermission(int userID, User.Permission p) {
+        if (this.subscribers.containsKey(userID)) {
+            User u = this.subscribers.get(userID);
+            if (this.systemManagerPermissions.get(userID) != null) {
+                return this.systemManagerPermissions.get(userID).hasPermission(p);
+            }
+        }
+        return false;
+    }
+
+    public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
+        this.stores.get(sh.getStoreID()).addHistory(sh);
+        if (!isGuest)
+            this.subscribers.get(sh.getUserID()).addHistory(sh);
+    }
+
+    public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
+        List<DummyProduct> dummyProducts = new ArrayList<>();
+        for(Store store: stores.values()){
+            if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
+                dummyProducts.addAll(store.SearchByName(name, minprice, maxprice,prank));
+            }
+        }
+        return dummyProducts;
+    }
+
+    public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
+        List<DummyProduct> dummyProducts = new ArrayList<>();
+        for(Store store: stores.values()){
+            if(!store.SearchByCategory(category, minprice, maxprice,prank).isEmpty()){
+                dummyProducts.addAll(store.SearchByCategory(category, minprice, maxprice,prank));
+            }
+        }
+        return dummyProducts;
+    }
+
+    public Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission) {
+        if (!this.subscribers.containsKey(userID)) {
+            return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
+        }
+        if (!this.subscribers.containsKey(newRole)) {
+            return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
+        }
+        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
+            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+        }
+        if(!this.hasPermission(userID,storeID,permission)) {
+            return new Response(true, "User " + userID + " is not allowed to "+permission.toString());
+        }
+        return new Response(false,"Sys OK");
+        User user = subscribers.get(userID);
+        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return res;
+    }
+
+    public boolean productIsLock(int productID, int storeID) {
+        return this.stores.get(storeID).productIsLock(productID);
+    }
+
+    public void lockProduct(int storeID, int productID) {
+        this.stores.get(storeID).lockProduct(productID);
+    }
+
+    public Lock getProductLock(int storeID, int productID) {
+        return this.stores.get(storeID).getProductLock(productID);
+    }
+
+    public String getStoreName(int storeID) {
+        return this.stores.get(storeID).getName();
+    }
+
+    public String getProductName(int storeID, int productID) {
+        return this.stores.get(storeID).getProductName(productID);
+    }
+
+    public void unLockProducts(Collection<Integer> values, int storeID) {
+        this.stores.get(storeID).unLockProducts(values);
+    }
+
+    public Product getProduct(int storeID, int productID) {
+        return this.stores.get(storeID).getProduct(productID);
+    }
+
+    public boolean ValidConnectedUser(int userID, String connID){
+        return connectedSubscribers.containsKey(connID) && connectedSubscribers.get(connID).equals(userID);
+    }
+
+    public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
+       return this.stores.get(storeID).reduceProducts(products);
+    }
+
+    public List<DummyShoppingHistory> ShowStoreHistory(int storeId){
+        return stores.get(storeId).ShowStoreHistory();
+    }
 
     public void printCommentForProduct(int storeID, int productID) {
         System.out.println("-----------------------------------------------");
@@ -1116,41 +1531,6 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         this.stores.get(storeID).pay(finalPrice);
     }
 
-    public Response editProductQuantityFromCart(String connID, int storeID, int productID, int quantity) {
-        if(guests.containsKey(connID)){
-            User myGuest= guests.get(connID);
-            Response res = myGuest.editProductQuantityFromCart(storeID, productID, quantity);
-            res.AddUserGuest();
-            return res;
-        }
-        else if(connectedSubscribers.containsKey(connID)){
-            int userID= connectedSubscribers.get(connID);
-            Response res = subscribers.get(userID).editProductQuantityFromCart(storeID, productID, quantity);
-            User user=subscribers.get(userID);
-            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-            return res;
-        }
-        else {
-            return new Response(true, "User not connect to system");
-        }
-    }
-    public Response RemoveProductFromCart(String connID, int storeID, int productID) {
-        if(guests.containsKey(connID)) {
-            Response res =guests.get(connID).RemoveProductFromCart(storeID,productID);
-            return res;
-        }
-        else if(connectedSubscribers.containsKey(connID)) {
-            int userID = connectedSubscribers.get(connID);
-            User user=subscribers.get(userID);
-            Response res = user.RemoveProductFromCart(storeID,productID);
-            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-            return res;
-        }
-        else {
-            return new Response(true, "user not Exist");
-        }
-    }
-
     public Double calculateBugPrice(int userID, int storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
         if(this.subscribers.contains(userID))
             return this.stores.get(storeID).calculateBugPrice(true,productsInTheBug);
@@ -1158,39 +1538,12 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             return this.stores.get(storeID).calculateBugPrice(false,productsInTheBug);
     }
 
-    public Response ShowAllUsers(int adminID, String connID) {
-        if(!ValidConnectedUser(adminID, connID)){
-            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed");
-            return new Response(true, "Error in User details");
-        }
-        else if (!systemAdmins.containsKey(adminID)){
-            loggerController.WriteErrorMsg("User "+adminID+" try see details of all users and failed not admin");
-            return new Response(true, "Error User not admin");
-        }
-        else {
-            List<DummyUser> list = new ArrayList<>();
-            for (Map.Entry<Integer, User> currUser : subscribers.entrySet()) {
-                list.add(new DummyUser(currUser.getValue()));
-            }
-            Response res = new Response("num of users in the system is " + list.size());
-            res.AddPair("users", list);
-            User user=subscribers.get(adminID);
-            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID) );
-            return res;
-        }
-    }
-
-
-    public Response ShowOwnerStores(int userID, String connID)
-    {
-        if(!ValidConnectedUser(userID, connID))
-        {
-            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed");
-            return new Response(true, "User is nor logged in");
+    public Response ShowOwnerStores(int userID, String connID) {
+        if(!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "ShowOwnerStores: The User is not connected");
         }
         else if (!subscribers.containsKey(userID)){
-            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed not admin");
-            return new Response(true, "User is not subscriber");
+            return new Response(true, "ShowOwnerStores: User is not subscriber");
         }
         else{
             User user = subscribers.get(userID);
@@ -1203,22 +1556,18 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                         list.add(new DummyStore(currStore.getValue()));
                 }
             }
-            Response res = new Response("num of owned stores of the user is " + list.size());
+            Response res = new Response(false, "ShowOwnerStores: Num of owned stores of the user is " + list.size());
             res.AddPair("stores", list);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
     }
 
-    public Response ShowManagerStores(int userID, String connID)
-    {
-        if(!ValidConnectedUser(userID, connID))
-        {
-            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed");
-            return new Response(true, "User is nor logged in");
+    public Response ShowManagerStores(int userID, String connID) {
+        if(!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "ShowManagerStores: The User is not connected");
         }
         else if (!subscribers.containsKey(userID)){
-            loggerController.WriteErrorMsg("User "+userID+" try see details of all users and failed not admin");
             return new Response(true, "User is not subscriber");
         }
         else{
@@ -1232,143 +1581,31 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                         list.add(new DummyStore(currStore.getValue()));
                 }
             }
-            Response res = new Response("num of managed stores of the user is " + list.size());
+            Response res = new Response(false, "ShowManagerStores: num of managed stores of the user is " + list.size());
             res.AddPair("stores", list);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
     }
 
-
-    //Admin
-    public Response StoreHistoryAdmin(int adminID, int storeID, String connID){
-        if (!ValidConnectedUser(adminID, connID)) {
-            return new Response(true, "Error in AdminID details");
+    public Response ShowAllUsers(int adminID, String connID) {
+        if(!ValidConnectedUser(adminID, connID)){
+            return new Response(true, "ShowAllUsers: User is not connected");
         }
-        if (!hasPermission(adminID, storeID, User.Permission.GetHistoryPurchasing)) {
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "user has no permission to watch the history");
-            res.AddPair("history", list);
-            return res;
+        else if (!systemAdmins.containsKey(adminID)){
+            return new Response(true, "ShowAllUsers: User is not admin");
         }
-        if (!stores.containsKey(storeID)) {
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "Admin - wrong store ID");
-            res.AddPair("history", list);
-            return res;
-        }
-
-        List<DummyShoppingHistory> list = stores.get(storeID).ShowStoreHistory();
-        Response res = new Response(false,"num of history buying in the store is " + list.size());
-        res.AddPair("history", list);
-        User user=subscribers.get(adminID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
-        return res;
-    }
-
-    public Response UserHistoryAdmin(int AdminID, int userID, String connID){
-        if (!ValidConnectedUser(AdminID, connID)) {
-            return new Response(true, "Error in Admin details");
-        }
-        if (!hasPermission(AdminID, userID, User.Permission.GetHistoryPurchasing)) {
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "user has no permission to watch the history");
-            res.AddPair("history", list);
-            return res;
-        }
-        if (!subscribers.containsKey(userID)) {
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "Admin - wrong user ID");
-            res.AddPair("history", list);
-            return res;
-        }
-
-        User user = subscribers.get(userID);
-        List<DummyShoppingHistory> list = user.ShowUserHistory();
-        Response res = new Response(false,"num of history buying in the store is " + list.size());
-        res.AddPair("history", list);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res;
-    }
-
-    public Response AllStoresHistoryAdmin(int adminID, String connID){
-        if (!ValidConnectedUser(adminID, connID)) {
-            return new Response(true, "Error in Admin details");
-        }
-        if (!hasPermission(adminID, User.Permission.GetHistoryPurchasing)) {
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "user has no permission to watch the history");
-            res.AddPair("history", list);
-            return res;
-        }
-        List<DummyShoppingHistory> list = new ArrayList<>();
-        for(Store s: stores.values())
-        {
-            for(DummyShoppingHistory e : s.ShowStoreHistory()) {
-                list.add(e);
+        else {
+            List<DummyUser> list = new ArrayList<>();
+            for (Map.Entry<Integer, User> currUser : subscribers.entrySet()) {
+                list.add(new DummyUser(currUser.getValue()));
             }
-        }
-        Response res = new Response(false,"num of history buying in the store is " + list.size());
-        res.AddPair("history", list);
-        User user=subscribers.get(adminID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
-        return res;
-    }
-
-    public Response AllUsersHistoryAdmin(int adminID, String connID) {
-        if (!ValidConnectedUser(adminID, connID)) {
-            return new Response(true, "Error in Admin details");
-        }
-        if (!hasPermission(adminID, User.Permission.GetHistoryPurchasing)) {
-            List<DummyShoppingHistory> list = new ArrayList<>();
-            Response res = new Response(true, "user has no permission to watch the history");
-            res.AddPair("history", list);
+            Response res = new Response(false, "ShowAllUsers: Num of users in the system is " + list.size());
+            res.AddPair("users", list);
+            User user=subscribers.get(adminID);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID) );
             return res;
         }
-        List<DummyShoppingHistory> list = new ArrayList<>();
-        for (User u : subscribers.values()) {
-            for (DummyShoppingHistory e : u.ShowUserHistory()) {
-                list.add(e);
-            }
-        }
-        Response res = new Response(false, "num of history buying in the store is " + list.size());
-        res.AddPair("history", list);
-        User user=subscribers.get(adminID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(adminID));
-        return res;
-    }
-
-    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
-        if (!ValidConnectedUser(userID, connID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to edit "+managerID+ " permissions for store " + storeID + " and failed. The err message: Error in User details");
-            return new Response(true, "Error in User details");
-        }
-        if (this.subscribers.get(managerID) == null) {
-            loggerController.WriteErrorMsg("User " + userID + " try to edit " + managerID + " details, for store " + storeID + " and failed. " + managerID + " is not subscriber");
-            return new Response(true, "The user " + managerID + " is not subscriber, so it impossible to edit his Permissions");
-        }
-
-        //TODO add synchronize
-        User MTE = this.subscribers.get(managerID);
-        Response res1 = this.systemRoleChecks(userID, storeID, managerID, User.Permission.EditManagerPermission);
-        if (res1.getIsErr()) {
-            //MTR.unlockUser();
-            return res1;
-        }
-        Response res2 =MTE.AbleToEditPermissions(userID, storeID);
-        if (res2.getIsErr()) {
-            //MTR.unlockUser();
-            return res2;
-        }
-
-        MTE.editPermissions(userID,storeID,permissions);
-        stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
-        //NM.unlockUser();
-        loggerController.WriteLogMsg("User " + userID + " edit permissions to " + managerID + " for store " + storeID + " successfully");
-        Response res = new Response( "The manager permissions edit successfully");
-        User user=subscribers.get(userID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res;
     }
 
     public User.Permission changeToPermission(String per){
@@ -1403,115 +1640,6 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         return null;
     }
 
-    public Response GetPossiblePermissionsToManager(int userID, String connID) {
-        if (!ValidConnectedUser(userID, connID)) {
-            loggerController.WriteErrorMsg("User " + userID + "try to get permissions for store and failed. The err message: Error in User details");
-            return new Response(true, "Error in User details");
-        }
-        List<String> permissions = new ArrayList<>();
-        OwnerPermission OP = new OwnerPermission(userID, -1);
-        for (User.Permission P : OP.getPermissions()
-        ) {
-            permissions.add(P.toString());
-        }
-        Response res = new Response(false, "Viewing permissions was successful");
-        res.AddPair("permissions", permissions);
-        User user=subscribers.get(userID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res;
-    }
-
-    public Response ShowStoreWorkers(int userID, String connID, int storeID){
-        if (!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "Error in User details");
-        }
-        if(!stores.containsKey(storeID)){
-            return new Response(true, "the store doesn't exist");
-        }
-        if(!stores.get(storeID).checkOwner(userID)){
-            return new Response(true, "the user has no permissions to see this information");
-        }
-        else{
-            List<String> list=new LinkedList<>();
-            ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
-            ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
-            if(ownerPermissionHashMap.size()==0 && managerPermissionHashMap.size()==0){
-                return new Response(true,"There are no users with permmissions in the store");
-            }
-            HashMap<Integer,List<Permission>> union= new HashMap<>();
-            for(Integer key:ownerPermissionHashMap.keySet()){
-                Permission permission=ownerPermissionHashMap.get(key);
-                List<Permission> lst = new LinkedList<>();
-                lst.add(ownerPermissionHashMap.get(key));
-                union.put(key,lst);
-            }
-            for(Integer key:managerPermissionHashMap.keySet()){
-                List<Permission> lst = union.getOrDefault(key, new LinkedList<>());
-                lst.add(managerPermissionHashMap.get(key));
-                union.put(key,lst);
-            }
-            List<String> workers=new LinkedList<>();
-            for(Integer key: union.keySet()){
-                List<Permission> value= union.get(key);
-                String permmision="";
-                for(int i=0;i<value.size();i++){
-                    permmision+= value.get(i).toString();
-                }
-                String res= "Id = "+key+", name ="+subscribers.get(key).getUserName()+", permissions= "+ permmision+"\n";
-                workers.add(res);
-            }
-            Response response = new Response(false, "");
-            response.AddPair("ConnId",connID);
-            response.AddPair("workers", workers);
-            User user=subscribers.get(userID);
-            response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-            return response;
-        }
-    }
-
-    public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
-        if (!ValidConnectedUser(ownerID, connID)) {
-            return new Response(true, "Error in User details!");
-        }
-        if (!stores.containsKey(storeID)) {
-            return new Response(true, "the store doesn't exist");
-        }
-        if(!stores.get(storeID).checkOwner(ownerID)){
-            return new Response(true, "the user that is not the owner of the store");
-        }
-        if (!stores.get(storeID).checkOwner(removeOwnerID)) {
-            return new Response(true, "the user that we want to remove is not the owner of the store");
-        }
-        if (stores.get(storeID).getPermission(removeOwnerID).getAppointmentId()!=ownerID) {
-            return new Response(true, "the user has no permissions to see this information");
-        }
-        else{
-            stores.get(storeID).removeOwner(removeOwnerID);
-            subscribers.get(removeOwnerID).removeOwnedStore(storeID);
-            ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
-            ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
-            for(OwnerPermission permission: ownerPermissionHashMap.values()){
-                if(permission.getAppointmentId()==removeOwnerID) {
-                    stores.get(storeID).removeOwner(permission.getUserId());
-                    subscribers.get(permission.getUserId()).removeOwnedStore(storeID);
-                    User userToRemove = subscribers.get(removeOwnerID);
-                    String storeName = stores.get(storeID).getName();
-                    observers = new ArrayList<>();
-                    observers.add(userToRemove);
-                    this.notifyObservers("You are removed from owning the store: " + storeName);
-                }
-            }
-            for(ManagerPermission permission: managerPermissionHashMap.values()){
-                if(permission.getAppointmentId()==removeOwnerID)
-                    stores.get(storeID).removeManager(permission.getUserId());
-            }
-        }
-        Response res = new Response(false, "Successfully removed the owner");
-        User user=subscribers.get(ownerID);
-        res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(ownerID));
-        return res;
-    }
-
     public ConcurrentHashMap<String, Integer> getConnectedSubscribers() {
         return connectedSubscribers;
     }
@@ -1521,7 +1649,6 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     public void addObserver(Observer observer) {
         this.observers.add(observer);
     }
-
 
     public void notifyObservers(Object object) {
         for (Observer o : this.observers) {

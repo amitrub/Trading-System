@@ -91,8 +91,7 @@ public class ShoppingCart {
     public Response addProductToBag(Integer storeID, Integer productID, Integer quantity){
         if(!this.shoppingBags.containsKey(storeID)){
             if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
-                loggerController.WriteErrorMsg("User "+userID+" try to add product " +productID+ " from store "+storeID+" to cart but failed. the product is not in the stock");
-                return new Response(true, "The product or quantity is not in stock");
+                return new Response(true, "AddProductToCart: The product " + productID + " doesn't exist in the store");
             }
             this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
         }
@@ -100,7 +99,7 @@ public class ShoppingCart {
             int oldQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
             if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, quantity + oldQuantity)) {
                 loggerController.WriteErrorMsg("User " + userID + " try to add product " + productID + " from store " + storeID + " to cart but failed. the product is not in the stock");
-                return new Response(true, "The product or quantity is not in stock");
+                return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
             }
         }
 
@@ -136,7 +135,7 @@ public class ShoppingCart {
 
     public Response Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
         if (shoppingBags.size()==0){
-            return new Response(true, "There is on products in shopping cart");
+            return new Response(true, "Purchase: There is on products in the shopping cart");
         }
         List<Lock> lockList = this.getLockList();
         Response productInStock = this.checkInventoryAndLockProduct(lockList);
@@ -146,11 +145,11 @@ public class ShoppingCart {
 //        TODO: add BuyingPolicy and DiscountPolicy
         if (!supplySystem.canSupply(address)) {
             this.releaseLocks(lockList);
-            return new Response(true,"The Supply is not approve");
+            return new Response(true,"Purchase: The Supply is not approve");
         }
         if (!paymentSystem.checkCredit(name, credit_number, phone_number)) {
             this.releaseLocks(lockList);
-            return new Response(true,"The payment is not approve");
+            return new Response(true,"Purchase: The payment is not approve");
         }
         Response res = Buy();
         if(res.getIsErr()) {
@@ -215,7 +214,7 @@ public class ShoppingCart {
     }
 
     private Response Buy(){
-        Response res=new Response("The reduction was made successfully ");
+        Response res;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
@@ -225,6 +224,7 @@ public class ShoppingCart {
             }
             PayToTheSellers();
         }
+        res=new Response(false, "Purchase: The reduction was made successfully ");
         return res;
     }
 
@@ -283,28 +283,23 @@ public class ShoppingCart {
      */
     public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
         if(this.shoppingBags.isEmpty()){
-            loggerController.WriteErrorMsg("user "+userID+" try to edit product quantity but the shoppingCart is empty");
-            return new Response(true,"The shoppingCart empty, cannot be edited");
+            return new Response(true,"EditCart: The shoppingCart empty, cannot be edited");
         }
         else if(this.shoppingBags.get(storeID)==null||
         !this.shoppingBags.get(storeID).getProductsList().contains(productID)){
-            loggerController.WriteErrorMsg("user "+userID+" try to edit product quantity ("+productID+", from store "+storeID+"), but the product isn't in the shoppingCart");
-            return new Response(true,"The product isn't in the shoppingCart, so it cannot be edited");
+            return new Response(true,"EditCart: The product isn't in the shoppingCart, so it cannot be edited");
         }
         else if(!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID,productID,quantity)){
-            loggerController.WriteErrorMsg("user "+userID+" try to change product quantity ("+productID+", from store "+storeID+"), to "+quantity+" but the product isn't in the stock");
-            return new Response(true,"The product isn't in the stock, so it cannot be edited");
+            return new Response(true,"EditCart: The product isn't in the stock, so it cannot be edited");
         }
         else if(!tradingSystemImpl.validation.checkBuyingPolicy(productID,storeID,quantity,this.shoppingBags.get(storeID).getProducts())){
-            loggerController.WriteErrorMsg("user "+userID+" try to change product quantity ("+productID+", from store "+storeID+"), to "+quantity+" but it's against the store policy");
-            return new Response(true,"The quantity of the product is against tha store policy, so it cannot be edited");
+            return new Response(true,"EditCart: The quantity of the product is against tha store policy, so it cannot be edited");
         }
         else{
             this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
             tradingSystemImpl.calculateBugPrice(productID,storeID, this.shoppingBags.get(storeID).getProducts());
         }
-        loggerController.WriteLogMsg("user "+userID+" change product quantity ("+productID+", from store "+storeID+"), to "+quantity+".");
-        return new Response("The quantity of the product update successfully");
+        return new Response(false,"EditCart: The quantity of the product update successfully");
 }
 
       /**
@@ -320,17 +315,16 @@ public class ShoppingCart {
     public Response RemoveProductFromCart(int storeID, int productID) {
         if (this.shoppingBags.get(storeID) == null ||
                 !this.shoppingBags.get(storeID).getProductsList().contains(productID)) {
-            loggerController.WriteErrorMsg("user " + userID + " try to remove product " + productID + " (Store " + storeID + "), but the product is not in the cart.");
-            return new Response(true, "product that does not exist in the cart cannot be removed");
-        } else {
+            return new Response(true, "RemoveFromCart: product that does not exist in the cart cannot be removed");
+        }
+        else {
             ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
             shoppingBag.RemoveProduct(productID);
             ConcurrentHashMap<Integer, Integer> productsInTheBug = shoppingBag.getProducts();
             Double priceForBug = tradingSystemImpl.calculateBugPrice(userID, storeID, productsInTheBug);
             shoppingBags.get(storeID).setFinalPrice(priceForBug);
         }
-        loggerController.WriteLogMsg("user " + userID + " remove product " + productID + " (Store " + storeID + ") successfully");
-        return new Response("product remove successfully");
+        return new Response(false, "RemoveFromCart: product removed successfully");
     }
 }
 

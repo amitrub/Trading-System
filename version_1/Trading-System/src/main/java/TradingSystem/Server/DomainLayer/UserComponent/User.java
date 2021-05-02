@@ -9,7 +9,6 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import TradingSystem.Server.ServiceLayer.LoggerController;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,8 +57,6 @@ public  class User implements Observer {
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
     private final Lock Lock = new ReentrantLock();
-
-    private static final LoggerController loggerController=LoggerController.getInstance();
 
     public User() {
         this.id = -1;
@@ -272,14 +269,12 @@ public  class User implements Observer {
 
     public Response AbleToAddOwner(int userID, int storeID) {
         if (this.checkOwner(storeID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+this.id+" to be the owner of store "+storeID + " and failed. "+ this.id+" is already owner the store");
-            return new Response(true, "User "+this.id+" is owner the store, so he can not appoint to owner again");
+            return new Response(true, "AddOwner: User "+userID+" is owner the store, so he can not appoint to owner again");
         }
         if (this.checkManager(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to Add " +this.id+" to be the owner of store " + storeID + " and failed. "+ this.id+" is already manages the store");
-            return new Response(true, "User "+this.id+" is manages the store, so he can not be owner");
+            return new Response(true, "AddOwner: User "+userID+" is manages the store, so he can not be owner");
         }
-        return new Response(false,"It is possible to add the user as the owner");
+        return new Response(false,"AddOwner: It is possible to add the user as the owner");
 }
 
     public boolean checkOwner(int storeID) {
@@ -292,41 +287,35 @@ public  class User implements Observer {
 
     public Response AbleToRemoveManager(int userID, int storeID) {
         if (!this.myManagedStoresIDs.contains(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to remove " +this.id+" from be the manager of store " + storeID + " and failed. "+ this.id+" is not manages the store");
-            return new Response(true, "The user "+this.id+" is not manages the store, so he can not be removed from Manages the store.");
+            return new Response(true, "RemoveManager: The user "+this.id+" is not manages the store, so he can not be removed from Manages the store.");
         }
         if (this.managerPermission.get(storeID)!=null&&
             this.managerPermission.get(storeID).getAppointmentId()!=userID) {
-            loggerController.WriteErrorMsg("User " + userID + " try to remove " + this.id + " from be the manager of store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
-            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+            return new Response(true, "RemoveManager: The user " + userID + " is not the one who appointed the manager");
         }
-        return new Response("It is possible to add the user as the owner");
+        return new Response(false, "It is possible to add the user as the owner");
     }
 
     public Response AbleToAddManager(int userID, int storeID, int newManager) {
         if (this.checkOwner(storeID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the owner of store "+storeID + " and failed. "+ newManager+" is already owner the store");
-            return new Response(true, "The user "+newManager+" is owner the store, so he can not appoint to Manager");
+            return new Response(true, "AddNewManager: The user "+newManager+" is owner the store, so he can not appoint to Manager");
 
         }
         if (this.checkManager(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to Add " +newManager+" to be the Manager of store " + storeID + " and failed. "+ newManager+" is already manages the store");
-            return new Response(true, "The user "+newManager+" is manages the store, so he can not appoint to Manager again");
+            return new Response(true, "AddNewManager: The user "+newManager+" is manages the store, so he can not appoint to Manager again");
         }
-        return new Response("It is possible to add the user as the owner");
+        return new Response(false, "It is possible to add the user as the owner");
     }
 
     public Response AbleToEditPermissions(int userID, int storeID) {
         if (!this.myManagedStoresIDs.contains(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " +this.id+" for store " + storeID + " and failed. "+ this.id+" is not manages the store");
-            return new Response(true, "The user "+this.id+" is not manages the store, so it impossible to edit his permissions.");
+            return new Response(true, "EditPermissions: The user "+this.id+" is not manages the store, so it impossible to edit his permissions.");
         }
         if (this.managerPermission.get(storeID)!=null&&
                 this.managerPermission.get(storeID).getAppointmentId()!=userID) {
-            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " + this.id + " for store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
-            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+            return new Response(true, "EditPermissions: The user " + userID + " is not the one who appointed the manager");
         }
-        return new Response("It is possible to edit the manager permissions");
+        return new Response(false, "EditPermissions: It is possible to edit the manager permissions");
     }
 
     public void editPermissions(int userID,int storeID, List<User.Permission> permissions) {

@@ -5,6 +5,7 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.DomainLayer.UserComponent.Permission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -24,6 +25,8 @@ import java.util.Map;
     SimpMessagingTemplate template;
 
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    private static final LoggerController loggerController=LoggerController.getInstance();
+
 
     /**
      * @requirement
@@ -144,6 +147,7 @@ import java.util.Map;
         Response res = tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
         res.AddTag("AddProductToStore");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -153,21 +157,21 @@ import java.util.Map;
      * @param userID : int (Path)
      * @param storeID: int (Path)
      * @param productID: int (Path)
-     * @param connID: String (Header)
      * @return Response{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
-    //TODO: not check yet
-    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
-    public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
+    @MessageMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    public Response RemoveProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
         System.out.println(res);
         tradingSystem.printProducts();
         res.AddTag("RemoveProduct");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -187,7 +191,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not check yet
     @MessageMapping("{userID}/store/{storeID}/change_quantity_product/{productID}")
     public Response ChangeQuantityProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
@@ -195,6 +198,7 @@ import java.util.Map;
         Response res = tradingSystem.ChangeQuantityProduct(userID,connID,storeID,productID,quantity);
         res.AddTag("ChangeQuantityProduct");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -217,7 +221,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not check yet
     @MessageMapping("{userID}/store/{storeID}/edit_product/{productID}")
     public Response EditProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
@@ -235,38 +238,12 @@ import java.util.Map;
         Response res = tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price,quantity);
         res.AddTag("EditProduct");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.1
-     *
-     * @param userID : int (Path)
-     * @param storeID: int (Path)
-     * @param productID: int (Path)
-     * @param obj:{
-     *  "connID": String
-     * }
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
-    //TODO: not check yet
-    @MessageMapping("{userID}/store/{storeID}/remove_product/{productID}")
-    public Response RemoveProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
-        System.out.println(res);
-        tradingSystem.printProducts();
-        res.AddTag("RemoveProduct");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
-        return res;
-    }
-
-    /**
-     * @requirement 4.2
+     * @requirement 4.2.1
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -280,7 +257,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
     @MessageMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
@@ -288,11 +264,12 @@ import java.util.Map;
         Response res = new Response(true, "not implemented");
         res.AddTag("AddBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.2
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -306,7 +283,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
     @MessageMapping("{userID}/store/{storeID}/add_discount_policy")
     public Response AddDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
@@ -314,11 +290,12 @@ import java.util.Map;
         Response res = new Response(true, "not implemented");
         res.AddTag("AddDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.3
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -333,7 +310,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
     @MessageMapping("{userID}/store/{storeID}/edit_buying_policy/{buyingPolicyID}")
     public Response EditBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int buyingPolicyID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
@@ -341,11 +317,12 @@ import java.util.Map;
         Response res = new Response(true, "not implemented");
         res.AddTag("EditBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.4
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -360,7 +337,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
     @MessageMapping("{userID}/store/{storeID}/edit_discount_policy/{discountPolicyID}")
     public Response EditDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int discountPolicyID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
@@ -368,11 +344,12 @@ import java.util.Map;
         Response res = new Response(true, "not implemented");
         res.AddTag("EditDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.5
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -387,7 +364,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
     @MessageMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
     public Response RemoveBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int buyingPolicyID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
@@ -395,11 +371,12 @@ import java.util.Map;
         Response res = new Response(true, "not implemented");
         res.AddTag("RemoveBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.6
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -414,7 +391,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
     @MessageMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}")
     public Response RemoveDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int discountPolicyID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
@@ -422,6 +398,7 @@ import java.util.Map;
         Response res = new Response(true, "not implemented");
         res.AddTag("RemoveDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -447,6 +424,7 @@ import java.util.Map;
         res.AddConnID(connID);
         res.AddTag("AddNewOwner");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -465,14 +443,13 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
     @MessageMapping("{userID}/store/{storeID}/remove_owner/{OwnerID}")
     public Response RemoveOwner(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int OwnerID, @Payload Map<String, Object> obj)  {
         String connID = (String) obj.get("connID");
-//        Response res = tradingSystem.RemoveOwner(userID, connID, storeID, newOwnerID);
-        Response res = new Response(true, "not implemented");
+        Response res = tradingSystem.RemoveOwnerByOwner(userID, connID, storeID, OwnerID);
         res.AddTag("RemoveOwner");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -498,6 +475,7 @@ import java.util.Map;
         res.AddConnID(connID);
         res.AddTag("AddNewManager");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -517,7 +495,6 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-
     @MessageMapping("{userID}/store/{storeID}/add_new_manager/{managerID}")
     public Response EditManagerPermissions(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int managerID, @Payload Map<String, Object> obj)  {
         String connID = (String) obj.get("connID");
@@ -555,6 +532,7 @@ import java.util.Map;
         res.AddConnID(connID);
         res.AddTag("EditManagerPermissions");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -571,7 +549,6 @@ import java.util.Map;
      *  permissions:String]
      * }
     */
-    //TODO: not check yet
     @MessageMapping("{userID}/store/get_possible_permissions_to_manager")
     public Response GetPossiblePermissionsToManager(@DestinationVariable int userID, @Payload Map<String, Object> obj)  {
         String connID = (String) obj.get("connID");
@@ -579,6 +556,7 @@ import java.util.Map;
         res.AddConnID(connID);
         res.AddTag("GetPossiblePermissionsToManager");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -604,6 +582,7 @@ import java.util.Map;
         res.AddConnID(connID);
         res.AddTag("RemoveManager");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -633,6 +612,7 @@ import java.util.Map;
         Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
         res.AddTag("ShowStoreWorkers");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -670,6 +650,7 @@ import java.util.Map;
         res.AddConnID(connID);
         res.AddTag("OwnerStoreHistory");
         template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -706,5 +687,14 @@ import java.util.Map;
         res.AddTag("ShowManagerStores");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
+    }
+
+    private void WriteToLogger(Response res){
+        if(res.getIsErr()) {
+            loggerController.WriteErrorMsg("Store Owner Error: " + res.getMessage());
+        }
+        else{
+            loggerController.WriteLogMsg("Store Owner: " + res.getMessage());
+        }
     }
 }
