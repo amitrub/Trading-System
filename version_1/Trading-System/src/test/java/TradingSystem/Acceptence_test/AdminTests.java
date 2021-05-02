@@ -1,6 +1,6 @@
 package TradingSystem.Acceptence_test;
 
-import TradingSystem.Client.Client;
+import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -15,14 +15,14 @@ import static org.junit.Assert.assertEquals;
 
 public class AdminTests {
 
-    Client_Interface client;
+    Client_Interface client= Client_Driver.getClient();
     Integer storeID;
     Integer userID;
 
 
     @BeforeEach
     public void setUp() {
-        client = new Client();
+    //    client = new Client();
         client.clearSystem();
         client.connectSystem();
         client.Register("elinor", "123");
@@ -71,13 +71,15 @@ public class AdminTests {
     //region requirement 6.4: Purchase history
     @Test
     void HappyStoreHistory() {
-        this.client.Login("amit", "qweasd");
+        client.connectSystem();
+        client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.adminStoreHistory(storeID);
         assertEquals(history.size(), 1);
     }
 
     @Test
     void HappyUserHistory() {
+        client.connectSystem();
         client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.adminUserHistory(userID);
         assertEquals(history.size(), 1);
@@ -85,6 +87,7 @@ public class AdminTests {
 
     @Test
     void HappyAllStores() {
+        client.connectSystem();
         client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.AdminAllStores();
         assertEquals(history.size(), 1);
@@ -92,6 +95,7 @@ public class AdminTests {
 
     @Test
     void HappyAllUsers() {
+        client.connectSystem();
         client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.AdminAllUsers();
         assertEquals(history.size(), 1);

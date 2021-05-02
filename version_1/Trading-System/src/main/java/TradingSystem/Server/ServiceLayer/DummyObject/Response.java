@@ -93,28 +93,33 @@ public class Response {
     }
 
     public List<DummyProduct> returnProductList(){
-        if(!this.isErr){
-            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("products");
-            List<DummyProduct> output = new ArrayList<>();
-            for (Map<String, Object> map: storeList){
-                output.add(new DummyProduct(map));
-            }
-            return output;
-        }
-        else
-            return new ArrayList<>();
+//        if(!this.isErr){
+//            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("products");
+//            List<DummyProduct> output = new ArrayList<>();
+//            for (Map<String, Object> map: storeList){
+//                output.add(new DummyProduct(map));
+//            }
+//            return output;
+//        }
+//        else
+//            return new ArrayList<>();
+        List<DummyProduct> hashMap= (List<DummyProduct>)this.returnObject.get("products");
+        return hashMap;
     }
+
     public List<DummyShoppingHistory> returnHistoryList(){
-        if(!this.isErr){
-            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("history");
-            List<DummyShoppingHistory> output = new ArrayList<>();
-            for (Map<String, Object> map: storeList){
-                output.add(new DummyShoppingHistory(map));
-            }
-            return output;
-        }
-        else
-            return new ArrayList<>();
+//        if(!this.isErr){
+//            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("history");
+//            List<DummyShoppingHistory> output = new ArrayList<>();
+//            for (Map<String, Object> map: storeList){
+//                output.add(new DummyShoppingHistory(map));
+//            }
+//            return output;
+//        }
+//        else
+//            return new ArrayList<>();
+        List<DummyShoppingHistory> hashMap= (List<DummyShoppingHistory>)this.returnObject.get("history");
+        return hashMap;
     }
     public List<String> returnPermissionList() {
 //        TODO: DEBUG ERROR BADOOK

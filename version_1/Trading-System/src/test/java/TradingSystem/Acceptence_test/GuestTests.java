@@ -1,7 +1,6 @@
 package TradingSystem.Acceptence_test;
 
-import TradingSystem.Client.Client_Driver;
-import TradingSystem.Client.Client_Interface;
+import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -21,7 +20,7 @@ import static org.junit.Assert.*;
 
 public class GuestTests {
 
-    Client_Interface client = Client_Driver.getClient();
+    ClientProxy client=new ClientProxy();
     TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     @BeforeEach
@@ -196,17 +195,19 @@ public class GuestTests {
      */
     @Test
     void showAllStores() {
+        ClientProxy clientProxy= new ClientProxy();
+        clientProxy.connectSystem();
         //case: no stores at all
-        client.Register("Reut", "123");
+        clientProxy.Register("Reut", "123");
         tradingSystemImpl.ClearSystem();
-        client.Login("Reut", "123");
+        clientProxy.Login("Reut", "123");
         List<DummyStore> stores1 = client.showAllStores();
         assertEquals(stores1.size(), 0);
 
         //case: have stores
-        client.openStore("Castro");
-        client.openStore("Urbanica");
-        client.openStore("Zara");
+        clientProxy.openStore("Castro");
+        clientProxy.openStore("Urbanica");
+        clientProxy.openStore("Zara");
         List<DummyStore> stores2 = client.showAllStores();
         assertEquals(stores2.size(), 3);
     }

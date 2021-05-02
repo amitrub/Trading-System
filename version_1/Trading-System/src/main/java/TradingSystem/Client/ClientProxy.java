@@ -1,17 +1,14 @@
 package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import TradingSystem.Server.ServiceLayer.Bridge.*;
-import org.json.JSONObject;
 
 import java.util.HashMap;
 import java.util.List;
-
-import static TradingSystem.Server.ServiceLayer.Configuration.urlbaseGuest;
 
 public class ClientProxy implements Client_Interface {
 
@@ -85,7 +82,8 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public void connectSystem() {
-        this.ConnID=tradingSystem.ConnectSystem().returnConnID();
+        String id= tradingSystem.ConnectSystem().returnConnID();
+        ConnID=id;
     }
 
     @Override
@@ -100,12 +98,18 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public int Register(String userName, String pass) {
-        return tradingSystem.Register(ConnID,userName,pass).returnUserID();
+        Response response=tradingSystem.Register(ConnID,userName,pass);
+        this.ConnID= response.returnConnID();
+        this.userID= response.returnUserID();
+        return userID;
     }
 
     @Override
     public int Login(String userName, String pass) {
-        return tradingSystem.Login(ConnID,userName,pass).returnUserID();
+        Response response = tradingSystem.Login(ConnID,userName,pass);
+        this.ConnID= response.returnConnID();
+        this.userID= response.returnUserID();
+        return userID;
     }
 
     @Override
@@ -115,11 +119,7 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public List<DummyProduct> showStoreProducts(int storeID) {
-        String path = String.format("store/%s/products", storeID);
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path,ConnID);
-        Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-        return dummyProductResponeArr;
+        return tradingSystem.ShowStoreProducts(storeID).returnProductList();
     }
 
     @Override
