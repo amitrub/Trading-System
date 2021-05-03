@@ -313,8 +313,19 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        Map<String, Object> map=(Map<String, Object>)obj.get("expression");
+        String connID;
+        //Expression exp;
+        try {
+            connID = (String) obj.get("connID");
+            //exp = (Expression) obj.get("Expression");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AddBuyingPolicy");
+            System.out.println(res);
+            return res;
+        }
+        Map<String, Object> map=(Map<String, Object>)obj.get("Expression");
         Expression exp=this.tradingSystem.CreateExpForBuy(storeID,map);
         Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
         res.AddConnID(connID);
@@ -341,8 +352,20 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/store/{storeID}/add_discount_policy")
     public Response AddDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        Map<String,Object> map=(Map<String,Object>)obj.get("expression");
+        String connID;
+        //Sale sale;
+        try {
+            connID = (String) obj.get("connID");
+            //sale = (Sale) obj.get("Sale");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AddDiscountPolicy");
+            System.out.println(res);
+            return res;
+        }
+        Map<String,Object> map=(Map<String,Object>)obj.get("Sale");
+        System.out.println(map);
         Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
         Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
         res.AddConnID(connID);
@@ -357,7 +380,6 @@ import java.util.Map;
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param buyingPolicyID : int (Path)
      * @param obj:{
      *  "connID": String
      *  TODO: Think what values should be in Buying Policy
@@ -368,8 +390,8 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @MessageMapping("{userID}/store/{storeID}/edit_buying_policy/{buyingPolicyID}")
-    public Response EditBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int buyingPolicyID, @Payload Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/edit_buying_policy")
+    public Response EditBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.EditBuyingPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
@@ -384,7 +406,6 @@ import java.util.Map;
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param discountPolicyID : int (Path)
      * @param obj:{
      *  "connID": String
      *  TODO: Think what values should be in Discount Policy
@@ -395,8 +416,8 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @MessageMapping("{userID}/store/{storeID}/edit_discount_policy/{discountPolicyID}")
-    public Response EditDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int discountPolicyID, @Payload Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/edit_discount_policy")
+    public Response EditDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.EditDiscountPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
@@ -411,7 +432,6 @@ import java.util.Map;
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param buyingPolicyID : int (Path)
      * @param obj:{
      *  "connID": String
      *  TODO: Think what values should be in Buying Policy
@@ -422,8 +442,8 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @MessageMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
-    public Response RemoveBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int buyingPolicyID, @Payload Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/remove_buying_policy")
+    public Response RemoveBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
         res.AddConnID(connID);
@@ -438,7 +458,6 @@ import java.util.Map;
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param discountPolicyID : int (Path)
      * @param obj:{
      *  "connID": String
      *  TODO: Think what values should be in Discount Policy
@@ -449,8 +468,8 @@ import java.util.Map;
      *  "connID": String
      * }
      */
-    @MessageMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}")
-    public Response RemoveDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int discountPolicyID, @Payload Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/remove_discount_policy")
+    public Response RemoveDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
         res.AddConnID(connID);

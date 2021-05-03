@@ -1,5 +1,7 @@
 package TradingSystem.Client;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
@@ -11,6 +13,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ClientProxy implements Client_Interface {
 
@@ -206,6 +209,34 @@ public class ClientProxy implements Client_Interface {
     public boolean editProduct(int storeID, int productID, String productName, String category, double price, int quantity) {
         return tradingSystem.EditProduct(userID,ConnID,storeID,productID,productName,category,price,quantity).getIsErr();
     }
+
+    @Override
+    public Response addBuyingPolicy(int storeID, Expression exp){
+        return tradingSystem.addBuyingPolicy(userID, ConnID, storeID, exp);
+    }
+
+    @Override
+    public Response addDiscountPolicy(int storeID, Sale sale){
+        return tradingSystem.addDiscountPolicy(userID, ConnID, storeID, sale);
+    }
+
+    @Override
+    public Response editBuyingPolicy(int storeID){
+        return new Response("not implemented");
+    }
+
+    @Override
+    public Response editDiscountPolicy(int storeID){
+        return new Response("not implemented");
+    }
+
+    @Override
+    public Response removeBuyingPolicy(int storeID){
+        return tradingSystem.RemoveBuyingPolicy(userID,storeID,ConnID);
+    }
+
+    @Override
+    public Response removeDiscountPolicy(int storeID){ return tradingSystem.RemoveDiscountPolicy(userID,storeID,ConnID); }
 
     @Override
     public boolean addOwner(int storeID, int newOwnerID) {
