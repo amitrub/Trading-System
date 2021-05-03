@@ -1,5 +1,9 @@
 package TradingSystem.Client;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
@@ -7,6 +11,7 @@ import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
@@ -441,6 +446,99 @@ public class Client implements Client_Interface {
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(editProduct) response: " + response + ANSI_RESET);
         return response.getIsErr();
+    }
+
+    /**
+     * @requirement 4.2.1
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response addBuyingPolicy(int storeID, Expression exp){
+        String path = String.format("%s/store/%s/add_buying_policy", this.userID, storeID);
+        JSONObject jsonPost = new JSONObject();
+        try{
+            jsonPost.put("Expression", exp);
+        }
+        catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: editProduct, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner + path,jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(addBuyingPolicy) response: " + response + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * @requirement 4.2.2
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response addDiscountPolicy(int storeID, Sale sale){
+        String path = String.format("%s/store/%s/add_discount_policy", this.userID, storeID);
+        JSONObject jsonPost = new JSONObject();
+        try{
+            jsonPost.put("Sale", sale);
+        }
+        catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: editProduct, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner + path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    /**
+     * @requirement 4.2.3
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response editBuyingPolicy(int storeID){
+        String path = String.format("%s/store/%s/edit_buying_policy", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    /**
+     * @requirement 4.2.4
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response editDiscountPolicy(int storeID){
+        String path = String.format("%s/store/%s/edit_discount_policy", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    /**
+     * @requirement 4.2.5
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response removeBuyingPolicy(int storeID){
+        String path = String.format("%s/store/%s/remove_buying_policy", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    /**
+     * @requirement 4.2.6
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response removeDiscountPolicy(int storeID){
+        String path = String.format("%s/store/%s/remove_discount_policy", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
     }
 
     /**

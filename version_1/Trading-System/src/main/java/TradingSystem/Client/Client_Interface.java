@@ -1,5 +1,9 @@
 package TradingSystem.Client;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -8,6 +12,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public interface Client_Interface {
 
@@ -152,6 +157,7 @@ public interface Client_Interface {
      * @return Response
      */
     public Response removeProduct(int storeID, int productID);
+
     /**
      * @requirement 4.1.3
      * @param storeID
@@ -163,6 +169,54 @@ public interface Client_Interface {
      * @return boolean
      */
     public boolean editProduct(int storeID, int productID, String productName, String category, double price, int quantity);
+
+    /**
+     * @requirement 4.2.1
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response addBuyingPolicy(int storeID, Expression exp);
+
+    /**
+     * @requirement 4.2.2
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response addDiscountPolicy(int storeID, Sale sale);
+
+    /**
+     * @requirement 4.2.3
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response editBuyingPolicy(int storeID);
+
+    /**
+     * @requirement 4.2.4
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response editDiscountPolicy(int storeID);
+
+    /**
+     * @requirement 4.2.5
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response removeBuyingPolicy(int storeID);
+
+    /**
+     * @requirement 4.2.6
+     * @param storeID
+     * @param storeID
+     * @return Response
+     */
+    public Response removeDiscountPolicy(int storeID);
 
     /**
      * @requirement 4.3
