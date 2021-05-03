@@ -106,15 +106,21 @@ public class GuestService {
      */
     @MessageMapping("register")
     public Response Register(@Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        String userName = (String) obj.get("userName");
-        String password = (String) obj.get("password");
-        Response res = this.tradingSystem.Register(connID, userName, password);
-        tradingSystem.printUsers();
-        res.AddTag("Register");
-        template.convertAndSend(String.format("/topic/%s", connID), res);
-        WriteToLogger(res);
-        return res;
+        try {
+            String connID = (String) obj.get("connID");
+            String userName = (String) obj.get("userName");
+            String password = (String) obj.get("password");
+
+            Response res = this.tradingSystem.Register(connID, userName, password);
+            tradingSystem.printUsers();
+            res.AddTag("Register");
+            template.convertAndSend(String.format("/topic/%s", connID), res);
+            WriteToLogger(res);
+            return res;
+        }
+        catch (Exception Ex){
+            return new Response(true, "There is Exception");
+        }
     }
 
     /**
