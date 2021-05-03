@@ -353,10 +353,10 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/add_discount_policy")
     public Response AddDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID;
-        //Sale sale;
+        //Sale sale1;
         try {
             connID = (String) obj.get("connID");
-            //sale = (Sale) obj.get("Sale");
+            //sale1 = (Sale) obj.get("Sale");
         }
         catch (Exception e){
             System.out.println(e);
