@@ -1,5 +1,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.Permission;
@@ -312,7 +314,9 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
-        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,obj);
+        Map<String, Object> map=(Map<String, Object>)obj.get("expression");
+        Expression exp=this.tradingSystem.CreateExpForBuy(storeID,map);
+        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
         res.AddConnID(connID);
         res.AddTag("AddBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
@@ -338,7 +342,9 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/add_discount_policy")
     public Response AddDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
-        Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,obj);
+        Map<String,Object> map=(Map<String,Object>)obj.get("expression");
+        Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
+        Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
         res.AddConnID(connID);
         res.AddTag("AddDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);

@@ -1,6 +1,8 @@
 package TradingSystem.Server.ServiceLayer.Bridge;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
@@ -475,16 +477,16 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response addDiscountPolicy(int userID, String connID, int storeID, Map<String, Object> obj) {
+    public Response addDiscountPolicy(int userID, String connID, int storeID, Sale sale) {
         if(real!=null)
-            return real.addDiscountPolicy(userID, connID, storeID,  obj);
+            return real.addDiscountPolicy(userID, connID, storeID,  sale);
         return null;
     }
 
     @Override
-    public Response addBuyingPolicy(int userID, String connID, int storeID, Map<String, Object> obj) {
+    public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp ) {
         if(real!=null)
-            return real.addBuyingPolicy( userID, connID, storeID,  obj);
+            return real.addBuyingPolicy( userID, connID, storeID,  exp);
         return null;
     }
 
@@ -505,6 +507,20 @@ public class ProxyTrading implements TradingSystem {
     public Response RemoveDiscountPolicy(int userID, int storeID, String connID) {
         if(real!=null)
             return real.RemoveDiscountPolicy( userID, storeID, connID);
+        return null;
+    }
+
+    @Override
+    public Expression CreateExpForBuy(Integer storeID, Map<String, Object> map) {
+        if(real!=null)
+            return real.CreateExpForBuy(storeID, map);
+        return null;
+    }
+
+    @Override
+    public Sale createSaleForDiscount(int storeID, Map<String, Object> obj) {
+        if(real!=null)
+            return real.createSaleForDiscount( storeID, obj);
         return null;
     }
 }

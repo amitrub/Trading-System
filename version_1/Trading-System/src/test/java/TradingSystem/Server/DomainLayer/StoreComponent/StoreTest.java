@@ -2,13 +2,6 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.XorComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
