@@ -22,7 +22,6 @@ public class GuestServiceHttp {
 
     @GetMapping("clear_system")
     public Response ClearSystem(){
-        System.out.println("777777777777777777777777777777");
         this.tradingSystem.ClearSystem();
         return new Response();
     }
@@ -76,11 +75,22 @@ public class GuestServiceHttp {
      */
     @PostMapping("register")
     public Response Register(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String userName = (String) obj.get("userName");
-        String password = (String) obj.get("password");
+        String userName, password;
+        try {
+            userName = (String) obj.get("userName");
+            password = (String) obj.get("password");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : Register");
+            res.AddConnID(connID);
+            System.out.println(res);
+            return res;
+        }
         Response res = this.tradingSystem.Register(connID, userName, password);
         tradingSystem.printUsers();
         return res;
+
     }
 
     /**
@@ -100,8 +110,18 @@ public class GuestServiceHttp {
      */
     @PostMapping("login")
     public Response Login(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String userName = (String) obj.get("userName");
-        String password = (String) obj.get("password");
+        String userName, password;
+        try {
+            userName = (String) obj.get("userName");
+            password = (String) obj.get("password");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : Login");
+            res.AddConnID(connID);
+            System.out.println(res);
+            return res;
+        }
         System.out.println("--------------");
         System.out.println(userName);
         System.out.println(password);
@@ -109,6 +129,7 @@ public class GuestServiceHttp {
         Response res = this.tradingSystem.Login(connID, userName, password);
         tradingSystem.printUsers();
         return res;
+
     }
 
     /**
@@ -184,22 +205,34 @@ public class GuestServiceHttp {
      *  }]
      * }
      */
-    //TODO: not check yet
     @PostMapping("search")
     public Response Search(@RequestBody Map<String, Object> obj){
-        String name = (String) obj.get("name");
-        boolean productNameMode = (boolean) obj.get("ProductName");
-        boolean productCategoryMode = (boolean) obj.get("ProductCategory");
-        int minPrice = (int) obj.get("minPrice");
-        int maxPrice = (int) obj.get("maxPrice");
-        int pRank = (int) obj.get("pRank");
-        int sRank = (int) obj.get("sRank");
-        if(productNameMode & !productCategoryMode)
+        String name;
+        boolean productNameMode, productCategoryMode;
+        int minPrice, maxPrice, pRank, sRank;
+        try {
+            name = (String) obj.get("name");
+            productNameMode = (boolean) obj.get("ProductName");
+            productCategoryMode = (boolean) obj.get("ProductCategory");
+            minPrice = (int) obj.get("minPrice");
+            maxPrice = (int) obj.get("maxPrice");
+            pRank = (int) obj.get("pRank");
+            sRank = (int) obj.get("sRank");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : Search");
+            System.out.println(res);
+            return res;
+        }
+        if (productNameMode & !productCategoryMode)
             return tradingSystem.SearchProduct(name, null, minPrice, maxPrice);
-        else if(!productNameMode & productCategoryMode)
+        else if (!productNameMode & productCategoryMode)
             return tradingSystem.SearchProduct(null, name, minPrice, maxPrice);
         else
             return new Response(true, "Input Error");
+
+
     }
 
 
@@ -220,7 +253,6 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/add_product")
     public Response AddProductToCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        System.out.println("add to cart");
         int storeID, productID, quantity;
         try {
             storeID = (int) obj.get("storeID");
@@ -281,13 +313,23 @@ public class GuestServiceHttp {
      * }
      */
     @PostMapping("shopping_cart/remove_product")
-    public Response RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)
-    {
-       int storeID = (int) obj.get("storeID");
-       int productID = (int) obj.get("productID");
-       Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
-       res.AddConnID(connID);
-       return res;
+    public Response RemoveProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
+        int storeID, productID;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : RemoveProductFromCart");
+            res.AddConnID(connID);
+            System.out.println(res);
+            return res;
+        }
+        Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
+        res.AddConnID(connID);
+        return res;
+
     }
 
     /**
@@ -344,10 +386,20 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/purchase")
     public Response guestPurchase(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String name = (String) obj.get("name");
-        String credit_number = (String) obj.get("credit_number");
-        String phone_number = (String) obj.get("phone_number");
-        String address = (String) obj.get("address");
+        String name, credit_number, phone_number, address;
+        try {
+            name = (String) obj.get("name");
+            credit_number = (String) obj.get("credit_number");
+            phone_number = (String) obj.get("phone_number");
+            address = (String) obj.get("address");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : guestPurchase");
+            res.AddConnID(connID);
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
         return res;
     }

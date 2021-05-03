@@ -64,8 +64,17 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/add_store")
     public Response AddStore(@DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        String storeName = (String) obj.get("storeName");
+        String connID, storeName;
+        try {
+            connID = (String) obj.get("connID");
+            storeName = (String) obj.get("storeName");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AddStore");
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.AddStore(userID, connID, storeName);
         tradingSystem.printUsers();
         tradingSystem.printStores();
@@ -94,9 +103,19 @@ import java.util.Map;
     //TODO: not check yet
     @MessageMapping("{userID}/write_comment")
     public Response WriteComment(@DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        int storeID = (int) obj.get("storeID");
-        int productID = (int) obj.get("productID");
+        String connID;
+        int storeID, productID;
+        try {
+            connID = (String) obj.get("connID");
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : WriteComment");
+            System.out.println(res);
+            return res;
+        }
         String review = (String) obj.get("comment");
         Response res = tradingSystem.WriteComment(userID,connID,storeID,productID,review);
         tradingSystem.printCommentForProduct(storeID,productID);
@@ -160,10 +179,19 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/shopping_cart/purchase")
     public Response subscriberPurchase(@DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        String credit_number = (String) obj.get("credit_number");
-        String phone_number = (String) obj.get("phone_number");
-        String address = (String) obj.get("address");
+        String connID, credit_number, phone_number, address;
+        try {
+            connID = (String) obj.get("connID");
+            credit_number = (String) obj.get("credit_number");
+            phone_number = (String) obj.get("phone_number");
+            address = (String) obj.get("address");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : subscriberPurchase");
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
         res.AddTag("subscriberPurchase");
         template.convertAndSend(String.format("/topic/%s", connID), res);
