@@ -801,6 +801,7 @@ public class OwnerTests {
 
     //endregion
 
+    
     //region requirement 4.7: Remove manager tests
     @Test
     void HappyRemoveManager() {
