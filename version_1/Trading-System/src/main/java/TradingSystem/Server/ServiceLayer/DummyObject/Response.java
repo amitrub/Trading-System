@@ -10,6 +10,7 @@ import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 public class Response {
     private boolean isErr = false;
     private String message = "";
+    private String header = "";
     Map<String, Object> returnObject = new HashMap<>();
 
 
@@ -161,6 +162,13 @@ public class Response {
     }
     private void setReturnObject(Map<String, Object> returnObject) {
         this.returnObject = returnObject;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     public static Response makeResponseFromJSON(JSONObject jsonResponse) {
