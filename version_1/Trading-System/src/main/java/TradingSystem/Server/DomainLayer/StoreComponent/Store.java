@@ -94,6 +94,10 @@ public class Store {
         return this.ownersIDs.contains(userID);
     }
 
+    public boolean checkManager(int newOwner) {
+        return this.managersIDs.contains(newOwner);
+    }
+
     public List<DummyProduct> ShowStoreProducts(){
         return inventory.ShowStoreProducts();
     }
@@ -110,8 +114,7 @@ public class Store {
         return inventory.deleteProduct(productId);
     }
 
-    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity)
-    {
+    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity) {
         return inventory.editProductDetails(productId,productName,price,category,quantity);
     }
 
@@ -128,9 +131,15 @@ public class Store {
         return "";
     }
 
-    public String removeManager(Integer userId, Integer managerId) {
+    public String removeManager(Integer managerId) {
         this.managersIDs.remove(managerId);
         this.managersPermission.remove(managerId);
+        return "The Manager removed";
+    }
+
+    public String removeOwner(Integer ownerId) {
+        this.ownersIDs.remove(ownerId);
+        this.ownersPermission.remove(ownerId);
         return "The Manager removed";
     }
     //todo - ensure that only the Trading Administrator can access this function.
@@ -374,9 +383,7 @@ public class Store {
     public void pay(Double finalPrice) {
     }
 
-    public boolean checkManager(int newOwner) {
-        return this.managersIDs.contains(newOwner);
-    }
+
 
     public boolean isProductExist(int id){
         return inventory.checkProductsExistInTheStore(id,1);
@@ -465,5 +472,9 @@ public class Store {
 
     public void RemoveDiscountPolicy() {
         this.discountPolicy=null;
+    }
+
+    public OwnerPermission getPermission(int key){
+        return ownersPermission.get(key);
     }
 }

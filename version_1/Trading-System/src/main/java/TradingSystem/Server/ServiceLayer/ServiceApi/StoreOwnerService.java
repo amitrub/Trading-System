@@ -1,9 +1,16 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.Permission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.messaging.handler.annotation.DestinationVariable;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 import java.util.LinkedList;
@@ -12,17 +19,107 @@ import java.util.Map;
 
 
 @RestController
-@RequestMapping(path = "api/owner")
-public class StoreOwnerService {
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+@MessageMapping("owner")
+@CrossOrigin("*") public class StoreOwnerService {
+    @Autowired
+    SimpMessagingTemplate template;
+
+    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    private static final LoggerController loggerController=LoggerController.getInstance();
+
+
+    /**
+     * @requirement
+     *
+     * @param userID: int (Path)
+     * @param obj:{
+     *  "connID": String
+     * }
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "stores": [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */
+    @MessageMapping("{userID}/founded_stores")
+    public Response ShowAllFoundedStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
+        System.out.println("ShowAllFoundedStores");
+        String connID = (String) obj.get("connID");
+        Response res = this.tradingSystem.ShowAllMyStores(connID, userID, true, false, false);
+        System.out.println(res);
+        res.AddTag("ShowAllFoundedStores");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        return res;
+    }
+
+    /**
+     * @requirement
+     *
+     * @param userID: int (Path)
+     * @param obj:{
+     *  "connID": String
+     * }
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "stores": [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */
+    @MessageMapping("{userID}/owned_stores")
+    public Response ShowAllOwnedStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
+        System.out.println("Enterrrrr ShowAllStores");
+        String connID = (String) obj.get("connID");
+        Response res = this.tradingSystem.ShowAllMyStores(connID, userID, false, true, false);
+        System.out.println(res);
+        res.AddTag("ShowAllOwnedStores");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        return res;
+    }
+
+    /**
+     * @requirement
+     *
+     * @param userID: int (Path)
+     * @param obj:{
+     *  "connID": String
+     * }
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "stores": [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */
+    @MessageMapping("{userID}/managed_stores")
+    public Response ShowAllManagedStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
+        String connID = (String) obj.get("connID");
+        Response res = this.tradingSystem.ShowAllMyStores(connID, userID, false, false, true);
+        System.out.println(res);
+        res.AddTag("ShowAllManagedStores");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        return res;
+    }
+
+
 
     /**
      * @requirement 4.1.1
      * 
      * @param userID: int (Path) 
      * @param storeID: int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "productName": String
      *  "category": String
      *  "quantity": int
@@ -33,8 +130,9 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    @PostMapping("{userID}/store/{storeID}/add_new_product")
-    public Response AddProductToStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
+    @MessageMapping("{userID}/store/{storeID}/add_new_product")
+    public Response AddProductToStore(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj) {
+        String connID = (String) obj.get("connID");
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
         int quantity  = (int) obj.get("quantity");
@@ -47,6 +145,9 @@ public class StoreOwnerService {
             price = new Double(price_int);
         }
         Response res = tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
+        res.AddTag("AddProductToStore");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -56,19 +157,21 @@ public class StoreOwnerService {
      * @param userID : int (Path)
      * @param storeID: int (Path)
      * @param productID: int (Path)
-     * @param connID: String (Header)
      * @return Response{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
-    //TODO: not check yet
-    @GetMapping("{userID}/store/{storeID}/remove_product/{productID}")
-    public Response RemoveProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID){
+    @MessageMapping("{userID}/store/{storeID}/remove_product/{productID}")
+    public Response RemoveProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
         System.out.println(res);
         tradingSystem.printProducts();
+        res.AddTag("RemoveProduct");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -78,8 +181,8 @@ public class StoreOwnerService {
      * @param userID : int (Path)
      * @param storeID: int (Path)
      * @param productID: int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "quantity": int
      * }
      * @return Response{
@@ -88,11 +191,15 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not check yet
-    @PostMapping("{userID}/store/{storeID}/change_quantity_product/{productID}")
-    public Response ChangeQuantityProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/change_quantity_product/{productID}")
+    public Response ChangeQuantityProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         int quantity  = (int) obj.get("quantity");
-        return tradingSystem.ChangeQuantityProduct(userID,connID,storeID,productID,quantity);
+        Response res = tradingSystem.ChangeQuantityProduct(userID,connID,storeID,productID,quantity);
+        res.AddTag("ChangeQuantityProduct");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
+        return res;
     }
 
     /**
@@ -101,8 +208,8 @@ public class StoreOwnerService {
      * @param userID : int (Path)
      * @param storeID: int (Path)
      * @param productID: int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  "productName": String
      *  "category": String
      *  "price": String
@@ -114,9 +221,9 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not check yet
-    @PostMapping("{userID}/store/{storeID}/edit_product/{productID}")
-    public Response EditProduct(@PathVariable int userID, @PathVariable int storeID, @PathVariable int productID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/edit_product/{productID}")
+    public Response EditProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         String productName = (String) obj.get("productName");
         String category = (String) obj.get("category");
         int price_int;
@@ -128,17 +235,20 @@ public class StoreOwnerService {
             price = new Double(price_int);
         }
         int quantity  = (int) obj.get("quantity");
-        return tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price,quantity);
+        Response res = tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price,quantity);
+        res.AddTag("EditProduct");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
+        return res;
     }
 
-
     /**
-     * @requirement 4.2
+     * @requirement 4.2.1
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  TODO: Think what values should be in Buying Policy
      * }
      * @return Response{
@@ -147,21 +257,24 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
-    @PostMapping("{userID}/store/{storeID}/add_buying_policy}")
-    public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/add_buying_policy")
+    public Response AddBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,obj);
         res.AddConnID(connID);
+        res.AddTag("AddBuyingPolicy");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.2
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  TODO: Think what values should be in Discount Policy
      * }
      * @return Response{
@@ -170,22 +283,25 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
-    @PostMapping("{userID}/store/{storeID}/add_discount_policy}")
-    public Response AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/add_discount_policy")
+    public Response AddDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,obj);
         res.AddConnID(connID);
+        res.AddTag("AddDiscountPolicy");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.3
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param buyingPolicyID : int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  TODO: Think what values should be in Buying Policy
      * }
      * @return Response{
@@ -194,22 +310,25 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
-    @PostMapping("{userID}/store/{storeID}/edit_buying_policy/{buyingPolicyID}")
-    public Response EditBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/edit_buying_policy/{buyingPolicyID}")
+    public Response EditBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int buyingPolicyID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.EditBuyingPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("EditBuyingPolicy");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.4
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param discountPolicyID : int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  TODO: Think what values should be in Discount Policy
      * }
      * @return Response{
@@ -218,22 +337,26 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
-    @PostMapping("{userID}/store/{storeID}/edit_discount_policy/{discountPolicyID}}")
-    public Response EditDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/edit_discount_policy/{discountPolicyID}")
+    public Response EditDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int discountPolicyID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
 //        Response res = this.tradingSystem.EditDiscountPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        res.AddTag("EditDiscountPolicy");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.5
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param buyingPolicyID : int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
+     *  TODO: Think what values should be in Buying Policy
      * }
      * @return Response{
      *  "isErr: boolean
@@ -241,21 +364,26 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    @DeleteMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
-    public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
+    public Response RemoveBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int buyingPolicyID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
         res.AddConnID(connID);
+        res.AddTag("RemoveBuyingPolicy");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.6
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param discountPolicyID : int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
+     *  TODO: Think what values should be in Discount Policy
      * }
      * @return Response{
      *  "isErr: boolean
@@ -263,11 +391,14 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-
-    @DeleteMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}}")
-    public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+    @MessageMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}")
+    public Response RemoveDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int discountPolicyID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
         res.AddConnID(connID);
+        res.AddTag("RemoveDiscountPolicy");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -277,17 +408,23 @@ public class StoreOwnerService {
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param newOwnerID: int (Path)
-     * @param connID: String (Header)
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response{
      *      *  "isErr: boolean
      *      *  "message": String
      *      *  "connID": String
      *      * }
      */
-    @GetMapping("{userID}/store/{storeID}/add_new_owner/{newOwnerID}")
-    public Response AddNewOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newOwnerID, @RequestHeader("connID") String connID)  {
+    @MessageMapping("{userID}/store/{storeID}/add_new_owner/{newOwnerID}")
+    public Response AddNewOwner(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int newOwnerID, @Payload Map<String, Object> obj)  {
+        String connID = (String) obj.get("connID");
         Response res = tradingSystem.AddNewOwner(userID, connID, storeID, newOwnerID);
         res.AddConnID(connID);
+        res.AddTag("AddNewOwner");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -297,18 +434,22 @@ public class StoreOwnerService {
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param OwnerID: int (Path)
-     * @param connID: String (Header)
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
-    @GetMapping("{userID}/store/{storeID}/remove_owner/{OwnerID}")
-    public Response RemoveOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int OwnerID, @RequestHeader("connID") String connID)  {
-//        Response res = tradingSystem.RemoveOwner(userID, connID, storeID, OwnerID);
-        Response res = new Response(true, "not implemented");
-        res.AddConnID(connID);
+    @MessageMapping("{userID}/store/{storeID}/remove_owner/{OwnerID}")
+    public Response RemoveOwner(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int OwnerID, @Payload Map<String, Object> obj)  {
+        String connID = (String) obj.get("connID");
+        Response res = tradingSystem.RemoveOwnerByOwner(userID, connID, storeID, OwnerID);
+        res.AddTag("RemoveOwner");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -318,17 +459,23 @@ public class StoreOwnerService {
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param newManagerID: int (Path)
-     * @param connID: String (Header)
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
-    @GetMapping("{userID}/store/{storeID}/add_new_manager/{newManagerID}")
-    public Response AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManagerID, @RequestHeader("connID") String connID)  {
+    @MessageMapping("{userID}/store/{storeID}/add_new_manager/{newManagerID}")
+    public Response AddNewManager(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int newManagerID, @Payload Map<String, Object> obj)  {
+        String connID = (String) obj.get("connID");
         Response res=tradingSystem.AddNewManager(userID, connID, storeID,newManagerID);
         res.AddConnID(connID);
+        res.AddTag("AddNewManager");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -338,8 +485,8 @@ public class StoreOwnerService {
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param managerID: int (Path)
-     * @param connID: String (Header)
      * @param obj:{
+     *  "connID": String
      *  TODO: Think what values should be in Edit Manager Permissions
      * }
      * @return Response{
@@ -348,8 +495,9 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    @PostMapping("{userID}/store/{storeID}/edit_manager_permissions/{managerID}")
-    public Response EditManagerPermissions(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)  {
+    @MessageMapping("{userID}/store/{storeID}/add_new_manager/{managerID}")
+    public Response EditManagerPermissions(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int managerID, @Payload Map<String, Object> obj)  {
+        String connID = (String) obj.get("connID");
         List<User.Permission> Permissions=new LinkedList<>();
         try {
             if((boolean) obj.get("AddProduct"))
@@ -382,13 +530,33 @@ public class StoreOwnerService {
 
         Response res = tradingSystem.EditManagerPermissions(userID, connID, storeID, managerID, Permissions);
         res.AddConnID(connID);
+        res.AddTag("EditManagerPermissions");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
-    @GetMapping("{userID}/store/get_possible_permissions_to_manager")
-    public Response GetPossiblePermissionsToManager(@PathVariable int userID, @RequestHeader("connID") String connID)  {
+    /**
+     * @param userID
+     * @param obj:{
+     *  "connID": String
+     * }
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     *  "permissions":List[
+     *  permissions:String]
+     * }
+    */
+    @MessageMapping("{userID}/store/get_possible_permissions_to_manager")
+    public Response GetPossiblePermissionsToManager(@DestinationVariable int userID, @Payload Map<String, Object> obj)  {
+        String connID = (String) obj.get("connID");
         Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID);
         res.AddConnID(connID);
+        res.AddTag("GetPossiblePermissionsToManager");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -398,17 +566,23 @@ public class StoreOwnerService {
      * @param userID : int (Path)
      * @param storeID: int (Path)
      * @param managerID: int (Path)
-     * @param connID: String (Header)
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
-    @GetMapping("{userID}/store/{storeID}/remove_manager/{managerID}")
-    public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID)  {
+    @MessageMapping("{userID}/store/{storeID}/remove_manager/{managerID}")
+    public Response RemoveManager(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int managerID, @Payload Map<String, Object> obj)  {
+        String connID = (String) obj.get("connID");
         Response res=tradingSystem.RemoveManager(userID, connID, storeID,managerID);
         res.AddConnID(connID);
+        res.AddTag("RemoveManager");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -417,7 +591,9 @@ public class StoreOwnerService {
      *
      * @param userID : int (Path)
      * @param storeID: int (Path)
-     * @param connID: String (Header)
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response{
      *  "isErr: boolean
      *  "message": String
@@ -430,9 +606,13 @@ public class StoreOwnerService {
      *  }]
      * }
      */
-    @GetMapping("{userID}/store/{storeID}/workers")
-    public Response ShowStoreWorkers(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
+    @MessageMapping("{userID}/store/{storeID}/workers")
+    public Response ShowStoreWorkers(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj)  {
+        String connID = (String) obj.get("connID");
         Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
+        res.AddTag("ShowStoreWorkers");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -441,7 +621,9 @@ public class StoreOwnerService {
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param connID: String (Header)
+     * @param obj:{
+     *  "connID": String
+     * }
      * @return Response {
      *  "isErr: boolean
      *  "message": String
@@ -461,15 +643,23 @@ public class StoreOwnerService {
      *  }]
      * }
      */
-    @GetMapping("{userID}/store_history_owner/{storeID}")
-    public Response OwnerStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+    @MessageMapping("{userID}/store_history_owner/{storeID}")
+    public Response OwnerStoreHistory(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
+        String connID = (String) obj.get("connID");
         Response res = tradingSystem.StoreHistoryOwner(userID,storeID,connID);
         res.AddConnID(connID);
+        res.AddTag("OwnerStoreHistory");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
+        WriteToLogger(res);
         return res;
     }
 
     /**
      * @requirement none
+     *
+     * @param obj:{
+     *  "connID": String
+     * }
      *
      * @return Response {
      *  "isErr: boolean
@@ -481,15 +671,30 @@ public class StoreOwnerService {
      *  }]
      * }
      */
-    @GetMapping("{userID}/stores_owner")
-    public Response ShowOwnerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
+    @MessageMapping("{userID}/stores_owner")
+    public Response ShowOwnerStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowOwnerStores(userID, connID);
+        res.AddTag("ShowOwnerStores");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
 
-    @GetMapping("{userID}/stores_manager")
-    public Response ShowManagerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
+    @MessageMapping("{userID}/stores_manager")
+    public Response ShowManagerStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
+        String connID = (String) obj.get("connID");
         Response res = this.tradingSystem.ShowManagerStores(userID, connID);
+        res.AddTag("ShowManagerStores");
+        template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
+    }
+
+    private void WriteToLogger(Response res){
+        if(res.getIsErr()) {
+            loggerController.WriteErrorMsg("Store Owner Error: " + res.getMessage());
+        }
+        else{
+            loggerController.WriteLogMsg("Store Owner: " + res.getMessage());
+        }
     }
 }

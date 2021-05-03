@@ -5,21 +5,20 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import TradingSystem.Server.ServiceLayer.LoggerController;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public  class User {
+public  class User implements Observer {
 
 
+    private List<Object> messages = new ArrayList<>();
 
     public enum Permission {
         AddProduct,
@@ -37,7 +36,7 @@ public  class User {
         GetStoreHistory
     }
 
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     private static int nextUserID = 0;
 
     private final Integer id;
@@ -58,8 +57,6 @@ public  class User {
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
     private final Lock Lock = new ReentrantLock();
-
-    private static final LoggerController loggerController=LoggerController.getInstance();
 
     public User() {
         this.id = -1;
@@ -97,6 +94,16 @@ public  class User {
         this.myFoundedStoresIDs=new ArrayList<>();
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
+    }
+
+    public boolean isFounder(){
+        return myFoundedStoresIDs!=null && myFoundedStoresIDs.size()>0;
+    }
+    public boolean isOwner(){
+        return myOwnedStoresIDs!=null && myOwnedStoresIDs.size()>0;
+    }
+    public boolean isManaged(){
+        return myManagedStoresIDs!=null && myManagedStoresIDs.size()>0;
     }
 
     private static synchronized int getNextUserID() {
@@ -223,7 +230,6 @@ public  class User {
         this.managerPermission.put(storeID, om);
     }
 
-
     public OwnerPermission getOwnerPermission(int storeID) {
         return this.ownerPermission.get(storeID);
     }
@@ -232,16 +238,22 @@ public  class User {
         return this.managerPermission.get(storeID);
     }
 
-    public void removeStore(int storeID) {
+    public void removeManagedStore(int storeID) {
         int index=this.myManagedStoresIDs.indexOf(storeID);
         this.myManagedStoresIDs.remove(index);
         this.managerPermission.remove(storeID);
     }
 
+    public void removeOwnedStore(int storeID){
+        int index=this.myOwnedStoresIDs.indexOf(storeID);
+        this.myOwnedStoresIDs.remove(index);
+        this.ownerPermission.remove(storeID);
+    }
 
     public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
         return this.shoppingCart.editProductQuantityFromCart(storeID,productID, quantity);
 }
+
     public Response RemoveProductFromCart(int storeID, int productID) {
       return this.shoppingCart.RemoveProductFromCart(storeID, productID);
     }
@@ -255,25 +267,19 @@ public  class User {
         return false;
     }
 
-
-
-
     public Response AbleToAddOwner(int userID, int storeID) {
         if (this.checkOwner(storeID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+this.id+" to be the owner of store "+storeID + " and failed. "+ this.id+" is already owner the store");
-            return new Response(true, "User "+this.id+" is owner the store, so he can not appoint to owner again");
+            return new Response(true, "AddOwner: User "+userID+" is owner the store, so he can not appoint to owner again");
         }
         if (this.checkManager(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to Add " +this.id+" to be the owner of store " + storeID + " and failed. "+ this.id+" is already manages the store");
-            return new Response(true, "User "+this.id+" is manages the store, so he can not be owner");
+            return new Response(true, "AddOwner: User "+userID+" is manages the store, so he can not be owner");
         }
-        return new Response(false,"It is possible to add the user as the owner");
+        return new Response(false,"AddOwner: It is possible to add the user as the owner");
 }
 
     public boolean checkOwner(int storeID) {
     return this.myOwnedStoresIDs.contains(storeID);
     }
-
 
     public boolean checkManager(int storeID) {
     return this.myManagedStoresIDs.contains(storeID);
@@ -281,41 +287,35 @@ public  class User {
 
     public Response AbleToRemoveManager(int userID, int storeID) {
         if (!this.myManagedStoresIDs.contains(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to remove " +this.id+" from be the manager of store " + storeID + " and failed. "+ this.id+" is not manages the store");
-            return new Response(true, "The user "+this.id+" is not manages the store, so he can not be removed from Manages the store.");
+            return new Response(true, "RemoveManager: The user "+this.id+" is not manages the store, so he can not be removed from Manages the store.");
         }
         if (this.managerPermission.get(storeID)!=null&&
             this.managerPermission.get(storeID).getAppointmentId()!=userID) {
-            loggerController.WriteErrorMsg("User " + userID + " try to remove " + this.id + " from be the manager of store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
-            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+            return new Response(true, "RemoveManager: The user " + userID + " is not the one who appointed the manager");
         }
-        return new Response("It is possible to add the user as the owner");
+        return new Response(false, "It is possible to add the user as the owner");
     }
 
     public Response AbleToAddManager(int userID, int storeID, int newManager) {
         if (this.checkOwner(storeID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the owner of store "+storeID + " and failed. "+ newManager+" is already owner the store");
-            return new Response(true, "The user "+newManager+" is owner the store, so he can not appoint to Manager");
+            return new Response(true, "AddNewManager: The user "+newManager+" is owner the store, so he can not appoint to Manager");
 
         }
         if (this.checkManager(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to Add " +newManager+" to be the Manager of store " + storeID + " and failed. "+ newManager+" is already manages the store");
-            return new Response(true, "The user "+newManager+" is manages the store, so he can not appoint to Manager again");
+            return new Response(true, "AddNewManager: The user "+newManager+" is manages the store, so he can not appoint to Manager again");
         }
-        return new Response("It is possible to add the user as the owner");
+        return new Response(false, "It is possible to add the user as the owner");
     }
 
     public Response AbleToEditPermissions(int userID, int storeID) {
         if (!this.myManagedStoresIDs.contains(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " +this.id+" for store " + storeID + " and failed. "+ this.id+" is not manages the store");
-            return new Response(true, "The user "+this.id+" is not manages the store, so it impossible to edit his permissions.");
+            return new Response(true, "EditPermissions: The user "+this.id+" is not manages the store, so it impossible to edit his permissions.");
         }
         if (this.managerPermission.get(storeID)!=null&&
                 this.managerPermission.get(storeID).getAppointmentId()!=userID) {
-            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " + this.id + " for store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
-            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+            return new Response(true, "EditPermissions: The user " + userID + " is not the one who appointed the manager");
         }
-        return new Response("It is possible to edit the manager permissions");
+        return new Response(false, "EditPermissions: It is possible to edit the manager permissions");
     }
 
     public void editPermissions(int userID,int storeID, List<User.Permission> permissions) {
@@ -333,6 +333,34 @@ public  class User {
     }
     }
 
+    @Override
+    public void update(Observable o, Object arg) {
+        //is guest
+        if(tradingSystem.guests.containsValue(this)){
+            System.out.println(arg);
+        }
+        //is subscriber
+        else {
+            boolean isConnected = false;
+            for (Integer connectedUser : tradingSystem.getConnectedSubscribers().values()) {
+                if (connectedUser == this.id) {
+                    isConnected = true;
+                    //TODO connect to client
+                    System.out.println(arg);
+                }
+            }
+            if(!isConnected)
+                messages.add(arg);
+        }
+    }
+
+    public List<Object> getMessages() {
+        return messages;
+    }
+
+    public void setMessages(List<Object> messages) {
+        this.messages = messages;
+    }
 }
 
 
