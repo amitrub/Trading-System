@@ -7,8 +7,11 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.MaxComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.ProductSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.StoreSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -25,6 +28,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PoliciesTests {
 
     Client_Interface client = Client_Driver.getClient();
+    TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     Integer storeID;
 
     //region other functions
@@ -70,9 +74,17 @@ public class PoliciesTests {
     //region requirement 4.2.1: Add Discount Policy
     @Test
     void Happy_AddDiscountPolicy() {
-        PriceForGetSale exp = new PriceForGetSale( 100.0);
-        StoreSale sale = new StoreSale(exp, storeID, 50.0);
-        Response res = client.addDiscountPolicy(storeID, sale);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+
+        PriceForGetSale exp1 = new PriceForGetSale( 100.0);
+        PriceForGetSale exp2 = new PriceForGetSale( 200.0);
+        StoreSale sale = new StoreSale(exp1, storeID, 50.0);
+        ProductSale sale2 = new ProductSale(exp2,productID2,50.0);
+        MaxComposite max = new MaxComposite();
+        max.add(sale);
+        max.add(sale2);
+        Response res = client.addDiscountPolicy(storeID, max);
         assertFalse(res.getIsErr());
     }
 

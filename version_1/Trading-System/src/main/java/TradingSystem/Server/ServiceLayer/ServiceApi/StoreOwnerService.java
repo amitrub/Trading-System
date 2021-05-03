@@ -314,10 +314,10 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID;
-        Expression exp;
+        //Expression exp;
         try {
             connID = (String) obj.get("connID");
-            exp = (Expression) obj.get("Expression");
+            //exp = (Expression) obj.get("Expression");
         }
         catch (Exception e){
             System.out.println(e);
@@ -325,8 +325,8 @@ import java.util.Map;
             System.out.println(res);
             return res;
         }
-        //Map<String, Object> map=(Map<String, Object>)obj.get("expression");
-        //Expression exp=this.tradingSystem.CreateExpForBuy(storeID,map);
+        Map<String, Object> map=(Map<String, Object>)obj.get("Expression");
+        Expression exp=this.tradingSystem.CreateExpForBuy(storeID,map);
         Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
         res.AddConnID(connID);
         res.AddTag("AddBuyingPolicy");
@@ -353,10 +353,10 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/add_discount_policy")
     public Response AddDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID;
-        Sale sale;
+        //Sale sale;
         try {
             connID = (String) obj.get("connID");
-            sale = (Sale) obj.get("Sale");
+            //sale = (Sale) obj.get("Sale");
         }
         catch (Exception e){
             System.out.println(e);
@@ -364,8 +364,9 @@ import java.util.Map;
             System.out.println(res);
             return res;
         }
-        //Map<String,Object> map=(Map<String,Object>)obj.get("expression");
-        //Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
+        Map<String,Object> map=(Map<String,Object>)obj.get("Sale");
+        System.out.println(map);
+        Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
         Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
         res.AddConnID(connID);
         res.AddTag("AddDiscountPolicy");
