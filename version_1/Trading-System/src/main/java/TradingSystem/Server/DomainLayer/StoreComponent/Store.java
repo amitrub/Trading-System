@@ -202,7 +202,7 @@ public class Store {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-*/
+
     public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank){
        List<Integer> FinalID=new ArrayList<>();
        if(name!=null){
@@ -230,7 +230,7 @@ public class Store {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-
+*/
     public Double getRate() {
         return rate;
     }
@@ -239,13 +239,29 @@ public class Store {
         return this.inventory.checkProductsExistInTheStore(productID,quantity);
     }
 
-    public boolean checkBuyingPolicy(Integer productID, Integer quantity, ConcurrentHashMap<Integer,Integer> productsInTheBug){
+    public boolean checkBuyingPolicy(Integer userID,ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        if(this.buyingPolicy!=null)
+        return this.buyingPolicy.checkEntitlement(productsInTheBug,userID,this.CalculatePriceBeforeSale(productsInTheBug));
+        else
         return true;
     }
 
-    public Double calculateBugPrice(Integer productID, Integer quantity,ConcurrentHashMap<Integer,Integer> productsInTheBug){
-        return 1.0;
+    public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        return this.discountPolicy.calculatePrice(productsInTheBug,userId,this.CalculatePriceBeforeSale(productsInTheBug)) ;
     }
+
+
+    public Double CalculatePriceBeforeSale (ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        Double priceBefore = 0.0;
+        for (Integer pId : productsInTheBug.keySet()) {
+            Integer quantity=productsInTheBug.get(pId);
+            Double price=inventory.getProduct(pId).getPrice();
+            priceBefore = priceBefore + price*quantity;
+        }
+        return priceBefore;
+    }
+
+
 
     public boolean productIsLock(Integer productID){
         return inventory.productIsLock(productID);
@@ -366,7 +382,7 @@ public class Store {
         return inventory.checkProductsExistInTheStore(id,1);
     }
 
-
+/*
     //TODO implement! by the policy
     public Double calculateBugPrice(boolean userSubscribe, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
         if(userSubscribe){
@@ -441,103 +457,13 @@ public class Store {
     public void setBuyingPolicy(BuyingPolicy buyingPolicy) {
         this.buyingPolicy = buyingPolicy;
     }
-    /*
 
-    //Todo add sale to response?
-    public Response addSaleToPolicy(String category, Integer productID, Double discount){
-    if(productID!=-1){
-        Integer saleId=this.discountPolicy.getNextSaleID();
-        ProductSale PS=new ProductSale(saleId,productID,discount);
-        this.discountPolicy.AddSale(PS);
-        return new Response(false,"new ProductSale added to store "+this.id);
-    }
-    else if(category!=null){
-        Integer saleId=this.discountPolicy.getNextSaleID();
-         CategorySale CS=new CategorySale(saleId,category,discount);
-        this.discountPolicy.AddSale(CS);
-        return new Response(false,"new CategorySale added to store "+this.id);
-    }
-        Integer saleId=this.discountPolicy.getNextSaleID();
-        StoreSale SS=new StoreSale(saleId,this.id,discount);
-        this.discountPolicy.AddSale(SS);
-        return new Response(false,"new StoreSale added to store "+this.id);
+    //todo syncronize?
+    public void RemoveBuyingPolicy() {
+        this.buyingPolicy=null;
     }
 
-    public Response addLimitToPolicy(String category, Integer productID, Expression exp){
-        if(productID!=-1){
-            Integer limitId=this.buyingPolicy.getNextLimitID();
-            ProductLimit PL=new ProductLimit(limitId,productID,exp);
-            this.buyingPolicy.AddLimit(PL);
-            return new Response(false,"new ProductLimit added to store "+this.id);
-        }
-        else if(category!=null){
-            Integer limitId=this.buyingPolicy.getNextLimitID();
-            CategoryLimit CL=new CategoryLimit(limitId,category,exp);
-            this.buyingPolicy.AddLimit(CL);
-            return new Response(false,"new CategoryLimit added to store "+this.id);
-        }
-        Integer limitId=this.buyingPolicy.getNextLimitID();
-        StoreLimit SL=new StoreLimit(limitId,this.id,exp);
-        this.buyingPolicy.AddLimit(SL);
-        return new Response(false,"new StoreLimit added to store "+this.id);
+    public void RemoveDiscountPolicy() {
+        this.discountPolicy=null;
     }
-
-    //Todo _ option with expression:
-    public Response addSaleToPolicy(String category, Integer productID, Double discount,Expression exp){
-        if(productID!=-1){
-            Integer saleId=this.discountPolicy.getNextSaleID();
-            ProductSale PS=new ProductSale(saleId,productID,discount);
-            this.discountPolicy.AddSale(PS);
-            return new Response(false,"new ProductSale added to store "+this.id);
-        }
-        else if(category!=null){
-            Integer saleId=this.discountPolicy.getNextSaleID();
-            CategorySale CS=new CategorySale(saleId,category,discount);
-            this.discountPolicy.AddSale(CS);
-            return new Response(false,"new CategorySale added to store "+this.id);
-        }
-        Integer saleId=this.discountPolicy.getNextSaleID();
-        StoreSale SS=new StoreSale(saleId,this.id,discount);
-        this.discountPolicy.AddSale(SS);
-        return new Response(false,"new StoreSale added to store "+this.id);
-    }
-
-    public Expression NumOfProductsForGetSaleExp(Integer num) {
-        int expId=getNextExpressionID();
-        return new NumOfProductsForGetSale(expId,num);
-    }
-
-    public Expression createPriceForGetSaleExp(Double price) {
-        int expId=getNextExpressionID();
-        return new PriceForGetSale(expId,price);
-    }
-
-    public Expression createQuantityForGetSaleExp(Integer productID, Integer quantityForSale){
-        int expId=getNextExpressionID();
-        return new QuantityForGetSale(expId,productID,quantityForSale);
-    }
-
-    public Expression createAgeLimitExp(Integer minAge){
-        int expId=getNextExpressionID();
-        return new AgeLimit(expId,minAge);
-    }
-
-    public Expression createHourLimitExp(Integer productID,Date date){
-        int expId=getNextExpressionID();
-        return new HourLimit(expId,date);
-    }
-
-    public Expression createQuantityLimitExp(Integer productID,Integer quantity){
-        int expId=getNextExpressionID();
-        return new QuantityLimit(expId,quantity);
-    }
-
-    public Expression createTimeLimitExp(Date date){
-        int expId=getNextExpressionID();
-        return new TimeLimit(expId,date);
-    }
-
-
-
- */
 }

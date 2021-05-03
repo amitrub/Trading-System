@@ -12,7 +12,6 @@ public class MaxComposite extends CompositeSale {
     }
 
     public MaxComposite() {
-      //  super(S);
     }
 
     @Override

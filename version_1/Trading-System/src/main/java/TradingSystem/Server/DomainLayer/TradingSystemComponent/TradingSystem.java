@@ -607,27 +607,6 @@ public class TradingSystem {
         return res;
     }
 
-    //TODO: to move?
-    public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
-        List<DummyProduct> dummyProducts = new ArrayList<>();
-        for(Store store: stores.values()){
-            if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
-                dummyProducts.addAll(store.SearchByName(name, minprice, maxprice,prank));
-            }
-        }
-        return dummyProducts;
-    }
-    //TODO: to move?
-    public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
-        List<DummyProduct> dummyProducts = new ArrayList<>();
-        for(Store store: stores.values()){
-            if(!store.SearchByCategory(category, minprice, maxprice,prank).isEmpty()){
-                dummyProducts.addAll(store.SearchByCategory(category, minprice, maxprice,prank));
-            }
-        }
-        return dummyProducts;
-    }
-
     /**
      *
      * @requirement 4.3
@@ -1053,11 +1032,12 @@ public class TradingSystem {
     }
 
     public Double calculateBugPrice(int userID, int storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-       if(this.subscribers.contains(userID))
-       return this.stores.get(storeID).calculateBugPrice(true,productsInTheBug);
-       else
-       return this.stores.get(storeID).calculateBugPrice(false,productsInTheBug);
-    }
+        if (this.stores.contains(storeID))
+            return this.stores.get(storeID).calculateBugPrice(userID, productsInTheBug);
+
+        return -1.0;
+        }
+
 
     public Response ShowAllUsers(int adminID, String connID) {
         if(!ValidConnectedUser(adminID, connID)){
@@ -1352,12 +1332,23 @@ public class TradingSystem {
         }
     }
 
-    public Response createSalePolicy(int userID, String connID, int storeID, Map<String, Object> obj ){
-       if (!ValidConnectedUser(userID, connID)) {
-           loggerController.WriteErrorMsg("User " + userID + "try to get permissions for store and failed. The err message: Error in User details");
-           return new Response(true, "Error in User details");
+    public Response addDiscountPolicy(int userID, String connID, int storeID, Map<String, Object> obj ){
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("user "+userID+" try to add discountPolicy but the details is wrong");
+            return new Response(true, "Error in Admin details");
         }
-        //todo add another checks
+        if (!subscribers.containsKey(userID)) {
+            loggerController.WriteErrorMsg("user "+userID+" try to add discountPolicy but he is not subscriber");
+            return new Response(true, "the user is not subscriber to the system");
+        }
+        if(stores.get(storeID)==null){
+            loggerController.WriteErrorMsg("user "+userID+" try to add discountPolicy from store "+storeID+ " but the store is not in the system");
+            return new Response(true, "the store not exist in the system");
+        }
+        if(!stores.get(storeID).checkOwner(userID)){
+            loggerController.WriteErrorMsg("user "+userID+" try to add discountPolicy from store "+storeID+ " but he is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
+        }
         Store s=this.stores.get(storeID);
         if(obj.size()==1) {
             Iterator it = obj.entrySet().iterator();
@@ -1368,7 +1359,7 @@ public class TradingSystem {
             DiscountPolicy d=new DiscountPolicy(storeID,res);
             s.setDiscountPolicy(d);
         }
-        return new Response("");
+        return new Response("the discountPolicy added successfully");
     }
 
     private Sale createSale(Integer storeID,String saleName, Map<String, Object> o) {
@@ -1381,7 +1372,7 @@ public class TradingSystem {
             ) {
                 Map<String, Object> tosend = new HashMap<>();
                 tosend.put(mapKey,(Map<String, Object>) o.get(mapKey));
-                createSalePolicy(storeID,sale,tosend);
+                CreateDiscountPolicy(storeID,sale,tosend);
             }
             s=sale;
         }
@@ -1392,14 +1383,14 @@ public class TradingSystem {
             ) {
                 Map<String, Object> tosend = new HashMap<>();
                 tosend.put(mapKey,(Map<String, Object>) o.get(mapKey));
-                createSalePolicy(storeID,sale,tosend);
+                CreateDiscountPolicy(storeID,sale,tosend);
             }
             s=sale;
         }
         return s;
     }
 
-    private Sale createSalePolicy(Integer storeID,Sale sale, Map<String, Object> o) {
+    private Sale CreateDiscountPolicy(Integer storeID, Sale sale, Map<String, Object> o) {
         Response res=new Response("");
         for (String key:o.keySet()
              ) {
@@ -1411,7 +1402,7 @@ public class TradingSystem {
                          ) {
                         Map<String, Object> tosend = new HashMap<>();
                         tosend.put(mapKey,(Map<String, Object>) map1.get(mapKey));
-                        createSalePolicy(storeID,addComposite,tosend);
+                        CreateDiscountPolicy(storeID,addComposite,tosend);
                     }
                     sale.setSale(addComposite);
                     return sale;
@@ -1422,7 +1413,7 @@ public class TradingSystem {
                     ) {
                         Map<String, Object> tosend = new HashMap<>();
                         tosend.put(mapKey,(Map<String, Object>) map2.get(mapKey));
-                        createSalePolicy(storeID,maxComposite,tosend);
+                        CreateDiscountPolicy(storeID,maxComposite,tosend);
                     }
                     sale.setSale(maxComposite);
                     return sale;
@@ -1528,12 +1519,23 @@ public class TradingSystem {
         return null;
     }
 
-    public Response createLimitPolicy(int userID, String connID, int storeID, Map<String, Object> obj ){
-        // if (!ValidConnectedUser(userID, connID)) {
-        // loggerController.WriteErrorMsg("User " + userID + "try to get permissions for store and failed. The err message: Error in User details");
-        //   return new Response(true, "Error in User details");
-        //}
-        //todo add another checks
+    public Response addBuyingPolicy(int userID, String connID, int storeID, Map<String, Object> obj ){
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("user "+userID+" try to add buyingPolicy but the details is wrong");
+            return new Response(true, "Error in Admin details");
+        }
+        if (!subscribers.containsKey(userID)) {
+            loggerController.WriteErrorMsg("user "+userID+" try to add buyingPolicy but he is not subscriber");
+            return new Response(true, "the user is not subscriber to the system");
+        }
+        if(stores.get(storeID)==null){
+            loggerController.WriteErrorMsg("user "+userID+" try to add buyingPolicy from store "+storeID+ " but the store is not in the system");
+            return new Response(true, "the store not exist in the system");
+        }
+        if(!stores.get(storeID).checkOwner(userID)){
+            loggerController.WriteErrorMsg("user "+userID+" try to add buyingPolicy from store "+storeID+ " but he is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
+        }
         Store s=this.stores.get(storeID);
         AndComposite exp=new AndComposite();
             Iterator it = obj.entrySet().iterator();
@@ -1643,4 +1645,48 @@ public class TradingSystem {
     public void AddStoreToList(Store store) {
         this.stores.put(store.getId(), store);
     }
-}
+
+    //todo add permission?
+    public Response RemoveBuyingPolicy(int userID, int storeID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("user "+userID+" try to remove buyingPolicy but the details is wrong");
+            return new Response(true, "Error in Admin details");
+        }
+        if (!subscribers.containsKey(userID)) {
+            loggerController.WriteErrorMsg("user "+userID+" try to remove buyingPolicy but he is not subscriber");
+            return new Response(true, "the user is not subscriber to the system");
+        }
+        if(stores.get(storeID)==null){
+            loggerController.WriteErrorMsg("user "+userID+" try to remove buyingPolicy from store "+storeID+ " but the store is not in the system");
+            return new Response(true, "the store not exist in the system");
+        }
+        if(!stores.get(storeID).checkOwner(userID)){
+            loggerController.WriteErrorMsg("user "+userID+" try to remove buyingPolicy from store "+storeID+ " but he is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
+        }
+        stores.get(storeID).RemoveBuyingPolicy();
+        return new Response("the buyingPolicy removed successfully");
+    }
+
+    public Response RemoveDiscountPolicy(int userID, int storeID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            loggerController.WriteErrorMsg("user "+userID+" try to remove discountPolicy but the details is wrong");
+            return new Response(true, "Error in Admin details");
+        }
+        if (!subscribers.containsKey(userID)) {
+            loggerController.WriteErrorMsg("user "+userID+" try to remove discountPolicy but he is not subscriber");
+            return new Response(true, "the user is not subscriber to the system");
+        }
+        if(stores.get(storeID)==null){
+            loggerController.WriteErrorMsg("user "+userID+" try to remove discountPolicy from store "+storeID+ " but the store is not in the system");
+            return new Response(true, "the store not exist in the system");
+        }
+        if(!stores.get(storeID).checkOwner(userID)){
+            loggerController.WriteErrorMsg("user "+userID+" try to remove discountPolicy from store "+storeID+ " but he is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
+        }
+        stores.get(storeID).RemoveDiscountPolicy();
+        return new Response("the discountPolicy removed successfully");
+     }
+
+    }

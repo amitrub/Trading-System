@@ -9,7 +9,6 @@ public class NumOfProductsForGetSale extends SimpleExpression {
    private Integer numOfProductsForSale;
 
     public NumOfProductsForGetSale(Integer numOfProductForSale) {
-        //super(expressionID);
       this.numOfProductsForSale=numOfProductForSale;
     }
 

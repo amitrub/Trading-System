@@ -297,7 +297,7 @@ public class ShoppingCart {
             loggerController.WriteErrorMsg("user "+userID+" try to change product quantity ("+productID+", from store "+storeID+"), to "+quantity+" but the product isn't in the stock");
             return new Response(true,"The product isn't in the stock, so it cannot be edited");
         }
-        else if(!tradingSystem.validation.checkBuyingPolicy(productID,storeID,quantity,this.shoppingBags.get(storeID).getProducts())){
+        else if(!tradingSystem.validation.checkBuyingPolicy(userID,storeID,this.shoppingBags.get(storeID).getProducts())){
             loggerController.WriteErrorMsg("user "+userID+" try to change product quantity ("+productID+", from store "+storeID+"), to "+quantity+" but it's against the store policy");
             return new Response(true,"The quantity of the product is against tha store policy, so it cannot be edited");
         }

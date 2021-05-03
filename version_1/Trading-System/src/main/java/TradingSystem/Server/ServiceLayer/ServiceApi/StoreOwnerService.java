@@ -150,8 +150,8 @@ public class StoreOwnerService {
     //TODO: not implemented version 2
     @PostMapping("{userID}/store/{storeID}/add_buying_policy}")
     public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        Response res = this.tradingSystem.AddBuyingPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
+        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,obj);
+        res.AddConnID(connID);
         return res;
     }
 
@@ -173,8 +173,8 @@ public class StoreOwnerService {
     //TODO: not implemented version 2
     @PostMapping("{userID}/store/{storeID}/add_discount_policy}")
     public Response AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        Response res = this.tradingSystem.AddDiscountPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
+        Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,obj);
+        res.AddConnID(connID);
         return res;
     }
 
@@ -234,7 +234,6 @@ public class StoreOwnerService {
      * @param buyingPolicyID : int (Path)
      * @param connID: String (Header)
      * @param obj:{
-     *  TODO: Think what values should be in Buying Policy
      * }
      * @return Response{
      *  "isErr: boolean
@@ -242,11 +241,10 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
     @DeleteMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
     public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
+        Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
+        res.AddConnID(connID);
         return res;
     }
 
@@ -258,7 +256,6 @@ public class StoreOwnerService {
      * @param discountPolicyID : int (Path)
      * @param connID: String (Header)
      * @param obj:{
-     *  TODO: Think what values should be in Discount Policy
      * }
      * @return Response{
      *  "isErr: boolean
@@ -266,11 +263,11 @@ public class StoreOwnerService {
      *  "connID": String
      * }
      */
-    //TODO: not implemented version 2
+
     @DeleteMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}}")
     public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
+        Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
+        res.AddConnID(connID);
         return res;
     }
 

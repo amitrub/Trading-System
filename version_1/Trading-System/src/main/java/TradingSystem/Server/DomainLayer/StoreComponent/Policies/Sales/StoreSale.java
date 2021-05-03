@@ -7,23 +7,18 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class StoreSale extends SimpleSale {
 
-   // private Integer saleID;
     private Integer storeID;
     private Double  discountPercentage;
-    //private Expression expression;
 
     public StoreSale(Expression exp,Integer storeID, Double discountPercentage) {
         super(exp);
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
-       // this.saleID=saleID;
     }
 
     public StoreSale(Integer storeID, Double discountPercentage) {
-        //super(exp);
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
-        // this.saleID=saleID;
     }
 
     @Override
@@ -35,69 +30,3 @@ public class StoreSale extends SimpleSale {
     }
 
 }
-
-
-/*
-    @Override
-    public Expression setExpression(Expression exp) {
-        if(this.expression!=null){
-         this.expression.add(exp);
-        }
-        else{
-            this.expression=exp;
-        }
-        return this.expression;
-    }
-
-    @Override
-    public Expression getExpression() {
-        return this.expression;
-    }
-
-    @Override
-    public Sale setSale(Sale sale) {
-        return this;
-    }
-
-    @Override
-    public Sale getSale() {
-        return this;
-    }
-
-
-
-    @Override
-    public Sale setSale(Integer saleID, Sale sale) {
-        return this;
-    }
-
-    @Override
-    public Expression getExpression(Integer ID) {
-        if(this.expression!=null){
-            return this.expression.getExpression(ID);
-        }
-        return this.expression;
-    }
-
-    @Override
-    public Integer getID() {
-        return this.saleID;
-    }
-
-    @Override
-    public Sale getSale(Integer saleID) {
-        return this;
-    }
-
-
-    @Override
-    public Expression setExpression(Integer expID, Expression exp) {
-        if(this.expression!=null) {
-            this.expression.setExpression(expID, exp);
-        }
-        else{
-            this.expression=exp;
-        }
-        return this.expression;
-    }
- */

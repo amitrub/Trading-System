@@ -61,8 +61,8 @@ public class Validation {
     }
 
     //Shopping Cart functions
-    public boolean checkBuyingPolicy(Integer productID, Integer storeID, Integer quantity, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        return tradingSystem.stores.get(storeID).checkBuyingPolicy(productID,quantity,productsInTheBug);
+    public boolean checkBuyingPolicy(Integer userId, Integer storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        return tradingSystem.stores.get(storeID).checkBuyingPolicy(userId,productsInTheBug);
     }
     public boolean checkProductsExistInTheStore(Integer storeID, Integer productID,  Integer quantity) {
         if (tradingSystem.stores.containsKey(storeID))

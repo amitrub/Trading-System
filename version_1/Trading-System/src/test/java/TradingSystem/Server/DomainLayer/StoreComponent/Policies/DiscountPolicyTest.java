@@ -35,42 +35,11 @@ class DiscountPolicyTest {
     DiscountPolicy DC;
     BuyingPolicy BP;
 
-/*
-    @Test
-    void test(){
-    QuantityForGetSale QFGS1 =new QuantityForGetSale(3,5);
-    QuantityForGetSale QFGS2 =new QuantityForGetSale(2,3);
-    List<Expression> L1=new LinkedList<>();
-    L1.add(QFGS1);
-    L1.add(QFGS2);
-    OrComposite OC=new OrComposite(L1);
-    CategorySale CS=new CategorySale(OC,"blabla",13.5);
-    NumOfProductsForGetSale NOPFGS=new NumOfProductsForGetSale(10);
-    ProductSale PS=new ProductSale(NOPFGS,10,10.0);
-    PriceForGetSale PFGS=new PriceForGetSale(100.0);
-    StoreSale SS=new StoreSale(PFGS,1,15.0);
-    List<Sale> L2=new LinkedList<Sale>();
-    L2.add(CS);
-    L2.add(PS);
-    L2.add(SS);
-    MaxComposite MC=new MaxComposite(L2);
-    DiscountPolicy DP=new DiscountPolicy(1,MC);
-    //new Gson().fromJson(json,
-    JSONObject json = new JSONObject();
-     ObjectMapper mapper = new ObjectMapper();
-     //mapper.readValue(json,DiscountPolicy.class);
-    // String output = JsonConvert.SerializeObject(DP);
-        // JsonNode productNode = new ObjectMapper().readTree(SOURCE_JSON);
-    //JsonSerializer serializer = new JsonSerializer();
-    //JsonConvert jc=new JsonSerializer<>();
-    }
-
-
     @BeforeEach
     void setUp() {
         store = new Store("Store1",1, DC, BP);
-        DC = new DiscountPolicy(store.getId());
-        BP = new BuyingPolicy(store.getId());
+        DC = new DiscountPolicy(store.getId(),null);
+        BP = new BuyingPolicy(store.getId(),null);
         store.AddProductToStore( "computer", 3000.0, "Technology",5);
         store.AddProductToStore("Bag" ,100.0, "Beauty",5);
         store.AddProductToStore("IPed",  2500.0, "Technology", 5);
@@ -88,9 +57,8 @@ class DiscountPolicyTest {
     //region Conditional discount tests
     @Test
     void HappyStoreSaleTest() {
-        StoreSale sale = new StoreSale(1, store.getId(), 10.0);
-        PriceForGetSale exp = new PriceForGetSale(1, 100.0);
-        sale.setExpression(exp);
+        PriceForGetSale exp = new PriceForGetSale( 100.0);
+        StoreSale sale = new StoreSale(exp, store.getId(), 10.0);
         DC.AddSale(sale);
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
@@ -103,9 +71,8 @@ class DiscountPolicyTest {
 
     @Test
     void SadStoreSaleTest() {
-        StoreSale sale = new StoreSale(1, store.getId(), 10.0);
-        PriceForGetSale exp = new PriceForGetSale(1, 5000.0);
-        sale.setExpression(exp);
+        PriceForGetSale exp = new PriceForGetSale( 5000.0);
+        StoreSale sale = new StoreSale(exp, store.getId(), 10.0);
         DC.AddSale(sale);
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
@@ -121,9 +88,8 @@ class DiscountPolicyTest {
         tradingSystem.AddStoreToList(store);
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        ProductSale sale = new ProductSale(1,productID1,20.0);
-        NumOfProductsForGetSale exp = new NumOfProductsForGetSale(1, 1);
-        sale.setExpression(exp);
+        NumOfProductsForGetSale exp = new NumOfProductsForGetSale( 1);
+        ProductSale sale = new ProductSale(exp,productID1,20.0);
         DC.AddSale(sale);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
@@ -137,9 +103,8 @@ class DiscountPolicyTest {
         tradingSystem.AddStoreToList(store);
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        ProductSale sale = new ProductSale(1,productID1,20.0);
-        NumOfProductsForGetSale exp = new NumOfProductsForGetSale(1, 3);
-        sale.setExpression(exp);
+        NumOfProductsForGetSale exp = new NumOfProductsForGetSale( 3);
+        ProductSale sale = new ProductSale(exp,productID1,20.0);
         DC.AddSale(sale);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
@@ -153,9 +118,9 @@ class DiscountPolicyTest {
         tradingSystem.AddStoreToList(store);
         Integer productID1 = store.getProductID("Ball");
         Integer productID2 = store.getProductID("Bag");
-        CategorySale sale = new CategorySale(1, "Fun", 50.0);
-        QuantityForGetSale exp = new QuantityForGetSale(1, productID1, 2);
-        sale.setExpression(exp);
+        QuantityForGetSale exp = new QuantityForGetSale( productID1, 2);
+        CategorySale sale = new CategorySale(exp, "Fun", 50.0);
+       // sale.setExpression(exp);
         DC.AddSale(sale);
         ConcurrentHashMap<Integer, Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
@@ -169,9 +134,9 @@ class DiscountPolicyTest {
         tradingSystem.AddStoreToList(store);
         Integer productID1 = store.getProductID("Ball");
         Integer productID2 = store.getProductID("Bag");
-        CategorySale sale = new CategorySale(1, "Fun", 50.0);
-        QuantityForGetSale exp = new QuantityForGetSale(1, productID1, 4);
-        sale.setExpression(exp);
+        QuantityForGetSale exp = new QuantityForGetSale( productID1, 4);
+        CategorySale sale = new CategorySale(exp, "Fun", 50.0);
+       // sale.setExpression(exp);
         DC.AddSale(sale);
         ConcurrentHashMap<Integer, Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
@@ -186,13 +151,13 @@ class DiscountPolicyTest {
     void HappyAndRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        StoreSale sale = new StoreSale(1, store.getId(), 50.0);
-        PriceForGetSale exp1 = new PriceForGetSale(1, 1000.0);
-        QuantityForGetSale exp2 = new QuantityForGetSale(2,productID1,2);
-        AndComposite andExpression = new AndComposite(1);
+        PriceForGetSale exp1 = new PriceForGetSale( 1000.0);
+        QuantityForGetSale exp2 = new QuantityForGetSale(productID1,2);
+        AndComposite andExpression = new AndComposite();
         andExpression.add(exp1);
         andExpression.add(exp2);
-        sale.setExpression(andExpression);
+        StoreSale sale = new StoreSale(andExpression, store.getId(), 50.0);
+        //sale.setExpression(andExpression);
         DC.AddSale(sale);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
@@ -205,13 +170,13 @@ class DiscountPolicyTest {
     void SadAndRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        StoreSale sale = new StoreSale(1, store.getId(), 50.0);
-        PriceForGetSale exp1 = new PriceForGetSale(1, 1000.0);
-        QuantityForGetSale exp2 = new QuantityForGetSale(2,productID1,5);
-        AndComposite andExpression = new AndComposite(1);
+        PriceForGetSale exp1 = new PriceForGetSale( 1000.0);
+        QuantityForGetSale exp2 = new QuantityForGetSale(productID1,5);
+        AndComposite andExpression = new AndComposite();
         andExpression.add(exp1);
         andExpression.add(exp2);
-        sale.setExpression(andExpression);
+        StoreSale sale = new StoreSale(andExpression, store.getId(), 50.0);
+       // sale.setExpression(andExpression);
         DC.AddSale(sale);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
@@ -224,13 +189,13 @@ class DiscountPolicyTest {
     void HappyOrRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        StoreSale sale = new StoreSale(1, store.getId(), 50.0);
-        PriceForGetSale exp1 = new PriceForGetSale(1, 10000.0);
-        QuantityForGetSale exp2 = new QuantityForGetSale(2,productID1,2);
-        OrComposite andExpression = new OrComposite(1);
+        PriceForGetSale exp1 = new PriceForGetSale( 10000.0);
+        QuantityForGetSale exp2 = new QuantityForGetSale(productID1,2);
+        OrComposite andExpression = new OrComposite();
         andExpression.add(exp1);
         andExpression.add(exp2);
-        sale.setExpression(andExpression);
+        StoreSale sale = new StoreSale(andExpression, store.getId(), 50.0);
+        //sale.setExpression(andExpression);
         DC.AddSale(sale);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
@@ -243,13 +208,13 @@ class DiscountPolicyTest {
     void SadOrRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        StoreSale sale = new StoreSale(1, store.getId(), 50.0);
-        PriceForGetSale exp1 = new PriceForGetSale(1, 10000.0);
-        QuantityForGetSale exp2 = new QuantityForGetSale(2,productID1,5);
-        OrComposite andExpression = new OrComposite(1);
+        PriceForGetSale exp1 = new PriceForGetSale( 10000.0);
+        QuantityForGetSale exp2 = new QuantityForGetSale(productID1,5);
+        OrComposite andExpression = new OrComposite();
         andExpression.add(exp1);
         andExpression.add(exp2);
-        sale.setExpression(andExpression);
+        StoreSale sale = new StoreSale(andExpression, store.getId(), 50.0);
+        //sale.setExpression(andExpression);
         DC.AddSale(sale);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
@@ -267,5 +232,5 @@ class DiscountPolicyTest {
     }
 
     //endregion
-  */
+
 }

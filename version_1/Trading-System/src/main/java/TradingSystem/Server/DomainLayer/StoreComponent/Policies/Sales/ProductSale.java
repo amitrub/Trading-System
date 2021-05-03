@@ -8,28 +8,21 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class ProductSale extends SimpleSale {
 
-    //Integer saleID;
     Integer productID;
     Double discountPercentage;
-    //Expression expression;
     TradingSystem tradingSystem = TradingSystem.getInstance();
 
     public ProductSale(Expression exp, Integer productID, Double discountPercentage) {
-        //this.saleID = saleID;
         super(exp);
         this.productID = productID;
         this.discountPercentage = discountPercentage;
-      //  this.setExpression(null);
     }
 
     public ProductSale(Integer productID, Double discountPercentage) {
-        //this.saleID = saleID;
-       // super(exp);
         this.productID = productID;
         this.discountPercentage = discountPercentage;
     }
 
-    //Add productID,Price,quantity
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         if (products.get(productID) != null) {

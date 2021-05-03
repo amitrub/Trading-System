@@ -12,7 +12,6 @@ public class QuantityForGetSale extends SimpleExpression {
     private Integer quantityForSale;
 
     public QuantityForGetSale(Integer productId,  Integer quantityForSale) {
-        //super(expId);
         this.productId=productId;
         this.quantityForSale = quantityForSale;
     }
@@ -23,16 +22,4 @@ public class QuantityForGetSale extends SimpleExpression {
       }
       return false;
     }
-
-/*
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
-        Integer quantityInTheBag=0;
-        Set<Integer> keySet=products.keySet();
-        for(Integer key:keySet){
-            quantityInTheBag=quantityInTheBag+products.get(key);
-        }
-        return quantityInTheBag>=quantityForSale;
-    }
-
- */
 }

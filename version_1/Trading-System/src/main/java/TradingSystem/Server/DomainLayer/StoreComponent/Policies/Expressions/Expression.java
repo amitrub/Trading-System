@@ -7,11 +7,6 @@ public interface Expression {
     public Expression add(Expression expr);
 
     public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
-
-   // public Expression setExpression(Integer expID, Expression exp);
-
-    //public Expression getExpression(Integer id);
-
-//    public Integer getExpressionId();
+    
 }
 

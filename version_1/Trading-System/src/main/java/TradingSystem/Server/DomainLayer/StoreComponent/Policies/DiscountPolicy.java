@@ -3,6 +3,9 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
+
 public class DiscountPolicy {
 
     private Integer storeID;
@@ -22,30 +25,21 @@ public class DiscountPolicy {
         return nextSaleID;
     }
 
-    public void AddSale(Sale sale){
-
-        this.Sales.put(sale.getID(),sale);
-    }
-
     public void RemoveSale(Integer saleID){
         this.Sales.remove(saleID);
     }
+*/
 
+    public void AddSale(Sale sale){
+        this.sale=sale;
+    }
    //TODO check
     public Double calculatePrice(ConcurrentHashMap<Integer,Integer> products, Integer userID, Double priceBeforeSale){
-        Double sale =0.0;
-
-        Set<Integer> keySetSales=Sales.keySet();
-        for (Integer key:keySetSales
-        ) {
-            Double s=Sales.get(key).calculateSale(products,priceBeforeSale, userID,storeID );
-            sale=s+sale;
-        }
-
+        Double sale =this.sale.calculateSale(products,priceBeforeSale,userID,storeID);
         return priceBeforeSale-sale;
     }
 
 
- */
+
 
 }

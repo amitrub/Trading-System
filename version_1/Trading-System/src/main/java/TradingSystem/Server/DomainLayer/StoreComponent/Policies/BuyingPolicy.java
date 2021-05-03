@@ -18,24 +18,9 @@ public class BuyingPolicy {
     public BuyingPolicy(Integer storeID,Expression exp){
         this.storeID=storeID;
         this.exp=exp;
-       // this.Limits =new ConcurrentHashMap<>();
         this.tradingSystem=TradingSystem.getInstance();
     }
-/*
-       public static synchronized int getNextLimitID() {
-        nextLimitID++;
-        return nextLimitID;
-    }
 
-    public void AddLimit(Limit limit){
-        this.Limits.put(limit.getID(),limit);
-    }
-
-    public void RemoveLimit(Integer limitID){
-        this.Limits.remove(limitID);
-    }
-*/
-    //TODO check
     public boolean checkEntitlement(ConcurrentHashMap<Integer,Integer> products,Integer userID,Double finalPrice){
         return exp.evaluate(products,finalPrice,userID,storeID);
     }
