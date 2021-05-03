@@ -38,7 +38,14 @@ public abstract class CompositeSale implements Sale{
 
     @Override
     public Response checkValidity(int storeID) {
-        return new Response("");
+        for (Sale s:children
+             ) {
+            Response r=s.checkValidity(storeID);
+            if(r.getIsErr()){
+                return r;
+            }
+        }
+        return new Response("correct");
     }
 
     public Boolean hasChildren()

@@ -2006,8 +2006,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         if(!stores.get(storeID).checkOwner(userID)){
               return new Response(true, "the user is not the owner of the store");
         }
-        stores.get(storeID).RemoveBuyingPolicy();
-        return new Response("the buyingPolicy removed successfully");
+       if(stores.get(storeID).getBuyingPolicy()==null){
+           return new Response(true,"there is not policy");
+       }
+        return  stores.get(storeID).RemoveBuyingPolicy();
     }
 
     public Response RemoveDiscountPolicy(int userID, int storeID, String connID) {
@@ -2023,8 +2025,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         if(!stores.get(storeID).checkOwner(userID)){
              return new Response(true, "the user is not the owner of the store");
         }
-        stores.get(storeID).RemoveDiscountPolicy();
-        return new Response("the discountPolicy removed successfully");
+        return stores.get(storeID).RemoveDiscountPolicy();
     }
 
     @Override

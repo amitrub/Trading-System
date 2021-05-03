@@ -291,6 +291,14 @@ public class Store {
         this.inventory.unlockProduct(productID);
     }
 
+    public DiscountPolicy getDiscountPolicy() {
+        return discountPolicy;
+    }
+
+    public BuyingPolicy getBuyingPolicy() {
+        return buyingPolicy;
+    }
+
     public String getName() {
         return name;
     }
@@ -469,12 +477,22 @@ public class Store {
     }
 
     //todo syncronize?
-    public void RemoveBuyingPolicy() {
+    public Response RemoveBuyingPolicy() {
+        if(this.getBuyingPolicy()==null||
+                this.getBuyingPolicy().getExp()==null){
+            return new Response(true,"there is no policy");
+        }
         this.buyingPolicy=null;
+        return new Response("the buyingPolicy removed successfully");
     }
 
-    public void RemoveDiscountPolicy() {
+    public Response RemoveDiscountPolicy() {
+        if(this.getDiscountPolicy()==null||
+        this.getDiscountPolicy().getSale()==null){
+            return new Response(true,"there is no policy");
+        }
         this.discountPolicy=null;
+        return new Response("the discountPolicy removed successfully");
     }
 
     public OwnerPermission getPermission(int key){

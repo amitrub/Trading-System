@@ -4,6 +4,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expr
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,6 +46,18 @@ public class CategorySale extends SimpleSale {
         }
         return 0.0;
     }
+
+    @Override
+    public Response checkValidity(int storeID) {
+        if(0>discountPercentage||discountPercentage>100){
+            return new Response(true, "discount percentage cant be negative");
+        }
+        if(this.getExpression()==null){
+            return new Response(true,"there is not expression from some reason");
+        }
+        return this.getExpression().checkValidity(storeID);
+    }
+
 }
 
 /*
