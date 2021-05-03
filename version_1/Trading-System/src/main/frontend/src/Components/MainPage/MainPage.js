@@ -42,13 +42,16 @@ function mainPage(props) {
             {/* <img src="resources/img/online-shopping-logo.jpeg" alt="Omnifood logo" className="logo"> </img> */}
             <ul className="main-nav js--main-nav" id="home">
               <li>
-                <a href="#home">hello {props.username}</a>
+                <a href="#">hello {props.username}</a>
               </li>
               <li>
                 <a href="#stores">stores</a>
               </li>
               <li>
-                <a href="#sign">sign</a>
+                <a href="#owners">owners</a>
+              </li>
+              <li>
+                <a href="#shoppingcart">shopping cart</a>
               </li>
               <li>
                 <a href="#programers">about us</a>

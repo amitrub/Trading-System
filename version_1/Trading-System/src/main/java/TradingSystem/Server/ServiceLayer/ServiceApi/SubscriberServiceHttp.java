@@ -10,6 +10,7 @@ import java.util.Map;
 
 @RestController
 @RequestMapping(path = "api/subscriber")
+@CrossOrigin("*")
 public class SubscriberServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
 

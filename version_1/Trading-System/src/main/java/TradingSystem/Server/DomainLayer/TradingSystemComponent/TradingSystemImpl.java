@@ -79,9 +79,23 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         String connID = "479f239c-797c-4bdb-8175-980acaabf070";
         this.connectedSubscribers.put(connID, userID);
         AddStore(userID, connID, "store1");
-        AddStore(userID, connID, "store2");
-        AddStore(userID, connID, "store3");
+        AddStore(userID, connID, "Mar y juana");
+        AddStore(userID, connID, "Roee Hadas");
         AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
+        AddProductToStore(userID, connID,1, "Sneakers2", "Shoes",50.0, 25);
+        AddProductToStore(userID, connID, 1,"Sneaker3", "bla" ,80.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers24",  "Shoes", 80.0,25);
+        AddProductToStore(userID, connID, 2, "Sneak23", "bloo", 840.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes",80.0, 25);
+        AddProductToStore(userID, connID, 3,"Sneakers2", "Shoes", 50.0, 25);
+        AddProductToStore(userID, connID, 3,"Sneaker3", "bla" , 80.0,25);
+        AddProductToStore(userID, connID, 3,"Sneakers24",  "Shoes", 80.0,25);
+        AddProductToStore(userID, connID, 1, "Sneak23",  "bloo",840.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes", 80.0,25);
+        AddProductToStore(userID,connID,1,"Sneak","Shos", 52.0, 2 );
+        AddProductToStore(userID,connID,2,"Sneak","Shos", 52.0, 2 );
+
+
 
         User user1 = new User("hadass", "1234");
         userID = user1.getId();

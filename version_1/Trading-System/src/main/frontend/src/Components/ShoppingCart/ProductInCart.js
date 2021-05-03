@@ -1,43 +1,48 @@
 import React, { useState } from "react";
 import "../../Design/grid.css";
 import "../../Design/style.css";
-import createApiClient from "../../ApiClient";
+import createApiClientHttp from "../../ApiClientHttp";
 
-const apiHtml = createApiClient();
+const apiHtml = createApiClientHttp();
 
 function ProductInCart(props) {
-  const [quantityToBuy, setQuantityToBuy] = useState(0);
   const product = props.currProduct;
+  const [editedQuantity, setEditedQuantity] = useState(product.quantity);
 
-  function insertQuantityToEdit(event) {
-    setQuantityToBuy(event.target.value);
+  function submitNewQuantity(event) {
+    const strQuantity = event.target.value;
+    setEditedQuantity(parseInt(strQuantity));
   }
 
-  async function submitBuyProductHandler(event) {
-    event.preventDefault();
-    console.log(
-      "Product: " +
-        product.productName +
-        " added to Cart! quantity added: " +
-        quantityToBuy +
-        "prodID=" +
-        product.productID +
-        " storeID=" +
-        product.storeID
-    );
-
-    const responseAddProductToCart = await apiHtml.addProductToCart(
-      props.clientConnection,
+  async function submitEditQuantity() {
+    console.log("Edit quantity in cart");
+    const editCartResponse = await apiHtml.EditProductQuantityFromCart(
       props.connID,
       product.storeID,
       product.productID,
-      quantityToBuy
+      editedQuantity
     );
 
-    console.log(responseAddProductToCart);
-    props.onAddToCart(product, quantityToBuy);
+    if (editCartResponse.isErr) {
+      console.log(editCartResponse.message);
+    } else {
+      props.onRefresh();
+    }
+  }
 
-    // props.onSubmitAddToCart();
+  async function sumbitRemoveProduct() {
+    console.log("sumbitRemoveProduct");
+    const removeProdFromCartResponse = await apiHtml.RemoveProductFromCart(
+      props.connID,
+      product.storeID,
+      product.productID
+    );
+
+    if (removeProdFromCartResponse.isErr) {
+      console.log(removeProdFromCartResponse.message);
+    } else {
+      props.onRefresh();
+    }
   }
 
   return (
@@ -45,39 +50,42 @@ function ProductInCart(props) {
       <div>
         <h3>{product.productName}</h3>
         <p className="plan-price">${product.price}</p>
+        <p className="plan-price-meal">{product.quantity} units in cart</p>
         <p className="plan-price-meal">
-          {product.quantity} units on '{product.storeName}'
+          from store '{product.storeName}' (id={product.storeID})
         </p>
       </div>
       <div>
         <p>Category: {product.category}</p>
       </div>
       <div>
-        <form onSubmit={submitBuyProductHandler} method="post" action="#">
-          <div className="">
-            <input
-              type="number"
-              name="quantity"
-              id="quantity"
-              placeholder="enter quantity"
-              required
-              min="1"
-              onChange={insertQuantityToEdit}
-            />
-          </div>
-          <div className={"row"}>
-            <div className={"col span-1-of-2"}>
-              <div className="btn btn-ghost">
-                <input type="submit" value="Remove from cart" />
-              </div>
-            </div>
-            <div className={"col span-2-of-2"}>
-              <div className="btn btn-ghost">
-                <input type="submit" value="Edit quantity" />
-              </div>
-            </div>
-          </div>
-        </form>
+        {/* <form onSubmit={submitBuyProductHandler} method="post" action="#"> */}
+        {/* Edit Product Quantity */}
+        <div className="">
+          <input
+            type="number"
+            name="edit"
+            placeholder="insert new quantity"
+            min="1"
+            onChange={submitNewQuantity}
+          />
+          <button
+            className="buttonus"
+            value="edit product cart"
+            onClick={submitEditQuantity}
+          >
+            Edit quantity
+          </button>
+        </div>
+
+        <button
+          className="buttonus"
+          value="Remove from cart"
+          onClick={sumbitRemoveProduct}
+        >
+          Remove from cart
+        </button>
+        {/* </form> */}
       </div>
     </div>
   );

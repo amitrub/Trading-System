@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
 
+@RequestMapping(path = "app")
 @RestController
 //server localhost is 8080 and react localhost is 3000 - we need to crossOrigin to communicate between the two.
 //but, if we think security its a problem because everybody can control and get our info.
@@ -34,7 +35,7 @@ public class GuestService {
         System.out.println("-------------------------------------------");
         return new ResponseEntity<>(HttpStatus.OK);
     }
-  
+
     @MessageMapping("/test")
     @SendTo("/topic/message")
     public void test(@Payload Map<String, Object> obj){

@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(path = "api/admin")
+@CrossOrigin("*")
 public class AdminServiceHttp {
 
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
