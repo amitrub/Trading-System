@@ -1,26 +1,23 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class HourLimit implements Expression {
+public class HourLimit extends SimpleExpression {
 
     Date date;
 
-    public HourLimit(Integer productID, Date date) {
+    public HourLimit(Integer expID, Date date) {
+      //  super(expID);
         this.date = date;
     }
 
-    @Override
-    public Expression add(Expression expr) {
-        return null;
-    }
 
-    @Override
     //ToDo check!
     public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
        if(products.isEmpty()){

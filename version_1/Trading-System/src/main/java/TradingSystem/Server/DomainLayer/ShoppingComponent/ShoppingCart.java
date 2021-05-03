@@ -292,8 +292,8 @@ public class ShoppingCart {
         else if(!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID,productID,quantity)){
             return new Response(true,"EditCart: The product isn't in the stock, so it cannot be edited");
         }
-        else if(!tradingSystemImpl.validation.checkBuyingPolicy(productID,storeID,quantity,this.shoppingBags.get(storeID).getProducts())){
-            return new Response(true,"EditCart: The quantity of the product is against tha store policy, so it cannot be edited");
+        else if(!tradingSystemImpl.validation.checkBuyingPolicy(userID,storeID,this.shoppingBags.get(storeID).getProducts())){
+                return new Response(true,"EditCart: The quantity of the product is against tha store policy, so it cannot be edited");
         }
         else{
             this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);

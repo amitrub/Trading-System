@@ -1,18 +1,23 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class MaxComposite extends CompositeSale {
 
-    @Override
-    public Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID) {
-        return true;
+    public MaxComposite(List<Sale> S) {
+        super(S);
+    }
+
+    public MaxComposite() {
     }
 
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         Double sale=0.0;
-        for (Sale s:children
+        for (Sale s:this.children
              ) {
             Double tempSale=s.calculateSale(products,finalSale, userID,storeID );
             if(tempSale>sale)
@@ -20,4 +25,5 @@ public class MaxComposite extends CompositeSale {
         }
         return sale;
     }
+
 }

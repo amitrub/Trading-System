@@ -260,8 +260,8 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
-//        Response res = this.tradingSystem.AddBuyingPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
+        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,obj);
+        res.AddConnID(connID);
         res.AddTag("AddBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         WriteToLogger(res);
@@ -286,8 +286,8 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/add_discount_policy")
     public Response AddDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
-//        Response res = this.tradingSystem.AddDiscountPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
+        Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,obj);
+        res.AddConnID(connID);
         res.AddTag("AddDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         WriteToLogger(res);
@@ -367,8 +367,8 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
     public Response RemoveBuyingPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int buyingPolicyID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
-//        Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
+        Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
+        res.AddConnID(connID);
         res.AddTag("RemoveBuyingPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         WriteToLogger(res);
@@ -394,8 +394,8 @@ import java.util.Map;
     @MessageMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}")
     public Response RemoveDiscountPolicy(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int discountPolicyID, @Payload Map<String, Object> obj){
         String connID = (String) obj.get("connID");
-//        Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
+        Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
+        res.AddConnID(connID);
         res.AddTag("RemoveDiscountPolicy");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         WriteToLogger(res);
