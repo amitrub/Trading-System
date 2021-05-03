@@ -23,9 +23,11 @@ public class StoreSale extends SimpleSale {
 
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
-        if(this.getExpression().evaluate(products,finalSale, userID, storeID)){
-            return  (discountPercentage/100)*finalSale;
-        }
+      if(this.getExpression()!=null) {
+          if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
+              return (discountPercentage / 100) * finalSale;
+          }
+      }
         return 0.0;
     }
 

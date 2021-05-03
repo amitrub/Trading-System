@@ -256,8 +256,11 @@ public class Store {
     }
 
     public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer,Integer> productsInTheBug){
-        return this.discountPolicy.calculatePrice(productsInTheBug,userId,this.CalculatePriceBeforeSale(productsInTheBug)) ;
-    }
+       if(this.discountPolicy!=null) {
+           return this.discountPolicy.calculatePrice(productsInTheBug, userId, this.CalculatePriceBeforeSale(productsInTheBug));
+       }
+       return 0.0;
+       }
 
 
     public Double CalculatePriceBeforeSale (ConcurrentHashMap<Integer,Integer> productsInTheBug){

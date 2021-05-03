@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,7 +11,7 @@ public class ProductSale extends SimpleSale {
 
     Integer productID;
     Double discountPercentage;
-    TradingSystem tradingSystem = TradingSystem.getInstance();
+    TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
 
     public ProductSale(Expression exp, Integer productID, Double discountPercentage) {
         super(exp);
@@ -25,11 +26,13 @@ public class ProductSale extends SimpleSale {
 
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
-        if (products.get(productID) != null) {
-            if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
-                Product p = tradingSystem.getProduct(storeID, productID);
-                Double ret = ((discountPercentage / 100) * p.getPrice())*products.get(productID);
-                return ret;
+        if(this.getExpression()!=null) {
+            if (products.get(productID) != null) {
+                if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
+                    Product p = tradingSystem.getProduct(storeID, productID);
+                    Double ret = ((discountPercentage / 100) * p.getPrice()) * products.get(productID);
+                    return ret;
+                }
             }
         }
         return 0.0;

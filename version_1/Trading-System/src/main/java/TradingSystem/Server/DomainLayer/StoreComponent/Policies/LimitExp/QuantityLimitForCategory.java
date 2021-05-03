@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -9,12 +10,12 @@ public class QuantityLimitForCategory extends SimpleExpression {
 
     Integer maxQuantity;
     String  category;
-    TradingSystem tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     public QuantityLimitForCategory(Integer maxQuantity,String category) {
         this.category=category;
         this.maxQuantity = maxQuantity;
-        tradingSystem=TradingSystem.getInstance();
+        tradingSystem= TradingSystemImpl.getInstance();
     }
 
     @Override

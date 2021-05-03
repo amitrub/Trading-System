@@ -8,6 +8,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import org.junit.jupiter.api.AfterEach;
@@ -30,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DiscountPolicyTest {
 
-    TradingSystem tradingSystem = TradingSystem.getInstance();
+    TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     Store store;
     DiscountPolicy DC;
     BuyingPolicy BP;

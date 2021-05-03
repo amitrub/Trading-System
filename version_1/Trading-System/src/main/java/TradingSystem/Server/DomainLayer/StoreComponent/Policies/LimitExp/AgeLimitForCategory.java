@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -11,12 +12,12 @@ public class AgeLimitForCategory extends SimpleExpression {
 
     Integer minAge;
     String  category;
-    TradingSystem tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     public AgeLimitForCategory(Integer minAge,String category) {
         this.category=category;
         this.minAge = minAge;
-        tradingSystem=TradingSystem.getInstance();
+        tradingSystem= TradingSystemImpl.getInstance();
     }
 
     @Override
