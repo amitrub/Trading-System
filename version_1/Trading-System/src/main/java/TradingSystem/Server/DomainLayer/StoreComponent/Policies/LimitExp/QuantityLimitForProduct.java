@@ -1,16 +1,19 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class QuantityLimit implements Expression {
+public class QuantityLimitForProduct extends SimpleExpression {
 
     Integer maxQuantity;
+    Integer productID;
 
-    public QuantityLimit(Integer productID, Integer quantity) {
-        maxQuantity = quantity;
+    public QuantityLimitForProduct(Integer quantity,Integer productID) {
+      this.productID=productID;
+       maxQuantity = quantity;
     }
 
     @Override
@@ -20,15 +23,11 @@ public class QuantityLimit implements Expression {
 
     //ToDo check!
     public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
-        if(products.isEmpty()){
-            return true;
+        if(!products.isEmpty()) {
+            if (products.get(productID) != null) {
+                return  maxQuantity>=products.get(productID) ;
+            }
         }
-        Integer quantity=0;
-        Set<Integer> keySet=products.keySet();
-        for (Integer key: keySet
-             ) {
-            quantity=quantity+products.get(key);
-        }
-        return quantity<= maxQuantity;
+        return true;
     }
 }

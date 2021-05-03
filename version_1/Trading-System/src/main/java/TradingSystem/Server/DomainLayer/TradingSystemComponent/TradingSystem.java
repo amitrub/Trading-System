@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
@@ -44,11 +45,6 @@ public interface TradingSystem {
     public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address);
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest);
     public Response SearchProduct(String name, String category, int minprice, int maxprice);
-    //TODO: to move?
-    public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank);
-    //TODO: to move?
-    public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank);
-
     public Response AddNewOwner(int userID, String connID, int storeID, int newOwner);
 
     public Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission);
@@ -94,5 +90,9 @@ public interface TradingSystem {
     public Response ShowStoreWorkers(int userID, String connID, int storeID);
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID);
     public Response ShowAllMyStores(String connID, int userID, boolean founder,boolean owner,boolean manager) ;
-
+    public Response addDiscountPolicy(int userID, String connID, int storeID, Map<String, Object> obj );
+    public Response addBuyingPolicy(int userID, String connID, int storeID, Map<String, Object> obj );
+    public void AddStoreToList(Store store);
+    public Response RemoveBuyingPolicy(int userID, int storeID, String connID);
+    public Response RemoveDiscountPolicy(int userID, int storeID, String connID);
 }

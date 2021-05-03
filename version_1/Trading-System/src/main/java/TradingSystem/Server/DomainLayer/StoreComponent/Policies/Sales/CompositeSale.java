@@ -1,25 +1,39 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class CompositeSale implements Sale{
+
     public List<Sale> children;
+  //  private Integer ID;
+
+    public CompositeSale(List<Sale> S)
+    { this.children= S ;}
 
     public CompositeSale()
-    { this.children = new LinkedList<>(); }
+    {this.children=new LinkedList<Sale>();}
+
 
     public Sale add(Sale sale){
         children.add(sale); return this;
     }
 
-    public Sale set(String name, Boolean value){
+    public abstract Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID);
+
+    @Override
+    public Sale setSale(Sale sale) {
+        this.children.add(sale);
         return this;
     }
 
-    public abstract Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID);
-    public abstract Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID);
+    @Override
+    public Sale getSale() {
+        return this;
+    }
 
     public Boolean hasChildren()
     { return !children.isEmpty(); }

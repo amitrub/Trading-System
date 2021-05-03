@@ -2,25 +2,33 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class StoreSale implements Sale {
+public class StoreSale extends SimpleSale {
 
-    Integer storeID;
-    Double  discountPercentage;
-    Expression expression;
+    private Integer storeID;
+    private Double  discountPercentage;
 
-    public StoreSale(Integer storeID, Double discountPercentage, Expression exp) {
+    public StoreSale(Expression exp,Integer storeID, Double discountPercentage) {
+        super(exp);
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
-        this.expression = exp;
+    }
+
+    public StoreSale(Integer storeID, Double discountPercentage) {
+        this.storeID = storeID;
+        this.discountPercentage = discountPercentage;
     }
 
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
-        if(expression.evaluate(products,finalSale, userID, storeID)){
-            return  (discountPercentage/100)*finalSale;
-        }
+      if(this.getExpression()!=null) {
+          if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
+              return (discountPercentage / 100) * finalSale;
+          }
+      }
         return 0.0;
     }
+
 }

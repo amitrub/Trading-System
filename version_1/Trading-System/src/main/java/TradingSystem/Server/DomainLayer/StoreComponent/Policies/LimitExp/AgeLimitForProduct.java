@@ -1,27 +1,26 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class AgeLimit implements Expression {
+public class AgeLimitForProduct extends SimpleExpression {
 
     Integer minAge;
+    Integer productID;
 
-    public AgeLimit(Integer minAge) {
+    public AgeLimitForProduct(Integer minAge,Integer productID) {
+      //  super(expId);
+        this.productID=productID;
         this.minAge = minAge;
     }
 
     @Override
-    public Expression add(Expression expr) {
-        return this;
-    }
-
-    @Override
     public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
-        if(products.isEmpty()){
-            return true;
+        if(products.get(productID)!=null){
+            return userID>=minAge;
         }
-        return userID>=minAge;
+        return true;
     }
 }

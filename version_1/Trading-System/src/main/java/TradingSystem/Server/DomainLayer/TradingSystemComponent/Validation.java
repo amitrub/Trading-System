@@ -61,15 +61,15 @@ public class Validation {
     }
 
     //Shopping Cart functions
-    public boolean checkBuyingPolicy(Integer productID, Integer storeID, Integer quantity, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        return tradingSystemImpl.stores.get(storeID).checkBuyingPolicy(productID,quantity,productsInTheBug);
+    public boolean checkBuyingPolicy(Integer userId, Integer storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        return tradingSystemImpl.stores.get(storeID).checkBuyingPolicy(userId, productsInTheBug);
     }
+
     public boolean checkProductsExistInTheStore(Integer storeID, Integer productID,  Integer quantity) {
         if (tradingSystemImpl.stores.containsKey(storeID))
             return tradingSystemImpl.stores.get(storeID).checkProductsExistInTheStore(productID,quantity);
         else
             return false;
     }
-
 
 }

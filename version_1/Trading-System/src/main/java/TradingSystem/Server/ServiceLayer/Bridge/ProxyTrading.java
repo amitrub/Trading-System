@@ -2,6 +2,7 @@ package TradingSystem.Server.ServiceLayer.Bridge;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -10,6 +11,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
@@ -208,11 +210,11 @@ public class ProxyTrading implements TradingSystem {
             return real.SearchProduct(name,category,minprice,maxprice);
         return null;
     }
-
+/*
     @Override
     public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank, int srank) {
         if(real!=null)
-            return real.SearchProductByName(name,minprice,maxprice,prank,srank);
+            return real.SearchProduct(name,null,minprice,maxprice);
         return null;
     }
 
@@ -223,6 +225,7 @@ public class ProxyTrading implements TradingSystem {
         return null;
     }
 
+ */
     @Override
     public Response AddNewOwner(int userID, String connID, int storeID, int newOwner) {
         if(real!=null)
@@ -468,6 +471,40 @@ public class ProxyTrading implements TradingSystem {
     public Response ShowAllMyStores(String connID, int userID, boolean founder, boolean owner, boolean manager) {
         if(real!=null)
             return real.ShowAllMyStores(connID,userID,founder,owner,manager);
+        return null;
+    }
+
+    @Override
+    public Response addDiscountPolicy(int userID, String connID, int storeID, Map<String, Object> obj) {
+        if(real!=null)
+            return real.addDiscountPolicy(userID, connID, storeID,  obj);
+        return null;
+    }
+
+    @Override
+    public Response addBuyingPolicy(int userID, String connID, int storeID, Map<String, Object> obj) {
+        if(real!=null)
+            return real.addBuyingPolicy( userID, connID, storeID,  obj);
+        return null;
+    }
+
+    @Override
+    public void AddStoreToList(Store store) {
+        if(real!=null)
+            real.AddStoreToList(store);
+    }
+
+    @Override
+    public Response RemoveBuyingPolicy(int userID, int storeID, String connID) {
+        if(real!=null)
+            return real.RemoveBuyingPolicy(userID, storeID, connID);
+        return null;
+    }
+
+    @Override
+    public Response RemoveDiscountPolicy(int userID, int storeID, String connID) {
+        if(real!=null)
+            return real.RemoveDiscountPolicy( userID, storeID, connID);
         return null;
     }
 }
