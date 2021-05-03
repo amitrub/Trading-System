@@ -71,8 +71,17 @@ public class SubscriberServiceHttp {
     //TODO: not check yet
     @PostMapping("{userID}/write_comment")
     public Response WriteComment(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID = (int) obj.get("storeID");
-        int productID = (int) obj.get("productID");
+        int storeID,productID;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : WriteComment");
+            System.out.println(res);
+            return res;
+        }
         String review = (String) obj.get("comment");
         Response res = tradingSystem.WriteComment(userID,connID,storeID,productID,review);
         tradingSystem.printCommentForProduct(storeID,productID);
@@ -103,7 +112,6 @@ public class SubscriberServiceHttp {
      *  }]
      * }
      */
-    //TODO: fix DummyShoppingHistory
     @GetMapping("{userID}/user_history")
     public Response ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
         return tradingSystem.ShowSubscriberHistory(userID, connID);
@@ -128,9 +136,18 @@ public class SubscriberServiceHttp {
      */
     @PostMapping("{userID}/shopping_cart/purchase")
     public Response subscriberPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String credit_number = (String) obj.get("credit_number");
-        String phone_number = (String) obj.get("phone_number");
-        String address = (String) obj.get("address");
+        String credit_number, phone_number, address;
+        try {
+            credit_number = (String) obj.get("credit_number");
+            phone_number = (String) obj.get("phone_number");
+            address = (String) obj.get("address");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : subscriberPurchase");
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
         return res;
     }

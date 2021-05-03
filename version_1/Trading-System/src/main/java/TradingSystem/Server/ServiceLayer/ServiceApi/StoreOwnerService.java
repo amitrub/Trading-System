@@ -47,8 +47,16 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/founded_stores")
     public Response ShowAllFoundedStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
-        System.out.println("ShowAllFoundedStores");
-        String connID = (String) obj.get("connID");
+        String connID;
+        try {
+            connID = (String) obj.get("connID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : ShowAllFoundedStores");
+            System.out.println(res);
+            return res;
+        }
         Response res = this.tradingSystem.ShowAllMyStores(connID, userID, true, false, false);
         System.out.println(res);
         res.AddTag("ShowAllFoundedStores");
@@ -75,8 +83,16 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/owned_stores")
     public Response ShowAllOwnedStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
-        System.out.println("Enterrrrr ShowAllStores");
-        String connID = (String) obj.get("connID");
+        String connID;
+        try {
+            connID = (String) obj.get("connID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : ShowAllOwnedStores");
+            System.out.println(res);
+            return res;
+        }
         Response res = this.tradingSystem.ShowAllMyStores(connID, userID, false, true, false);
         System.out.println(res);
         res.AddTag("ShowAllOwnedStores");
@@ -103,14 +119,22 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/managed_stores")
     public Response ShowAllManagedStores(@DestinationVariable int userID, @Payload Map<String, Object> obj) {
-        String connID = (String) obj.get("connID");
+        String connID;
+        try {
+            connID = (String) obj.get("connID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : ShowAllManagedStores");
+            System.out.println(res);
+            return res;
+        }
         Response res = this.tradingSystem.ShowAllMyStores(connID, userID, false, false, true);
         System.out.println(res);
         res.AddTag("ShowAllManagedStores");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         return res;
     }
-
 
 
     /**
@@ -132,17 +156,26 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/store/{storeID}/add_new_product")
     public Response AddProductToStore(@DestinationVariable int userID, @DestinationVariable int storeID, @Payload Map<String, Object> obj) {
-        String connID = (String) obj.get("connID");
-        String productName = (String) obj.get("productName");
-        String category = (String) obj.get("category");
-        int quantity  = (int) obj.get("quantity");
-        int price_int;
+        String connID, productName, category;
+        int quantity, price_int;
         Double price;
         try {
-            price = (Double) obj.get("price");
-        } catch (Exception e) {
-            price_int = (int) obj.get("price");
-            price = new Double(price_int);
+            connID = (String) obj.get("connID");
+            productName = (String) obj.get("productName");
+            category = (String) obj.get("category");
+            quantity = (int) obj.get("quantity");
+            try {
+                price = (Double) obj.get("price");
+            } catch (Exception e) {
+                price_int = (int) obj.get("price");
+                price = new Double(price_int);
+            }
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AddProductToStore");
+            System.out.println(res);
+            return res;
         }
         Response res = tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
         res.AddTag("AddProductToStore");
@@ -193,8 +226,18 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/store/{storeID}/change_quantity_product/{productID}")
     public Response ChangeQuantityProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        int quantity  = (int) obj.get("quantity");
+        String connID;
+        int quantity;
+        try {
+            connID = (String) obj.get("connID");
+            quantity = (int) obj.get("quantity");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : ChangeQuantityProduct");
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.ChangeQuantityProduct(userID,connID,storeID,productID,quantity);
         res.AddTag("ChangeQuantityProduct");
         template.convertAndSend(String.format("/topic/%s", connID), res);
@@ -223,18 +266,27 @@ import java.util.Map;
      */
     @MessageMapping("{userID}/store/{storeID}/edit_product/{productID}")
     public Response EditProduct(@DestinationVariable int userID, @DestinationVariable int storeID, @DestinationVariable int productID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        String productName = (String) obj.get("productName");
-        String category = (String) obj.get("category");
-        int price_int;
+        String connID, productName, category;
+        int price_int, quantity;
         Double price;
         try {
-            price = (Double) obj.get("price");
-        } catch (Exception e) {
-            price_int = (int) obj.get("price");
-            price = new Double(price_int);
+            connID = (String) obj.get("connID");
+            productName = (String) obj.get("productName");
+            category = (String) obj.get("category");
+            try {
+                price = (Double) obj.get("price");
+            } catch (Exception e) {
+                price_int = (int) obj.get("price");
+                price = new Double(price_int);
+            }
+            quantity = (int) obj.get("quantity");
         }
-        int quantity  = (int) obj.get("quantity");
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : EditProduct");
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.EditProduct(userID, connID, storeID,productID, productName, category, price,quantity);
         res.AddTag("EditProduct");
         template.convertAndSend(String.format("/topic/%s", connID), res);

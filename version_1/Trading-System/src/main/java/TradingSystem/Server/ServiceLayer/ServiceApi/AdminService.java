@@ -42,7 +42,16 @@ import java.util.Map;
      */
     @MessageMapping("{adminID}/users")
     public Response AdminAllUsers(@DestinationVariable int adminID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
+        String connID;
+        try {
+            connID = (String) obj.get("connID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AdminAllUsers");
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.AllUsersHistoryAdmin(adminID, connID);
         res.AddTag("AdminAllUsers");
         template.convertAndSend(String.format("/topic/%s", connID), res);
@@ -69,7 +78,16 @@ import java.util.Map;
      */
     @MessageMapping("{adminID}/stores")
     public Response AdminAllStores(@DestinationVariable int adminID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
+        String connID;
+        try {
+            connID = (String) obj.get("connID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AdminAllStores");
+            System.out.println(res);
+            return res;
+        }
         Response res = tradingSystem.AllStoresHistoryAdmin(adminID, connID);
         res.AddTag("AdminAllStores");
         template.convertAndSend(String.format("/topic/%s", connID), res);
@@ -107,8 +125,17 @@ import java.util.Map;
      */
     @MessageMapping("{adminID}/user_history_admin/{userID}")
     public Response AdminUserHistory(@DestinationVariable int adminID, @DestinationVariable int userID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        Response res = tradingSystem.UserHistoryAdmin(adminID, userID ,connID);
+        String connID;
+        try {
+            connID = (String) obj.get("connID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AdminUserHistory");
+            System.out.println(res);
+            return res;
+        }
+        Response res = tradingSystem.UserHistoryAdmin(adminID, userID, connID);
         res.AddTag("AdminUserHistory");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         WriteToLogger(res);
@@ -145,8 +172,17 @@ import java.util.Map;
      */
     @MessageMapping("{adminID}/store_history_admin/{storeID}")
     public Response AdminStoreHistory(@DestinationVariable int adminID, @DestinationVariable int storeID, @Payload Map<String, Object> obj){
-        String connID = (String) obj.get("connID");
-        Response res = tradingSystem.StoreHistoryAdmin(adminID,storeID,connID);
+        String connID;
+        try {
+            connID = (String) obj.get("connID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AdminStoreHistory");
+            System.out.println(res);
+            return res;
+        }
+        Response res = tradingSystem.StoreHistoryAdmin(adminID, storeID, connID);
         res.AddTag("AdminStoreHistory");
         template.convertAndSend(String.format("/topic/%s", connID), res);
         WriteToLogger(res);
