@@ -325,6 +325,8 @@ import java.util.Map;
             System.out.println(res);
             return res;
         }
+        //Map<String, Object> map=(Map<String, Object>)obj.get("expression");
+        //Expression exp=this.tradingSystem.CreateExpForBuy(storeID,map);
         Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
         res.AddConnID(connID);
         res.AddTag("AddBuyingPolicy");
@@ -362,6 +364,8 @@ import java.util.Map;
             System.out.println(res);
             return res;
         }
+        //Map<String,Object> map=(Map<String,Object>)obj.get("expression");
+        //Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
         Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
         res.AddConnID(connID);
         res.AddTag("AddDiscountPolicy");

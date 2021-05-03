@@ -1707,7 +1707,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
     }
 
 
-    public Response addDiscountPolicy(int userID, String connID, int storeID, Map<String, Object> obj ){
+    public Response addDiscountPolicy(int userID, String connID, int storeID,Sale sale){
         if (!ValidConnectedUser(userID, connID)) {
              return new Response(true, "Error in Admin details");
         }
@@ -1721,17 +1721,11 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
              return new Response(true, "the user is not the owner of the store");
         }
         Store s=this.stores.get(storeID);
-        if(obj.size()==1) {
-            Iterator it = obj.entrySet().iterator();
-            Map.Entry pair = (Map.Entry) it.next();
-            String saleName = (String) pair.getKey();
-            Map<String, Object> value=( Map<String, Object>) pair.getValue();
-            Sale res = this.createSale(storeID,saleName, value);
-            DiscountPolicy d=new DiscountPolicy(storeID,res);
-            s.setDiscountPolicy(d);
-        }
+        DiscountPolicy d=new DiscountPolicy(storeID,sale);
+        s.setDiscountPolicy(d);
         return new Response("the discountPolicy added successfully");
     }
+
 
     private Sale createSale(Integer storeID,String saleName, Map<String, Object> o) {
         Sale s=null;
@@ -1788,6 +1782,17 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                     }
                     sale.setSale(maxComposite);
                     return sale;
+                case "XorComposite":
+                    XorComposite xorComposite = new XorComposite();
+                    Map<String, Object> map0 = (Map<String, Object>) o.get("XorComposite");
+                    for (String mapKey:map0.keySet()
+                    ) {
+                        Map<String, Object> tosend = new HashMap<>();
+                        tosend.put(mapKey,(Map<String, Object>) map0.get(mapKey));
+                        CreateDiscountPolicy(storeID,xorComposite,tosend);
+                    }
+                    sale.setSale(xorComposite);
+                    return xorComposite;
                 case "StoreSale":
                     Map<String, Object> map3=(Map<String, Object>)o.get("StoreSale");
                     Double discount1=(Double)map3.get("discount");
@@ -1848,17 +1853,6 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                         orComposite.add(tmp);
                     }
                     return orComposite;
-                case "XorComposite":
-                    XorComposite xorComposite = new XorComposite();
-                    Map<String, Object> map3 = (Map<String, Object>) exp.get("XorComposite");
-                    for (String mapKey:map3.keySet()
-                    ) {
-                        Map<String, Object> tosend = new HashMap<>();
-                        tosend.put(mapKey,(Map<String, Object>) map3.get(mapKey));
-                        Expression tmp=createSaleExp(storeID, tosend);
-                        xorComposite.add(tmp);
-                    }
-                    return xorComposite;
                 case "Conditioning":
                     Conditioning conditioning = new Conditioning();
                     Map<String, Object> map4 = (Map<String, Object>) exp.get("Conditioning");
@@ -1890,7 +1884,8 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         return null;
     }
 
-    public Response addBuyingPolicy(int userID, String connID, int storeID, Map<String, Object> obj ){
+    @Override
+    public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "Error in Admin details");
         }
@@ -1904,25 +1899,12 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
              return new Response(true, "the user is not the owner of the store");
         }
         Store s=this.stores.get(storeID);
-        AndComposite exp=new AndComposite();
-        Iterator it = obj.entrySet().iterator();
-        while (it.hasNext()) {
-            Map.Entry pair = (Map.Entry) it.next();
-            String limitName = (String) pair.getKey();
-            Map<String, Object> value = (Map<String, Object>) pair.getValue();
-            Map<String, Object> tosend=new HashMap<>();
-            tosend.put(limitName,value);
-            Expression res = this.createLimitExp(storeID, tosend);
-            exp.add(res);
-        }
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
-
         return new Response("");
     }
 
     private Expression createLimitExp(int storeID, Map<String, Object> exp) {
-
         for (String key : exp.keySet()
         ) {
             switch (key) {
@@ -1948,17 +1930,6 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
                         orComposite.add(tmp);
                     }
                     return orComposite;
-                case "XorComposite":
-                    XorComposite xorComposite = new XorComposite();
-                    Map<String, Object> map3 = (Map<String, Object>) exp.get("XorComposite");
-                    for (String mapKey : map3.keySet()
-                    ) {
-                        Map<String, Object> tosend = new HashMap<>();
-                        tosend.put(mapKey, (Map<String, Object>) map3.get(mapKey));
-                        Expression tmp = createLimitExp(storeID, tosend);
-                        xorComposite.add(tmp);
-                    }
-                    return xorComposite;
                 case "Conditioning":
                     Conditioning conditioning = new Conditioning();
                     Map<String, Object> map4 = (Map<String, Object>) exp.get("Conditioning");
@@ -2048,9 +2019,32 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         return new Response("the discountPolicy removed successfully");
     }
 
+    @Override
+    public Expression CreateExpForBuy(Integer storeID,Map<String, Object> map) {
+        AndComposite exp=new AndComposite();
+        Iterator it = map.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry pair = (Map.Entry) it.next();
+            String limitName = (String) pair.getKey();
+            Map<String, Object> value = (Map<String, Object>) pair.getValue();
+            Map<String, Object> tosend = new HashMap<>();
+            tosend.put(limitName, value);
+            Expression res = this.createLimitExp(storeID, tosend);
+            exp.add(res);
+        }
+        return exp;
+    }
 
-
-
-
-
+    @Override
+    public Sale createSaleForDiscount(int storeID, Map<String, Object> obj) {
+        if (obj.size() == 1) {
+            Iterator it = obj.entrySet().iterator();
+            Map.Entry pair = (Map.Entry) it.next();
+            String saleName = (String) pair.getKey();
+            Map<String, Object> value = (Map<String, Object>) pair.getValue();
+            Sale res = this.createSale(storeID, saleName, value);
+            return res;
+        }
+        return null;
+    }
 }

@@ -1,5 +1,7 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -243,7 +245,9 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/store/{storeID}/add_buying_policy}")
     public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,obj);
+        Map<String,Object> map=(Map<String,Object>)obj.get("expression");
+        Expression exp=tradingSystem.CreateExpForBuy(storeID,map);
+        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
         return res;
     }
 
@@ -264,7 +268,9 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/store/{storeID}/add_discount_policy}")
     public Response AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,obj);
+       Map<String, Object> map=(Map<String, Object> )obj.get("expression");
+        Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
+        Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
         return res;
     }
 
