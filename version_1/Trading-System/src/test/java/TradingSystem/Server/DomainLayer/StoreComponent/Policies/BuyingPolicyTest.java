@@ -1,9 +1,9 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.AgeLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimit;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Limits.ProductLimit;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForCategory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import org.junit.jupiter.api.AfterEach;
@@ -40,13 +40,14 @@ class BuyingPolicyTest {
     void HappyProductRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        QuantityLimit exp = new QuantityLimit(1, 1);
-        store.addLimitToPolicy(null,productID1,exp);
+        QuantityLimitForProduct exp = new QuantityLimitForProduct(1, productID1);
+        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+        store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 1);
         products.put(productID2, 3);
-        Boolean isLegal = store.checkEntitlement(2, products);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
         assertTrue(isLegal);
     }
 
@@ -54,13 +55,14 @@ class BuyingPolicyTest {
     void SadProductRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        QuantityLimit exp = new QuantityLimit(1, 1);
-        store.addLimitToPolicy(null,productID1,exp);
+        QuantityLimitForProduct exp = new QuantityLimitForProduct(1, productID1);
+        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+        store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
         products.put(productID2, 3);
-        Boolean isLegal = store.checkEntitlement(2, products);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
         assertFalse(isLegal);
     }
 
@@ -68,13 +70,14 @@ class BuyingPolicyTest {
     void HappyCategoryRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        QuantityLimit exp = new QuantityLimit(1, 1);
-        store.addLimitToPolicy("Technology",-1,exp);
+        QuantityLimitForCategory exp = new QuantityLimitForCategory(1, "Technology");
+        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+        store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 1);
         products.put(productID2, 3);
-        Boolean isLegal = store.checkEntitlement(2, products);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
         assertTrue(isLegal);
     }
 
@@ -82,13 +85,14 @@ class BuyingPolicyTest {
     void SadCategoryRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        QuantityLimit exp = new QuantityLimit(1, 1);
-        store.addLimitToPolicy("Technology",-1,exp);
+        QuantityLimitForCategory exp = new QuantityLimitForCategory(1, "Technology");
+        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+        store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
         products.put(productID2, 3);
-        Boolean isLegal = store.checkEntitlement(2, products);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
         assertFalse(isLegal);
     }
 
@@ -96,13 +100,14 @@ class BuyingPolicyTest {
     void HappyBagRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        QuantityLimit exp = new QuantityLimit(1, 4);
-        store.addLimitToPolicy(null,-1,exp);
+        QuantityLimitForStore exp = new QuantityLimitForStore(4, store.getId());
+        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+        store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 1);
         products.put(productID2, 3);
-        Boolean isLegal = store.checkEntitlement(2, products);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
         assertTrue(isLegal);
     }
 
@@ -110,13 +115,14 @@ class BuyingPolicyTest {
     void SadBagRule() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        QuantityLimit exp = new QuantityLimit(1, 4);
-        store.addLimitToPolicy(null,-1,exp);
+        QuantityLimitForStore exp = new QuantityLimitForStore(4, store.getId());
+        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+        store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
         products.put(productID2, 3);
-        Boolean isLegal = store.checkEntitlement(2, products);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
         assertFalse(isLegal);
     }
 
@@ -134,18 +140,19 @@ class BuyingPolicyTest {
     void HappyAndBuying() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        QuantityLimit exp1 = new QuantityLimit(1, 4);
-        AgeLimit exp2 = new AgeLimit(2, 20);
-        AndComposite andExpression = new AndComposite(1);
+        QuantityLimitForProduct exp1 = new QuantityLimitForProduct(5, productID1);
+        QuantityLimitForProduct exp2 = new QuantityLimitForProduct(4, productID2);
+        AndComposite andExpression = new AndComposite();
         andExpression.add(exp1);
         andExpression.add(exp2);
-        store.addLimitToPolicy(null,-1,andExpression);
+        BuyingPolicy b=new BuyingPolicy(store.getId(),andExpression);
+        store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 1);
         products.put(productID2, 3);
         //TODO check age
-        Boolean isLegal = store.checkEntitlement(2, products);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
         assertTrue(isLegal);
     }
 
@@ -153,19 +160,20 @@ class BuyingPolicyTest {
     void SadAndBuying() {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
-        QuantityLimit exp1 = new QuantityLimit(1, 4);
-        AgeLimit exp2 = new AgeLimit(2, 20);
-        AndComposite andExpression = new AndComposite(1);
+        QuantityLimitForProduct exp1 = new QuantityLimitForProduct(5, productID1);
+        QuantityLimitForProduct exp2 = new QuantityLimitForProduct(4, productID2);
+        AndComposite andExpression = new AndComposite();
         andExpression.add(exp1);
         andExpression.add(exp2);
-        store.addLimitToPolicy(null,-1,andExpression);
+        BuyingPolicy b=new BuyingPolicy(store.getId(),andExpression);
+        store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
-        products.put(productID1, 2);
-        products.put(productID2, 3);
+        products.put(productID1, 6);
+        products.put(productID2, 7);
         //TODO check age
-        Boolean isLegal = store.checkEntitlement(2, products);
-        assertTrue(isLegal);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
+        assertFalse(isLegal);
     }
 
     @Test
