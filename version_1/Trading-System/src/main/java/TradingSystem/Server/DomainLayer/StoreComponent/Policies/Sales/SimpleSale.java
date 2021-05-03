@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -24,6 +25,11 @@ public abstract class SimpleSale implements Sale {
 
     public Sale getSale() {
         return this;
+    }
+
+    @Override
+    public Response checkValidity(int storeID) {
+        return new Response("");
     }
 
     public Expression setExpression(Expression exp){

@@ -1706,7 +1706,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         return res;
     }
 
-
+    //Todo finish
     public Response addDiscountPolicy(int userID, String connID, int storeID,Sale sale){
         if (!ValidConnectedUser(userID, connID)) {
              return new Response(true, "Error in Admin details");
@@ -1721,6 +1721,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
              return new Response(true, "the user is not the owner of the store");
         }
         Store s=this.stores.get(storeID);
+        Response r=sale.checkValidity(storeID);
+        if(r.getIsErr()){
+            return r;
+        }
         DiscountPolicy d=new DiscountPolicy(storeID,sale);
         s.setDiscountPolicy(d);
         return new Response("the discountPolicy added successfully");
@@ -1897,6 +1901,10 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         }
         if(!stores.get(storeID).checkOwner(userID)){
              return new Response(true, "the user is not the owner of the store");
+        }
+        Response r=exp.checkValidity(storeID);
+        if(r.getIsErr()){
+            return r;
         }
         Store s=this.stores.get(storeID);
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
