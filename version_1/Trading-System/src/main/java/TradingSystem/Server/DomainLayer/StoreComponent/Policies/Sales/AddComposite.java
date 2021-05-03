@@ -1,11 +1,19 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+
+import java.util.LinkedList;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class AddComposite extends CompositeSale{
-    @Override
-    public Boolean checkEntitlement(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID) {
-        return true;
+
+    public AddComposite(List<Sale> S) {
+        super(S);
+    }
+
+    public AddComposite() {
+       // super(new LinkedList<Sale>());
     }
 
     @Override
@@ -18,4 +26,5 @@ public class AddComposite extends CompositeSale{
         }
         return sale;
     }
+
 }

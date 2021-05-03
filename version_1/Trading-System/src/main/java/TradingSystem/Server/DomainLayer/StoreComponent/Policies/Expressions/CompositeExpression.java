@@ -8,18 +8,22 @@ public abstract class CompositeExpression implements Expression {
 
     public List<Expression> children;
 
+    public CompositeExpression(List<Expression> c){
+        this.children=c;
+    }
+
     public CompositeExpression()
-    { this.children = new LinkedList<>(); }
+    {
+        this.children = new LinkedList<>();
+    }
 
     public Expression add(Expression expr){
         children.add(expr);
         return this;
     }
 
-    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
-
     public Boolean hasChildren()
-        { return !children.isEmpty(); }
+    { return !children.isEmpty(); }
 
     public List<Expression> getChildren() {
         return children;
@@ -28,4 +32,7 @@ public abstract class CompositeExpression implements Expression {
     private void setChildren(List<Expression> children) {
         this.children = children;
     }
+
+    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
+    
 }

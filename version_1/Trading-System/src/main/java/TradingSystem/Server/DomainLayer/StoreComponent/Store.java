@@ -21,6 +21,8 @@ public class Store {
 
     private static int nextStoreID=0;
 
+    private static int nextExpressionID=0;
+
     private Integer id;
     private String name;
 
@@ -62,6 +64,8 @@ public class Store {
         this.ownersIDs.add(founderID);
         this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
+        this.discountPolicy=new DiscountPolicy(this.id,null);
+        this.buyingPolicy=new BuyingPolicy(this.id,null);
     }
 
     public Integer getId() {
@@ -71,6 +75,11 @@ public class Store {
     private static synchronized int getNextStoreID() {
         nextStoreID++;
         return nextStoreID;
+    }
+
+    private static synchronized int getNextExpressionID() {
+        nextExpressionID++;
+        return nextExpressionID;
     }
 
     public static void ClearSystem() {
@@ -202,7 +211,7 @@ public class Store {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-*/
+
     public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank){
        List<Integer> FinalID=new ArrayList<>();
        if(name!=null){
@@ -230,7 +239,7 @@ public class Store {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-
+*/
     public Double getRate() {
         return rate;
     }
@@ -239,13 +248,32 @@ public class Store {
         return this.inventory.checkProductsExistInTheStore(productID,quantity);
     }
 
-    public boolean checkBuyingPolicy(Integer productID, Integer quantity, ConcurrentHashMap<Integer,Integer> productsInTheBug){
+    public boolean checkBuyingPolicy(Integer userID,ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        if(this.buyingPolicy!=null)
+        return this.buyingPolicy.checkEntitlement(productsInTheBug,userID,this.CalculatePriceBeforeSale(productsInTheBug));
+        else
         return true;
     }
 
-    public Double calculateBugPrice(Integer productID, Integer quantity,ConcurrentHashMap<Integer,Integer> productsInTheBug){
-        return 1.0;
+    public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer,Integer> productsInTheBug){
+       if(this.discountPolicy!=null) {
+           return this.discountPolicy.calculatePrice(productsInTheBug, userId, this.CalculatePriceBeforeSale(productsInTheBug));
+       }
+       return 0.0;
+       }
+
+
+    public Double CalculatePriceBeforeSale (ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        Double priceBefore = 0.0;
+        for (Integer pId : productsInTheBug.keySet()) {
+            Integer quantity=productsInTheBug.get(pId);
+            Double price=inventory.getProduct(pId).getPrice();
+            priceBefore = priceBefore + price*quantity;
+        }
+        return priceBefore;
     }
+
+
 
     public boolean productIsLock(Integer productID){
         return inventory.productIsLock(productID);
@@ -364,7 +392,7 @@ public class Store {
         return inventory.checkProductsExistInTheStore(id,1);
     }
 
-
+/*
     //TODO implement! by the policy
     public Double calculateBugPrice(boolean userSubscribe, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
         if(userSubscribe){
@@ -373,6 +401,33 @@ public class Store {
         else
             return 2.0;
     }
+/*
+    public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
+        Double priceBeforeSale=0.0;
+
+        Set<Integer> keySetProdects=productsInTheBug.keySet();
+        for (Integer key:keySetProdects
+        ) {
+            Double tmpPrice=this.getProduct(key).getPrice();
+            priceBeforeSale=priceBeforeSale+tmpPrice;
+        }
+        return this.discountPolicy.calculatePrice(productsInTheBug,userId,priceBeforeSale);
+    }
+
+    public boolean checkEntitlement(Integer userId, ConcurrentHashMap<Integer, Integer> productsInTheBug){
+        Double priceBeforeSale=0.0;
+
+        Set<Integer> keySetProdects=productsInTheBug.keySet();
+        for (Integer key:keySetProdects
+        ) {
+            Double tmpPrice=this.getProduct(key).getPrice();
+            priceBeforeSale=priceBeforeSale+tmpPrice;
+        }
+        return this.buyingPolicy.checkEntitlement(productsInTheBug,userId,priceBeforeSale);
+    }
+
+
+ */
 
     public void addOwnerPermission(int newOwner, OwnerPermission op) {
         this.ownersPermission.put(newOwner,op);
@@ -403,6 +458,23 @@ public class Store {
 
     public ConcurrentHashMap<Integer,ManagerPermission> getManagerIDs(){
         return this.managersPermission;
+    }
+
+    public void setDiscountPolicy(DiscountPolicy d){
+        this.discountPolicy=d;
+    }
+
+    public void setBuyingPolicy(BuyingPolicy buyingPolicy) {
+        this.buyingPolicy = buyingPolicy;
+    }
+
+    //todo syncronize?
+    public void RemoveBuyingPolicy() {
+        this.buyingPolicy=null;
+    }
+
+    public void RemoveDiscountPolicy() {
+        this.discountPolicy=null;
     }
 
     public OwnerPermission getPermission(int key){
