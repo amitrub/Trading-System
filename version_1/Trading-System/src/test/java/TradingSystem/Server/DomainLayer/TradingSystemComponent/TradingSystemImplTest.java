@@ -1,11 +1,15 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 
+import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.Map;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.BeforeAll;
@@ -600,4 +604,131 @@ class TradingSystemImplTest {
         Response response = tradingSystemImpl.RemoveOwnerByOwner(userID, connID, userID1, storeid);
         assertTrue(response.getIsErr());
     }
+
+    @Test
+    void tmpTest1() {
+
+
+        Map<String, Object> storeSale = new HashMap<>();
+        Map<String, Object> storeSaleElements = new HashMap<>();
+        storeSaleElements.put("storeID", 1);
+        storeSaleElements.put("discount", 15.0);
+
+        Map<String, Object> priceForSaleElements = new HashMap<>();
+        priceForSaleElements.put("priceForSale", 100.0);
+
+        Map<String, Object> QuantityForGetSaleElements = new HashMap<>();
+        QuantityForGetSaleElements.put("productID", 1);
+        QuantityForGetSaleElements.put("quantityForSale", 3);
+
+        Map<String, Object> storeSaleExpressionElements = new HashMap<>();
+        storeSaleExpressionElements.put("PriceForGetSale", priceForSaleElements);
+        storeSaleExpressionElements.put("QuantityForGetSale", QuantityForGetSaleElements);
+
+
+        Map<String, Object> storeSaleExpression = new HashMap<>();
+        storeSaleExpression.put("AndComposite", storeSaleExpressionElements);
+
+        storeSaleElements.put("expression", storeSaleExpression);
+
+        storeSale.put("StoreSale", storeSaleElements);
+
+
+        Map<String, Object> productSaleElements = new HashMap<>();
+        productSaleElements.put("productID", 2);
+        productSaleElements.put("discount", 10.0);
+
+        Map<String, Object> priceForSaleElements2 = new HashMap<>();
+        priceForSaleElements2.put("priceForSale", 50.0);
+
+        Map<String, Object> productSaleExpression = new HashMap<>();
+        productSaleExpression.put("PriceForGetSale", priceForSaleElements2);
+
+        productSaleElements.put("expression", productSaleExpression);
+
+
+        Map<String, Object> categorySaleElements = new HashMap<>();
+        categorySaleElements.put("category", "blabla");
+        categorySaleElements.put("discount", 20.0);
+
+        Map<String, Object> NumOfProductsForGetSaleElements = new HashMap<>();
+        NumOfProductsForGetSaleElements.put("numOfProductsForSale", 4);
+
+        Map<String, Object> categorySaleExpression = new HashMap<>();
+        categorySaleExpression.put("NumOfProductsForGetSale", NumOfProductsForGetSaleElements);
+
+        categorySaleElements.put("expression", categorySaleExpression);
+
+        Map<String, Object> AddElement = new HashMap<>();
+        AddElement.put("CategorySale", categorySaleElements);
+        AddElement.put("ProductSale", productSaleElements);
+        Map<String, Object> Add = new HashMap<>();
+        Add.put("AddComposite", AddElement);
+
+        Map<String, Object> MaxElement = new HashMap<>();
+        MaxElement.put("AddComposite", AddElement);
+        MaxElement.put("StoreSale", storeSaleElements);
+
+        Map<String, Object> Max = new HashMap<>();
+        Max.put("MaxComposite", MaxElement);
+
+        Sale s = tradingSystemImpl.createSaleForDiscount(1,  Max);
+        assertTrue(true);
+    }
+    @Test
+    void tmpTest2() {
+
+        Map<String, Object> QuantityLimitForProductElement =new HashMap<> ();
+        QuantityLimitForProductElement.put("maxQuantity",30);
+        QuantityLimitForProductElement.put("productID",2);
+        Map<String, Object> QuantityLimitForProduct =new HashMap<> ();
+        QuantityLimitForProduct.put("QuantityLimitForProduct",QuantityLimitForProductElement);
+
+
+        Map<String, Object> QuantityLimitForCategoryElement =new HashMap<> ();
+        QuantityLimitForCategoryElement.put("maxQuantity",50);
+        QuantityLimitForCategoryElement.put("category","blabla");
+        Map<String, Object> QuantityLimitForCategory =new HashMap<> ();
+        QuantityLimitForCategory.put("QuantityLimitForCategory",QuantityLimitForCategoryElement);
+
+        Map<String, Object> ConditioningElement =new HashMap<> ();
+        ConditioningElement.put("cond",QuantityLimitForCategory);
+        ConditioningElement.put("condIf",QuantityLimitForProduct);
+
+        Map<String, Object> QuantityLimitForStoreElement =new HashMap<> ();
+        QuantityLimitForStoreElement.put("maxQuantity",70);
+        QuantityLimitForStoreElement.put("storeID",2);
+
+        Map<String, Object> AgeLimitForProductElement =new HashMap<> ();
+        AgeLimitForProductElement.put("minAge",20);
+        AgeLimitForProductElement.put("productID",1);
+
+        Map<String, Object> AndCompositeElement = new HashMap<>();
+        AndCompositeElement.put("AgeLimitForProduct",AgeLimitForProductElement);
+        AndCompositeElement.put("QuantityLimitForStore",QuantityLimitForStoreElement);
+        AndCompositeElement.put("Conditioning",ConditioningElement);
+
+        Map<String, Object> AgeLimitForCategoryElement =new HashMap<> ();
+        AgeLimitForCategoryElement.put("minAge",19);
+        AgeLimitForCategoryElement.put("category","foo");
+
+        Map<String, Object> AgeLimitForStoreElement =new HashMap<> ();
+        AgeLimitForStoreElement.put("minAge",10);
+        AgeLimitForStoreElement.put("storeID",1);
+        //Map<String, Object> AgeLimitForStore =new HashMap<> ();
+
+        Map<String, Object> OrCompositeElement = new HashMap<>();
+        OrCompositeElement.put("AgeLimitForCategory",AgeLimitForCategoryElement);
+        OrCompositeElement.put("AndComposite",AndCompositeElement);
+        OrCompositeElement.put("AgeLimitForStore",AgeLimitForStoreElement);
+
+        Map<String, Object> OrComposite = new HashMap<>();
+        OrComposite.put("OrComposite",OrCompositeElement);
+;
+
+        Expression exp = tradingSystemImpl.CreateExpForBuy(1,  OrComposite);
+        assertTrue(true);
+    }
+
+
 }

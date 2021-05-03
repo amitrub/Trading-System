@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -90,9 +91,11 @@ public interface TradingSystem {
     public Response ShowStoreWorkers(int userID, String connID, int storeID);
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID);
     public Response ShowAllMyStores(String connID, int userID, boolean founder,boolean owner,boolean manager) ;
-    public Response addDiscountPolicy(int userID, String connID, int storeID, Map<String, Object> obj );
-    public Response addBuyingPolicy(int userID, String connID, int storeID, Map<String, Object> obj );
+    public Response addDiscountPolicy(int userID, String connID, int storeID, Sale sale );
+    public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp );
     public void AddStoreToList(Store store);
     public Response RemoveBuyingPolicy(int userID, int storeID, String connID);
     public Response RemoveDiscountPolicy(int userID, int storeID, String connID);
+    public Expression CreateExpForBuy(Integer storeID,Map<String, Object> map);
+    public Sale createSaleForDiscount(int storeID, Map<String, Object> obj);
 }
