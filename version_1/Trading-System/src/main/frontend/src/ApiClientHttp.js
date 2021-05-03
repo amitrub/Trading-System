@@ -44,7 +44,7 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        name: name,
+        userName: name,
         password: pass,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {

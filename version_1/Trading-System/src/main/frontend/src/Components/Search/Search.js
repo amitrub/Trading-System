@@ -257,7 +257,7 @@ function Search(props) {
       </div>
 
       {/* Show Searched Product */}
-      {props.searchedProducts.length === 0 ? (
+      {props.searchedProducts && props.searchedProducts.length !== 0 ? (
         props.searchedProducts.map((currProduct) => (
           <div className="col span-1-of-4">
             <li key={prodKey++} className="curr product">

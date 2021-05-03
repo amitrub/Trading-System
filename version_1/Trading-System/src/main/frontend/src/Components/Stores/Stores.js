@@ -1,23 +1,42 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import createApiClient from "../../ApiClient";
+import createApiClientHttp from "../../ApiClientHttp";
 import "../../Design/grid.css";
 import "../../Design/style.css";
 import Search from "../Search/Search";
 import Store from "./Store";
 
-const api = createApiClient();
+// const api = createApiClient();
+const apiHttp = createApiClientHttp();
 
 function Stores(props) {
   const [search, setSearch] = useState(false);
-  const [stores, setStores] = useState(false);
+  const [stores, setStores] = useState(true);
+  const [allStores, setAllStores] = useState([]);
 
-  async function submitLoadStores() {
-    console.log("get Stores");
-    setStores(true);
-    await api.getAllStores(props.clientConnection, props.connID);
+  async function fetchStores() {
+    const storesResponse = await apiHttp.ShowAllStores();
+    console.log(storesResponse);
+
+    if (storesResponse.isErr) {
+      console.log(storesResponse.message);
+    } else {
+      setAllStores(storesResponse.returnObject.stores);
+    }
   }
 
-  async function submitCloseStores() {
+  useEffect(() => {
+    fetchStores();
+    console.log("useEffectStores");
+  }, [props.refresh]);
+
+  function submitShowStores() {
+    console.log("get Stores");
+    setStores(true);
+    props.onRefresh();
+  }
+
+  function submitCloseStores() {
     console.log("close Stores");
     setStores(false);
   }
@@ -42,7 +61,7 @@ function Stores(props) {
           <button
             className="buttonus"
             value="load our stores..."
-            onClick={stores ? submitCloseStores : submitLoadStores}
+            onClick={stores ? submitCloseStores : submitShowStores}
           >
             {stores ? "Hide Stores" : "Show All Stores"}
           </button>
@@ -59,31 +78,30 @@ function Stores(props) {
       </div>
 
       {search ? (
-        <Search
-          clientConnection={props.clientConnection}
-          connID={props.connID}
-          searchedProducts={props.searchedProducts}
-        ></Search>
+        <Search refresh={props.refresh} onRefresh={props.onRefresh}></Search>
       ) : (
         ""
+        // <section className="section-form"></section>
       )}
-
-      {stores
-        ? props.stores.map((currStore, index) => (
-            <li key={index} className="curr store">
-              <Store
-                refresh={props.refresh}
-                onRefresh={props.onRefresh}
-                currStore={currStore}
-                clientConnection={props.clientConnection}
-                connID={props.connID}
-                products={props.products.filter(
-                  (prod) => prod.storeID === currStore.id
-                )}
-              ></Store>
-            </li>
-          ))
-        : ""}
+      <section className="section-form"></section>
+      <section className="section-form">
+        {stores
+          ? allStores.map((currStore, index) => (
+              <li key={index} className="curr store">
+                <Store
+                  refresh={props.refresh}
+                  onRefresh={props.onRefresh}
+                  currStore={currStore}
+                  clientConnection={props.clientConnection}
+                  connID={props.connID}
+                  products={props.products.filter(
+                    (prod) => prod.storeID === currStore.id
+                  )}
+                ></Store>
+              </li>
+            ))
+          : ""}
+      </section>
     </section>
   );
 }

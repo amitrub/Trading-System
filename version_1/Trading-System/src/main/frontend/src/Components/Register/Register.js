@@ -1,26 +1,42 @@
 import React, { useState } from "react";
 import createApiClient from "../../ApiClient";
+import createApiClientHttp from "../../ApiClientHttp";
 import "../../Design/grid.css";
 import "../../Design/style.css";
+import MyPopup from "../MyPopup/MyPopup";
 
 const api = createApiClient();
+const apiHttp = createApiClientHttp();
 
 function Register(props) {
   // const [regConnID, setConnIDState] = useState("");
   const [enteredName, setNameState] = useState("");
   const [enteredPass, setPassState] = useState("");
+  const [registered, setRegistered] = useState(false);
+  const [popupMsg, setPopUpMsg] = useState("");
 
   async function submitHandler(event) {
     event.preventDefault();
     // setConnIDState(props.connID);
 
-    await api.register(
-      props.clientConnection,
+    // await api.register(
+    //   props.clientConnection,
+    //   props.connID,
+    //   enteredName,
+    //   enteredPass
+    // );
+    const registerResponse = await apiHttp.Register(
       props.connID,
       enteredName,
       enteredPass
     );
-
+    if (registerResponse) {
+      setPopUpMsg(registerResponse.message);
+      setRegistered(true);
+    }
+    if (registerResponse.isErr) {
+      console.log(registerResponse.message);
+    }
     props.onSubmitRegister(enteredName, enteredPass);
     setNameState("");
     setPassState("");
@@ -32,6 +48,10 @@ function Register(props) {
 
   function passChangeHandler(event) {
     setPassState(event.target.value);
+  }
+
+  function onClosePopupRegister() {
+    setRegistered(false);
   }
 
   return (
@@ -86,6 +106,14 @@ function Register(props) {
           </div>
         </form>
       </div>
+      {registered ? (
+        <MyPopup
+          errMsg={popupMsg}
+          onClosePopup={onClosePopupRegister}
+        ></MyPopup>
+      ) : (
+        ""
+      )}
     </section>
   );
 }

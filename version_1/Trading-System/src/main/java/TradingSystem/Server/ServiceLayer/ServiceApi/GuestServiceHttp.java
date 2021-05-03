@@ -76,6 +76,7 @@ public class GuestServiceHttp {
      */
     @PostMapping("register")
     public Response Register(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        System.out.println("enter register");
         String userName = (String) obj.get("userName");
         String password = (String) obj.get("password");
         Response res = this.tradingSystem.Register(connID, userName, password);

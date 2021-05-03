@@ -10,13 +10,11 @@ import Recommendations from "./Components/MainPage/Recommendations";
 import Programers from "./Components/MainPage/Programers";
 import Login from "./Components/Login/Login";
 import Stores from "./Components/Stores/Stores";
-import Navbar from "./Components/Navbar/Navbar";
 import "./Components/Navbar/Navbar.css";
-import { BrowserRouter, Route, Switch } from "react-router-dom";
 import DownPage from "./Components/MainPage/DownPage";
 import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
-import { Typography } from "@material-ui/core";
 import StoresOwner from "./Components/StoresOwner/StoresOwner";
+import MyPopup from "./Components/MyPopup/MyPopup";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -317,6 +315,7 @@ class App extends React.Component {
             />
           </div>
         </section>
+
         <Stores
           refresh={refresh}
           onRefresh={this.onRefresh}
