@@ -13,7 +13,7 @@ import Stores from "./Components/Stores/Stores";
 import Navbar from "./Components/Navbar/Navbar";
 import "./Components/Navbar/Navbar.css";
 import { BrowserRouter, Route, Switch } from "react-router-dom";
-import DownPage from "./Components/MainPage/DownPage";
+import DownPage from "./Components/MainPage/downPage";
 import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
 import { Typography } from "@material-ui/core";
 import StoresOwner from "./Components/StoresOwner/StoresOwner";
@@ -41,9 +41,15 @@ class App extends React.Component {
       owner: false,
       founder: false,
       admin: false,
+      founderStoresNames: [],
+      ownerStoresNames: [],
+      managerStoresNames: [],
       stores: [],
       products: [],
       searchedProducts: [],
+      showPopup: false,
+      popupHeader: "",
+      popupMassge: "",
     };
   }
 
@@ -117,9 +123,6 @@ class App extends React.Component {
   };
 
   loginHandler = (name, pass, res) => {
-    console.log("LoginHandler:" + name);
-    console.log("LoginHandler:" + pass);
-    console.log(res);
     const currentComponent = this;
     const loginResponse = res;
 
@@ -127,48 +130,50 @@ class App extends React.Component {
       console.log(loginResponse.message);
     } else {
       // const oldConnID = this.state.connID;
-      console.log("7777777777777");
       this.setState(
         (prevState) => ({
           username: name,
           pass: pass,
           userID: loginResponse.returnObject.userID,
           connID: loginResponse.returnObject.connID,
-          whoAreUser: {
-            guest: false,
-            manager: false,
-            owner: false,
-          },
-          // whoAreUser: loginResponse.returnObject.whoAreUser
+          founderStoresNames: loginResponse.returnObject.founderStoresNames,
+          ownerStoresNames: loginResponse.returnObject.ownerStoresNames,
+          managerStoresNames: loginResponse.returnObject.managerStoresNames,
         }),
         () => {
-          //unsubscribe old id
-          this.state.clientConnection.subscribe(
-            `/topic/${this.state.connID}`,
-            (msg) => {
-              if (msg.body) {
-                var jsonBody = JSON.parse(msg.body);
-                if (jsonBody.message) {
-                  currentComponent.setState({
-                    response: jsonBody,
-                  });
-                  console.log(jsonBody);
-
-                  //get All Stores
-                  if (jsonBody.returnObject.founder) {
-                    const founder = jsonBody.returnObject.founder;
-                    currentComponent.setState({
-                      whoAreUser: { founder: founder },
-                    });
-                  }
-                }
-              }
-            }
-          );
+          this.subscribeToTopic(this.state.clientConnection, this.state.connID);
+          this.state.founderStoresNames.forEach((storeName, index) => {
+            this.subscribeToTopic(this.state.clientConnection, storeName);
+          });
+          this.state.ownerStoresNames.forEach((storeName, index) => {
+            this.subscribeToTopic(this.state.clientConnection, storeName);
+          });
+          this.state.managerStoresNames.forEach((storeName, index) => {
+            this.subscribeToTopic(this.state.clientConnection, storeName);
+          });
         }
       );
     }
     console.log("End Login Handler! connID: " + this.state.connID);
+  };
+
+  subscribeToTopic = (clientConnection, topicName) => {
+    clientConnection.subscribe(`/topic/${topicName}`, (msg) => {
+      if (msg.body) {
+        console.log(msg);
+        var jsonBody = JSON.parse(msg.body);
+        if (jsonBody.message) {
+          this.setState({
+            response: jsonBody,
+            showPopup: true,
+            popupHeader: jsonBody.header,
+            popupMassge: jsonBody.message,
+          });
+          console.log(jsonBody);
+          // TODO: pop up massege
+        }
+      }
+    });
   };
 
   async componentDidMount() {
@@ -242,6 +247,11 @@ class App extends React.Component {
     );
   }
 
+  tryClick = () => {
+    console.log("click");
+    api.getTest(this.state.clientConnection, "");
+  };
+
   render() {
     const {
       refresh,
@@ -268,6 +278,9 @@ class App extends React.Component {
     ) : (
       <div className="App">
         {this.guestContent()}
+        <Fragment>
+          <button onClick={this.tryClick}>myButton</button>
+        </Fragment>
         {/* {!this.state.guest &&  */}
         {this.subscriberContent()}
         {/* {this.state.owner ? ( */}

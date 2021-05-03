@@ -16,6 +16,7 @@ class StoresOwner extends Component {
       founderStores: [],
       ownerStores: [],
       managerStores: [],
+      showStores: false,
     };
   }
 
@@ -28,8 +29,10 @@ class StoresOwner extends Component {
     });
   }
 
-  click1 = () => {
-    console.log("click");
+  showStoresClick = () => {
+    this.setState((prevState) => ({
+      showStores: !prevState.showStores,
+    }));
   };
 
   componentDidMount() {
@@ -52,6 +55,7 @@ class StoresOwner extends Component {
       founderStores,
       ownerStores,
       managerStores,
+      showStores,
     } = this.state;
     return (
       <section className="section-form" id="owners">
@@ -60,22 +64,31 @@ class StoresOwner extends Component {
             <strong>My Stores</strong>
           </h2>
         </div>
+        <div className="row">
+          <h2>
+            <strong>{userID}</strong>
+          </h2>
+        </div>
         {userID !== -1 ? (
           <div>
             <div className="row"></div>
             <button
               className="buttonus"
               value="load our stores..."
-              onClick={this.click1}
+              onClick={this.showStoresClick}
             >
               Show Stores
             </button>
-            {founderStores.map((store) => (
-              <li key={store.id} className="curr store">
-                <Store connID={connID} userID={userID} store={store}></Store>
-                <h3>{userID}</h3>
-              </li>
-            ))}
+            {showStores ? (
+              founderStores.map((store) => (
+                <li key={store.id} className="curr store">
+                  <Store connID={connID} userID={userID} store={store}></Store>
+                  <h3>{userID}</h3>
+                </li>
+              ))
+            ) : (
+              <h3></h3>
+            )}
           </div>
         ) : (
           <div>

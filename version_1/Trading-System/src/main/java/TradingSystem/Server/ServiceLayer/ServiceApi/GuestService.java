@@ -40,12 +40,7 @@ public class GuestService {
     @SendTo("/topic/message")
     public void test(@Payload Map<String, Object> obj){
         System.out.println("testtttt");
-        String connID = (String) obj.get("connID");
-//        String path = String.format("/topic/%s", connID);
-        String path = "/topic/greetings";
-        System.out.println(path);
-        template.convertAndSend(path, new Response(false, "Hello Welcome to Trading System"));
-//        return new Response(false, "Hello Welcome to Trading System");
+        template.convertAndSend(String.format("/topic/%s","store1"), new Response(false, "Hello Welcome to Trading System"));
     }
 
     @GetMapping("clear_system")
