@@ -482,7 +482,7 @@ public class Client implements Client_Interface {
             jsonPost.put("Sale", sale);
         }
         catch (Exception e) {
-            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: editProduct, making post json"));
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: addDiscountPolicy, making post json"));
         }
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner + path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
