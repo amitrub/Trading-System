@@ -22,7 +22,11 @@ public class BuyingPolicy {
         this.tradingSystem= TradingSystemImpl.getInstance();
     }
 
-    public boolean checkEntitlement(ConcurrentHashMap<Integer,Integer> products,Integer userID,Double finalPrice){
+    public Expression getExp() {
+        return exp;
+    }
+
+    public boolean checkEntitlement(ConcurrentHashMap<Integer,Integer> products, Integer userID, Double finalPrice){
        if(exp!=null) {
            return exp.evaluate(products, finalPrice, userID, storeID);
        }

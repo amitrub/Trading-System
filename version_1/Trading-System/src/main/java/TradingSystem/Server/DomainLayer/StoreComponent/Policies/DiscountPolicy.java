@@ -31,6 +31,10 @@ public class DiscountPolicy {
     }
 */
 
+    public Sale getSale() {
+        return sale;
+    }
+
     public void AddSale(Sale sale){
         this.sale=sale;
     }
