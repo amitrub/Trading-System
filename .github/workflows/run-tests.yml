@@ -1,4 +1,12 @@
---- 
+name: test
+
+
+on:
+  # Trigger the workflow on push or pull request,
+  # but only for the main branch
+  push:
+    branches:
+      - Version-2
 jobs: 
   build: 
     runs-on: 
@@ -21,8 +29,3 @@ jobs:
       - 
         name: "Run tests with Maven"
         run: "mvn -B test --file ./version_1/Trading-System/pom.xml"
-name: test
-true: 
-  push: 
-    branches: 
-      - Version-2
