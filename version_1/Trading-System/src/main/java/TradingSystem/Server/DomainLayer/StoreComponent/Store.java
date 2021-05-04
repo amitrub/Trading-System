@@ -5,6 +5,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -17,7 +18,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
-public class Store {
+public class Store extends Observable {
 
     private static int nextStoreID=0;
 
@@ -45,6 +46,8 @@ public class Store {
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
     private Inventory inventory;
+
+    private TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
 
     public Store(String name, Integer founderID,  DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy) {
         this.id = getNextStoreID();
@@ -498,4 +501,25 @@ public class Store {
     public OwnerPermission getPermission(int key){
         return ownersPermission.get(key);
     }
+
+    //Observable pattern
+    public void sendAlertToOwners(String message){
+        Enumeration<Integer> ownersID = this.getOwnersIDs().keys();
+        while(ownersID.hasMoreElements()){
+            Integer ID = ownersID.nextElement();
+            User user = tradingSystem.subscribers.get(ID);
+            this.addObserver(user);
+        }
+        this.notifyObservers(message);
+        //TODO - need to remove all observers from the list??
+    }
+
+    public void sendAlert(Integer ownerID, String message){
+        User user = tradingSystem.subscribers.get(ownerID);
+        this.addObserver(user);
+        this.notifyObservers(message);
+        //TODO - need to remove all observers from the list??
+    }
+
+
 }

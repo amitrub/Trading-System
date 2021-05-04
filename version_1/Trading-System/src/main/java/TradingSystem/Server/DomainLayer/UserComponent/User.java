@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.Notification.Alert;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -38,6 +39,7 @@ public  class User implements Observer {
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     private static int nextUserID = 0;
+    private static int AlertID = 0;
 
     private final Integer id;
     private String userName;
@@ -333,33 +335,42 @@ public  class User implements Observer {
     }
     }
 
+
+    //Observable pattern
+    private static synchronized int getNextAlertID() {
+        AlertID++;
+        return AlertID;
+    }
+
     @Override
     public void update(Observable o, Object arg) {
         //is guest
         if(tradingSystem.guests.containsValue(this)){
-            System.out.println(arg);
+              //implement next versions
         }
         //is subscriber
         else {
-            boolean isConnected = false;
-            for (Integer connectedUser : tradingSystem.getConnectedSubscribers().values()) {
-                if (connectedUser == this.id) {
-                    isConnected = true;
-                    //TODO connect to client
-                    System.out.println(arg);
-                }
+            if(tradingSystem.getConnectedSubscribers().containsValue(this.id)){
+                String mess = (String) arg;
+                Alert newAlert = new Alert("Owner-Alert", this, getNextAlertID(), mess);
+                newAlert.SendAlertToClient();
             }
-            if(!isConnected)
+            else {
                 messages.add(arg);
+            }
         }
     }
 
-    public List<Object> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(List<Object> messages) {
-        this.messages = messages;
+    public void updateAfterLogin(){
+        synchronized (messages) {
+            for (Object o : messages) {
+                String mess = (String) o;
+                Alert newAlert = new Alert("Owner-Alert", this, getNextAlertID(), mess);
+                newAlert.SendAlertToClient();
+            }
+            messages = new ArrayList<>();
+        }
+        notifyAll();
     }
 }
 
