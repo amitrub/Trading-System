@@ -39,7 +39,7 @@ public  class User implements Observer {
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     private static int nextUserID = 0;
-    private static int AlertID = 0;
+    private static long AlertID = 0;
 
     private final Integer id;
     private String userName;
@@ -337,7 +337,7 @@ public  class User implements Observer {
 
 
     //Observable pattern
-    private static synchronized int getNextAlertID() {
+    private static synchronized long getNextAlertID() {
         AlertID++;
         return AlertID;
     }
@@ -346,7 +346,7 @@ public  class User implements Observer {
     public void update(Observable o, Object arg) {
         //is guest
         if(tradingSystem.guests.containsValue(this)){
-              //implement next versions
+              //implement in next versions
         }
         //is subscriber
         else {
