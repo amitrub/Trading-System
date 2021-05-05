@@ -4,9 +4,8 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
-import TradingSystem.Server.Notification.Alert;
+import TradingSystem.Server.DomainLayer.Notification.Alert;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -39,7 +38,6 @@ public  class User implements Observer {
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     private static int nextUserID = 0;
-    private static long AlertID = 0;
 
     private final Integer id;
     private String userName;
@@ -337,38 +335,20 @@ public  class User implements Observer {
 
 
     //Observable pattern
-    private static synchronized long getNextAlertID() {
-        AlertID++;
-        return AlertID;
-    }
-
     @Override
     public void update(Observable o, Object arg) {
-        //is guest
-        if(tradingSystem.guests.containsValue(this)){
-              //implement in next versions
-        }
-        //is subscriber
-        else {
-            if(tradingSystem.getConnectedSubscribers().containsValue(this.id)){
-                String mess = (String) arg;
-                Alert newAlert = new Alert("Owner-Alert", this, getNextAlertID(), mess);
-                newAlert.SendAlertToClient();
-            }
-            else {
-                messages.add(arg);
-            }
+        if(!tradingSystem.tryToSend(arg, this.id)) {
+            messages.add(arg);
         }
     }
 
     public void updateAfterLogin(){
         synchronized (messages) {
-            for (Object o : messages) {
-                String mess = (String) o;
-                Alert newAlert = new Alert("Owner-Alert", this, getNextAlertID(), mess);
-                newAlert.SendAlertToClient();
+            for (Object arg : messages) {
+                if(tradingSystem.tryToSend(arg, this.id)){
+                    messages.remove(arg);
+                }
             }
-            messages = new ArrayList<>();
         }
         notifyAll();
     }

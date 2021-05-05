@@ -1,6 +1,4 @@
-package TradingSystem.Server.Notification;
-
-import org.springframework.jmx.export.notification.NotificationPublisher;
+package TradingSystem.Server.DomainLayer.Notification;
 
 import javax.management.Notification;
 import java.util.HashMap;

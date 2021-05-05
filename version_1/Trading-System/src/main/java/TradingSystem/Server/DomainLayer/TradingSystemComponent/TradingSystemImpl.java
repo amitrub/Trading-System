@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.Notification.Alert;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -37,6 +38,7 @@ public class TradingSystemImpl implements TradingSystem {
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
 
+    private static long AlertID = 0;
 
     //    Singleton
     private static TradingSystemImpl tradingSystem = null;
@@ -2025,5 +2027,21 @@ public class TradingSystemImpl implements TradingSystem {
             return res;
         }
         return null;
+    }
+
+    //Alert implementation
+    public boolean tryToSend(Object obj, Integer userID) {
+        if(this.connectedSubscribers.containsValue(userID)) {
+            String mess = (String) obj;
+            Alert newAlert = new Alert("Owner-Alert", this, getNextAlertID(), mess);
+            newAlert.SendAlertToClient();
+            return true;
+        }
+        return false;
+    }
+
+    private static synchronized long getNextAlertID() {
+        AlertID++;
+        return AlertID;
     }
 }
