@@ -44,7 +44,7 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        name: name,
+        userName: name,
         password: pass,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
@@ -179,7 +179,7 @@ export const createApiClientHttp = () => {
     },
 
     guestPurchase: (connID, name, credit_number, phone_number, address) => {
-      let path = guestURL.concat(`shopping_cart/edit_product`);
+      let path = guestURL.concat(`shopping_cart/purchase`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",

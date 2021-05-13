@@ -316,8 +316,21 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
         Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
+        res.AddPair("founderStoresNames", StoreIDToName(myUser.getMyFoundedStoresIDs()));
+        res.AddPair("ownerStoresNames", StoreIDToName(myUser.getMyOwnerStore()));
+        res.AddPair("managerStoresNames", StoreIDToName(myUser.getMyManagerStore()));
         res.AddUserSubscriber(myUser.isManaged(), myUser.isOwner(), myUser.isFounder(),systemAdmins.containsKey(myUser.getId()));
         return res;
+    }
+    public List<String> StoreIDToName(List<Integer> idList) {
+        List<String> output = new ArrayList<>();
+        for (Integer storeID: idList){
+            if(stores.containsKey(storeID)){
+                output.add(stores.get(storeID).getName());
+            }
+        }
+        return output;
+
     }
 
     /**
@@ -686,6 +699,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             return new Response(true, "WriteComment: The user " + userId + " is not connected");
         }
         User user=subscribers.get(userId);
+        //todo: the name is not clear
         if(!user.IsProductExist(productId)){
             return new Response(true, "WriteComment: User didn't buy this product");
         }

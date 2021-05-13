@@ -1,13 +1,21 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import "../../Design/grid.css";
 import "../../Design/style.css";
 import createApiClientHttp from "../../ApiClientHttp";
+import MyPopup from "../../Components/MyPopup/MyPopup";
 
 const apiHtml = createApiClientHttp();
 
 function Product(props) {
   const [quantityToBuy, setQuantityToBuy] = useState(0);
+  const [popUpProduct, setPopUpProduct] = useState(false);
+  const [popupMsg, setPopMsg] = useState("");
+
   const product = props.currProduct;
+
+  function onClosePopupProduct() {
+    setPopUpProduct(false);
+  }
 
   function insertQuantity(event) {
     setQuantityToBuy(event.target.value);
@@ -38,7 +46,13 @@ function Product(props) {
     console.log(responseAddProductToCart);
 
     props.onRefresh();
+    setPopMsg(responseAddProductToCart.message);
+    setPopUpProduct(true);
   }
+
+  useEffect(() => {
+    console.log("ppprrroooddduuuctttt");
+  }, [props.refresh]);
 
   return (
     <div className="plan-box">
@@ -53,7 +67,11 @@ function Product(props) {
         <p>Category: {product.category}</p>
       </div>
       <div>
-        <form onSubmit={submitBuyProductHandler} method="post" action="#">
+        <form
+          onSubmit={submitBuyProductHandler}
+          method="post"
+          // action="#"
+        >
           <div className="">
             <input
               type="number"
@@ -69,6 +87,11 @@ function Product(props) {
           </div>
         </form>
       </div>
+      {popUpProduct ? (
+        <MyPopup errMsg={popupMsg} onClosePopup={onClosePopupProduct}></MyPopup>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

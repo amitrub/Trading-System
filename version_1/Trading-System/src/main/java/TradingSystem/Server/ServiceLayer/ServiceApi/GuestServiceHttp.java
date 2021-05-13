@@ -401,6 +401,7 @@ public class GuestServiceHttp {
             return res;
         }
         Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
+        System.out.println("purchase: " + res);
         return res;
     }
 
