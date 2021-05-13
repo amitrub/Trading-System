@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
@@ -18,6 +19,7 @@ import java.util.Map;
 @CrossOrigin("*")
 public class StoreOwnerServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
 
     /**
@@ -40,6 +42,7 @@ public class StoreOwnerServiceHttp {
         Response res = this.tradingSystem.ShowAllMyStores(connID, userID, true, false, false);
         System.out.println(res);
         res.AddTag("ShowAllFoundedStores");
+        WriteToLogger(res);
         return res;
     }
 
@@ -63,6 +66,7 @@ public class StoreOwnerServiceHttp {
         Response res = this.tradingSystem.ShowAllMyStores(connID, userID, false, true, false);
         System.out.println(res);
         res.AddTag("ShowAllOwnedStores");
+        WriteToLogger(res);
         return res;
     }
 
@@ -86,6 +90,7 @@ public class StoreOwnerServiceHttp {
         Response res = this.tradingSystem.ShowAllMyStores(connID, userID, false, false, true);
         System.out.println(res);
         res.AddTag("ShowAllManagedStores");
+        WriteToLogger(res);
         return res;
     }
 
@@ -126,9 +131,11 @@ public class StoreOwnerServiceHttp {
             System.out.println(e);
             Response res = new Response(true, "Error in parse body : AddProductToStore");
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         Response res = tradingSystem.AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
+        WriteToLogger(res);
         return res;
     }
 
@@ -158,6 +165,7 @@ public class StoreOwnerServiceHttp {
             System.out.println(e);
             Response res = new Response(true, "Error in parse body : ChangeQuantityProduct");
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         return tradingSystem.ChangeQuantityProduct(userID,connID,storeID,productID,quantity);
@@ -201,6 +209,7 @@ public class StoreOwnerServiceHttp {
             System.out.println(e);
             Response res = new Response(true, "Error in parse body : EditProduct");
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         int quantity  = (int) obj.get("quantity");
@@ -225,6 +234,7 @@ public class StoreOwnerServiceHttp {
         Response res = this.tradingSystem.RemoveProduct(userID,storeID,productID,connID);
         System.out.println(res);
         tradingSystem.printProducts();
+        WriteToLogger(res);
         return res;
     }
 
@@ -248,6 +258,7 @@ public class StoreOwnerServiceHttp {
         Map<String,Object> map=(Map<String,Object>)obj.get("expression");
         Expression exp=tradingSystem.CreateExpForBuy(storeID,map);
         Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
+        WriteToLogger(res);
         return res;
     }
 
@@ -271,6 +282,7 @@ public class StoreOwnerServiceHttp {
        Map<String, Object> map=(Map<String, Object> )obj.get("expression");
         Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
         Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
+        WriteToLogger(res);
         return res;
     }
 
@@ -295,6 +307,7 @@ public class StoreOwnerServiceHttp {
     public Response EditBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
 //        Response res = this.tradingSystem.EditBuyingPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        WriteToLogger(res);
         return res;
     }
 
@@ -319,6 +332,7 @@ public class StoreOwnerServiceHttp {
     public Response EditDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
 //        Response res = this.tradingSystem.EditDiscountPolicy(userID,storeID,connID);
         Response res = new Response(true, "not implemented");
+        WriteToLogger(res);
         return res;
     }
 
@@ -339,6 +353,7 @@ public class StoreOwnerServiceHttp {
     @GetMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
     public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID){
         Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -359,6 +374,7 @@ public class StoreOwnerServiceHttp {
     @GetMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}")
     public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID){
         Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -379,6 +395,7 @@ public class StoreOwnerServiceHttp {
     public Response AddNewOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newOwnerID, @RequestHeader("connID") String connID)  {
         Response res = tradingSystem.AddNewOwner(userID, connID, storeID, newOwnerID);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -398,6 +415,7 @@ public class StoreOwnerServiceHttp {
     @GetMapping("{userID}/store/{storeID}/remove_owner/{OwnerID}")
     public Response RemoveOwner(@PathVariable int userID, @PathVariable int storeID, @PathVariable int OwnerID, @RequestHeader("connID") String connID)  {
         Response res = tradingSystem.RemoveOwnerByOwner(userID, connID,OwnerID,storeID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -418,6 +436,7 @@ public class StoreOwnerServiceHttp {
     public Response AddNewManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int newManagerID, @RequestHeader("connID") String connID)  {
         Response res=tradingSystem.AddNewManager(userID, connID, storeID,newManagerID);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -471,6 +490,7 @@ public class StoreOwnerServiceHttp {
 
         Response res = tradingSystem.EditManagerPermissions(userID, connID, storeID, managerID, Permissions);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -489,6 +509,7 @@ public class StoreOwnerServiceHttp {
     public Response GetPossiblePermissionsToManager(@PathVariable int userID, @RequestHeader("connID") String connID)  {
         Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -509,6 +530,7 @@ public class StoreOwnerServiceHttp {
     public Response RemoveManager(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID)  {
         Response res=tradingSystem.RemoveManager(userID, connID, storeID,managerID);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -533,6 +555,7 @@ public class StoreOwnerServiceHttp {
     @GetMapping("{userID}/store/{storeID}/workers")
     public Response ShowStoreWorkers(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
         Response res = tradingSystem.ShowStoreWorkers(userID, connID, storeID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -565,6 +588,7 @@ public class StoreOwnerServiceHttp {
     public Response OwnerStoreHistory(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.StoreHistoryOwner(userID,storeID,connID);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -584,12 +608,23 @@ public class StoreOwnerServiceHttp {
     @GetMapping("{userID}/stores_owner")
     public Response ShowOwnerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
         Response res = this.tradingSystem.ShowOwnerStores(userID, connID);
+        WriteToLogger(res);
         return res;
     }
 
     @GetMapping("{userID}/stores_manager")
     public Response ShowManagerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
         Response res = this.tradingSystem.ShowManagerStores(userID, connID);
+        WriteToLogger(res);
         return res;
+    }
+
+    private void WriteToLogger(Response res){
+        if(res.getIsErr()) {
+            loggerController.WriteErrorMsg("Guest Error: " + res.getMessage());
+        }
+        else{
+            loggerController.WriteLogMsg("Guest: " + res.getMessage());
+        }
     }
 }

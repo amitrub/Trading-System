@@ -8,6 +8,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
+import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -31,6 +32,7 @@ public interface TradingSystem {
     public Response Register(String connID, String userName, String password);
     public String connectSubscriberToSystemConnID(Integer userID);
     public Response Login(String guestConnID, String userName, String password);
+    public Response LoginPublisher(String guestConnID, String userName, String password, Publisher publisher);
     public Response Logout(String connID);
     public Response AddStore(int userID, String connID, String storeName);
     public Response ShowAllStores();

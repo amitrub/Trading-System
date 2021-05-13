@@ -10,6 +10,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 
 import java.util.Collection;
 import java.util.List;
@@ -106,6 +107,13 @@ public class ProxyTrading implements TradingSystem {
     public Response Login(String guestConnID, String userName, String password) {
         if(real!=null)
             return real.Login(guestConnID,userName,password);
+        return null;
+    }
+
+    @Override
+    public Response LoginPublisher(String guestConnID, String userName, String password, Publisher publisher) {
+        if(real!=null)
+            return real.LoginPublisher(guestConnID,userName,password, publisher);
         return null;
     }
 
