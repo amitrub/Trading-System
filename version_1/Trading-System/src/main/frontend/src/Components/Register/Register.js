@@ -8,7 +8,6 @@ import MyPopup from "../MyPopup/MyPopup";
 const apiHttp = createApiClientHttp();
 
 function Register(props) {
-  // const [regConnID, setConnIDState] = useState("");
   const [enteredName, setNameState] = useState("");
   const [enteredPass, setPassState] = useState("");
   const [registered, setRegistered] = useState(false);
@@ -16,14 +15,7 @@ function Register(props) {
 
   async function submitHandler(event) {
     event.preventDefault();
-    // setConnIDState(props.connID);
 
-    // await api.register(
-    //   props.clientConnection,
-    //   props.connID,
-    //   enteredName,
-    //   enteredPass
-    // );
     const registerResponse = await apiHttp.Register(
       props.connID,
       enteredName,
@@ -36,7 +28,6 @@ function Register(props) {
     if (registerResponse.isErr) {
       console.log(registerResponse.message);
     }
-    props.onSubmitRegister(enteredName, enteredPass);
     setNameState("");
     setPassState("");
   }
@@ -59,12 +50,7 @@ function Register(props) {
         <h2>Join Us!</h2>
       </div>
       <div className="row">
-        <form
-          method="post"
-          // action="#"
-          className="contact-form"
-          onSubmit={submitHandler}
-        >
+        <form method="post" className="contact-form" onSubmit={submitHandler}>
           <div className="row">
             <div className="col span-1-of-3">
               <label htmlFor="name">User Name</label>

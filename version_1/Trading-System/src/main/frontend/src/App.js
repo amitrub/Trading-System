@@ -15,6 +15,7 @@ import DownPage from "./Components/MainPage/DownPage";
 import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
 import StoresOwner from "./Components/StoresOwner/StoresOwner";
 import Logout from "./Components/Logout/Logout";
+import MyPopup from "./Components/MyPopup/MyPopup";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -57,6 +58,14 @@ class App extends React.Component {
     }));
   };
 
+  onClosePopupApp = () => {
+    this.setState((prevState) => ({
+      showPopup: false,
+      popupHeader: "",
+      popupMassge: "",
+    }));
+  };
+
   loadStores = () => {
     const storeResponse = this.state.response.returnObject;
     this.setState({
@@ -84,50 +93,49 @@ class App extends React.Component {
     });
   };
 
-  registerHandler = (name, pass) => {
-    console.log("RegisterHandler:" + name);
-    const currentComponent = this;
-    const registerResponse = this.state.response;
+  // // TODO: DELETE
+  // registerHandler = (name, pass) => {
+  //   console.log("RegisterHandler:" + name);
+  //   const currentComponent = this;
+  //   const registerResponse = this.state.response;
 
-    if (registerResponse.isErr) {
-      console.log(registerResponse.message);
-    } else {
-      // const oldConnID = this.state.connID;
-      this.setState(
-        (prevState) => ({
-          // userID: registerResponse.returnObject.userID,
-          // connID: registerResponse.returnObject.connID,
-        }),
-        () => {
-          //unsubscribe old id
-          // this.state.clientConnection.subscribe(
-          //   `/topic/${this.state.connID}`,
-          //   (msg) => {
-          //     if (msg.body) {
-          //       var jsonBody = JSON.parse(msg.body);
-          //       if (jsonBody.message) {
-          //         currentComponent.setState({
-          //           response: jsonBody,
-          //         });
-          //         console.log(jsonBody);
-          //       }
-          //     }
-          //   }
-          // );
-        }
-      );
-    }
-    console.log("End Register Handler! connID: " + this.state.connID);
-  };
+  //   if (registerResponse.isErr) {
+  //     console.log(registerResponse.message);
+  //   } else {
+  //     // const oldConnID = this.state.connID;
+  //     this.setState(
+  //       (prevState) => ({
+  //         // userID: registerResponse.returnObject.userID,
+  //         // connID: registerResponse.returnObject.connID,
+  //       }),
+  //       () => {
+  //         //unsubscribe old id
+  //         // this.state.clientConnection.subscribe(
+  //         //   `/topic/${this.state.connID}`,
+  //         //   (msg) => {
+  //         //     if (msg.body) {
+  //         //       var jsonBody = JSON.parse(msg.body);
+  //         //       if (jsonBody.message) {
+  //         //         currentComponent.setState({
+  //         //           response: jsonBody,
+  //         //         });
+  //         //         console.log(jsonBody);
+  //         //       }
+  //         //     }
+  //         //   }
+  //         // );
+  //       }
+  //     );
+  //   }
+  //   console.log("End Register Handler! connID: " + this.state.connID);
+  // };
 
   loginHandler = (name, pass, res) => {
-    const currentComponent = this;
     const loginResponse = res;
 
     if (loginResponse.isErr) {
       console.log(loginResponse.message);
     } else {
-      // const oldConnID = this.state.connID;
       this.setState(
         (prevState) => ({
           username: name,
@@ -140,12 +148,15 @@ class App extends React.Component {
         }),
         () => {
           this.subscribeToTopic(this.state.clientConnection, this.state.connID);
+
           this.state.founderStoresNames.forEach((storeName, index) => {
             this.subscribeToTopic(this.state.clientConnection, storeName);
           });
+
           this.state.ownerStoresNames.forEach((storeName, index) => {
             this.subscribeToTopic(this.state.clientConnection, storeName);
           });
+
           this.state.managerStoresNames.forEach((storeName, index) => {
             this.subscribeToTopic(this.state.clientConnection, storeName);
           });
@@ -155,20 +166,30 @@ class App extends React.Component {
     console.log("End Login Handler! connID: " + this.state.connID);
   };
 
+  logoutHandler = () => {
+    this.setState((prevState) => ({
+      username: "guest",
+    }));
+  };
+
   subscribeToTopic = (clientConnection, topicName) => {
     clientConnection.subscribe(`/topic/${topicName}`, (msg) => {
       if (msg.body) {
         console.log(msg);
         var jsonBody = JSON.parse(msg.body);
         if (jsonBody.message) {
-          this.setState({
-            response: jsonBody,
-            showPopup: true,
-            popupHeader: jsonBody.header,
-            popupMassge: jsonBody.message,
-          });
+          this.setState(
+            {
+              response: jsonBody,
+              showPopup: true,
+              popupHeader: jsonBody.header,
+              popupMassge: jsonBody.message,
+            },
+            () => {
+              this.onRefresh();
+            }
+          );
           console.log(jsonBody);
-          // TODO: pop up massege
         }
       }
     });
@@ -226,6 +247,7 @@ class App extends React.Component {
     });
 
     const connectionRespone = await api.connectSystem();
+    console.log("Connection response:");
     console.log(connectionRespone);
     if (!connectionRespone) console.log("Error response is null!!!");
 
@@ -235,8 +257,9 @@ class App extends React.Component {
         connID: connectionRespone.returnObject.connID,
       }),
       () => {
-        console.log(connectionRespone.returnObject.connID);
-        console.log(this.state.connID);
+        // console.log(connectionRespone.returnObject.connID);
+        // console.log(this.state.connID);
+        // here we sure that the connID updated
         client.activate();
         // this.setState({
         //   clientConnection: client,
@@ -267,6 +290,9 @@ class App extends React.Component {
       stores,
       products,
       searchedProducts,
+      showPopup,
+      popupHeader,
+      popupMassge,
     } = this.state;
     return !this.state.clientConnection ? (
       <Fragment>
@@ -275,6 +301,14 @@ class App extends React.Component {
       </Fragment>
     ) : (
       <div className="App">
+        {showPopup ? (
+          <MyPopup
+            errMsg={popupMassge}
+            onClosePopup={this.onClosePopupApp}
+          ></MyPopup>
+        ) : (
+          ""
+        )}
         {this.guestContent()}
         {/* <Fragment>
           <button onClick={this.tryClick}>myButton</button>
@@ -312,20 +346,13 @@ class App extends React.Component {
         {username === "guest" ? (
           <section className="row">
             <div className="col span-1-of-2 box">
-              <Register
-                onSubmitRegister={this.registerHandler}
-                connID={connID}
-                clientConnection={clientConnection}
-                response={response}
-              />
+              <Register connID={connID} />
             </div>
             <div className="col span-1-of-2 box">
               <Login
-                onSubmitLogin={this.loginHandler}
                 connID={connID}
-                clientConnection={clientConnection}
-                response={response}
-                refresHandler={this.onRefresh}
+                onSubmitLogin={this.loginHandler}
+                onRefresh={this.onRefresh}
               />
             </div>
           </section>
@@ -333,10 +360,10 @@ class App extends React.Component {
           <section className="row">
             <div className="box">
               <Logout
-                onSubmitRegister={this.registerHandler}
+                userID={userID}
                 connID={connID}
-                clientConnection={clientConnection}
-                response={response}
+                onLogout={this.logoutHandler}
+                onRefresh={this.onRefresh}
               />
             </div>
           </section>

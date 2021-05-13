@@ -4,10 +4,9 @@ import "../../Design/grid.css";
 import "../../Design/style.css";
 import MyPopup from "../MyPopup/MyPopup";
 
-const api = createApiClientHttp();
+const apiHttp = createApiClientHttp();
 
 function Login(props) {
-  // const [regConnID, setConnIDState] = useState("");
   const [enteredName, setNameState] = useState("");
   const [enteredPass, setPassState] = useState("");
   const [popUpLogin, setPopUpLogin] = useState(false);
@@ -19,17 +18,14 @@ function Login(props) {
 
   async function submitHandler(event) {
     event.preventDefault();
-    // setConnIDState(props.connID);
-    console.log(enteredName);
-    console.log(enteredPass);
 
-    await api.Login(props.connID, enteredName, enteredPass).then((res) => {
+    await apiHttp.Login(props.connID, enteredName, enteredPass).then((res) => {
       props.onSubmitLogin(enteredName, enteredPass, res);
       setNameState("");
       setPassState("");
       setPopMsg(res.message);
       setPopUpLogin(true);
-      props.refresHandler();
+      // props.onRefresh();
     });
   }
 
@@ -47,12 +43,7 @@ function Login(props) {
         <h2>not your first time?</h2>
       </div>
       <div className="row">
-        <form
-          method="post"
-          // action="#"
-          className="contact-form"
-          onSubmit={submitHandler}
-        >
+        <form method="post" className="contact-form" onSubmit={submitHandler}>
           <div className="row">
             <div className="col span-1-of-3">
               <label htmlFor="name">User Name</label>

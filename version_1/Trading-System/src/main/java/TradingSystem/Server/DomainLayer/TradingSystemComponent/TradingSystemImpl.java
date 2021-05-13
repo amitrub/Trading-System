@@ -252,14 +252,14 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
      */
     public Response Register(String connID, String userName, String password) {
         if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
-            return new Response(true, "Register: Error in connID");
+            return new Response(true, "Register Error: error in connID");
         }
         else{
             if (validation.IsUserNameExist(userName)) { 
-                return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
+                return new Response(true, "Register Error: user name is taken");
             }
             if(!validation.VerifyPassword(password)){
-                return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error password is invalid"));
+                return new Response(true, "Register Error: password is invalid");
             }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
