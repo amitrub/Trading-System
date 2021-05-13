@@ -120,7 +120,7 @@ function Search(props) {
       <div className="row">
         <form
           method="post"
-          action="#"
+          // action="#"
           className="contact-form"
           onSubmit={submitHandler}
         >

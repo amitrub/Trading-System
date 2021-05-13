@@ -691,6 +691,7 @@ public class TradingSystemImpl extends Observable implements TradingSystem {
             return new Response(true, "WriteComment: The user " + userId + " is not connected");
         }
         User user=subscribers.get(userId);
+        //todo: the name is not clear
         if(!user.IsProductExist(productId)){
             return new Response(true, "WriteComment: User didn't buy this product");
         }

@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import createApiClientHttp from "../../ApiClientHttp";
 import "../../Design/grid.css";
 import "../../Design/style.css";
+import MyPopup from "../MyPopup/MyPopup";
 
 const api = createApiClientHttp();
 
@@ -9,6 +10,12 @@ function Login(props) {
   // const [regConnID, setConnIDState] = useState("");
   const [enteredName, setNameState] = useState("");
   const [enteredPass, setPassState] = useState("");
+  const [popUpLogin, setPopUpLogin] = useState(false);
+  const [popupMsg, setPopMsg] = useState("");
+
+  function onClosePopupLogin() {
+    setPopUpLogin(false);
+  }
 
   async function submitHandler(event) {
     event.preventDefault();
@@ -20,6 +27,8 @@ function Login(props) {
       props.onSubmitLogin(enteredName, enteredPass, res);
       setNameState("");
       setPassState("");
+      setPopMsg(res.message);
+      setPopUpLogin(true);
       props.refresHandler();
     });
   }
@@ -40,7 +49,7 @@ function Login(props) {
       <div className="row">
         <form
           method="post"
-          action="#"
+          // action="#"
           className="contact-form"
           onSubmit={submitHandler}
         >
@@ -84,6 +93,11 @@ function Login(props) {
           </div>
         </form>
       </div>
+      {popUpLogin ? (
+        <MyPopup errMsg={popupMsg} onClosePopup={onClosePopupLogin}></MyPopup>
+      ) : (
+        ""
+      )}
     </section>
   );
 }

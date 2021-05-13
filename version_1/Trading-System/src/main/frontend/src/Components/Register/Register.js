@@ -5,7 +5,6 @@ import "../../Design/grid.css";
 import "../../Design/style.css";
 import MyPopup from "../MyPopup/MyPopup";
 
-const api = createApiClient();
 const apiHttp = createApiClientHttp();
 
 function Register(props) {
@@ -62,7 +61,7 @@ function Register(props) {
       <div className="row">
         <form
           method="post"
-          action="#"
+          // action="#"
           className="contact-form"
           onSubmit={submitHandler}
         >

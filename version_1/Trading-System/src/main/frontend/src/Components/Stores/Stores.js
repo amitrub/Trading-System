@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
-import createApiClient from "../../ApiClient";
 import createApiClientHttp from "../../ApiClientHttp";
 import "../../Design/grid.css";
 import "../../Design/style.css";
 import Search from "../Search/Search";
 import Store from "./Store";
 
-// const api = createApiClient();
 const apiHttp = createApiClientHttp();
 
 function Stores(props) {

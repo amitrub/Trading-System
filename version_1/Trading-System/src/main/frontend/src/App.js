@@ -14,7 +14,7 @@ import "./Components/Navbar/Navbar.css";
 import DownPage from "./Components/MainPage/DownPage";
 import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
 import StoresOwner from "./Components/StoresOwner/StoresOwner";
-import MyPopup from "./Components/MyPopup/MyPopup";
+import Logout from "./Components/Logout/Logout";
 
 const api = createApiClient();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -276,9 +276,9 @@ class App extends React.Component {
     ) : (
       <div className="App">
         {this.guestContent()}
-        <Fragment>
+        {/* <Fragment>
           <button onClick={this.tryClick}>myButton</button>
-        </Fragment>
+        </Fragment> */}
         {/* {!this.state.guest &&  */}
         {this.subscriberContent()}
         {/* {this.state.owner ? ( */}
@@ -309,25 +309,38 @@ class App extends React.Component {
     return (
       <Fragment>
         <MainPage username={username} />
-        <section className="row">
-          <div className="col span-1-of-2 box">
-            <Register
-              onSubmitRegister={this.registerHandler}
-              connID={connID}
-              clientConnection={clientConnection}
-              response={response}
-            />
-          </div>
-          <div className="col span-1-of-2 box">
-            <Login
-              onSubmitLogin={this.loginHandler}
-              connID={connID}
-              clientConnection={clientConnection}
-              response={response}
-              refresHandler={this.onRefresh}
-            />
-          </div>
-        </section>
+        {username === "guest" ? (
+          <section className="row">
+            <div className="col span-1-of-2 box">
+              <Register
+                onSubmitRegister={this.registerHandler}
+                connID={connID}
+                clientConnection={clientConnection}
+                response={response}
+              />
+            </div>
+            <div className="col span-1-of-2 box">
+              <Login
+                onSubmitLogin={this.loginHandler}
+                connID={connID}
+                clientConnection={clientConnection}
+                response={response}
+                refresHandler={this.onRefresh}
+              />
+            </div>
+          </section>
+        ) : (
+          <section className="row">
+            <div className="box">
+              <Logout
+                onSubmitRegister={this.registerHandler}
+                connID={connID}
+                clientConnection={clientConnection}
+                response={response}
+              />
+            </div>
+          </section>
+        )}
 
         <Stores
           refresh={refresh}
