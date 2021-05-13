@@ -346,20 +346,29 @@ public  class User implements Observer {
 
 
     //Observable pattern
+    public void update(Object arg) {
+        Response res = (Response) arg;
+        this.notify(res.returnConnID(), res);
+    }
+
     @Override
     public void update(Observable o, Object arg) {
-        this.notify(this.);
-        if(!tradingSystem.tryToSend(arg, this.id)) {
-            messages.add(arg);
+        update(arg);
+    }
+
+    public void addMessage(Object arg){
+        synchronized (messages){
+            this.messages.add(arg);
         }
+        notifyAll();
     }
 
     public void updateAfterLogin(){
         synchronized (messages) {
             for (Object arg : messages) {
-                if(tradingSystem.tryToSend(arg, this.id)){
-                    messages.remove(arg);
-                }
+                Response res = (Response) arg;
+                this.notify(res.returnConnID(), res);
+                messages.remove(arg);
             }
         }
         notifyAll();

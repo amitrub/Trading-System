@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DomainLayer.Notification.Alert;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -39,7 +38,6 @@ public class TradingSystemImpl implements TradingSystem {
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
 
-    private static long AlertID = 0;
 
     //    Singleton
     private static TradingSystemImpl tradingSystem = null;
@@ -307,12 +305,21 @@ public class TradingSystemImpl implements TradingSystem {
         myUser.mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
-        myUser.updateAfterLogin(guestConnID);
         Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         res.AddUserSubscriber(myUser.isManaged(), myUser.isOwner(), myUser.isFounder(),systemAdmins.containsKey(myUser.getId()));
+        sendAlert(myUser, res);
         return res;
+    }
+
+    //Observer
+    private void sendAlert(User user, Response res){
+        Publisher publisher = new Publisher();
+        user.setPublisher(publisher);
+        user.update(res);
+
+        //user.updateAfterLogin();
     }
 
     /**
@@ -565,7 +572,8 @@ public class TradingSystemImpl implements TradingSystem {
             if(!res.getIsErr())
             {
                 for(Store s:storesToUpdate){
-                    s.sendAlertToOwners("A product has been purchased from your store");
+                    Response resAlert = new Response(false, "A product has been purchased from your store");
+                    s.sendAlertToOwners(resAlert);
                 }
             }
             res.AddUserGuest();
@@ -603,7 +611,8 @@ public class TradingSystemImpl implements TradingSystem {
             if(!res.getIsErr())
             {
                 for(Store s:storesToUpdate){
-                    s.sendAlertToOwners("A product has been purchased from your store");
+                    Response resAlert = new Response(false, "A product has been purchased from your store");
+                    s.sendAlertToOwners(resAlert);
                 }
             }
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -707,7 +716,8 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "WriteComment: The user already wrote comment for this product");
         }
 
-        stores.get(storeId).sendAlertToOwners("There is a new comment on one of your store's products");
+        Response resAlert = new Response(false, "There is a new comment on one of your store's products");
+        stores.get(storeId).sendAlertToOwners(resAlert);
 
         Response res = new Response(false, "WriteComment: The comment added successfully to product " + productId);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userId));
@@ -1008,7 +1018,8 @@ public class TradingSystemImpl implements TradingSystem {
 
                     Store store = stores.get(storeID);
                     String storeName = store.getName();
-                    store.sendAlert(removeOwnerID, "You are removed from owning the store: " + storeName);
+                    Response resAlert = new Response(false, "You are removed from owning the store: " + storeName);
+                    store.sendAlert(removeOwnerID, resAlert);
                 }
             }
             for(ManagerPermission permission: managerPermissionHashMap.values()){
@@ -2051,21 +2062,5 @@ public class TradingSystemImpl implements TradingSystem {
             return res;
         }
         return null;
-    }
-
-    //Alert implementation
-    public boolean tryToSend(Object obj, Integer userID) {
-        if(this.connectedSubscribers.containsValue(userID)) {
-            String mess = (String) obj;
-            Alert newAlert = new Alert("Owner-Alert", this, getNextAlertID(), mess);
-            newAlert.SendAlertToClient();
-            return true;
-        }
-        return false;
-    }
-
-    private static synchronized long getNextAlertID() {
-        AlertID++;
-        return AlertID;
     }
 }
