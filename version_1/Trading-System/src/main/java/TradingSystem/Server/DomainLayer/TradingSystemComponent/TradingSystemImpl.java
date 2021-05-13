@@ -16,6 +16,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
+import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -307,11 +308,33 @@ public class TradingSystemImpl implements TradingSystem {
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
         myUser.updateAfterLogin();
-
         Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
         res.AddUserSubscriber(myUser.isManaged(), myUser.isOwner(), myUser.isFounder(),systemAdmins.containsKey(myUser.getId()));
+        return res;
+    }
+
+    /**
+     * @requirement 2.4
+     * @param guestConnID
+     * @param userName
+     * @param password
+     * @param publisher
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "userID": int
+     * }
+     */
+    @Override
+    public Response LoginPublisher(String guestConnID, String userName, String password, Publisher publisher) {
+        Response res = Login(guestConnID,userName, password);
+        if(!res.getIsErr()){
+            User myUser = subscribers.get(res.returnUserID());
+            myUser.setPublisher(publisher);
+        }
         return res;
     }
 
@@ -603,6 +626,7 @@ public class TradingSystemImpl implements TradingSystem {
     public Response Logout(String connID) {
         if (connectedSubscribers.containsKey(connID)) {
             User myUser = subscribers.get(connectedSubscribers.get(connID));
+            myUser.setPublisher(null);
             connectedSubscribers.remove(connID);
             User newGuest = new User();
             newGuest.setShoppingCart(new ShoppingCart( myUser.getShoppingCart()));

@@ -2,10 +2,10 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
+import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
-import TradingSystem.Server.DomainLayer.Notification.Alert;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -55,6 +55,7 @@ public  class User implements Observer {
 
     private ShoppingCart shoppingCart;
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
+    private Publisher publisher;
 
     private final Lock Lock = new ReentrantLock();
 
@@ -109,6 +110,16 @@ public  class User implements Observer {
     private static synchronized int getNextUserID() {
         nextUserID++;
         return nextUserID;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public void notify(String topic, Response res) {
+        if(publisher!=null){
+            publisher.SendMessage(topic, res);
+        }
     }
 
     public static void ClearSystem() {
