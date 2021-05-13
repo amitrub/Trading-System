@@ -2,9 +2,9 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
+import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -55,6 +55,7 @@ public  class User implements Observer {
 
     private ShoppingCart shoppingCart;
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
+    private Publisher publisher;
 
     private final Lock Lock = new ReentrantLock();
 
@@ -109,6 +110,16 @@ public  class User implements Observer {
     private static synchronized int getNextUserID() {
         nextUserID++;
         return nextUserID;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public void notify(String topic, Response res) {
+        if(publisher!=null){
+            publisher.SendMessage(topic, res);
+        }
     }
 
     public static void ClearSystem() {
@@ -333,33 +344,24 @@ public  class User implements Observer {
     }
     }
 
+
+    //Observable pattern
     @Override
     public void update(Observable o, Object arg) {
-        //is guest
-        if(tradingSystem.guests.containsValue(this)){
-            System.out.println(arg);
+        if(!tradingSystem.tryToSend(arg, this.id)) {
+            messages.add(arg);
         }
-        //is subscriber
-        else {
-            boolean isConnected = false;
-            for (Integer connectedUser : tradingSystem.getConnectedSubscribers().values()) {
-                if (connectedUser == this.id) {
-                    isConnected = true;
-                    //TODO connect to client
-                    System.out.println(arg);
+    }
+
+    public void updateAfterLogin(){
+        synchronized (messages) {
+            for (Object arg : messages) {
+                if(tradingSystem.tryToSend(arg, this.id)){
+                    messages.remove(arg);
                 }
             }
-            if(!isConnected)
-                messages.add(arg);
         }
-    }
-
-    public List<Object> getMessages() {
-        return messages;
-    }
-
-    public void setMessages(List<Object> messages) {
-        this.messages = messages;
+        notifyAll();
     }
 }
 

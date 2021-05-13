@@ -4,6 +4,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,12 +14,7 @@ import java.util.Map;
 @CrossOrigin("*")
 public class GuestServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
-    // 2.1 test
-
-    @GetMapping("test")
-    public int test(){
-        return 1;
-    }
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
     @GetMapping("clear_system")
     public Response ClearSystem(){
@@ -37,8 +33,10 @@ public class GuestServiceHttp {
      */
     @GetMapping("home")
     public Response ConnectSystem(){
+        System.out.println("--------------HELLO--------------");
         Response res = this.tradingSystem.ConnectSystem();
         tradingSystem.printUsers();
+        WriteToLogger(res);
         return res;
     }
 
@@ -55,6 +53,7 @@ public class GuestServiceHttp {
     public Response Exit(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.Exit(connID);
         tradingSystem.printUsers();
+        WriteToLogger(res);
         return res;
     }
 
@@ -85,52 +84,52 @@ public class GuestServiceHttp {
             Response res = new Response(true, "Error in parse body : Register");
             res.AddConnID(connID);
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         Response res = this.tradingSystem.Register(connID, userName, password);
         tradingSystem.printUsers();
+        WriteToLogger(res);
         return res;
 
     }
 
-    /**
-     * @requirement 2.4
-     *
-     * @param connID: String (Header)
-     * @param obj:{
-     *  "userName": String
-     *  "password": String
-     * }
-     * @return Response {
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID: String
-     *  "userID": int
-     * }
-     */
-    @PostMapping("login")
-    public Response Login(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String userName, password;
-        try {
-            userName = (String) obj.get("userName");
-            password = (String) obj.get("password");
-        }
-        catch (Exception e){
-            System.out.println(e);
-            Response res = new Response(true, "Error in parse body : Login");
-            res.AddConnID(connID);
-            System.out.println(res);
-            return res;
-        }
-        System.out.println("--------------");
-        System.out.println(userName);
-        System.out.println(password);
-        System.out.println("--------------");
-        Response res = this.tradingSystem.Login(connID, userName, password);
-        tradingSystem.printUsers();
-        return res;
-
-    }
+//    /**
+//     * @requirement 2.4
+//     *
+//     * @param connID: String (Header)
+//     * @param obj:{
+//     *  "userName": String
+//     *  "password": String
+//     * }
+//     * @return Response {
+//     *  "isErr: boolean
+//     *  "message": String
+//     *  "connID: String
+//     *  "userID": int
+//     * }
+//     */
+//    @PostMapping("login")
+//    public Response Login(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+//        String userName, password;
+//        try {
+//            userName = (String) obj.get("userName");
+//            password = (String) obj.get("password");
+//        }
+//        catch (Exception e){
+//            System.out.println(e);
+//            Response res = new Response(true, "Error in parse body : Login");
+//            res.AddConnID(connID);
+//            System.out.println(res);
+//            WriteToLogger(res);
+//            return res;
+//        }
+//        Response res = this.tradingSystem.Login(connID, userName, password);
+//        tradingSystem.printUsers();
+//        WriteToLogger(res);
+//        return res;
+//
+//    }
 
     /**
      * @requirement 2.5
@@ -148,6 +147,7 @@ public class GuestServiceHttp {
     @GetMapping("stores")
     public Response ShowAllStores() {
         Response res = this.tradingSystem.ShowAllStores();
+        WriteToLogger(res);
         return res;
     }
 
@@ -174,6 +174,7 @@ public class GuestServiceHttp {
     public Response ShowStoreProducts(@PathVariable int storeID) {
         Response res = this.tradingSystem.ShowStoreProducts(storeID);
         System.out.println(res);
+        WriteToLogger(res);
         return res;
     }
 
@@ -223,6 +224,7 @@ public class GuestServiceHttp {
             System.out.println(e);
             Response res = new Response(true, "Error in parse body : Search");
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         if (productNameMode & !productCategoryMode)
@@ -263,12 +265,14 @@ public class GuestServiceHttp {
             Response res = new Response(true, "Error in parse body : AddProductToCart");
             res.AddConnID(connID);
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
         System.out.println(res);
         tradingSystem.printUsers();
+        WriteToLogger(res);
         return res;
     }
 
@@ -295,6 +299,7 @@ public class GuestServiceHttp {
     public Response ShowShoppingCart(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.ShowShoppingCart(connID);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -324,10 +329,12 @@ public class GuestServiceHttp {
             Response res = new Response(true, "Error in parse body : RemoveProductFromCart");
             res.AddConnID(connID);
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         Response res = tradingSystem.RemoveProductFromCart(connID, storeID, productID);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
 
     }
@@ -360,11 +367,13 @@ public class GuestServiceHttp {
             Response res = new Response(true, "Error in parse body : EditProductQuantityFromCart");
             res.AddConnID(connID);
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
         System.out.println(res);
         res.AddConnID(connID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -398,11 +407,21 @@ public class GuestServiceHttp {
             Response res = new Response(true, "Error in parse body : guestPurchase");
             res.AddConnID(connID);
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
-        System.out.println("purchase: " + res);
+        WriteToLogger(res);
         return res;
+    }
+
+    private void WriteToLogger(Response res){
+        if(res.getIsErr()) {
+            loggerController.WriteErrorMsg("Guest Error: " + res.getMessage());
+        }
+        else{
+            loggerController.WriteLogMsg("Guest: " + res.getMessage());
+        }
     }
 
 

@@ -3,6 +3,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,6 +14,7 @@ import java.util.Map;
 @CrossOrigin("*")
 public class SubscriberServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    private static final LoggerController loggerController=LoggerController.getInstance();
 
     /**
      * @requirement 3.1
@@ -29,6 +31,7 @@ public class SubscriberServiceHttp {
     public Response Logout(@PathVariable int userID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.Logout(connID);
         tradingSystem.printUsers();
+        WriteToLogger(res);
         return res;
     }
 
@@ -49,6 +52,7 @@ public class SubscriberServiceHttp {
         Response res = tradingSystem.AddStore(userID, connID, storeName);
         tradingSystem.printUsers();
         tradingSystem.printStores();
+        WriteToLogger(res);
         return res;
     }
 
@@ -80,11 +84,13 @@ public class SubscriberServiceHttp {
             System.out.println(e);
             Response res = new Response(true, "Error in parse body : WriteComment");
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         String review = (String) obj.get("comment");
         Response res = tradingSystem.WriteComment(userID,connID,storeID,productID,review);
         tradingSystem.printCommentForProduct(storeID,productID);
+        WriteToLogger(res);
         return res;
     }
 
@@ -146,9 +152,20 @@ public class SubscriberServiceHttp {
             System.out.println(e);
             Response res = new Response(true, "Error in parse body : subscriberPurchase");
             System.out.println(res);
+            WriteToLogger(res);
             return res;
         }
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
+        WriteToLogger(res);
         return res;
+    }
+
+    private void WriteToLogger(Response res){
+        if(res.getIsErr()) {
+            loggerController.WriteErrorMsg("Guest Error: " + res.getMessage());
+        }
+        else{
+            loggerController.WriteLogMsg("Guest: " + res.getMessage());
+        }
     }
 }
