@@ -1,7 +1,10 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -181,6 +184,7 @@ class TradingSystemImplTest {
         assertTrue(response.getIsErr());
     }
     //TODO- implement this
+
     void registerInvalidPassword() {
 
     }
@@ -600,9 +604,27 @@ class TradingSystemImplTest {
     }
 
     @Test
-    void removeOwnerFaliled() {
+    void removeOwnerFailed() {
         Response response = tradingSystemImpl.RemoveOwnerByOwner(userID, connID, userID1, storeid);
         assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void HappyInfoPolicies() {
+        QuantityLimitForProduct exp = new QuantityLimitForProduct(1, productId);
+        tradingSystemImpl.addBuyingPolicy(userID, connID, storeid, exp);
+        Response res = tradingSystemImpl.GetPoliciesInfo(userID, storeid, connID);
+        assertFalse(res.getIsErr());
+    }
+
+    @Test
+    void SadInfoPolicies() {
+        Response res = tradingSystemImpl.GetPoliciesInfo(userID, storeid, connID);
+        assertFalse(res.getIsErr());
+        BuyingPolicy BP = (BuyingPolicy) res.getReturnObject().get("BuyingPolicy");
+        DiscountPolicy DP = (DiscountPolicy) res.getReturnObject().get("DiscountPolicy");
+        assertEquals(BP.getExp(), null);
+        assertEquals(DP.getSale(), null);
     }
 
     @Test

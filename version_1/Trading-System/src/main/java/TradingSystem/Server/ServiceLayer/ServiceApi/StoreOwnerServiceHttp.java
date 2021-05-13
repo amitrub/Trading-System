@@ -239,7 +239,7 @@ public class StoreOwnerServiceHttp {
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.1
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -263,7 +263,7 @@ public class StoreOwnerServiceHttp {
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.2
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -287,57 +287,7 @@ public class StoreOwnerServiceHttp {
     }
 
     /**
-     * @requirement 4.2
-     *
-     * @param userID: int (Path)
-     * @param storeID: int (Path)
-     * @param buyingPolicyID : int (Path)
-     * @param connID: String (Header)
-     * @param obj:{
-     *  TODO: Think what values should be in Buying Policy
-     * }
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
-    //TODO: not implemented version 2
-    @PostMapping("{userID}/store/{storeID}/edit_buying_policy/{buyingPolicyID}")
-    public Response EditBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        Response res = this.tradingSystem.EditBuyingPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
-        WriteToLogger(res);
-        return res;
-    }
-
-    /**
-     * @requirement 4.2
-     *
-     * @param userID: int (Path)
-     * @param storeID: int (Path)
-     * @param discountPolicyID : int (Path)
-     * @param connID: String (Header)
-     * @param obj:{
-     *  TODO: Think what values should be in Discount Policy
-     * }
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
-    //TODO: not implemented version 2
-    @PostMapping("{userID}/store/{storeID}/edit_discount_policy/{discountPolicyID}}")
-    public Response EditDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-//        Response res = this.tradingSystem.EditDiscountPolicy(userID,storeID,connID);
-        Response res = new Response(true, "not implemented");
-        WriteToLogger(res);
-        return res;
-    }
-
-    /**
-     * @requirement 4.2
+     * @requirement 4.2.3
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -350,7 +300,7 @@ public class StoreOwnerServiceHttp {
      *  "connID": String
      * }
      */
-    @GetMapping("{userID}/store/{storeID}/remove_buying_policy/{buyingPolicyID}")
+    @GetMapping("{userID}/store/{storeID}/remove_buying_policy")
     public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID){
         Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
         WriteToLogger(res);
@@ -358,7 +308,7 @@ public class StoreOwnerServiceHttp {
     }
 
     /**
-     * @requirement 4.2
+     * @requirement 4.2.4
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
@@ -371,9 +321,30 @@ public class StoreOwnerServiceHttp {
      *  "connID": String
      * }
      */
-    @GetMapping("{userID}/store/{storeID}/remove_discount_policy/{discountPolicyID}")
+    @GetMapping("{userID}/store/{storeID}/remove_discount_policy")
     public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID){
         Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 4.2.5
+     *
+     * @param userID: int (Path)
+     * @param storeID: int (Path)
+     * @param discountPolicyID : int (Path)
+     * @param connID: String (Header)
+
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
+    @GetMapping("{userID}/store/{storeID}/get_policies_info")
+    public Response GetPoliciesInfo(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID){
+        Response res = this.tradingSystem.GetPoliciesInfo(userID,storeID,connID);
         WriteToLogger(res);
         return res;
     }

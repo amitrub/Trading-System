@@ -192,7 +192,7 @@ public interface Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response editBuyingPolicy(int storeID);
+    public Response removeBuyingPolicy(int storeID);
 
     /**
      * @requirement 4.2.4
@@ -200,7 +200,7 @@ public interface Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response editDiscountPolicy(int storeID);
+    public Response removeDiscountPolicy(int storeID);
 
     /**
      * @requirement 4.2.5
@@ -208,15 +208,7 @@ public interface Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response removeBuyingPolicy(int storeID);
-
-    /**
-     * @requirement 4.2.6
-     * @param storeID
-     * @param storeID
-     * @return Response
-     */
-    public Response removeDiscountPolicy(int storeID);
+    public Response getPoliciesInfo(int storeID);
 
     /**
      * @requirement 4.3

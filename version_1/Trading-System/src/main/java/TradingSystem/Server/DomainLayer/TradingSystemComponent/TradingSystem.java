@@ -98,6 +98,7 @@ public interface TradingSystem {
     public void AddStoreToList(Store store);
     public Response RemoveBuyingPolicy(int userID, int storeID, String connID);
     public Response RemoveDiscountPolicy(int userID, int storeID, String connID);
+    public Response GetPoliciesInfo(int userID, int storeID, String connID);
     public Expression CreateExpForBuy(Integer storeID,Map<String, Object> map);
     public Sale createSaleForDiscount(int storeID, Map<String, Object> obj);
 }

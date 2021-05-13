@@ -169,7 +169,7 @@ public class PoliciesTests {
     }
     //endregion
 
-    //region requirement 4.2.5: Remove Discount Policy
+    //region requirement 4.2.3: Remove Discount Policy
     @Test
     void Happy_RemoveDiscountPolicy() {
         PriceForGetSale exp = new PriceForGetSale( 100.0);
@@ -202,7 +202,7 @@ public class PoliciesTests {
     }
     //endregion
 
-    //region requirement 4.2.6: Remove Buying Policy
+    //region requirement 4.2.4: Remove Buying Policy
     @Test
     void Happy_RemoveBuyingPolicy() {
         QuantityLimitForStore quantityExp = new QuantityLimitForStore(2, storeID);
@@ -232,4 +232,43 @@ public class PoliciesTests {
         assertTrue(res.getIsErr());
     }
     //endregion
+
+    //region requirement 4.2.5: Get Information of Policies
+    @Test
+    void Happy_GetInfo() {
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        QuantityForGetSale quantityExp1 = new QuantityForGetSale(productID2,2);
+        ProductSale sale = new ProductSale(quantityExp1, productID2, 50.0);
+        client.addDiscountPolicy(storeID, sale);
+        QuantityLimitForStore quantityExp2 = new QuantityLimitForStore(5, storeID);
+        client.addBuyingPolicy(storeID, quantityExp2);
+
+        Response res = client.getPoliciesInfo(storeID);
+        assertFalse(res.getIsErr());
+    }
+
+    @Test
+    void Sad_NoPermissionToInfo() {
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        QuantityForGetSale quantityExp = new QuantityForGetSale(productID2,2);
+        ProductSale sale = new ProductSale(quantityExp, productID2, 50.0);
+        client.addDiscountPolicy(storeID, sale);
+        client.Logout();
+
+        client.Register("reut", "123");
+        client.Login("reut", "123");
+        Response res = client.getPoliciesInfo(storeID);
+        assertTrue(res.getIsErr());
+    }
+
+    @Test
+    void Sad_EmptyPoliciesInfo() {
+        Response res = client.getPoliciesInfo(storeID);
+        assertFalse(res.getIsErr());
+    }
+
+    //endregion
+
 }

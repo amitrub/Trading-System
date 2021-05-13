@@ -495,8 +495,8 @@ public class Client implements Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response editBuyingPolicy(int storeID){
-        String path = String.format("%s/store/%s/edit_buying_policy", this.userID, storeID);
+    public Response removeBuyingPolicy(int storeID){
+        String path = String.format("%s/store/%s/remove_buying_policy", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         return response;
@@ -508,8 +508,8 @@ public class Client implements Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response editDiscountPolicy(int storeID){
-        String path = String.format("%s/store/%s/edit_discount_policy", this.userID, storeID);
+    public Response removeDiscountPolicy(int storeID){
+        String path = String.format("%s/store/%s/remove_discount_policy", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         return response;
@@ -521,25 +521,13 @@ public class Client implements Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response removeBuyingPolicy(int storeID){
-        String path = String.format("%s/store/%s/remove_buying_policy", this.userID, storeID);
+    public Response getPoliciesInfo(int storeID){
+        String path = String.format("%s/store/%s/get_policies_info", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         return response;
     }
 
-    /**
-     * @requirement 4.2.6
-     * @param storeID
-     * @param storeID
-     * @return Response
-     */
-    public Response removeDiscountPolicy(int storeID){
-        String path = String.format("%s/store/%s/remove_discount_policy", this.userID, storeID);
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
-        Response response = Response.makeResponseFromJSON(jsonResponse);
-        return response;
-    }
 
     /**
      * @requirement 4.3
