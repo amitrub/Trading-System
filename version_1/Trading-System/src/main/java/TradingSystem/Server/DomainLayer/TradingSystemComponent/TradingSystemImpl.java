@@ -1895,19 +1895,27 @@ public class TradingSystemImpl implements TradingSystem {
         return null;
     }
 
-    @Override
-    public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp){
+    private Response checkPermissionToPolicy(int userID, String connID, int storeID){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "Error in Admin details");
         }
         if (!subscribers.containsKey(userID)) {
-             return new Response(true, "the user is not subscriber to the system");
+            return new Response(true, "the user is not subscriber to the system");
         }
         if(stores.get(storeID)==null){
-              return new Response(true, "the store not exist in the system");
+            return new Response(true, "the store not exist in the system");
         }
         if(!stores.get(storeID).checkOwner(userID)){
-             return new Response(true, "the user is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
+        }
+        return new Response(false, "");
+    }
+
+    @Override
+    public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp){
+        Response res = checkPermissionToPolicy(userID, connID, storeID);
+        if(res.getIsErr()){
+            return res;
         }
         Response r=exp.checkValidity(storeID);
         if(r.getIsErr()){
@@ -1917,6 +1925,22 @@ public class TradingSystemImpl implements TradingSystem {
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
         return new Response("");
+    }
+
+    public Response GetPoliciesInfo(int userID, int storeID, String connID){
+        Response res = checkPermissionToPolicy(userID, connID, storeID);
+        if(res.getIsErr()){
+            return res;
+        }
+        Store s=this.stores.get(storeID);
+        BuyingPolicy BP = s.getBuyingPolicy();
+        DiscountPolicy DP = s.getDiscountPolicy();
+        Response r = new Response(false, "The Buying Policy and Discount Policy returned successfully");
+        r.AddConnID(connID);
+        r.AddUserID(userID);
+        r.AddPair("BuyingPolicy", BP);
+        r.AddPair("DiscountPolicy", DP);
+        return r;
     }
 
     private Expression createLimitExp(int storeID, Map<String, Object> exp) {

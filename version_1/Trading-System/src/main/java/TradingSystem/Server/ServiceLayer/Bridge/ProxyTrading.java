@@ -519,6 +519,13 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
+    public Response GetPoliciesInfo(int userID, int storeID, String connID) {
+        if(real!=null)
+            return real.GetPoliciesInfo( userID, storeID, connID);
+        return null;
+    }
+
+    @Override
     public Expression CreateExpForBuy(Integer storeID, Map<String, Object> map) {
         if(real!=null)
             return real.CreateExpForBuy(storeID, map);

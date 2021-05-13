@@ -359,27 +359,7 @@ public class OwnerTests {
 
     //endregion
 
-    //region requirement 4.2: Add Policies tests - version 2
-    @Test
-    void HappyAddBuyingPolicy() {
-    }
-
-    @Test
-    void SadAddBuyingPolicy() {
-    }
-
-    @Test
-    void HappyAddDiscountPolicy() {
-    }
-
-    @Test
-    void SadAddDiscountPolicy() {
-    }
-    //endregion
-    //region requirement 4.2: Edit Policies tests - version 2
-
-    //endregion
-    //region requirement 4.2: Get Policies information tests - version 2
+    //region requirement 4.2 - the tests in PoliciesTests
 
     //endregion
 

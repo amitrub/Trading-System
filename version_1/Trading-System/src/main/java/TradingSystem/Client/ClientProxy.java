@@ -221,22 +221,17 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response editBuyingPolicy(int storeID){
-        return new Response("not implemented");
-    }
-
-    @Override
-    public Response editDiscountPolicy(int storeID){
-        return new Response("not implemented");
-    }
-
-    @Override
     public Response removeBuyingPolicy(int storeID){
         return tradingSystem.RemoveBuyingPolicy(userID,storeID,ConnID);
     }
 
     @Override
     public Response removeDiscountPolicy(int storeID){ return tradingSystem.RemoveDiscountPolicy(userID,storeID,ConnID); }
+
+    @Override
+    public Response getPoliciesInfo(int storeID) {
+        return tradingSystem.GetPoliciesInfo(userID, storeID, ConnID);
+    }
 
     @Override
     public boolean addOwner(int storeID, int newOwnerID) {
