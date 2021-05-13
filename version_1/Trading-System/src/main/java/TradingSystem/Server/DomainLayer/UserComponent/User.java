@@ -348,6 +348,7 @@ public  class User implements Observer {
     //Observable pattern
     @Override
     public void update(Observable o, Object arg) {
+        this.notify(this.);
         if(!tradingSystem.tryToSend(arg, this.id)) {
             messages.add(arg);
         }

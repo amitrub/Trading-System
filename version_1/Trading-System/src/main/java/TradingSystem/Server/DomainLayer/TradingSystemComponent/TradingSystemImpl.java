@@ -307,7 +307,7 @@ public class TradingSystemImpl implements TradingSystem {
         myUser.mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
-        myUser.updateAfterLogin();
+        myUser.updateAfterLogin(guestConnID);
         Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
