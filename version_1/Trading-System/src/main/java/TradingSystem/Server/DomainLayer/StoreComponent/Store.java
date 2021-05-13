@@ -503,7 +503,8 @@ public class Store extends Observable {
     }
 
     //Observable pattern
-    public void sendAlertToOwners(String message){
+    //send alert to all owners of the store
+    public void sendAlertToOwners(Response message){
         Enumeration<Integer> ownersID = this.getOwnersIDs().keys();
         while(ownersID.hasMoreElements()){
             Integer ID = ownersID.nextElement();
@@ -514,7 +515,8 @@ public class Store extends Observable {
         //TODO - need to remove all observers from the list??
     }
 
-    public void sendAlert(Integer ownerID, String message){
+    //send alert to specific owner
+    public void sendAlert(Integer ownerID, Response message){
         User user = tradingSystem.subscribers.get(ownerID);
         this.addObserver(user);
         this.notifyObservers(message);
