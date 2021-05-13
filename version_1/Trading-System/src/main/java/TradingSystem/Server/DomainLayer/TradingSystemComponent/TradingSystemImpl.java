@@ -701,7 +701,7 @@ public class TradingSystemImpl implements TradingSystem {
         }
         else if(stores.containsKey(storeId)){
             Store store=stores.get(storeId);
-            if(!store.isProductExist(storeId)){
+            if(!store.isProductExist(productId)){
                 return new Response(true, "WriteComment: The product " + productId + " doesn't exist in the store anymore");
             }
         }

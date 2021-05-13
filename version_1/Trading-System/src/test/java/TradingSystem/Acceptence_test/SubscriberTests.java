@@ -100,21 +100,11 @@ public class SubscriberTests {
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
         List<DummyProduct> products = client.showStoreProducts(storeID);
         Integer productID = products.get(0).getProductID();
-//        client.Logout();
         client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().get(0).getProductName();
-        assertEquals(ans1, "Short Pants");
 
-//        //Issue
-//        boolean purchaseFailed = client.subscriberPurchase( "12345678",
-//                "052897878787", "sioot st. 5");
-//        List<DummyProduct> cartAfter = client.showShoppingCart();
-//        List<DummyProduct> productsAfter = client.showStoreProducts(storeID);
-//        DummyProduct shortPants = products.get(0);
-//        DummyProduct shortPantsAfter = productsAfter.get(0);
-//
-//        Response response = client.writeComment(storeID, productID, 3, "The product is nice");
-//        assertFalse(response.getIsErr());
+        client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+        Response response = client.writeComment(storeID, productID, 3, "The product is nice");
+        assertFalse(response.getIsErr());
     }
     //case: 3.3.2, trying comment on product sub didn't buy
     @Test
