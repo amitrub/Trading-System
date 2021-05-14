@@ -262,7 +262,7 @@ public class Store extends Observable {
        if(this.discountPolicy!=null) {
            return this.discountPolicy.calculatePrice(productsInTheBug, userId, this.CalculatePriceBeforeSale(productsInTheBug));
        }
-       return 0.0;
+       return this.CalculatePriceBeforeSale(productsInTheBug);
        }
 
 
@@ -317,6 +317,10 @@ public class Store extends Observable {
 
     public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
         return this.inventory.reduceProducts(products_quantity);
+    }
+
+    public void cancilReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
+        this.inventory.cancilReduceProducts(products);
     }
 
     public Response WriteComment(int userId, int productId, String comment) {
@@ -403,43 +407,6 @@ public class Store extends Observable {
         return inventory.checkProductsExistInTheStore(id,1);
     }
 
-/*
-    //TODO implement! by the policy
-    public Double calculateBugPrice(boolean userSubscribe, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        if(userSubscribe){
-            return 1.0;
-        }
-        else
-            return 2.0;
-    }
-/*
-    public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        Double priceBeforeSale=0.0;
-
-        Set<Integer> keySetProdects=productsInTheBug.keySet();
-        for (Integer key:keySetProdects
-        ) {
-            Double tmpPrice=this.getProduct(key).getPrice();
-            priceBeforeSale=priceBeforeSale+tmpPrice;
-        }
-        return this.discountPolicy.calculatePrice(productsInTheBug,userId,priceBeforeSale);
-    }
-
-    public boolean checkEntitlement(Integer userId, ConcurrentHashMap<Integer, Integer> productsInTheBug){
-        Double priceBeforeSale=0.0;
-
-        Set<Integer> keySetProdects=productsInTheBug.keySet();
-        for (Integer key:keySetProdects
-        ) {
-            Double tmpPrice=this.getProduct(key).getPrice();
-            priceBeforeSale=priceBeforeSale+tmpPrice;
-        }
-        return this.buyingPolicy.checkEntitlement(productsInTheBug,userId,priceBeforeSale);
-    }
-
-
- */
-
     public void addOwnerPermission(int newOwner, OwnerPermission op) {
         this.ownersPermission.put(newOwner,op);
     }
@@ -522,6 +489,7 @@ public class Store extends Observable {
         this.notifyObservers(message);
         //TODO - need to remove all observers from the list??
     }
+
 
 
 }

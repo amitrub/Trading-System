@@ -118,6 +118,19 @@ public class Inventory {
         return new Response(false, "Purchase: Product inventory successfully updated");
     }
 
+    public void cancilReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
+        Set<Integer> PQ = products.keySet();
+        for (Integer PID : PQ) {
+            int quantityToAdd = products.get(PID);
+            if (products.containsKey(PID)) {
+                Product product = this.products.get(PID);
+                int quantity = product.getQuantity();
+                int newQuantity = quantity + quantityToAdd;
+                product.setQuantity(newQuantity);
+            }
+        }
+    }
+
     public Response addCommentToProduct(Integer productId, Integer userID, String comment) {
         if (this.products.containsKey(productId)) {
             return this.products.get(productId).addComment(userID, comment);
@@ -390,5 +403,7 @@ public class Inventory {
     public Lock getProductLock(int productID) {
         return this.products.get(productID).getLock();
     }
+
+
 }
 
