@@ -1554,6 +1554,10 @@ public class TradingSystemImpl implements TradingSystem {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
+    public void cancilReduceProducts(Integer storeID, ConcurrentHashMap<Integer, Integer> products) {
+      this.stores.get(storeID).cancilReduceProducts(products);
+    }
+
     public List<DummyShoppingHistory> ShowStoreHistory(int storeId){
         return stores.get(storeId).ShowStoreHistory();
     }
@@ -2087,4 +2091,6 @@ public class TradingSystemImpl implements TradingSystem {
         }
         return null;
     }
+
+
 }
