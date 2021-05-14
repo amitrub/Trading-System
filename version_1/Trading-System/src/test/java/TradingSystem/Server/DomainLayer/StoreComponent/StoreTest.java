@@ -36,7 +36,7 @@ class StoreTest {
         store = null;
     }
 
-    //region search tests
+    //region search tests - requirement 2.6
     @Test
     void searchProduct() {
         List<DummyProduct> L1= store.SearchProduct("computer",null,-1,-1);

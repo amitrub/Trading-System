@@ -116,7 +116,7 @@ class TradingSystemImplTest {
 
     // requirement 2.2
     @Test
-    void exiBad() {
+    void exitBad() {
         String connId= tradingSystemImpl.ConnectSystem().returnConnID();
         tradingSystemImpl.Exit(connId);
         Response response= tradingSystemImpl.Exit(connId);
@@ -139,7 +139,6 @@ class TradingSystemImplTest {
         response= tradingSystemImpl.Register(connID,"reutlevy30","reut");
         assertTrue(response.getIsErr());
     }
-
 
     // requirement 2.4
     @Test
@@ -178,12 +177,34 @@ class TradingSystemImplTest {
 
     //region requirement 3
 
+    // requirement 3.1
+    @Test
+    void LogoutHappy() {
+        String connID= tradingSystemImpl.ConnectSystem().returnConnID();
+        tradingSystemImpl.Register(connID,"Rubin","123");
+        Response res = tradingSystemImpl.Login(connID,"Rubin","123");
+        connID = res.returnConnID();
+        Response response = tradingSystemImpl.Logout(connID);
+        assertFalse(response.getIsErr());
+    }
+
+    // requirement 3.1
+    @Test
+    void LogoutSad() {
+        String connID= tradingSystemImpl.ConnectSystem().returnConnID();
+        Response res = tradingSystemImpl.Register(connID,"Rubin","123");
+        connID = res.returnConnID();
+        Response response = tradingSystemImpl.Logout(connID);
+        assertTrue(response.getIsErr());
+    }
+
     // requirement 3.2
     @Test
     void AddStoreNotSubscriber() { ;
         Response response= tradingSystemImpl.AddStore(11,connID,"Store3");
         assertTrue(response.getIsErr());
     }
+
     // requirement 3.2
     @Test
     void AddStoreSameName() {
@@ -197,6 +218,45 @@ class TradingSystemImplTest {
     void AddStoreSuccess() {
         Response response= tradingSystemImpl.AddStore(userID,connID,"Stor143");
         assertFalse(response.getIsErr());
+    }
+
+    // requirement 3.3
+    @Test
+    void WriteCommentSuccess() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+
+        Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
+        assertFalse(response.getIsErr());
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
+        assertEquals(size, 1);
+    }
+
+    // requirement 3.3
+    @Test
+    void WriteCommentWrongStoreID() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+
+        Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, 100, productID1, "Amazing");
+        assertTrue(response.getIsErr());
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
+        assertEquals(size, 0);
+    }
+    
+
+    // requirement 3.3
+    @Test
+    void WriteCommentNotInHistory() {
+    }
+
+    // requirement 3.3
+    @Test
+    void WriteCommentExistComment() {
     }
 
     //endregion
@@ -653,7 +713,7 @@ class TradingSystemImplTest {
 
 //endregion
 
-    //region purchase tests
+    //region purchase tests - requirement 2.9
     void setUpBeforePurchase(){
         tradingSystemImpl.AddProductToStore(NofetID, NconnID, NofetStore, "computer", "Technology", 3000.0,20);
         tradingSystemImpl.AddProductToStore(NofetID, NconnID, NofetStore, "Bag", "Beauty", 100.0,50);

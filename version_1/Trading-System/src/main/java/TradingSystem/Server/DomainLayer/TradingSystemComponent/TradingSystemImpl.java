@@ -706,7 +706,7 @@ public class TradingSystemImpl implements TradingSystem {
                 return new Response(true, "WriteComment: The product " + productId + " doesn't exist in the store anymore");
             }
         }
-        else if(!ValidConnectedUser(userId, connID)) {
+        if(!ValidConnectedUser(userId, connID)) {
             return new Response(true, "WriteComment: The user " + userId + " is not connected");
         }
         User user=subscribers.get(userId);
@@ -716,6 +716,8 @@ public class TradingSystemImpl implements TradingSystem {
         if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
             return new Response(true, "WriteComment: The user already wrote comment for this product");
         }
+        Product product = stores.get(storeId).getProduct(productId);
+        product.addComment(userId, comment);
 
         Response resAlert = new Response(false, "There is a new comment on one of your store's products");
         stores.get(storeId).sendAlertToOwners(resAlert);
