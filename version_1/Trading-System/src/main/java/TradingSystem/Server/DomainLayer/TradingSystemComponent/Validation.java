@@ -4,6 +4,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
+import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -43,9 +44,8 @@ public class Validation {
         return new Response(true, tradingSystemImpl.errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
     }
 
-    //TODO- implement the function
-    public boolean VerifyPassword(String password) {
-            return true;
+    public boolean VerifyPassword(String userName, String password) {
+        return true;
     }
 
 

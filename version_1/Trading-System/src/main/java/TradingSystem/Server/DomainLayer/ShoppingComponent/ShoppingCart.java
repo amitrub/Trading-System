@@ -6,7 +6,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
-import TradingSystem.Server.ServiceLayer.LoggerController;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 
@@ -22,7 +21,6 @@ public class ShoppingCart {
 
     private final Integer userID;
     
-    private static final LoggerController loggerController=LoggerController.getInstance();
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags = new ConcurrentHashMap<>();
     //StoreID
@@ -110,7 +108,6 @@ public class ShoppingCart {
         Double priceForBug = tradingSystemImpl.calculateBugPrice(productID, storeID, products);
         shoppingBags.get(storeID).setFinalPrice(priceForBug);
         this.shoppingBags.get(storeID).addProduct(productID, quantity);
-        loggerController.WriteLogMsg("User "+userID+" added product " +productID+ " from store "+storeID+" to cart successfully");
         Response res =new Response("The product added successfully");
         return res;
     }

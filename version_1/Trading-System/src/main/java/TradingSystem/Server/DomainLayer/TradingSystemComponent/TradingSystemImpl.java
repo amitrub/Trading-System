@@ -31,6 +31,7 @@ public class TradingSystemImpl implements TradingSystem {
 
     private ConcurrentHashMap<Integer, Integer> systemAdmins;
     private ConcurrentHashMap<String, Integer> connectedSubscribers;
+    //private ConcurrentHashMap<Integer, String> passwords;
 
     public ConcurrentHashMap<Integer, User> subscribers;
     public ConcurrentHashMap<String, User> guests;
@@ -257,7 +258,7 @@ public class TradingSystemImpl implements TradingSystem {
             if (validation.IsUserNameExist(userName)) { 
                 return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
             }
-            if(!validation.VerifyPassword(password)){
+            if(!validation.VerifyPassword(userName, password)){
                 return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error password is invalid"));
             }
             User newUser = new User(userName, password);
