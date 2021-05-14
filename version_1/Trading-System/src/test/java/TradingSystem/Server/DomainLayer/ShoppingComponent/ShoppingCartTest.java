@@ -56,6 +56,7 @@ class ShoppingCartTest {
         t.AddProductToStore(NuserId, NconnID, storeID2, "Bed", "Fun", 4000.0,30);
     }
 
+    //requirement 2.7
     @Test
     void addProductToBag() {
         Store Nstore = t.stores.get(storeID1);
@@ -82,6 +83,7 @@ class ShoppingCartTest {
 
     }
 
+    //requirement 2.8
     @Test
     void editProductQuantityFromCart() {
         Store Nstore = t.stores.get(storeID1);
@@ -110,6 +112,7 @@ class ShoppingCartTest {
         //assertTrue(res5.getIsErr());
     }
 
+    //requirement 2.8
     @Test
     void removeProductFromCart() {
         SC1.addProductToBag(storeID1,1,3);
@@ -129,6 +132,7 @@ class ShoppingCartTest {
 
     }
 
+    //requirement 2.8
     @Test
     void showShoppingCart() {
         SC1.addProductToBag(storeID1,1,3);
@@ -157,6 +161,7 @@ class ShoppingCartTest {
         assertTrue(L2.isEmpty());
 }
 
+    //requirement 2.8
     @Test
     void mergeToMyCart() {
         ConcurrentHashMap<Integer, ShoppingBag> shoppingBagsList1 = new ConcurrentHashMap<>();
