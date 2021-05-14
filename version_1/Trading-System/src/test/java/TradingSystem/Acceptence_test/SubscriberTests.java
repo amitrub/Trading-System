@@ -218,8 +218,6 @@ public class SubscriberTests {
     }
     //endregion
 
-    //TODO: user purchase need to add to history
-
 
 
 }

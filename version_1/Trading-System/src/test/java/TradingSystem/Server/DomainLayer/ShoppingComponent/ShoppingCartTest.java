@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class ShoppingCartTest {
 
     TradingSystemImpl t= TradingSystemImpl.getInstance();
-    String gust1=t.ConnectSystem().returnConnID();
+    String guest1=t.ConnectSystem().returnConnID();
     String NconnID;
     int NuserId ,storeID1,storeID2;
     ShoppingCart SC1;
@@ -26,8 +26,8 @@ class ShoppingCartTest {
 
     @BeforeEach
     void setUp() {
-        t.Register(gust1, "nofet", "123");
-        Response res=t.Login(gust1, "nofet", "123");
+        t.Register(guest1, "nofet", "123");
+        Response res=t.Login(guest1, "nofet", "123");
         NconnID= res.returnConnID();
         NuserId=res.returnUserID();
         SC1=new ShoppingCart(NuserId);
@@ -167,10 +167,38 @@ class ShoppingCartTest {
         assertEquals(shoppingCart1.getShoppingBags().size(),4);
     }
 
+    
+    //region Purchase Tests
     @Test
-    void purchase() {
-//        TODO
+    void HappyPurchase() {
+        t.Register(guest1, "elinor", "123");
+        Response res = t.Login(guest1, "nofet", "123");
+        String elinorConnID = res.returnConnID();
+        Integer elinorUserID = res.returnUserID();
+        Integer productID = t.stores.get(storeID1).getProductID("computer");
+        t.AddProductToCart(elinorConnID, storeID1,productID, 1);
+    }
+
+    @Test
+    void SadPurchase_BuyingPolicy() {
 
     }
+
+    @Test
+    void SadPurchase_Payment() {
+
+    }
+
+    @Test
+    void SadPurchase_EmptyCart() {
+
+    }
+
+    @Test
+    void Sad_Purchase_Supply() {
+        
+    }
+
+    //endregion
 
 }
