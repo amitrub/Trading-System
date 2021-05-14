@@ -247,16 +247,34 @@ class TradingSystemImplTest {
         Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
         assertEquals(size, 0);
     }
-    
+
 
     // requirement 3.3
     @Test
     void WriteCommentNotInHistory() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+
+        Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
+        assertTrue(response.getIsErr());
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
+        assertEquals(size, 0);
+
     }
 
     // requirement 3.3
     @Test
     void WriteCommentExistComment() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+
+        tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
+        Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "WTF");
+        assertTrue(response.getIsErr());
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
+        assertEquals(size, 1);
     }
 
     //endregion
