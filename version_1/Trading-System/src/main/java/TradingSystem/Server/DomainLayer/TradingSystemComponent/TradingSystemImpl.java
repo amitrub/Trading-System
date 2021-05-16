@@ -1206,7 +1206,6 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "ShowStoreWorkers: The user " + userID + " has no permissions to see this information");
         }
         else{
-            List<String> list=new LinkedList<>();
             ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
             ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
             if(ownerPermissionHashMap.size()==0 && managerPermissionHashMap.size()==0){

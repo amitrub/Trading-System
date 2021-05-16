@@ -510,8 +510,8 @@ class TradingSystemImplTest {
         Response response = tradingSystemImpl.RemoveOwnerByOwner(NofetID, NconnID, ElinorID, NofetStore);
         assertFalse(response.getIsErr());
 
-        Integer size = tradingSystemImpl.stores.get(NofetStore).getOwnersIDs().size();
-        assertEquals(size, 0);
+        Integer size = tradingSystemImpl.stores.get(NofetStore).OwnersID().size();
+        assertEquals(size, 1);
     }
 
     // requirement 4.4
@@ -522,8 +522,8 @@ class TradingSystemImplTest {
         Response response = tradingSystemImpl.RemoveOwnerByOwner(userID, connID, ElinorID, NofetStore);
         assertTrue(response.getIsErr());
 
-        Integer size = tradingSystemImpl.stores.get(NofetStore).getOwnersIDs().size();
-        assertEquals(size, 2);
+        Integer size = tradingSystemImpl.stores.get(NofetStore).OwnersID().size();
+        assertEquals(size, 3);
     }
 
     // requirement 4.4
@@ -533,8 +533,8 @@ class TradingSystemImplTest {
         Response response = tradingSystemImpl.RemoveOwnerByOwner(userID, connID, ElinorID, NofetStore);
         assertTrue(response.getIsErr());
 
-        Integer size = tradingSystemImpl.stores.get(NofetStore).getOwnersIDs().size();
-        assertEquals(size, 1);
+        Integer size = tradingSystemImpl.stores.get(NofetStore).OwnersID().size();
+        assertEquals(size, 2);
     }
 
     // requirement 4.4
@@ -543,8 +543,8 @@ class TradingSystemImplTest {
         Response response = tradingSystemImpl.RemoveOwnerByOwner(NofetID, NconnID, ElinorID, NofetStore);
         assertTrue(response.getIsErr());
 
-        Integer size = tradingSystemImpl.stores.get(NofetStore).getOwnersIDs().size();
-        assertEquals(size, 0);
+        Integer size = tradingSystemImpl.stores.get(NofetStore).OwnersID().size();
+        assertEquals(size, 1);
     }
 
     // requirement 4.5
@@ -744,7 +744,7 @@ class TradingSystemImplTest {
     @Test
     void removeManagerByOwnerSuccess() {
         Response response = tradingSystemImpl.RemoveOwnerByOwner(userID,connID,ElinorID,storeid);
-        boolean exist = tradingSystemImpl.stores.get(storeid).getOwnersIDs().containsKey(ElinorID);
+        boolean exist = tradingSystemImpl.stores.get(storeid).OwnersID().contains(ElinorID);
         assertTrue(!exist && !response.getIsErr());
     }
 
@@ -753,7 +753,7 @@ class TradingSystemImplTest {
     void removeManagerNotByOwner() {
         tradingSystemImpl.AddNewOwner(userID, connID, storeid, ElinorID);
         Response response = tradingSystemImpl.RemoveOwnerByOwner(userID1, connID1, ElinorID, storeid);
-        boolean exist = tradingSystemImpl.stores.get(storeid).getOwnersIDs().containsKey(ElinorID);
+        boolean exist = tradingSystemImpl.stores.get(storeid).OwnersID().contains(ElinorID);
         assertTrue(exist && response.getIsErr());
     }
 
@@ -811,8 +811,8 @@ class TradingSystemImplTest {
         Response response = tradingSystemImpl.AddNewOwner(NofetID, NconnID, ElinorStore, userID);
         assertTrue(response.getIsErr());
 
-        Integer size = tradingSystemImpl.stores.get(ElinorStore).getOwnersIDs().size();
-        assertEquals(size, 0);
+        Integer size = tradingSystemImpl.stores.get(ElinorStore).OwnersID().size();
+        assertEquals(size, 1);
     }
 
     //endregion
