@@ -1,9 +1,7 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.CompositeExpression;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Cheaper;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Decission;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Decision;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class XorComposite extends CompositeSale{
 
-    private Decission des;
+    private Decision des;
     public XorComposite(List<Sale> c) {
         super(c);
     }
@@ -36,7 +34,7 @@ public class XorComposite extends CompositeSale{
            return des.chooseSale(sales,products,finalSale,userID,storeID);
     }
 
-    public void setDes(Decission des) {
+    public void setDes(Decision des) {
         this.des = des;
     }
 }

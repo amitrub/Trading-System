@@ -6,11 +6,15 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ConditionRole;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ExistProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Cheaper;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Decision;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
@@ -1546,7 +1550,10 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public Product getProduct(int storeID, int productID) {
-        return this.stores.get(storeID).getProduct(productID);
+       if(this.stores.get(storeID)!=null) {
+           return this.stores.get(storeID).getProduct(productID);
+       }
+       return null;
     }
 
     public boolean ValidConnectedUser(int userID, String connID){
@@ -1803,6 +1810,8 @@ public class TradingSystemImpl implements TradingSystem {
                 case "XorComposite":
                     XorComposite xorComposite = new XorComposite();
                     Map<String, Object> map0 = (Map<String, Object>) o.get("XorComposite");
+                    Map<String, Object> Decision=(  Map<String, Object>) map0.get("Decision");
+                    Decision dec=createDecision(Decision);
                     for (String mapKey:map0.keySet()
                     ) {
                         Map<String, Object> tosend = new HashMap<>();
@@ -1845,6 +1854,14 @@ public class TradingSystemImpl implements TradingSystem {
         return sale;
     }
 
+    private Decision createDecision(  Map<String, Object> decision) {
+        String des=(String) decision.get("decision");
+        if(decision.equals("Cheaper")){
+          return new Cheaper();
+        }
+        return null;
+    }
+
     private Expression createSaleExp(Integer storeID, Map<String, Object> exp) {
         for (String key : exp.keySet()
         ) {
@@ -1871,16 +1888,6 @@ public class TradingSystemImpl implements TradingSystem {
                         orComposite.add(tmp);
                     }
                     return orComposite;
-                case "Conditioning":
-                    Conditioning conditioning = new Conditioning();
-                    Map<String, Object> map4 = (Map<String, Object>) exp.get("Conditioning");
-                    Map<String, Object> cond = (Map<String, Object>) map4.get("cond");
-                    Expression e1 = createSaleExp(storeID, cond);
-                    Map<String, Object> condIf = (Map<String, Object>) map4.get("condIf");
-                    Expression e2 = createSaleExp(storeID, condIf);
-                    conditioning.setCond(e1);
-                    conditioning.setCondIf(e2);
-                    return conditioning;
                 case "NumOfProductsForGetSale":
                     Map<String, Object> map5 = (Map<String, Object>) exp.get("NumOfProductsForGetSale");
                     Integer num = (Integer) map5.get("numOfProductsForSale");
@@ -1980,7 +1987,7 @@ public class TradingSystemImpl implements TradingSystem {
                     Conditioning conditioning = new Conditioning();
                     Map<String, Object> map4 = (Map<String, Object>) exp.get("Conditioning");
                     Map<String, Object> cond = (Map<String, Object>) map4.get("cond");
-                    Expression e1 = createLimitExp(storeID, cond);
+                    ConditionRole e1 = createConditingRole(storeID, cond);
                     Map<String, Object> condIf = (Map<String, Object>) map4.get("condIf");
                     Expression e2 = createLimitExp(storeID, condIf);
                     conditioning.setCond(e1);
@@ -2023,6 +2030,17 @@ public class TradingSystemImpl implements TradingSystem {
             }
         }
         return null;
+    }
+
+    private ConditionRole createConditingRole(int storeID, Map<String, Object> cond) {
+        String role=(String) cond.get("Role");
+        if(role.equals("ExistProduct")){
+           Integer productId=(Integer) cond.get("productID");
+            return new ExistProduct(productId);
+        }
+        return null;
+
+
     }
 
     //for the tests
