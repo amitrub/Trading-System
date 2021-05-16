@@ -323,8 +323,12 @@ public class TradingSystemImpl implements TradingSystem {
         Publisher publisher = new Publisher();
         user.setPublisher(publisher);
         user.update(res);
-
-        //user.updateAfterLogin();
+        try {
+            Thread.sleep(10000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        user.updateAfterLogin();
     }
 
     /**
@@ -1027,17 +1031,20 @@ public class TradingSystemImpl implements TradingSystem {
         else{
             stores.get(storeID).removeOwner(removeOwnerID);
             subscribers.get(removeOwnerID).removeOwnedStore(storeID);
+            //alert the removed owner
+            Store store = stores.get(storeID);
+            String storeName = store.getName();
+            Response resAlert = new Response(false, "You are removed from owning the store: " + storeName);
+            store.sendAlert(removeOwnerID, resAlert);
+
             ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
             ConcurrentHashMap<Integer,ManagerPermission> managerPermissionHashMap= stores.get(storeID).getManagerIDs();
             for(OwnerPermission permission: ownerPermissionHashMap.values()){
                 if(permission.getAppointmentId()==removeOwnerID) {
                     stores.get(storeID).removeOwner(permission.getUserId());
                     subscribers.get(permission.getUserId()).removeOwnedStore(storeID);
-
-                    Store store = stores.get(storeID);
-                    String storeName = store.getName();
-                    Response resAlert = new Response(false, "You are removed from owning the store: " + storeName);
-                    store.sendAlert(removeOwnerID, resAlert);
+                    //alert the removed owner
+                    store.sendAlert(permission.getAppointmentId(), resAlert);
                 }
             }
             for(ManagerPermission permission: managerPermissionHashMap.values()){
