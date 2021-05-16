@@ -88,74 +88,7 @@ public class GuestTests {
         int respondID2 = client.Register("Avi", "qqq");
         assertTrue(respondID2 == -1 && this.client.getConnID().equals(""));
     }
-    @Test
-    void registerParallelHappy(){
-        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
 
-        List<RegisterTask> taskList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            RegisterTask task = new RegisterTask("Client-" + i);
-            taskList.add(task);
-        }
-
-        //Execute all tasks and get reference to Future objects
-        List<Future<Result>> resultList = null;
-
-        try {
-            resultList = executor.invokeAll(taskList);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        executor.shutdown();
-
-        System.out.println("\n========Printing the results======");
-
-        assert resultList != null;
-        for (int i = 0; i < resultList.size(); i++) {
-            Future<Result> future = resultList.get(i);
-            try {
-                Result result = future.get();
-                System.out.println(result.getName() + ": " + result.getTimestamp());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-    @Test
-    void registerParallelSadSameName(){
-        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
-
-        List<RegisterTask> taskList = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            RegisterTask task = new RegisterTask("SameName");
-            taskList.add(task);
-        }
-
-        //Execute all tasks and get reference to Future objects
-        List<Future<Result>> resultList = null;
-
-        try {
-            resultList = executor.invokeAll(taskList);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        executor.shutdown();
-
-        System.out.println("\n========Printing the results======");
-
-        assert resultList != null;
-        for (int i = 0; i < resultList.size(); i++) {
-            Future<Result> future = resultList.get(i);
-            try {
-                Result result = future.get();
-                System.out.println(result.getName() + ": " + result.getTimestamp());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
 //    @Test
 //    void registerShortPassword() {
 //        int respondID = client.Register("Lior", "q");
