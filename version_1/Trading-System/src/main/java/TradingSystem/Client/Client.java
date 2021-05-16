@@ -139,19 +139,17 @@ public class Client implements Client_Interface {
      * @requirement 2.5
      * @return int userID
      */
-    public List<DummyStore> showAllStores() {
+    public Response showAllStores() {
         String path = "stores";
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyStore> dummySearchResponeArr = response.getStores();
-        return dummySearchResponeArr;
+        return response;
     }
-    public List<DummyProduct> showStoreProducts(int storeID) {
+    public Response showStoreProducts(int storeID) {
         String path = String.format("store/%s/products", storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-        return dummyProductResponeArr;
+        return response;
     }
 
     /**
@@ -164,7 +162,7 @@ public class Client implements Client_Interface {
      * @param s_rank s_rank
      * @return List<DummyProduct>
      */
-    public List<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
+    public Response Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
 
         String path = "search";
         double min = Double.parseDouble(minPrice);
@@ -190,13 +188,13 @@ public class Client implements Client_Interface {
         }
         JSONObject jsonArray = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, jsonSearch.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonArray);
-        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-        System.out.println(ANSI_YELLOW + "(Search) response: " + dummyProductResponeArr + ANSI_RESET);
+        //List<DummyProduct> dummyProductResponeArr = response.returnProductList();
+        System.out.println(ANSI_YELLOW + "(Search) response: " + response.returnProductList() + ANSI_RESET);
 //        this.userID = response.getUserID();
 //        this.connID = response.getConnID();
-        return dummyProductResponeArr;
+        //return dummyProductResponeArr;
+        return response;
     }
-
 
     /**
      * @requirement 2.7
@@ -227,13 +225,14 @@ public class Client implements Client_Interface {
      * @requirement 2.8
      * @return List<DummyProduct>
      */
-    public List<DummyProduct> showShoppingCart() {
+    public Response showShoppingCart() {
         String path = "shopping_cart";
         JSONObject jsonArray = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonArray);
         System.out.println(ANSI_YELLOW + "(addProductToCart) response: " + response + ANSI_RESET);
-        List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-        return dummyProductResponeArr;
+        //List<DummyProduct> dummyProductResponeArr = response.returnProductList();
+        //return dummyProductResponeArr;
+        return response;
     }
     public Response removeFromShoppingCart(int storeID, int productID) {
         String path = "shopping_cart/remove_product";
@@ -291,7 +290,6 @@ public class Client implements Client_Interface {
     }
 
     //Subscriber
-
     /**
      * @requirement 3.1
      *
@@ -363,7 +361,7 @@ public class Client implements Client_Interface {
      * @param address
      * @return
      */
-    public boolean subscriberPurchase(String credit_number, String phone_number, String address) {
+    public Response subscriberPurchase(String credit_number, String phone_number, String address) {
         String path = String.format("%s/shopping_cart/purchase", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
@@ -376,7 +374,7 @@ public class Client implements Client_Interface {
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(subscriberPurchase) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        return response;
     }
 
     //Store Owner Service
@@ -390,7 +388,7 @@ public class Client implements Client_Interface {
      * @param quantity
      * @return boolean
      */
-    public boolean addProduct(int storeID, String productName, String category, double price, int quantity) {
+    public Response addProduct(int storeID, String productName, String category, double price, int quantity) {
         String path = String.format("%s/store/%s/add_new_product", this.userID, storeID);
         JSONObject jsonPost = new JSONObject();
         try {
@@ -404,7 +402,7 @@ public class Client implements Client_Interface {
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addProduct) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        return response;
     }
 
     /**
@@ -431,7 +429,7 @@ public class Client implements Client_Interface {
      * @param quantity
      * @return boolean
      */
-    public boolean editProduct(int storeID, int productID, String productName, String category, double price, int quantity) {
+    public Response editProduct(int storeID, int productID, String productName, String category, double price, int quantity) {
         String path = String.format("%s/store/%s/edit_product/%s", this.userID, storeID, productID);
         JSONObject jsonPost = new JSONObject();
         try {
@@ -445,7 +443,7 @@ public class Client implements Client_Interface {
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(editProduct) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        return response;
     }
 
     /**
@@ -528,14 +526,13 @@ public class Client implements Client_Interface {
         return response;
     }
 
-
     /**
      * @requirement 4.3
      * @param storeID
      * @param newOwnerID
      * @return boolean
      */
-    public boolean addOwner(int storeID, int newOwnerID) {
+    public Response addOwner(int storeID, int newOwnerID) {
         String path = String.format("%s/store/%s/add_new_owner/%s", this.userID, storeID, newOwnerID);
         /*JSONObject jsonPost = new JSONObject();
         try {
@@ -549,7 +546,7 @@ public class Client implements Client_Interface {
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addOwner) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        return response;
     }
 
     /**
@@ -620,26 +617,24 @@ public class Client implements Client_Interface {
      * @param managerToRemoveID
      * @return boolean
      */
-    public boolean removeManager(int storeID, int managerToRemoveID){
+    public Response removeManager(int storeID, int managerToRemoveID){
         String path = String.format("%s/store/%s/remove_manager/%s", this.userID, storeID, managerToRemoveID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(removeManager) response: " + response + ANSI_RESET);
-        return response.getIsErr();
+        return response;
     }
-    public List<DummyStore> showOwnerStores() {
+    public Response showOwnerStores() {
         String path = String.format("%s/stores_owner", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyStore> dummySearchResponeArr = response.getStores();
-        return dummySearchResponeArr;
+        return response;
     }
-    public List<DummyStore> showManagerStores() {
+    public Response showManagerStores() {
         String path = String.format("%s/stores_manager", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyStore> dummySearchResponeArr = response.getStores();
-        return dummySearchResponeArr;
+        return response;
     }
 
     /**
@@ -659,13 +654,12 @@ public class Client implements Client_Interface {
      * @param storeID
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> ownerStoreHistory(int storeID) {
+    public Response ownerStoreHistory(int storeID) {
         String path = String.format("%s/store_history_owner/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
-        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
-        return dummyShoppingHistoryResponse;
+        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
     }
 
 
@@ -675,13 +669,12 @@ public class Client implements Client_Interface {
      * @param storeID
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> adminStoreHistory(int storeID) {
+    public Response adminStoreHistory(int storeID) {
         String path = String.format("%s/store_history_admin/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
-        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
-        return dummyShoppingHistoryResponse;
+        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
     }
 
     /**
@@ -689,39 +682,36 @@ public class Client implements Client_Interface {
      * @param userToShow
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> adminUserHistory(int userToShow) {
+    public Response adminUserHistory(int userToShow) {
         String path = String.format("%s/user_history_admin/%s", this.userID, userToShow);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
-        System.out.println(ANSI_YELLOW + "(ShowUserHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
-        return dummyShoppingHistoryResponse;
+        System.out.println(ANSI_YELLOW + "(ShowUserHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
     }
 
     /**
      * requirement 6.4
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> AdminAllStores() {
+    public Response AdminAllStores() {
         String path = String.format("%s/stores", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
-        System.out.println(ANSI_YELLOW + "(ShowAllStoresHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
-        return dummyShoppingHistoryResponse;
+        System.out.println(ANSI_YELLOW + "(ShowAllStoresHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
     }
 
     /**
      * requirement 6.4
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> AdminAllUsers() {
+    public Response AdminAllUsers() {
         String path = String.format("%s/users", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        List<DummyShoppingHistory> dummyShoppingHistoryResponse = response.returnHistoryList();
-        System.out.println(ANSI_YELLOW + "(ShowAllUsersHistory) response: " + dummyShoppingHistoryResponse + ANSI_RESET);
-        return dummyShoppingHistoryResponse;
+        System.out.println(ANSI_YELLOW + "(ShowAllUsersHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
     }
 
     

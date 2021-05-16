@@ -59,11 +59,11 @@ public class SubscriberTests {
     void openStore_Happy() {
         client.Register("Lee", "123");
         client.Login("Lee", "123");
-        Integer preSize = client.showAllStores().size();
+        Integer preSize = client.showAllStores().getStores().size();
 
         Response response = client.openStore("Mania1");
         assertFalse(response.getIsErr());
-        assertEquals(preSize+1, client.showAllStores().size());
+        assertEquals(preSize+1, client.showAllStores().getStores().size());
     }
     //case 3.2.2
     @Test
@@ -95,10 +95,10 @@ public class SubscriberTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores().getStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.addProductToCart(storeID, productID, 1);
 
@@ -112,10 +112,10 @@ public class SubscriberTests {
         client.Register("Sapir", "123");
         client.Login("Sapir", "123");
         client.openStore("Fox");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         Response response = client.writeComment(storeID, productID, 3, "The product is nice");
         assertTrue(response.getIsErr());
@@ -130,21 +130,21 @@ public class SubscriberTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores().getStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
 //        client.Logout();
         client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().get(0).getProductName();
+        String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
 
         //Issue
         boolean purchaseFailed = client.subscriberPurchase( "12345678",
-                "052897878787", "sioot st. 5");
-        List<DummyProduct> cartAfter = client.showShoppingCart();
-        List<DummyProduct> productsAfter = client.showStoreProducts(storeID);
+                "052897878787", "sioot st. 5").getIsErr();
+        List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
+        List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
         DummyProduct shortPants = products.get(0);
         DummyProduct shortPantsAfter = productsAfter.get(0);
 
@@ -164,14 +164,14 @@ public class SubscriberTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores().getStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
 //        client.Logout();
         client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().get(0).getProductName();
+        String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
 
 //        //Issue, not valid credit number and phone number
@@ -189,10 +189,10 @@ public class SubscriberTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores().getStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.addProductToCart(storeID, productID, 1);
         client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
@@ -209,7 +209,7 @@ public class SubscriberTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores().getStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
 
