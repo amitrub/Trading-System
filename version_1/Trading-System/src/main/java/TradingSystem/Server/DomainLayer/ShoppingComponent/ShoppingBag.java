@@ -142,7 +142,7 @@ public class ShoppingBag {
             if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
                 String storeName = tradingSystemImpl.getStoreName(storeID);
                 String productName = tradingSystemImpl.getProductName(storeID, productID);
-                String err = "Purchase: " + productName + " in The store" + storeName + " is not exist in the stock";
+                String err = "Purchase: " + productName + " in The store: " + storeName + " is not exist in the stock";
                 return new Response(true, err);
             }
         }
