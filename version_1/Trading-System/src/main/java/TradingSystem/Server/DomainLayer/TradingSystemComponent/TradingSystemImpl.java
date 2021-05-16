@@ -307,7 +307,7 @@ public class TradingSystemImpl implements TradingSystem {
         myUser.mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
-        myUser.updateAfterLogin();
+//        myUser.updateAfterLogin();
         Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
@@ -343,7 +343,9 @@ public class TradingSystemImpl implements TradingSystem {
      */
     @Override
     public Response LoginPublisher(String guestConnID, String userName, String password, Publisher publisher) {
+        System.out.println("22222");
         Response res = Login(guestConnID,userName, password);
+        System.out.println("res:\n" + res);
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
@@ -679,6 +681,7 @@ public class TradingSystemImpl implements TradingSystem {
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
+                System.out.println("--------------\n\n" + storeName);
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                 return res; 

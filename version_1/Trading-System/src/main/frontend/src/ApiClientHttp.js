@@ -48,7 +48,7 @@ export const createApiClientHttp = () => {
         password: pass,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -65,7 +65,7 @@ export const createApiClientHttp = () => {
         password: pass,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -108,7 +108,7 @@ export const createApiClientHttp = () => {
         sRank: sRank,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -126,7 +126,7 @@ export const createApiClientHttp = () => {
         quantity: quantity,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -155,7 +155,7 @@ export const createApiClientHttp = () => {
         productID: productID,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -173,7 +173,7 @@ export const createApiClientHttp = () => {
         quantity: quantity,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -192,7 +192,7 @@ export const createApiClientHttp = () => {
         address: address,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -216,9 +216,11 @@ export const createApiClientHttp = () => {
         Accept: "application/json",
         connID: connID,
       };
-      const body = storeName;
+      const body = {
+        storeName: storeName,
+      };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -236,7 +238,7 @@ export const createApiClientHttp = () => {
         comment: comment,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -272,15 +274,15 @@ export const createApiClientHttp = () => {
         address: address,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
     //Owner
     ShowAllFoundedStores: (connID, userID) => {
-      console.log("ShowAllFoundedStores");
-      console.log(connID);
-      console.log(userID);
+      // console.log("ShowAllFoundedStores");
+      // console.log(connID);
+      // console.log(userID);
       let path = ownerURL.concat(`${userID}/founded_stores`);
       const headers = {
         "Content-Type": "application/json; utf-8",
@@ -338,7 +340,7 @@ export const createApiClientHttp = () => {
         price: price,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -356,7 +358,7 @@ export const createApiClientHttp = () => {
         quantity: quantity,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -386,7 +388,7 @@ export const createApiClientHttp = () => {
         price: price,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -418,7 +420,7 @@ export const createApiClientHttp = () => {
         // TODO
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -436,7 +438,7 @@ export const createApiClientHttp = () => {
         // TODO
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -454,7 +456,7 @@ export const createApiClientHttp = () => {
         // TODO
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -472,7 +474,7 @@ export const createApiClientHttp = () => {
         // TODO
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },
@@ -588,7 +590,7 @@ export const createApiClientHttp = () => {
         GetStoreHistory: GetStoreHistory,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
-        console.log(res);
+        // console.log(res);
         return res.data;
       });
     },

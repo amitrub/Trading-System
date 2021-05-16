@@ -2,22 +2,23 @@ import React, { Fragment } from "react";
 import "./App.css";
 import "./Design/grid.css";
 import "./Design/style.css";
-import Register from "./Components/Register/Register";
+import Register from "./Components/GuestComponents/Register/Register";
 import { Client } from "@stomp/stompjs";
 import MainPage from "./Components/MainPage/MainPage";
-import createApiClient from "./ApiClient";
 import Recommendations from "./Components/MainPage/Recommendations";
 import Programers from "./Components/MainPage/Programers";
-import Login from "./Components/Login/Login";
-import Stores from "./Components/Stores/Stores";
+import Login from "./Components/GuestComponents/Login/Login";
+import Stores from "./Components/GuestComponents/Stores/Stores";
 import "./Components/Navbar/Navbar.css";
 import DownPage from "./Components/MainPage/DownPage";
-import ShoppingCart from "./Components/ShoppingCart/ShoppingCart";
-import StoresOwner from "./Components/StoresOwner/StoresOwner";
-import Logout from "./Components/Logout/Logout";
+import ShoppingCart from "./Components/GuestComponents/ShoppingCart/ShoppingCart";
+import OwnerStores from "./Components/OwnerComponents/OwnerStores/OwnerStores";
+import Logout from "./Components/SubscriberComponents/Logout/Logout";
 import MyPopup from "./Components/MyPopup/MyPopup";
+import createApiClientHttp from "./ApiClientHttp";
+import OpenStore from "./Components/SubscriberComponents/OpenStore/OpenStore";
 
-const api = createApiClient();
+const apiHttp = createApiClientHttp();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
 
 class App extends React.Component {
@@ -93,43 +94,6 @@ class App extends React.Component {
     });
   };
 
-  // // TODO: DELETE
-  // registerHandler = (name, pass) => {
-  //   console.log("RegisterHandler:" + name);
-  //   const currentComponent = this;
-  //   const registerResponse = this.state.response;
-
-  //   if (registerResponse.isErr) {
-  //     console.log(registerResponse.message);
-  //   } else {
-  //     // const oldConnID = this.state.connID;
-  //     this.setState(
-  //       (prevState) => ({
-  //         // userID: registerResponse.returnObject.userID,
-  //         // connID: registerResponse.returnObject.connID,
-  //       }),
-  //       () => {
-  //         //unsubscribe old id
-  //         // this.state.clientConnection.subscribe(
-  //         //   `/topic/${this.state.connID}`,
-  //         //   (msg) => {
-  //         //     if (msg.body) {
-  //         //       var jsonBody = JSON.parse(msg.body);
-  //         //       if (jsonBody.message) {
-  //         //         currentComponent.setState({
-  //         //           response: jsonBody,
-  //         //         });
-  //         //         console.log(jsonBody);
-  //         //       }
-  //         //     }
-  //         //   }
-  //         // );
-  //       }
-  //     );
-  //   }
-  //   console.log("End Register Handler! connID: " + this.state.connID);
-  // };
-
   loginHandler = (name, pass, res) => {
     const loginResponse = res;
 
@@ -142,6 +106,11 @@ class App extends React.Component {
           pass: pass,
           userID: loginResponse.returnObject.userID,
           connID: loginResponse.returnObject.connID,
+          guest: loginResponse.returnObject.guest,
+          manager: loginResponse.returnObject.manager,
+          owner: loginResponse.returnObject.owner,
+          founder: loginResponse.returnObject.founder,
+          admin: loginResponse.returnObject.admin,
           founderStoresNames: loginResponse.returnObject.founderStoresNames,
           ownerStoresNames: loginResponse.returnObject.ownerStoresNames,
           managerStoresNames: loginResponse.returnObject.managerStoresNames,
@@ -160,22 +129,32 @@ class App extends React.Component {
           this.state.managerStoresNames.forEach((storeName, index) => {
             this.subscribeToTopic(this.state.clientConnection, storeName);
           });
+
+          this.onRefresh();
         }
       );
     }
-    console.log("End Login Handler! connID: " + this.state.connID);
+    // console.log("End Login Handler! connID: " + this.state.connID);
   };
 
-  logoutHandler = () => {
+  logoutHandler = (logoutResponse) => {
     this.setState((prevState) => ({
       username: "guest",
+      pass: "",
+      userID: -1,
+      connID: logoutResponse.returnObject.connID,
+      guest: logoutResponse.returnObject.guest,
+      manager: logoutResponse.returnObject.manager,
+      owner: logoutResponse.returnObject.owner,
+      founder: logoutResponse.returnObject.founder,
+      admin: false,
     }));
   };
 
   subscribeToTopic = (clientConnection, topicName) => {
     clientConnection.subscribe(`/topic/${topicName}`, (msg) => {
       if (msg.body) {
-        console.log(msg);
+        // console.log(msg);
         var jsonBody = JSON.parse(msg.body);
         if (jsonBody.message) {
           this.setState(
@@ -224,7 +203,7 @@ class App extends React.Component {
                 }
               }
             );
-            console.log(jsonBody);
+            // console.log(jsonBody);
           }
         }
       });
@@ -246,9 +225,9 @@ class App extends React.Component {
       onDisconnect: onDisconnected,
     });
 
-    const connectionRespone = await api.connectSystem();
-    console.log("Connection response:");
-    console.log(connectionRespone);
+    const connectionRespone = await apiHttp.ConnectSystem();
+    // console.log("Connection response:");
+    // console.log(connectionRespone);
     if (!connectionRespone) console.log("Error response is null!!!");
 
     this.setState(
@@ -267,11 +246,6 @@ class App extends React.Component {
       }
     );
   }
-
-  tryClick = () => {
-    console.log("click");
-    api.getTest(this.state.clientConnection, "");
-  };
 
   render() {
     const {
@@ -296,7 +270,6 @@ class App extends React.Component {
     } = this.state;
     return !this.state.clientConnection ? (
       <Fragment>
-        {/* <Typography>Connecting To System...</Typography> */}
         <h3>Connecting To System...</h3>
       </Fragment>
     ) : (
@@ -310,12 +283,7 @@ class App extends React.Component {
           ""
         )}
         {this.guestContent()}
-        {/* <Fragment>
-          <button onClick={this.tryClick}>myButton</button>
-        </Fragment> */}
-        {/* {!this.state.guest &&  */}
         {this.subscriberContent()}
-        {/* {this.state.owner ? ( */}
         {this.ownerContent(connID, userID)}
         {this.endOfPage()}
       </div>
@@ -323,28 +291,12 @@ class App extends React.Component {
   }
 
   guestContent = () => {
-    const {
-      refresh,
-      clientConnection,
-      response,
-      username,
-      pass,
-      userID,
-      connID,
-      guest,
-      manager,
-      owner,
-      founder,
-      admin,
-      stores,
-      products,
-      searchedProducts,
-    } = this.state;
+    const { refresh, username, userID, connID } = this.state;
     return (
       <Fragment>
         <MainPage username={username} />
         {username === "guest" ? (
-          <section className="row">
+          <section className="row" id="sign">
             <div className="col span-1-of-2 box">
               <Register connID={connID} />
             </div>
@@ -369,40 +321,37 @@ class App extends React.Component {
           </section>
         )}
 
-        <Stores
-          refresh={refresh}
-          onRefresh={this.onRefresh}
-          loadSys={this.loadStores}
-          connID={connID}
-          clientConnection={clientConnection}
-          stores={stores}
-          products={products}
-          searchedProducts={searchedProducts}
-        />
+        <Stores refresh={refresh} onRefresh={this.onRefresh} connID={connID} />
+
         <ShoppingCart
           refresh={refresh}
           onRefresh={this.onRefresh}
           connID={connID}
-          clientConnection={clientConnection}
-          response={response}
           username={username}
+          userID={userID}
         />
       </Fragment>
     );
   };
 
   subscriberContent = () => {
+    const { username, userID, connID } = this.state;
     return (
       <Fragment>
-        <section className="section-plans js--section-plans" id="stores">
+        <section className="section-plans js--section-plans" id="subscribers">
           <div className="row">
             <h2>
               <strong>Subscriber Services</strong>
             </h2>
           </div>
-          {this.state.userID ? (
+          {this.state.userID !== -1 ? (
             <div>
-              <p>Will be subscriber services</p>
+              <OpenStore
+                connID={connID}
+                userID={userID}
+                username={username}
+                onRefresh={this.onRefresh}
+              ></OpenStore>
             </div>
           ) : (
             <p>You are guest, login for subscriber permissions!</p>
@@ -415,7 +364,12 @@ class App extends React.Component {
   ownerContent = (connID, userID) => {
     return (
       <Fragment>
-        <StoresOwner connID={connID} userID={userID}></StoresOwner>
+        <OwnerStores
+          connID={connID}
+          userID={userID}
+          refresh={this.state.refresh}
+          onRefresh={this.onRefresh}
+        ></OwnerStores>
       </Fragment>
     );
   };

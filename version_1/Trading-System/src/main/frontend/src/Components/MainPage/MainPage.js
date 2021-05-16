@@ -45,19 +45,25 @@ function mainPage(props) {
                 <a href="#">hello {props.username}</a>
               </li>
               <li>
-                <a href="#stores">stores</a>
+                <a href="#sign">sign</a>
               </li>
               <li>
-                <a href="#owners">owners</a>
+                <a href="#stores">stores</a>
               </li>
               <li>
                 <a href="#shoppingcart">shopping cart</a>
               </li>
               <li>
-                <a href="#programers">about us</a>
+                <a href="#subscribers">subscribers</a>
+              </li>
+              <li>
+                <a href="#owners">owners</a>
               </li>
               <li>
                 <a href="#recommanditions">recommanditions</a>
+              </li>
+              <li>
+                <a href="#programers">about us</a>
               </li>
             </ul>
             <a className="mobile-nav-icon js--nav-icon" href="//#region">
