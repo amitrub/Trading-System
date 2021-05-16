@@ -1,22 +1,23 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ConditionRole;
+
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Conditioning extends SimpleExpression{
 
-    Expression cond;
     Expression condIf;
+    ConditionRole cond;
 
-
-    public Conditioning(Expression cond, Expression condIf) {
-        this.cond = cond;
+    public Conditioning(Expression condIf, ConditionRole cond) {
         this.condIf = condIf;
+        this.cond = cond;
     }
 
     public Conditioning(){
     }
 
-    public void setCond(Expression cond) {
+    public void setCond(ConditionRole cond) {
         this.cond = cond;
     }
 
@@ -25,8 +26,8 @@ public class Conditioning extends SimpleExpression{
     }
 
     public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
-        if(!cond.evaluate(products,finalPrice, userID,storeID )){
-            return condIf.evaluate(products,finalPrice, userID,storeID );
+        if(!condIf.evaluate(products,finalPrice, userID,storeID )){
+            return cond.checkRole(products,finalPrice, userID,storeID );
         }
         return true;
     }
