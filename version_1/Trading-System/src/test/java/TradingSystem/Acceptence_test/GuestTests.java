@@ -201,7 +201,7 @@ public class GuestTests {
         clientProxy.Register("Reut", "123");
         tradingSystemImpl.ClearSystem();
         clientProxy.Login("Reut", "123");
-        List<DummyStore> stores1 = client.showAllStores();
+        List<DummyStore> stores1 = client.showAllStores().getStores();
         assertEquals(stores1.size(), 0);
 
         //case: have stores
@@ -217,7 +217,7 @@ public class GuestTests {
         client.Register("Reut", "123");
         tradingSystemImpl.ClearSystem();
         client.Login("Reut", "123");
-        List<DummyStore> stores1 = client.showAllStores();
+        List<DummyStore> stores1 = client.showAllStores().getStores();
         assertEquals(stores1.size(), 0);
     }
     @Test
@@ -225,11 +225,11 @@ public class GuestTests {
         client.Register("Or", "123");
         client.Login("Or", "123");
         client.openStore("Renuar");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 20);
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 20);
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
         assertEquals(products.size(), 5);
     }
     //endregion
@@ -243,7 +243,7 @@ public class GuestTests {
         client.Register("Shani", "123");
         client.Login("Shani", "123");
         client.openStore("H&M");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = getStoreID(store, "H&M");
         client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
@@ -252,11 +252,11 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.1 Search by product name exist
-        List<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50","100","1","5");
+        List<DummyProduct> searchProducts1 = client.Search("Product Name","Jeans Dress", "50","100","1","5").returnProductList();
         assertEquals(searchProducts1.size(),1);
 
         //2.6.2 Search by product name doesnt exist
-        List<DummyProduct> searchNoProducts = client.Search("Product Name","blabla", "50","100","1","5");
+        List<DummyProduct> searchNoProducts = client.Search("Product Name","blabla", "50","100","1","5").returnProductList();
         assertEquals(searchNoProducts.size(),0);
     }
     @Test
@@ -264,7 +264,7 @@ public class GuestTests {
         client.Register("Shalom", "123");
         client.Login("Shalom", "123");
         client.openStore("H&O");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = getStoreID(store, "H&O");
         client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
@@ -273,11 +273,11 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.3 search by product category exist
-        List<DummyProduct> searchProducts2 = client.Search("Product Category", "Tops", "30","150","1", "5");
+        List<DummyProduct> searchProducts2 = client.Search("Product Category", "Tops", "30","150","1", "5").returnProductList();
         assertEquals(searchProducts2.size(),2);
 
         //2.6.4 search by product category exist
-        List<DummyProduct> searchNoProducts = client.Search("Product Category", "blabla", "30","150","1", "5");
+        List<DummyProduct> searchNoProducts = client.Search("Product Category", "blabla", "30","150","1", "5").returnProductList();
         assertEquals(searchNoProducts.size(),0);
     }
     @Test
@@ -285,7 +285,7 @@ public class GuestTests {
         client.Register("Shaya", "123");
         client.Login("Shaya", "123");
         client.openStore("H&L");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = getStoreID(store, "H&L");
         client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
@@ -294,7 +294,7 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.5 search by product category and price
-        List<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100","150","1", "5");
+        List<DummyProduct> searchProducts3 = client.Search("Product Category", "Tops", "100","150","1", "5").returnProductList();
         assertEquals(searchProducts3.size(),2);
     }
     @Test
@@ -302,7 +302,7 @@ public class GuestTests {
         client.Register("Lital", "123");
         client.Login("Lital", "123");
         client.openStore("H&V");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Simple Dress", "Dress", 120.0, 50);
         client.addProduct(storeID, "Evening Dress", "Dress", 250.0, 50);
@@ -311,7 +311,7 @@ public class GuestTests {
         client.addProduct(storeID, "Stripe Shirt", "Tops", 120.0, 50);
 
         //2.6.6 sad search - there isn't products that match the search
-        List<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150","200","1", "5");
+        List<DummyProduct> searchProducts4 = client.Search("Product Category", "Tops", "150","200","1", "5").returnProductList();
         assertEquals(searchProducts4.size(),0);
     }
 
@@ -326,15 +326,15 @@ public class GuestTests {
         client.Register("Hadas", "123");
         client.Login("Hadas", "123");
         client.openStore("Mania Jeans");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
 
         client.addProductToCart(storeID, productID, 1);
-        assertEquals(client.showShoppingCart().size(), 1);
-        String ans1 = client.showShoppingCart().get(0).getProductName();
+        assertEquals(client.showShoppingCart().returnProductList().size(), 1);
+        String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Sneakers2");
     }
     @Test
@@ -342,28 +342,28 @@ public class GuestTests {
         client.Register("Liat", "123");
         client.Login("Liat", "123");
         client.openStore("Mango");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
 
         Response response = client.addProductToCart(storeID, productID, 3);
-        assertEquals(client.showShoppingCart().size(), 1);
+        assertEquals(client.showShoppingCart().returnProductList().size(), 1);
     }
     @Test
     void addProductToCart_SadStoreWithoutThisProduct() {
         client.Register("Liat", "123");
         client.Login("Liat", "123");
         client.openStore("Mango");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
 
         Response response = client.addProductToCart(storeID, 8, 3);
-        assertEquals(client.showShoppingCart().size(), 0);
+        assertEquals(client.showShoppingCart().returnProductList().size(), 0);
     }
 
 
@@ -375,14 +375,14 @@ public class GuestTests {
         client.Register("Amit", "123");
         client.Login("Amit", "123");
         client.openStore("Bershka");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
 
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.addProductToCart(storeID, productID , 3);
-        List<DummyProduct> dummyProducts = client.showShoppingCart();
+        List<DummyProduct> dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1); //types
         int quantity = dummyProducts.get(0).getQuantity();
         assertEquals(quantity, 3); //quantity
@@ -393,7 +393,7 @@ public class GuestTests {
         client.Login("Dana", "123");
         client.openStore("Cocktail");
 
-        List<DummyProduct> ans1 = client.showShoppingCart();
+        List<DummyProduct> ans1 = client.showShoppingCart().returnProductList();
         assertEquals(ans1.size(), 0);
     }
 
@@ -408,13 +408,13 @@ public class GuestTests {
         client.Register("Amit", "123");
         client.Login("Amit", "123");
         client.openStore("Bershka");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.addProductToCart(storeID, productID , 3);
-        List<DummyProduct> dummyProducts = client.showShoppingCart();
+        List<DummyProduct> dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1); //types
         int quantity = dummyProducts.get(0).getQuantity();
         assertEquals(quantity, 3); //quantity
@@ -424,7 +424,7 @@ public class GuestTests {
 
         //Assert
         assertFalse(response.getIsErr());
-        dummyProducts = client.showShoppingCart();
+        dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 0);
     }
     @Test
@@ -434,13 +434,13 @@ public class GuestTests {
         client.Register("Amit", "123");
         client.Login("Amit", "123");
         client.openStore("Bershka");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.addProductToCart(storeID, productID , 3);
-        List<DummyProduct> dummyProducts = client.showShoppingCart();
+        List<DummyProduct> dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1); //types
         int quantity = dummyProducts.get(0).getQuantity();
         assertEquals(quantity, 3); //quantity
@@ -450,7 +450,7 @@ public class GuestTests {
 
         //Assert
         assertTrue(response.getIsErr());
-        dummyProducts = client.showShoppingCart();
+        dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1);
     }
 
@@ -464,13 +464,13 @@ public class GuestTests {
         client.Register("Amit", "123");
         client.Login("Amit", "123");
         client.openStore("Bershka");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.addProductToCart(storeID, productID , 3);
-        List<DummyProduct> dummyProducts = client.showShoppingCart();
+        List<DummyProduct> dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1); //types
         int quantity = dummyProducts.get(0).getQuantity();
         assertEquals(quantity, 3); //quantity
@@ -480,7 +480,7 @@ public class GuestTests {
 
         //Assert
         assertFalse(response.getIsErr());
-        dummyProducts = client.showShoppingCart();
+        dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1); //types
         quantity = dummyProducts.get(0).getQuantity();
         assertEquals(quantity, 6); //quantity
@@ -492,13 +492,13 @@ public class GuestTests {
         client.Register("Amit", "123");
         client.Login("Amit", "123");
         client.openStore("Bershka");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.addProductToCart(storeID, productID , 3);
-        List<DummyProduct> dummyProducts = client.showShoppingCart();
+        List<DummyProduct> dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1); //types
         int quantity = dummyProducts.get(0).getQuantity();
         assertEquals(quantity, 3); //quantity
@@ -508,7 +508,7 @@ public class GuestTests {
 
         //Assert
         assertTrue(response.getIsErr());
-        dummyProducts = client.showShoppingCart();
+        dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1); //types
         quantity = dummyProducts.get(0).getQuantity();
         assertEquals(quantity, 3); //quantity
@@ -520,10 +520,10 @@ public class GuestTests {
         client.Register("Amit", "123");
         client.Login("Amit", "123");
         client.openStore("Bershka");
-        List<DummyStore> store = client.showAllStores();
+        List<DummyStore> store = client.showAllStores().getStores();
         Integer storeID = store.get(0).getId();
         client.addProduct(storeID, "Jeans Pants", "Pants", 100.0, 10);
-        List<DummyProduct> products= client.showStoreProducts(storeID);
+        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
 
         //Issue
@@ -531,7 +531,7 @@ public class GuestTests {
 
         //Assert
         assertTrue(response.getIsErr());
-        List<DummyProduct> dummyProducts = client.showShoppingCart();
+        List<DummyProduct> dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 0); //types
     }
     @Test
@@ -554,21 +554,21 @@ public class GuestTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores().getStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.Logout();
         client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().get(0).getProductName();
+        String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
 
         //Issue
         Response response = client.guestPurchase("Roee", "12345678","052897878787", "sioot st. 5");
         boolean purchaseFailed = response.getIsErr();
-        List<DummyProduct> cartAfter = client.showShoppingCart();
-        List<DummyProduct> productsAfter = client.showStoreProducts(storeID);
+        List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
+        List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
         DummyProduct shortPants = products.get(0);
         DummyProduct shortPantsAfter = productsAfter.get(0);
 
@@ -581,14 +581,14 @@ public class GuestTests {
 
         //Try to buy the sa,e product again
         client.addProductToCart(storeID, productID, 1);
-        ans1 = client.showShoppingCart().get(0).getProductName();
+        ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
 
         //Issue
         response = client.guestPurchase("Roee", "12345678","052897878787", "sioot st. 5");
         purchaseFailed = response.getIsErr();
-        cartAfter = client.showShoppingCart();
-        productsAfter = client.showStoreProducts(storeID);
+        cartAfter = client.showShoppingCart().returnProductList();
+        productsAfter = client.showStoreProducts(storeID).returnProductList();
         shortPants = products.get(0);
         shortPantsAfter = productsAfter.get(0);
 
@@ -606,14 +606,14 @@ public class GuestTests {
         client.Login("Hadas", "123");
         String store_name = "Mania Jeans";
         client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores();
+        List<DummyStore> stores = client.showAllStores().getStores();
         Integer storeID = getStoreID(stores, store_name);
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = client.showStoreProducts(storeID);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
         client.Logout();
         client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().get(0).getProductName();
+        String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
 
         //Issue
