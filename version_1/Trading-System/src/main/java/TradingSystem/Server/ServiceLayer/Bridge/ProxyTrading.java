@@ -209,6 +209,13 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
+    public String getUserConnID(Integer userID) {
+        if(real!=null)
+            return real.getUserConnID(userID);
+        return null;
+    }
+
+    @Override
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
         if(real!=null)
             real.addHistoryToStoreAndUser(sh,isGuest);

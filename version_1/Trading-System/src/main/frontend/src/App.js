@@ -117,18 +117,19 @@ class App extends React.Component {
         }),
         () => {
           this.subscribeToTopic(this.state.clientConnection, this.state.connID);
+          console.log(this.state.connID);
 
-          this.state.founderStoresNames.forEach((storeName, index) => {
-            this.subscribeToTopic(this.state.clientConnection, storeName);
-          });
+          // this.state.founderStoresNames.forEach((storeName, index) => {
+          //   this.subscribeToTopic(this.state.clientConnection, storeName);
+          // });
 
-          this.state.ownerStoresNames.forEach((storeName, index) => {
-            this.subscribeToTopic(this.state.clientConnection, storeName);
-          });
+          // this.state.ownerStoresNames.forEach((storeName, index) => {
+          //   this.subscribeToTopic(this.state.clientConnection, storeName);
+          // });
 
-          this.state.managerStoresNames.forEach((storeName, index) => {
-            this.subscribeToTopic(this.state.clientConnection, storeName);
-          });
+          // this.state.managerStoresNames.forEach((storeName, index) => {
+          //   this.subscribeToTopic(this.state.clientConnection, storeName);
+          // });
 
           this.onRefresh();
         }
@@ -154,22 +155,22 @@ class App extends React.Component {
   subscribeToTopic = (clientConnection, topicName) => {
     clientConnection.subscribe(`/topic/${topicName}`, (msg) => {
       if (msg.body) {
-        // console.log(msg);
         var jsonBody = JSON.parse(msg.body);
-        if (jsonBody.message) {
-          this.setState(
-            {
-              response: jsonBody,
-              showPopup: true,
-              popupHeader: jsonBody.header,
-              popupMassge: jsonBody.message,
-            },
-            () => {
-              this.onRefresh();
-            }
-          );
-          console.log(jsonBody);
-        }
+        console.log(jsonBody);
+        // if (jsonBody.message) {
+        //   this.setState(
+        //     {
+        //       response: jsonBody,
+        //       showPopup: true,
+        //       popupHeader: jsonBody.header,
+        //       popupMassge: jsonBody.message,
+        //     },
+        //     () => {
+        //       this.onRefresh();
+        //     }
+        //   );
+        //   console.log(jsonBody);
+        // }
       }
     });
   };

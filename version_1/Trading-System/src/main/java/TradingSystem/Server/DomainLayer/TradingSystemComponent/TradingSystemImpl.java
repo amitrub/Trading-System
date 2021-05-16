@@ -346,6 +346,7 @@ public class TradingSystemImpl implements TradingSystem {
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
+
         }
         return res;
     }
@@ -624,6 +625,16 @@ public class TradingSystemImpl implements TradingSystem {
             return res;
 
         }
+    }
+
+    public String getUserConnID(Integer userID){
+        for (String connID: this.connectedSubscribers.keySet()){
+            int id = this.connectedSubscribers.get(connID);
+            if(id == userID){
+                return connID;
+            }
+        }
+        return "";
     }
 
 
