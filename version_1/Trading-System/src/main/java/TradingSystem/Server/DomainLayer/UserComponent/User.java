@@ -390,7 +390,7 @@ public  class User implements Observer {
         synchronized (messages) {
             for (Object arg : messages) {
                 Response res = (Response) arg;
-                this.notify(res.returnConnID(), res);
+                this.notify(tradingSystem.getUserConnID(this.id), res);
                 messages.remove(arg);
             }
         }
