@@ -353,7 +353,8 @@ public  class User implements Observer {
 
     @Override
     public void update(Observable o, Object arg) {
-        update(arg);
+        //update(arg);
+        System.out.println("--------------------->update<------------------");
     }
 
     public void addMessage(Object arg){
