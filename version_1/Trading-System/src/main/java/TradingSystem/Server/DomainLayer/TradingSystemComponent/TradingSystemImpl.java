@@ -323,12 +323,6 @@ public class TradingSystemImpl implements TradingSystem {
         Publisher publisher = new Publisher();
         user.setPublisher(publisher);
         user.update(res);
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        user.updateAfterLogin();
     }
 
     /**
@@ -350,7 +344,12 @@ public class TradingSystemImpl implements TradingSystem {
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
-
+            try {
+                Thread.sleep(10000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            myUser.updateAfterLogin();
         }
         return res;
     }
