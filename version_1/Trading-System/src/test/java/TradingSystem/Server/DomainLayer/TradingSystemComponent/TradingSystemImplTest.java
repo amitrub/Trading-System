@@ -9,6 +9,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.PurchaseTaskUnitTests;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.RegisterTaskUnitTests;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.RemoveProductTaskUnitTests;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.ResultUnitTests;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -144,6 +145,78 @@ class TradingSystemImplTest {
         Response response= tradingSystemImpl.Register(connID,"reutlevy30","8111996");
         response= tradingSystemImpl.Register(connID,"reutlevy30","reut");
         assertTrue(response.getIsErr());
+    }
+
+    // requirement 2.3
+    @Test
+    void registerParallelHappy(){
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<RegisterTaskUnitTests> taskList = new ArrayList<>();
+        for (int i = 0; i < 5; i++) {
+            RegisterTaskUnitTests task = new RegisterTaskUnitTests("Client-" + i);
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<ResultUnitTests>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+
+        assert resultList != null;
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<ResultUnitTests> future = resultList.get(i);
+            try {
+                ResultUnitTests result = future.get();
+                System.out.println(result.getName() + ": " + result.getTimestamp());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    // requirement 2.3
+    @Test
+    void registerParallelSadSameName(){
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<RegisterTaskUnitTests> taskList = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            RegisterTaskUnitTests task = new RegisterTaskUnitTests("SameName");
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<ResultUnitTests>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+
+        assert resultList != null;
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<ResultUnitTests> future = resultList.get(i);
+            try {
+                ResultUnitTests result = future.get();
+                System.out.println(result.getName() + ": " + result.getTimestamp());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     // requirement 2.4

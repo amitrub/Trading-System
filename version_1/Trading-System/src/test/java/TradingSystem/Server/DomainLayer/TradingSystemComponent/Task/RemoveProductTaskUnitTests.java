@@ -21,7 +21,7 @@ public class RemoveProductTaskUnitTests  implements Callable<ResultUnitTests> {
         this.name = name;
         this.storeID = storeID;
         this.productID = productID;
-        connID= tradingSystem.ConnectSystem().returnConnID();
+        connID = tradingSystem.ConnectSystem().returnConnID();
         System.out.printf(ANSI_YELLOW + "%s: Store Owner is trying to remove product... " + ANSI_RESET, this.name);
     }
 
