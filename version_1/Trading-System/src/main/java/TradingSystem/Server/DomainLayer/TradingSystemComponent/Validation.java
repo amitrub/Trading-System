@@ -38,10 +38,10 @@ public class Validation {
                     return res;
                 }
                 else
-                    return new Response(true, tradingSystemImpl.errMsgGenerator("Server", "TradingSystem", "122", "Incorrect password"));
+                    return new Response(true, "Incorrect password");
             }
         }
-        return new Response(true, tradingSystemImpl.errMsgGenerator("Server", "TradingSystem", "125", "User not found"));
+        return new Response(true, "User not found");
     }
 
     public boolean VerifyPassword(String userName, String password) {

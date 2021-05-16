@@ -39,6 +39,7 @@ public class Publisher {
      */
     @PostMapping("login")
     public Response Login(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        System.out.println("1111111");
         String userName, password;
         try {
             userName = (String) obj.get("userName");
@@ -53,10 +54,10 @@ public class Publisher {
             return res;
         }
         Response res = this.tradingSystem.LoginPublisher(connID, userName, password, this);
+        System.out.println("33333\n" + res);
         tradingSystem.printUsers();
         WriteToLogger(res);
         return res;
-
     }
 
 

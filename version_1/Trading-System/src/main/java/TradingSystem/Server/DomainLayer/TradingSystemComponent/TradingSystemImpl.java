@@ -31,7 +31,6 @@ public class TradingSystemImpl implements TradingSystem {
 
     private ConcurrentHashMap<Integer, Integer> systemAdmins;
     private ConcurrentHashMap<String, Integer> connectedSubscribers;
-    //private ConcurrentHashMap<Integer, String> passwords;
 
     public ConcurrentHashMap<Integer, User> subscribers;
     public ConcurrentHashMap<String, User> guests;
@@ -252,15 +251,15 @@ public class TradingSystemImpl implements TradingSystem {
      */
     public Response Register(String connID, String userName, String password) {
         if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
-            return new Response(true, "Register: Error in connID");
+            return new Response(true, "Register Error: error in connID");
         }
         else{
             if (validation.IsUserNameExist(userName)) { 
-                return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error user name is taken"));
+                return new Response(true, "Register Error: user name is taken");
             }
-            if(!validation.VerifyPassword(userName, password)){
-                return new Response(true, errMsgGenerator("Server", "TradingSystem", "62", "Error password is invalid"));
-            }
+//            if(!validation.VerifyPassword(userName, password)){
+//                return new Response(true, "Register Error: password is invalid");
+//            }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
             Response res = new Response(false,"Register: Registration of " + userName + " was successful");
@@ -306,6 +305,7 @@ public class TradingSystemImpl implements TradingSystem {
         myUser.mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
+//        myUser.updateAfterLogin();
         Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);

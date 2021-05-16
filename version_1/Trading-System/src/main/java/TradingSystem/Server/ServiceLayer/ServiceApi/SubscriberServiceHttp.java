@@ -40,7 +40,6 @@ public class SubscriberServiceHttp {
      *
      * @param userID: int (Path)
      * @param connID: String (Header)
-     * @param storeName: String (Body)
      * @return Response{
      *  "isErr: boolean
      *  "message": String
@@ -48,7 +47,18 @@ public class SubscriberServiceHttp {
      * }
      */
     @PostMapping("{userID}/add_store")
-    public Response AddStore(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody String storeName){
+    public Response AddStore(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        String storeName;
+        try {
+            storeName = (String) obj.get("storeName");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : AddStore");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
         Response res = tradingSystem.AddStore(userID, connID, storeName);
         tradingSystem.printUsers();
         tradingSystem.printStores();
