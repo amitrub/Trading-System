@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,7 +11,6 @@ public class QuantityLimitForCategory extends SimpleExpression {
 
     Integer maxQuantity;
     String  category;
-    TradingSystemImpl tradingSystem;
 
     public QuantityLimitForCategory(Integer maxQuantity,String category) {
         this.category=category;
@@ -28,5 +28,13 @@ public class QuantityLimitForCategory extends SimpleExpression {
             }
         }
         return maxQuantity>=quantity;
+    }
+
+    @Override
+    public Response checkValidity(int storeID) {
+        if(0>maxQuantity){
+            return new Response(true, "maxQuantity cant be negative");
+        }
+        return new Response("correct");
     }
     }

@@ -28,10 +28,10 @@ public class AdminTests {
         client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Store");
-        storeID = getStoreID(client.showAllStores(),"Store");
+        storeID = getStoreID(client.showAllStores().getStores(),"Store");
         client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
         client.addProduct(storeID, "Boots", "Shoes", 100.0, 20);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID);
+        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
         Integer productID1= getProductID(storeProducts1, "Sneakers");
         client.Logout();
 
@@ -73,7 +73,7 @@ public class AdminTests {
     void HappyStoreHistory() {
         client.connectSystem();
         client.Login("amit", "qweasd");
-        List<DummyShoppingHistory> history = client.adminStoreHistory(storeID);
+        List<DummyShoppingHistory> history = client.adminStoreHistory(storeID).returnHistoryList();
         assertEquals(history.size(), 1);
     }
 
@@ -81,7 +81,7 @@ public class AdminTests {
     void HappyUserHistory() {
         client.connectSystem();
         client.Login("amit", "qweasd");
-        List<DummyShoppingHistory> history = client.adminUserHistory(userID);
+        List<DummyShoppingHistory> history = client.adminUserHistory(userID).returnHistoryList();
         assertEquals(history.size(), 1);
     }
 
@@ -89,7 +89,7 @@ public class AdminTests {
     void HappyAllStores() {
         client.connectSystem();
         client.Login("amit", "qweasd");
-        List<DummyShoppingHistory> history = client.AdminAllStores();
+        List<DummyShoppingHistory> history = client.AdminAllStores().returnHistoryList();
         assertEquals(history.size(), 1);
     }
 
@@ -97,28 +97,28 @@ public class AdminTests {
     void HappyAllUsers() {
         client.connectSystem();
         client.Login("amit", "qweasd");
-        List<DummyShoppingHistory> history = client.AdminAllUsers();
+        List<DummyShoppingHistory> history = client.AdminAllUsers().returnHistoryList();
         assertEquals(history.size(), 1);
     }
 
     @Test
     void SadAdminUser() {
         client.Login("elinor", "123");
-        List<DummyShoppingHistory> history = client.adminStoreHistory(storeID);
+        List<DummyShoppingHistory> history = client.adminStoreHistory(storeID).returnHistoryList();
         assertEquals(history.size(), 0);
     }
 
     @Test
     void SadStoreId() {
         client.Login("amit", "qweasd");
-        List<DummyShoppingHistory> history = client.adminStoreHistory(storeID+1);
+        List<DummyShoppingHistory> history = client.adminStoreHistory(storeID+1).returnHistoryList();
         assertEquals(history.size(), 0);
     }
 
     @Test
     void SadUserId() {
         client.Login("amit", "qweasd");
-        List<DummyShoppingHistory> history = client.adminUserHistory(userID+1);
+        List<DummyShoppingHistory> history = client.adminUserHistory(userID+1).returnHistoryList();
         assertEquals(history.size(), 0);
     }
     //endregion

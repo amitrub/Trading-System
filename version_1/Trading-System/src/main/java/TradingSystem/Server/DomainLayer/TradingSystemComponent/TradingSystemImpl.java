@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DomainLayer.Notification.Alert;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -39,7 +38,6 @@ public class TradingSystemImpl implements TradingSystem {
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
 
-    private static long AlertID = 0;
 
     //    Singleton
     private static TradingSystemImpl tradingSystem = null;
@@ -259,9 +257,9 @@ public class TradingSystemImpl implements TradingSystem {
             if (validation.IsUserNameExist(userName)) { 
                 return new Response(true, "Register Error: user name is taken");
             }
-            if(!validation.VerifyPassword(password)){
-                return new Response(true, "Register Error: password is invalid");
-            }
+//            if(!validation.VerifyPassword(userName, password)){
+//                return new Response(true, "Register Error: password is invalid");
+//            }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
             Response res = new Response(false,"Register: Registration of " + userName + " was successful");
@@ -311,21 +309,18 @@ public class TradingSystemImpl implements TradingSystem {
         Response res = new Response(false, "Login: Login of user " + userName + " was successful");
         res.AddUserID(response.returnUserID());
         res.AddConnID(connID);
-        res.AddPair("founderStoresNames", StoreIDToName(myUser.getMyFoundedStoresIDs()));
-        res.AddPair("ownerStoresNames", StoreIDToName(myUser.getMyOwnerStore()));
-        res.AddPair("managerStoresNames", StoreIDToName(myUser.getMyManagerStore()));
         res.AddUserSubscriber(myUser.isManaged(), myUser.isOwner(), myUser.isFounder(),systemAdmins.containsKey(myUser.getId()));
+        sendAlert(myUser, res);
         return res;
     }
-    public List<String> StoreIDToName(List<Integer> idList) {
-        List<String> output = new ArrayList<>();
-        for (Integer storeID: idList){
-            if(stores.containsKey(storeID)){
-                output.add(stores.get(storeID).getName());
-            }
-        }
-        return output;
 
+    //Observer
+    private void sendAlert(User user, Response res){
+        Publisher publisher = new Publisher();
+        user.setPublisher(publisher);
+        user.update(res);
+
+        //user.updateAfterLogin();
     }
 
     /**
@@ -343,9 +338,7 @@ public class TradingSystemImpl implements TradingSystem {
      */
     @Override
     public Response LoginPublisher(String guestConnID, String userName, String password, Publisher publisher) {
-        System.out.println("22222");
         Response res = Login(guestConnID,userName, password);
-        System.out.println("res:\n" + res);
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
@@ -580,7 +573,8 @@ public class TradingSystemImpl implements TradingSystem {
             if(!res.getIsErr())
             {
                 for(Store s:storesToUpdate){
-                    s.sendAlertToOwners("A product has been purchased from your store");
+                    Response resAlert = new Response(false, "A product has been purchased from your store");
+                    s.sendAlertToOwners(resAlert);
                 }
             }
             res.AddUserGuest();
@@ -618,7 +612,8 @@ public class TradingSystemImpl implements TradingSystem {
             if(!res.getIsErr())
             {
                 for(Store s:storesToUpdate){
-                    s.sendAlertToOwners("A product has been purchased from your store");
+                    Response resAlert = new Response(false, "A product has been purchased from your store");
+                    s.sendAlertToOwners(resAlert);
                 }
             }
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -681,7 +676,6 @@ public class TradingSystemImpl implements TradingSystem {
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
-                System.out.println("--------------\n\n" + storeName);
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                 return res; 
@@ -708,23 +702,25 @@ public class TradingSystemImpl implements TradingSystem {
         }
         else if(stores.containsKey(storeId)){
             Store store=stores.get(storeId);
-            if(!store.isProductExist(storeId)){
+            if(!store.isProductExist(productId)){
                 return new Response(true, "WriteComment: The product " + productId + " doesn't exist in the store anymore");
             }
         }
-        else if(!ValidConnectedUser(userId, connID)) {
+        if(!ValidConnectedUser(userId, connID)) {
             return new Response(true, "WriteComment: The user " + userId + " is not connected");
         }
         User user=subscribers.get(userId);
-        //todo: the name is not clear
         if(!user.IsProductExist(productId)){
             return new Response(true, "WriteComment: User didn't buy this product");
         }
         if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
             return new Response(true, "WriteComment: The user already wrote comment for this product");
         }
+        Product product = stores.get(storeId).getProduct(productId);
+        product.addComment(userId, comment);
 
-        stores.get(storeId).sendAlertToOwners("There is a new comment on one of your store's products");
+        Response resAlert = new Response(false, "There is a new comment on one of your store's products");
+        stores.get(storeId).sendAlertToOwners(resAlert);
 
         Response res = new Response(false, "WriteComment: The comment added successfully to product " + productId);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userId));
@@ -1025,7 +1021,8 @@ public class TradingSystemImpl implements TradingSystem {
 
                     Store store = stores.get(storeID);
                     String storeName = store.getName();
-                    store.sendAlert(removeOwnerID, "You are removed from owning the store: " + storeName);
+                    Response resAlert = new Response(false, "You are removed from owning the store: " + storeName);
+                    store.sendAlert(removeOwnerID, resAlert);
                 }
             }
             for(ManagerPermission permission: managerPermissionHashMap.values()){
@@ -1560,6 +1557,10 @@ public class TradingSystemImpl implements TradingSystem {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
+    public void cancilReduceProducts(Integer storeID, ConcurrentHashMap<Integer, Integer> products) {
+      this.stores.get(storeID).cancilReduceProducts(products);
+    }
+
     public List<DummyShoppingHistory> ShowStoreHistory(int storeId){
         return stores.get(storeId).ShowStoreHistory();
     }
@@ -1901,19 +1902,27 @@ public class TradingSystemImpl implements TradingSystem {
         return null;
     }
 
-    @Override
-    public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp){
+    private Response checkPermissionToPolicy(int userID, String connID, int storeID){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "Error in Admin details");
         }
         if (!subscribers.containsKey(userID)) {
-             return new Response(true, "the user is not subscriber to the system");
+            return new Response(true, "the user is not subscriber to the system");
         }
         if(stores.get(storeID)==null){
-              return new Response(true, "the store not exist in the system");
+            return new Response(true, "the store not exist in the system");
         }
         if(!stores.get(storeID).checkOwner(userID)){
-             return new Response(true, "the user is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
+        }
+        return new Response(false, "");
+    }
+
+    @Override
+    public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp){
+        Response res = checkPermissionToPolicy(userID, connID, storeID);
+        if(res.getIsErr()){
+            return res;
         }
         Response r=exp.checkValidity(storeID);
         if(r.getIsErr()){
@@ -1923,6 +1932,22 @@ public class TradingSystemImpl implements TradingSystem {
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
         return new Response("");
+    }
+
+    public Response GetPoliciesInfo(int userID, int storeID, String connID){
+        Response res = checkPermissionToPolicy(userID, connID, storeID);
+        if(res.getIsErr()){
+            return res;
+        }
+        Store s=this.stores.get(storeID);
+        BuyingPolicy BP = s.getBuyingPolicy();
+        DiscountPolicy DP = s.getDiscountPolicy();
+        Response r = new Response(false, "The Buying Policy and Discount Policy returned successfully");
+        r.AddConnID(connID);
+        r.AddUserID(userID);
+        r.AddPair("BuyingPolicy", BP);
+        r.AddPair("DiscountPolicy", DP);
+        return r;
     }
 
     private Expression createLimitExp(int storeID, Map<String, Object> exp) {
@@ -2070,19 +2095,5 @@ public class TradingSystemImpl implements TradingSystem {
         return null;
     }
 
-    //Alert implementation
-    public boolean tryToSend(Object obj, Integer userID) {
-        if(this.connectedSubscribers.containsValue(userID)) {
-            String mess = (String) obj;
-            Alert newAlert = new Alert("Owner-Alert", this, getNextAlertID(), mess);
-            newAlert.SendAlertToClient();
-            return true;
-        }
-        return false;
-    }
 
-    private static synchronized long getNextAlertID() {
-        AlertID++;
-        return AlertID;
-    }
 }

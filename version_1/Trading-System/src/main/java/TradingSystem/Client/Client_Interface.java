@@ -52,12 +52,14 @@ public interface Client_Interface {
      * @return int if ok
      */
     public int Login(String userName, String pass);
+
     /**
      * @requirement 2.5
      * @return int userID
      */
-    public List<DummyStore> showAllStores();
-    public List<DummyProduct> showStoreProducts(int storeID);
+    public Response showAllStores();
+    public Response showStoreProducts(int storeID);
+
     /**
      * @requirement 2.6
      * @param mode mode
@@ -68,7 +70,7 @@ public interface Client_Interface {
      * @param s_rank s_rank
      * @return List<DummyProduct>
      */
-    public List<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank);
+    public Response Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank);
 
     /**
      * @requirement 2.7
@@ -83,7 +85,7 @@ public interface Client_Interface {
      * @requirement 2.8
      * @return List<DummyProduct>
      */
-    public List<DummyProduct> showShoppingCart();
+    public Response showShoppingCart();
     public Response removeFromShoppingCart(int storeID, int productID);
     public Response editShoppingCart(int storeID, int productID, int quantity);
 
@@ -136,7 +138,7 @@ public interface Client_Interface {
      * @param address
      * @return
      */
-    public boolean subscriberPurchase(String credit_number, String phone_number, String address);
+    public Response subscriberPurchase(String credit_number, String phone_number, String address);
     //Store Owner Service
 
     /**
@@ -148,7 +150,7 @@ public interface Client_Interface {
      * @param quantity
      * @return boolean
      */
-    public boolean addProduct(int storeID, String productName, String category, double price, int quantity);
+    public Response addProduct(int storeID, String productName, String category, double price, int quantity);
 
     /**
      * @requirement 4.1.2
@@ -168,7 +170,7 @@ public interface Client_Interface {
      * @param quantity
      * @return boolean
      */
-    public boolean editProduct(int storeID, int productID, String productName, String category, double price, int quantity);
+    public Response editProduct(int storeID, int productID, String productName, String category, double price, int quantity);
 
     /**
      * @requirement 4.2.1
@@ -192,7 +194,7 @@ public interface Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response editBuyingPolicy(int storeID);
+    public Response removeBuyingPolicy(int storeID);
 
     /**
      * @requirement 4.2.4
@@ -200,7 +202,7 @@ public interface Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response editDiscountPolicy(int storeID);
+    public Response removeDiscountPolicy(int storeID);
 
     /**
      * @requirement 4.2.5
@@ -208,15 +210,7 @@ public interface Client_Interface {
      * @param storeID
      * @return Response
      */
-    public Response removeBuyingPolicy(int storeID);
-
-    /**
-     * @requirement 4.2.6
-     * @param storeID
-     * @param storeID
-     * @return Response
-     */
-    public Response removeDiscountPolicy(int storeID);
+    public Response getPoliciesInfo(int storeID);
 
     /**
      * @requirement 4.3
@@ -224,7 +218,7 @@ public interface Client_Interface {
      * @param newOwnerID
      * @return boolean
      */
-    public boolean addOwner(int storeID, int newOwnerID);
+    public Response addOwner(int storeID, int newOwnerID);
 
     /**
      * @requirement 4.4
@@ -258,9 +252,9 @@ public interface Client_Interface {
      * @param managerToRemoveID
      * @return boolean
      */
-    public boolean removeManager(int storeID, int managerToRemoveID);
-    public List<DummyStore> showOwnerStores();
-    public List<DummyStore> showManagerStores();
+    public Response removeManager(int storeID, int managerToRemoveID);
+    public Response showOwnerStores();
+    public Response showManagerStores();
 
     /**
      * requirement 4.9
@@ -274,7 +268,7 @@ public interface Client_Interface {
      * @param storeID
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> ownerStoreHistory(int storeID);
+    public Response ownerStoreHistory(int storeID);
 
     //Admin
     /**
@@ -282,23 +276,23 @@ public interface Client_Interface {
      * @param storeID
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> adminStoreHistory(int storeID);
+    public Response adminStoreHistory(int storeID);
     /**
      * requirement 6.4
      * @param userToShow
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> adminUserHistory(int userToShow);
+    public Response adminUserHistory(int userToShow);
     /**
      * requirement 6.4
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> AdminAllStores();
+    public Response AdminAllStores();
     /**
      * requirement 6.4
      * @return List<DummyShoppingHistory>
      */
-    public List<DummyShoppingHistory> AdminAllUsers();
+    public Response AdminAllUsers();
 
 
 }

@@ -1,7 +1,11 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -9,9 +13,12 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 
 import java.util.HashMap;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import static org.junit.Assert.assertTrue;
@@ -37,6 +44,7 @@ class TradingSystemImplTest {
     private static int NofetID;
     private static int NofetStore;
     private static int ElinorStore;
+    private static Store Nstore;
 
     @BeforeAll
     public static void setup() {
@@ -75,6 +83,7 @@ class TradingSystemImplTest {
         EconnID= tradingSystemImpl.Login(EconnID, "elinor", "123").returnConnID();
 
 
+
         tradingSystemImpl.AddStore(NofetID,NconnID,"NofetStore");
         tradingSystemImpl.AddStore(ElinorID,EconnID,"ElinorStore");
         for(Store store1: tradingSystemImpl.stores.values()){
@@ -86,59 +95,11 @@ class TradingSystemImplTest {
             }
         }
         Response response2= tradingSystemImpl.AddNewOwner(userID,connID,storeid,ElinorID);
+
+        Nstore = tradingSystemImpl.stores.get(NofetStore);
     }
 
-    @Test
-    void AddProductSuccess(){
-        Response response= tradingSystemImpl.AddProductToStore(userID,connID,storeid,"prod8","food",11.0,9);
-        assertFalse(response.getIsErr());
-    }
-
-    @Test
-    void ChangeProductQuantitySuccess(){
-        Response response= tradingSystemImpl.ChangeQuantityProduct(userID,connID,storeid,productId,10);
-        assertFalse(response.getIsErr());
-    }
-
-    // requirement 4.1
-    @Test
-    void EditProductSuccess(){
-        Response response= tradingSystemImpl.EditProduct(userID,connID,storeid,productId,"prod3","food",12.0,9);
-        assertFalse(response.getIsErr());
-    }
-
-    // requirement 4.1
-    @Test
-    void EditProductInvalidPremmision(){
-        String connID1= tradingSystemImpl.ConnectSystem().returnConnID();
-        Response response= tradingSystemImpl.Register(connID1,"reutlevy30","8119");
-        int userID1= response.returnUserID();
-        connID1= tradingSystemImpl.Login(connID1,"reutlevy30","8119").returnConnID();
-        response= tradingSystemImpl.EditProduct(userID1,connID1,storeid,productId,"prod4","food",12.0,9);
-        assertTrue(response.getIsErr());
-    }
-
-    // requirement 4.1
-    @Test
-    void AddProductInvalidAmount(){
-        Store store= new Store("store11", userID);
-        tradingSystemImpl.AddStore(userID,connID,"store11");
-        int storeid=0;
-        for(Store store1: tradingSystemImpl.stores.values()){
-            if(store1.getName().equals("store11")){
-                storeid=store1.getId();
-            }
-        }
-        Response response= tradingSystemImpl.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,-1);
-        assertTrue(response.getIsErr());
-    }
-
-    // requirement 4.1
-    @Test
-    void EditProductWrongPrice(){
-        Response response= tradingSystemImpl.EditProduct(userID,connID,storeid,productId,"prod4","food",-12.0,9);
-        assertTrue(response.getIsErr());
-    }
+    //region requirement 2
 
     // requirement 2.1
     @Test
@@ -157,7 +118,7 @@ class TradingSystemImplTest {
 
     // requirement 2.2
     @Test
-    void exiBad() {
+    void exitBad() {
         String connId= tradingSystemImpl.ConnectSystem().returnConnID();
         tradingSystemImpl.Exit(connId);
         Response response= tradingSystemImpl.Exit(connId);
@@ -180,14 +141,10 @@ class TradingSystemImplTest {
         response= tradingSystemImpl.Register(connID,"reutlevy30","reut");
         assertTrue(response.getIsErr());
     }
-    //TODO- implement this
-    void registerInvalidPassword() {
-
-    }
 
     // requirement 2.4
     @Test
-    void loginSucess() {
+    void loginSuccess() {
         String connID= tradingSystemImpl.ConnectSystem().returnConnID();
         tradingSystemImpl.Register(connID,"reutlevy300","811199");
         Response response= tradingSystemImpl.Login(connID,"reutlevy300","811199");
@@ -218,12 +175,38 @@ class TradingSystemImplTest {
         assertEquals(res.getIsErr(),false);
     }
 
+    //endregion
+
+    //region requirement 3
+
+    // requirement 3.1
+    @Test
+    void LogoutHappy() {
+        String connID= tradingSystemImpl.ConnectSystem().returnConnID();
+        tradingSystemImpl.Register(connID,"Rubin","123");
+        Response res = tradingSystemImpl.Login(connID,"Rubin","123");
+        connID = res.returnConnID();
+        Response response = tradingSystemImpl.Logout(connID);
+        assertFalse(response.getIsErr());
+    }
+
+    // requirement 3.1
+    @Test
+    void LogoutSad() {
+        String connID= tradingSystemImpl.ConnectSystem().returnConnID();
+        Response res = tradingSystemImpl.Register(connID,"Rubin","123");
+        connID = res.returnConnID();
+        Response response = tradingSystemImpl.Logout(connID);
+        assertTrue(response.getIsErr());
+    }
+
     // requirement 3.2
     @Test
     void AddStoreNotSubscriber() { ;
         Response response= tradingSystemImpl.AddStore(11,connID,"Store3");
         assertTrue(response.getIsErr());
     }
+
     // requirement 3.2
     @Test
     void AddStoreSameName() {
@@ -239,15 +222,186 @@ class TradingSystemImplTest {
         assertFalse(response.getIsErr());
     }
 
+    // requirement 3.3
+    @Test
+    void WriteCommentSuccess() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+
+        Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
+        assertFalse(response.getIsErr());
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
+        assertEquals(size, 1);
+    }
+
+    // requirement 3.3
+    @Test
+    void WriteCommentWrongStoreID() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+
+        Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, 100, productID1, "Amazing");
+        assertTrue(response.getIsErr());
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
+        assertEquals(size, 0);
+    }
+    
+    // requirement 3.3
+    @Test
+    void WriteCommentNotInHistory() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+
+        Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
+        assertTrue(response.getIsErr());
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
+        assertEquals(size, 0);
+
+    }
+
+    // requirement 3.3
+    @Test
+    void WriteCommentExistComment() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+
+        tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
+        Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "WTF");
+        assertTrue(response.getIsErr());
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getProduct(productID1).getComments().size();
+        assertEquals(size, 1);
+    }
+
+    // requirement 3.7
+    @Test
+    void UserHistorySuccess() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+
+        Response res = tradingSystemImpl.ShowSubscriberHistory(ElinorID, EconnID);
+        assertFalse(res.getIsErr());
+        List<DummyShoppingHistory> list = (List<DummyShoppingHistory>) res.getReturnObject().get("history");
+        assertEquals(list.size(), 1);
+    }
+
+    // requirement 3.7
+    @Test
+    void UserHistoryFailed() {
+        Response res = tradingSystemImpl.ShowSubscriberHistory(ElinorID, EconnID);
+        assertTrue(res.getIsErr());
+    }
+
+    //endregion
+
+    //region requirement 4
+
+    // requirement 4.1
+    @Test
+    void AddProductSuccess(){
+        Response response= tradingSystemImpl.AddProductToStore(userID,connID,storeid,"prod8","food",11.0,9);
+        assertFalse(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void AddProductInvalidAmount(){
+        Store store= new Store("store11", userID);
+        tradingSystemImpl.AddStore(userID,connID,"store11");
+        int storeid=0;
+        for(Store store1: tradingSystemImpl.stores.values()){
+            if(store1.getName().equals("store11")){
+                storeid=store1.getId();
+            }
+        }
+        Response response= tradingSystemImpl.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,-1);
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void AddProductInvalidPermission(){
+        Response response= tradingSystemImpl.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,-1);
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void AddProductInValidDetails(){
+        Response response= tradingSystemImpl.AddProductToStore(userID,connID,storeid,"prod3","food",-1,11);
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void ChangeProductQuantitySuccess(){
+        Response response= tradingSystemImpl.ChangeQuantityProduct(userID,connID,storeid,productId,10);
+        assertFalse(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void EditProductWrongQuantity(){
+        Response response= tradingSystemImpl.EditProduct(userID,connID,storeid,productId,"prod4","food",12.0,-9);
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void ChangeProductQuantityInvalidPermission(){
+        Response response= tradingSystemImpl.ChangeQuantityProduct(userID1,connID1,storeid,productId,10);
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void ChangeProductWrongQuantity(){
+        Response response= tradingSystemImpl.ChangeQuantityProduct(userID,connID,storeid,productId,-10);
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void EditProductSuccess(){
+        Response response= tradingSystemImpl.EditProduct(userID,connID,storeid,productId,"prod3","food",12.0,9);
+        assertFalse(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void EditProductInvalidPermission(){
+        String connID1= tradingSystemImpl.ConnectSystem().returnConnID();
+        Response response= tradingSystemImpl.Register(connID1,"reutlevy30","8119");
+        int userID1= response.returnUserID();
+        connID1= tradingSystemImpl.Login(connID1,"reutlevy30","8119").returnConnID();
+        response= tradingSystemImpl.EditProduct(userID1,connID1,storeid,productId,"prod4","food",12.0,9);
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    void EditProductWrongPrice(){
+        Response response= tradingSystemImpl.EditProduct(userID,connID,storeid,productId,"prod4","food",-12.0,9);
+        assertTrue(response.getIsErr());
+    }
+
     // requirement 4.1
     @Test
     void RemoveProductSuccess(){
         Response response= tradingSystemImpl.RemoveProduct(userID,storeid,productId2,connID);
         assertFalse(response.getIsErr());
     }
+
     // requirement 4.1
     @Test
-    void RemoveProductInvalidPermmison(){
+    void RemoveProductInvalidPermission(){
         String connID1= tradingSystemImpl.ConnectSystem().returnConnID();
         Response response= tradingSystemImpl.Register(connID1,"reutlevy30","8119");
         int userID1= response.returnUserID();
@@ -265,37 +419,25 @@ class TradingSystemImplTest {
         Response response= tradingSystemImpl.RemoveProduct(userID,storeid,product.getProductID(),connID);
         assertTrue(response.getIsErr());
     }
-    // requirement 4.1
+
+    // requirement 4.2
     @Test
-    void AddProductInvalidPremmision(){
-        Response response= tradingSystemImpl.AddProductToStore(userID,connID,storeid,"prod3","food",11.0,-1);
-        assertTrue(response.getIsErr());
-    }
-    // requirement 4.1
-    @Test
-    void EditProductWrongQuantity(){
-        Response response= tradingSystemImpl.EditProduct(userID,connID,storeid,productId,"prod4","food",12.0,-9);
-        assertTrue(response.getIsErr());
+    void HappyInfoPolicies() {
+        QuantityLimitForProduct exp = new QuantityLimitForProduct(1, productId);
+        tradingSystemImpl.addBuyingPolicy(userID, connID, storeid, exp);
+        Response res = tradingSystemImpl.GetPoliciesInfo(userID, storeid, connID);
+        assertFalse(res.getIsErr());
     }
 
-    // requirement 4.1
+    // requirement 4.2
     @Test
-    void ChangeProductQunatityInvalidPremmision(){
-        Response response= tradingSystemImpl.ChangeQuantityProduct(userID1,connID1,storeid,productId,10);
-        assertTrue(response.getIsErr());
-    }
-
-    // requirement 4.1
-    @Test
-    void ChangeProductWrongQuantity(){
-        Response response= tradingSystemImpl.ChangeQuantityProduct(userID,connID,storeid,productId,-10);
-        assertTrue(response.getIsErr());
-    }
-    // requirement 4.1
-    @Test
-    void AddProductInvaliddetails(){
-        Response response= tradingSystemImpl.AddProductToStore(userID,connID,storeid,"prod3","food",-1,11);
-        assertTrue(response.getIsErr());
+    void SadInfoPolicies() {
+        Response res = tradingSystemImpl.GetPoliciesInfo(userID, storeid, connID);
+        assertFalse(res.getIsErr());
+        BuyingPolicy BP = (BuyingPolicy) res.getReturnObject().get("BuyingPolicy");
+        DiscountPolicy DP = (DiscountPolicy) res.getReturnObject().get("DiscountPolicy");
+        assertEquals(BP.getExp(), null);
+        assertEquals(DP.getSale(), null);
     }
 
     // requirement 4.3
@@ -358,6 +500,51 @@ class TradingSystemImplTest {
         Response r = tradingSystemImpl.AddNewOwner(NofetID, NconnID, NofetStore, res.returnUserID());
         System.out.println(r.getMessage());
         assertTrue(r.getIsErr());
+    }
+
+    // requirement 4.4
+    @Test
+    void removeOwnerSuccess() {
+        tradingSystemImpl.AddNewOwner(NofetID, NconnID, NofetStore, ElinorID);
+        tradingSystemImpl.AddNewOwner(ElinorID, EconnID, NofetStore, userID);
+        Response response = tradingSystemImpl.RemoveOwnerByOwner(NofetID, NconnID, ElinorID, NofetStore);
+        assertFalse(response.getIsErr());
+
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getOwnersIDs().size();
+        assertEquals(size, 0);
+    }
+
+    // requirement 4.4
+    @Test
+    void removeOwnerNotAppointment() {
+        tradingSystemImpl.AddNewOwner(NofetID, NconnID, NofetStore, ElinorID);
+        tradingSystemImpl.AddNewOwner(NofetID, NconnID, NofetStore, userID);
+        Response response = tradingSystemImpl.RemoveOwnerByOwner(userID, connID, ElinorID, NofetStore);
+        assertTrue(response.getIsErr());
+
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getOwnersIDs().size();
+        assertEquals(size, 2);
+    }
+
+    // requirement 4.4
+    @Test
+    void removeOwnerNotOwner1() {
+        tradingSystemImpl.AddNewOwner(NofetID, NconnID, NofetStore, ElinorID);
+        Response response = tradingSystemImpl.RemoveOwnerByOwner(userID, connID, ElinorID, NofetStore);
+        assertTrue(response.getIsErr());
+
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getOwnersIDs().size();
+        assertEquals(size, 1);
+    }
+
+    // requirement 4.4
+    @Test
+    void removeOwnerNotOwner2() {
+        Response response = tradingSystemImpl.RemoveOwnerByOwner(NofetID, NconnID, ElinorID, NofetStore);
+        assertTrue(response.getIsErr());
+
+        Integer size = tradingSystemImpl.stores.get(NofetStore).getOwnersIDs().size();
+        assertEquals(size, 0);
     }
 
     // requirement 4.5
@@ -423,6 +610,68 @@ class TradingSystemImplTest {
         Response r = tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
         System.out.println(r.getMessage());
         assertTrue(r.getIsErr());
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsSuccess() {
+        String gust = tradingSystemImpl.ConnectSystem().returnConnID();
+        tradingSystemImpl.Register(gust, "m", "123");
+        Response res = tradingSystemImpl.Login(gust, "m", "123");
+        tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
+        LinkedList<User.Permission> p=new LinkedList<>();
+        p.add(User.Permission.AddProduct);
+        tradingSystemImpl.EditManagerPermissions(ElinorID,EconnID,ElinorStore,res.returnUserID(),p);
+        boolean r1 = tradingSystemImpl.hasPermission(res.returnUserID(),ElinorStore, User.Permission.AddProduct);
+        boolean r2 = tradingSystemImpl.hasPermission(res.returnUserID(),ElinorStore, User.Permission.GetInfoOfficials);
+        assertTrue(r1);
+        assertFalse(r2);
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsNotConnected() {
+        Response r = tradingSystemImpl.EditManagerPermissions(NofetID, "--", NofetStore, ElinorID,null);
+        System.out.println(r.getMessage());
+        assertTrue(r.getIsErr());
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsIsNotSubscriber() {
+        Response r1 = tradingSystemImpl.EditManagerPermissions(-1, NconnID, NofetStore, ElinorID,null);
+        System.out.println(r1.getMessage());
+        assertTrue(r1.getIsErr());
+        Response r2 = tradingSystemImpl.EditManagerPermissions(NofetID, NconnID, NofetStore, 20,null);
+        System.out.println(r2.getMessage());
+        assertTrue(r2.getIsErr());
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsIsNotTheOwner() {
+        String gust2 = tradingSystemImpl.ConnectSystem().returnConnID();
+        tradingSystemImpl.Register(gust2, "l", "123");
+        Response res2 = tradingSystemImpl.Login(gust2, "l", "123");
+        LinkedList<User.Permission> p=new LinkedList<>();
+        p.add(User.Permission.AddProduct);
+        Response res3 = tradingSystemImpl.EditManagerPermissions(res2.returnUserID(), res2.returnConnID(), NofetStore, ElinorID,p);
+        System.out.println(res3.getMessage());
+        assertTrue(res3.getIsErr());
+    }
+
+    // requirement 4.6
+    @Test
+    void EditManagerPermissionsIsNotTheAppointment() {
+        String gust = tradingSystemImpl.ConnectSystem().returnConnID();
+        tradingSystemImpl.Register(gust, "D", "123");
+        Response res = tradingSystemImpl.Login(gust, "D", "123");
+        LinkedList<User.Permission> p=new LinkedList<>();
+        p.add(User.Permission.AddProduct);
+        tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
+        Response res3 = tradingSystemImpl.EditManagerPermissions(NofetID, NconnID, ElinorStore, res.returnUserID(),p);
+        System.out.println(res3.getMessage());
+        assertTrue(res3.getIsErr());
     }
 
     // requirement 4.7
@@ -491,99 +740,7 @@ class TradingSystemImplTest {
         assertTrue(res3.getIsErr());
     }
 
-
-    // requirement 4.6
-    @Test
-    void EditManagerPermissionsSuccess() {
-        String gust = tradingSystemImpl.ConnectSystem().returnConnID();
-        tradingSystemImpl.Register(gust, "m", "123");
-        Response res = tradingSystemImpl.Login(gust, "m", "123");
-        tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
-        tradingSystemImpl.EditManagerPermissions(ElinorID,EconnID,ElinorStore,res.returnUserID(),p);
-        boolean r1 = tradingSystemImpl.hasPermission(res.returnUserID(),ElinorStore, User.Permission.AddProduct);
-        boolean r2 = tradingSystemImpl.hasPermission(res.returnUserID(),ElinorStore, User.Permission.GetInfoOfficials);
-        assertTrue(r1);
-        assertFalse(r2);
-    }
-
-    // requirement 4.6
-    @Test
-    void EditManagerPermissionsNotConnected() {
-        Response r = tradingSystemImpl.EditManagerPermissions(NofetID, "--", NofetStore, ElinorID,null);
-        System.out.println(r.getMessage());
-        assertTrue(r.getIsErr());
-    }
-
-    // requirement 4.6
-    @Test
-    void EditManagerPermissionsIsNotSubscriber() {
-        Response r1 = tradingSystemImpl.EditManagerPermissions(-1, NconnID, NofetStore, ElinorID,null);
-        System.out.println(r1.getMessage());
-        assertTrue(r1.getIsErr());
-        Response r2 = tradingSystemImpl.EditManagerPermissions(NofetID, NconnID, NofetStore, 20,null);
-        System.out.println(r2.getMessage());
-        assertTrue(r2.getIsErr());
-    }
-
-    // requirement 4.6
-    @Test
-    void EditManagerPermissionsIsNotTheOwner() {
-        String gust2 = tradingSystemImpl.ConnectSystem().returnConnID();
-        tradingSystemImpl.Register(gust2, "l", "123");
-        Response res2 = tradingSystemImpl.Login(gust2, "l", "123");
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
-        Response res3 = tradingSystemImpl.EditManagerPermissions(res2.returnUserID(), res2.returnConnID(), NofetStore, ElinorID,p);
-        System.out.println(res3.getMessage());
-        assertTrue(res3.getIsErr());
-    }
-
-    // requirement 4.6
-    @Test
-    void EditManagerPermissionsIsNotTheAppointment() {
-        String gust = tradingSystemImpl.ConnectSystem().returnConnID();
-        tradingSystemImpl.Register(gust, "D", "123");
-        Response res = tradingSystemImpl.Login(gust, "D", "123");
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
-        tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
-        Response res3 = tradingSystemImpl.EditManagerPermissions(NofetID, NconnID, ElinorStore, res.returnUserID(),p);
-        System.out.println(res3.getMessage());
-        assertTrue(res3.getIsErr());
-    }
-
-
-    @Test
-    void editManagerPermissions() {
-    }
-
-    //4.9
-    @Test
-    void ShowStoreWorkersSuccess(){
-        tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, userID);
-        tradingSystemImpl.AddNewOwner(ElinorID, EconnID, ElinorStore, NofetID);
-        System.out.println(tradingSystemImpl.ShowStoreWorkers(ElinorID,EconnID,ElinorStore));
-        assertFalse(tradingSystemImpl.ShowStoreWorkers(ElinorID,EconnID,ElinorStore).getIsErr());
-    }
-
-    @Test
-    void ShowStoreWorkersNotPerminssion(){
-        assertTrue(tradingSystemImpl.ShowStoreWorkers(userID,EconnID,ElinorStore).getIsErr());
-    }
-
-    @Test
-    void ShowStoreWorkersStoreNotexist(){
-        assertTrue(tradingSystemImpl.ShowStoreWorkers(userID,EconnID,-1).getIsErr());
-    }
-
-    @Test
-    void ShowStoreWorkersEmpty(){
-        Object res= tradingSystemImpl.ShowStoreWorkers(ElinorID,EconnID,ElinorStore).getReturnObject().get("workers");
-        assertNull(res);
-    }
-
+    // requirement 4.7
     @Test
     void removeManagerByOwnerSuccess() {
         Response response = tradingSystemImpl.RemoveOwnerByOwner(userID,connID,ElinorID,storeid);
@@ -591,6 +748,7 @@ class TradingSystemImplTest {
         assertTrue(!exist && !response.getIsErr());
     }
 
+    // requirement 4.7
     @Test
     void removeManagerNotByOwner() {
         tradingSystemImpl.AddNewOwner(userID, connID, storeid, ElinorID);
@@ -599,12 +757,142 @@ class TradingSystemImplTest {
         assertTrue(exist && response.getIsErr());
     }
 
+    // requirement 4.9
     @Test
-    void removeOwnerFaliled() {
-        Response response = tradingSystemImpl.RemoveOwnerByOwner(userID, connID, userID1, storeid);
-        assertTrue(response.getIsErr());
+    void ShowStoreWorkersSuccess(){
+        tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, userID);
+        tradingSystemImpl.AddNewOwner(ElinorID, EconnID, ElinorStore, NofetID);
+        System.out.println(tradingSystemImpl.ShowStoreWorkers(ElinorID,EconnID,ElinorStore));
+        assertFalse(tradingSystemImpl.ShowStoreWorkers(ElinorID,EconnID,ElinorStore).getIsErr());
     }
 
+    // requirement 4.9
+    @Test
+    void ShowStoreWorkersNotPermission(){
+        assertTrue(tradingSystemImpl.ShowStoreWorkers(userID,EconnID,ElinorStore).getIsErr());
+    }
+
+    // requirement 4.9
+    @Test
+    void ShowStoreWorkersStoreNotExist(){
+        assertTrue(tradingSystemImpl.ShowStoreWorkers(userID,EconnID,-1).getIsErr());
+    }
+
+    // requirement 4.9
+    @Test
+    void ShowStoreWorkersEmpty(){
+        Object res= tradingSystemImpl.ShowStoreWorkers(ElinorID,EconnID,ElinorStore).getReturnObject().get("workers");
+        assertNull(res);
+    }
+
+    //endregion
+
+    //region requirement 5
+
+    @Test
+    void ManagerOperationsSuccess() {
+        tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, NofetID);
+        LinkedList<User.Permission> p=new LinkedList<>();
+        p.add(User.Permission.AddProduct);
+        tradingSystemImpl.EditManagerPermissions(ElinorID,EconnID,ElinorStore,NofetID,p);
+        Response response = tradingSystemImpl.AddProductToStore(NofetID, NconnID, ElinorStore, "Watermelon", "Fruits", 20.0, 10);
+        assertFalse(response.getIsErr());
+
+        Integer productID = tradingSystemImpl.stores.get(ElinorStore).getProductID("Watermelon");
+        assertTrue(productID != -1);
+    }
+
+    @Test
+    void ManagerOperationsFailed() {
+        tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, NofetID);
+        LinkedList<User.Permission> p=new LinkedList<>();
+        p.add(User.Permission.AddProduct);
+        tradingSystemImpl.EditManagerPermissions(ElinorID,EconnID,ElinorStore,NofetID,p);
+        Response response = tradingSystemImpl.AddNewOwner(NofetID, NconnID, ElinorStore, userID);
+        assertTrue(response.getIsErr());
+
+        Integer size = tradingSystemImpl.stores.get(ElinorStore).getOwnersIDs().size();
+        assertEquals(size, 0);
+    }
+
+    //endregion
+
+    //region purchase tests - requirement 2.9
+    void setUpBeforePurchase(){
+        tradingSystemImpl.AddProductToStore(NofetID, NconnID, NofetStore, "computer", "Technology", 3000.0,20);
+        tradingSystemImpl.AddProductToStore(NofetID, NconnID, NofetStore, "Bag", "Beauty", 100.0,50);
+        tradingSystemImpl.AddProductToStore(NofetID, NconnID, NofetStore, "Bed", "Fun", 4500.0,30);
+
+    }
+
+
+    @Test
+    void HappyPurchase() {
+        setUpBeforePurchase();
+        QuantityLimitForStore exp = new QuantityLimitForStore(2, NofetStore);
+        tradingSystemImpl.addBuyingPolicy(NofetID, NconnID, NofetStore, exp);
+        Integer productID1 = Nstore.getProductID("computer");
+        Integer preQuantity = Nstore.getQuantity(productID1);
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        assertFalse(response.getIsErr());
+
+        //check Inventory after happy purchase
+        Integer newQuantity = Nstore.getQuantity(productID1);
+        assertEquals(preQuantity, newQuantity+1);
+    }
+
+    @Test
+    void SadPurchase_BuyingPolicy() {
+        QuantityLimitForStore exp = new QuantityLimitForStore(2, NofetStore);
+        tradingSystemImpl.addBuyingPolicy(NofetID, NconnID, NofetStore, exp);
+        Integer productID1 = Nstore.getProductID("computer");
+        Integer preQuantity = Nstore.getQuantity(productID1);
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 5);
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Assertions.assertTrue(response.getIsErr());
+
+        //check Inventory after happy purchase
+        Integer newQuantity = Nstore.getQuantity(productID1);
+        assertEquals(preQuantity, newQuantity);
+    }
+
+    @Test
+    void SadPurchase_Payment() {
+
+    }
+
+    @Test
+    void SadPurchase_EmptyCart() {
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Assertions.assertTrue(response.getIsErr());
+    }
+
+    @Test
+    void Sad_Purchase_Supply() {
+        QuantityLimitForStore exp = new QuantityLimitForStore(100, NofetStore);
+        tradingSystemImpl.addBuyingPolicy(NofetID, NconnID, NofetStore, exp);
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 10);
+
+        //another user is buying this product
+        tradingSystemImpl.AddProductToCart(connID, NofetStore, productID1, 15);
+        tradingSystemImpl.subscriberPurchase(userID, connID, "123456789", "0524550335", "Kiryat Gat");
+
+        //the previous user make the purchase
+        Integer preQuantity = Nstore.getQuantity(productID1);
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Assertions.assertTrue(response.getIsErr());
+
+        //check Inventory after happy purchase
+        Integer newQuantity = Nstore.getQuantity(productID1);
+        assertEquals(preQuantity, newQuantity);
+    }
+
+
+    //endregion
+
+    //region template tests
     @Test
     void tmpTest1() {
 
@@ -729,6 +1017,8 @@ class TradingSystemImplTest {
         Expression exp = tradingSystemImpl.CreateExpForBuy(1,  OrComposite);
         assertTrue(true);
     }
+
+    //endregion
 
 
 }

@@ -4,6 +4,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Simp
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,5 +30,13 @@ public class AgeLimitForCategory extends SimpleExpression {
             }
         }
         return true;
+    }
+
+    @Override
+    public Response checkValidity(int storeID) {
+        if(0>minAge){
+            return new Response(true, "minAge cant be negative");
+        }
+        return new Response("correct");
     }
 }

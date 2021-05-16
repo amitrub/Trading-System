@@ -6,7 +6,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
-import TradingSystem.Server.ServiceLayer.LoggerController;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 
@@ -22,9 +21,10 @@ public class ShoppingCart {
 
     private final Integer userID;
     
-    private static final LoggerController loggerController=LoggerController.getInstance();
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags = new ConcurrentHashMap<>();
+    //StoreID
+    private Set<Integer> storesReducedProductsVain=new HashSet<>();
 
     public ShoppingCart(Integer userID){
 
@@ -98,21 +98,16 @@ public class ShoppingCart {
         else {
             int oldQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
             if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, quantity + oldQuantity)) {
-                loggerController.WriteErrorMsg("User " + userID + " try to add product " + productID + " from store " + storeID + " to cart but failed. the product is not in the stock");
-                return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
+                  return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
             }
         }
-
-//        TODO: checkBuyingPolicy
-//        if (!tradingSystemImpl.validation.checkBuyingPolicy(productID, storeID, quantity, productsInTheBug)) {
-//            loggerController.WriteErrorMsg("User "+userID+" try to add product " +productID+ " from store "+storeID+" to cart but failed. Adding the product is against the store policy");
-//            return new Response(true, "Adding the product is against the store policy");
-//        }
-//        TODO: calculateBugPrice
-//        Double priceForBug = tradingSystemImpl.calculateBugPrice(productID, storeID, productsInTheBug);
-//        shoppingBags.get(storeID).setFinalPrice(priceForBug);
+        ConcurrentHashMap<Integer,Integer> products=this.shoppingBags.get(storeID).getProducts();
+        if (!tradingSystemImpl.validation.checkBuyingPolicy(this.userID, storeID,products)) {
+            return new Response(true, "Adding the product "+productID+" is against the store policy");
+        }
+        Double priceForBug = tradingSystemImpl.calculateBugPrice(productID, storeID, products);
+        shoppingBags.get(storeID).setFinalPrice(priceForBug);
         this.shoppingBags.get(storeID).addProduct(productID, quantity);
-        loggerController.WriteLogMsg("User "+userID+" added product " +productID+ " from store "+storeID+" to cart successfully");
         Response res =new Response("The product added successfully");
         return res;
     }
@@ -135,14 +130,21 @@ public class ShoppingCart {
 
     public Response Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
         if (shoppingBags.size()==0){
-            return new Response(true, "Purchase: There is on products in the shopping cart");
+            return new Response(true, "Purchase: There is no products in the shopping cart");
         }
         List<Lock> lockList = this.getLockList();
         Response productInStock = this.checkInventoryAndLockProduct(lockList);
         if (productInStock.getIsErr()){
             return productInStock;
         }
-//        TODO: add BuyingPolicy and DiscountPolicy
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer storeID : shoppingBagsSet) {
+            ConcurrentHashMap<Integer, Integer> products = this.shoppingBags.get(storeID).getProducts();
+            if (!tradingSystemImpl.validation.checkBuyingPolicy(this.userID, storeID, products)) {
+                this.releaseLocks(lockList);
+                return new Response(true, "Purchase in the store "+ storeID+" is against the store policy");
+            }
+        }
         if (!supplySystem.canSupply(address)) {
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The Supply is not approve");
@@ -151,16 +153,19 @@ public class ShoppingCart {
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The payment is not approve");
         }
+
         Response res = Buy();
         if(res.getIsErr()) {
             this.releaseLocks(lockList);
             return res;
         }
+        //TODO add charge to a payment
+        //TODO Add payment to each store for the products
         addShoppingHistory(isGuest);
+        this.storesReducedProductsVain=new HashSet<>();
         this.shoppingBags = new ConcurrentHashMap<>();
         this.releaseLocks(lockList);
         return new Response("The purchase was made successfully ");
-
     }
 
     private List<Lock> getLockList() {
@@ -220,12 +225,20 @@ public class ShoppingCart {
             ShoppingBag SB = this.shoppingBags.get(storeID);
             res = tradingSystemImpl.reduceProducts(SB.getProducts(), storeID);
             if (res.getIsErr()) {
+                this.cancilReduceProducts();
+                this.storesReducedProductsVain=new HashSet<>();
                 return res;
             }
-            PayToTheSellers();
+            this.storesReducedProductsVain.add(storeID);
         }
         res=new Response(false, "Purchase: The reduction was made successfully ");
         return res;
+    }
+
+    private void cancilReduceProducts() {
+        for (Integer storeID : this.storesReducedProductsVain) {
+            tradingSystemImpl.cancilReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
+        }
     }
 
     private void addShoppingHistory(boolean isGuest) {

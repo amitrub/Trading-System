@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.LinkedList;
@@ -39,7 +40,14 @@ public abstract class CompositeExpression implements Expression {
 
     @Override
     public Response checkValidity(int storeID) {
-        return new Response("");
+        for (Expression e:children
+        ) {
+            Response r=e.checkValidity(storeID);
+            if(r.getIsErr()){
+                return r;
+            }
+        }
+        return new Response("correct");
     }
 
 }

@@ -118,27 +118,27 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public List<DummyStore> showAllStores() {
-        return tradingSystem.ShowAllStores().getStores();
+    public Response showAllStores() {
+        return tradingSystem.ShowAllStores();
     }
 
     @Override
-    public List<DummyProduct> showStoreProducts(int storeID) {
-        return tradingSystem.ShowStoreProducts(storeID).returnProductList();
+    public Response showStoreProducts(int storeID) {
+        return tradingSystem.ShowStoreProducts(storeID);
     }
 
     @Override
-    public List<DummyProduct> Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
+    public Response Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
         try {
             Integer min = Integer.parseInt(minPrice);
             Integer max = Integer.parseInt(maxPrice);
             if (mode.equals("Product Name")) {
-                return tradingSystem.SearchProduct(name, null, min, max).returnProductList();
+                return tradingSystem.SearchProduct(name, null, min, max);
             } else {
-                return tradingSystem.SearchProduct(null, name, min, max).returnProductList();
+                return tradingSystem.SearchProduct(null, name, min, max);
             }
         } catch (Exception ex){
-            return new ArrayList<>();
+            return new Response(true, "error");
         }
     }
 
@@ -148,8 +148,8 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public List<DummyProduct> showShoppingCart() {
-        return tradingSystem.ShowShoppingCart(this.ConnID).returnProductList();
+    public Response showShoppingCart() {
+        return tradingSystem.ShowShoppingCart(this.ConnID);
     }
 
     @Override
@@ -191,13 +191,13 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public boolean subscriberPurchase(String credit_number, String phone_number, String address) {
-        return tradingSystem.subscriberPurchase(userID,ConnID,credit_number,phone_number,address).getIsErr();
+    public Response subscriberPurchase(String credit_number, String phone_number, String address) {
+        return tradingSystem.subscriberPurchase(userID,ConnID,credit_number,phone_number,address);
     }
 
     @Override
-    public boolean addProduct(int storeID, String productName, String category, double price, int quantity) {
-        return tradingSystem.AddProductToStore(userID,ConnID,storeID,productName,category,price,quantity).getIsErr();
+    public Response addProduct(int storeID, String productName, String category, double price, int quantity) {
+        return tradingSystem.AddProductToStore(userID,ConnID,storeID,productName,category,price,quantity);
     }
 
     @Override
@@ -206,8 +206,8 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public boolean editProduct(int storeID, int productID, String productName, String category, double price, int quantity) {
-        return tradingSystem.EditProduct(userID,ConnID,storeID,productID,productName,category,price,quantity).getIsErr();
+    public Response editProduct(int storeID, int productID, String productName, String category, double price, int quantity) {
+        return tradingSystem.EditProduct(userID,ConnID,storeID,productID,productName,category,price,quantity);
     }
 
     @Override
@@ -221,16 +221,6 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response editBuyingPolicy(int storeID){
-        return new Response("not implemented");
-    }
-
-    @Override
-    public Response editDiscountPolicy(int storeID){
-        return new Response("not implemented");
-    }
-
-    @Override
     public Response removeBuyingPolicy(int storeID){
         return tradingSystem.RemoveBuyingPolicy(userID,storeID,ConnID);
     }
@@ -239,8 +229,13 @@ public class ClientProxy implements Client_Interface {
     public Response removeDiscountPolicy(int storeID){ return tradingSystem.RemoveDiscountPolicy(userID,storeID,ConnID); }
 
     @Override
-    public boolean addOwner(int storeID, int newOwnerID) {
-        return tradingSystem.AddNewOwner(userID,ConnID,storeID,newOwnerID).getIsErr();
+    public Response getPoliciesInfo(int storeID) {
+        return tradingSystem.GetPoliciesInfo(userID, storeID, ConnID);
+    }
+
+    @Override
+    public Response addOwner(int storeID, int newOwnerID) {
+        return tradingSystem.AddNewOwner(userID,ConnID,storeID,newOwnerID);
     }
 
     @Override
@@ -265,18 +260,18 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public boolean removeManager(int storeID, int managerToRemoveID) {
-        return tradingSystem.RemoveManager(userID,ConnID,storeID,managerToRemoveID).getIsErr();
+    public Response removeManager(int storeID, int managerToRemoveID) {
+        return tradingSystem.RemoveManager(userID,ConnID,storeID,managerToRemoveID);
     }
 
     @Override
-    public List<DummyStore> showOwnerStores() {
-        return tradingSystem.ShowOwnerStores(userID,ConnID).getStores();
+    public Response showOwnerStores() {
+        return tradingSystem.ShowOwnerStores(userID,ConnID);
     }
 
     @Override
-    public List<DummyStore> showManagerStores() {
-        return tradingSystem.ShowManagerStores(userID,ConnID).getStores();
+    public Response showManagerStores() {
+        return tradingSystem.ShowManagerStores(userID,ConnID);
     }
 
     @Override
@@ -285,27 +280,27 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public List<DummyShoppingHistory> ownerStoreHistory(int storeID) {
-        return tradingSystem.StoreHistoryOwner(userID,storeID,ConnID).returnHistoryList();
+    public Response ownerStoreHistory(int storeID) {
+        return tradingSystem.StoreHistoryOwner(userID,storeID,ConnID);
     }
 
     @Override
-    public List<DummyShoppingHistory> adminStoreHistory(int storeID) {
-        return tradingSystem.StoreHistoryAdmin(userID,storeID,ConnID).returnHistoryList();
+    public Response adminStoreHistory(int storeID) {
+        return tradingSystem.StoreHistoryAdmin(userID,storeID,ConnID);
     }
 
     @Override
-    public List<DummyShoppingHistory> adminUserHistory(int userToShow) {
-        return tradingSystem.UserHistoryAdmin(userID,userToShow,ConnID).returnHistoryList();
+    public Response adminUserHistory(int userToShow) {
+        return tradingSystem.UserHistoryAdmin(userID,userToShow,ConnID);
     }
 
     @Override
-    public List<DummyShoppingHistory> AdminAllStores() {
-        return tradingSystem.AllStoresHistoryAdmin(userID,ConnID).returnHistoryList();
+    public Response AdminAllStores() {
+        return tradingSystem.AllStoresHistoryAdmin(userID,ConnID);
     }
 
     @Override
-    public List<DummyShoppingHistory> AdminAllUsers() {
-        return tradingSystem.AllUsersHistoryAdmin(userID,ConnID).returnHistoryList();
+    public Response AdminAllUsers() {
+        return tradingSystem.AllUsersHistoryAdmin(userID,ConnID);
     }
 }
