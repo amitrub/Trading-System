@@ -17,9 +17,9 @@ public class PurchaseTask implements Callable<Result> {
     private int quantity;
     private String creditCard;
     private String phoneNumber;
-    private String adress;
+    private String address;
 
-    public PurchaseTask(String name, int storeID, int productID, int quantity, String creditCard, String phoneNumber, String adress) {
+    public PurchaseTask(String name, int storeID, int productID, int quantity, String creditCard, String phoneNumber, String address) {
         this.name = name;
         this.client = new Client();
         this.storeID = storeID;
@@ -27,7 +27,7 @@ public class PurchaseTask implements Callable<Result> {
         this.quantity = quantity;
         this.creditCard = creditCard;
         this.phoneNumber = phoneNumber;
-        this.adress = adress;
+        this.address = address;
         System.out.printf(ANSI_YELLOW + "%s: Trying connect to system... ", this.name);
         this.client.connectSystem();
         if(this.client.getConnID().equals(""))
@@ -49,7 +49,7 @@ public class PurchaseTask implements Callable<Result> {
         client.addProductToCart(this.storeID, this.productID, this.quantity);
 
         //Issue
-        Response response = client.guestPurchase(this.name, this.creditCard, this.phoneNumber, this.adress);
+        Response response = client.guestPurchase(this.name, this.creditCard, this.phoneNumber, this.address);
         System.out.println(client.getUserName() + ": (Purchase task parallel) response: " + response);
 
         //Results to assert

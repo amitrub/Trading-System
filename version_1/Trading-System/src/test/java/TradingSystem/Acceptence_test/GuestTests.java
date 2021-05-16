@@ -545,7 +545,6 @@ public class GuestTests {
 
     //endregion
     //region Purchase tests requirement 2.9
-
     @Test
     void Purchase_Happy()
     {
@@ -625,122 +624,124 @@ public class GuestTests {
             System.out.println("purchase shouldn't succeed!!!");
         assertTrue(purchaseFailed);
     }
-//    @Test
-//    void PurchaseParallel_HappyFailed_TwoBuyersLastProduct_10times()
-//    {
-//        for(int test_try = 1; test_try <= 10; test_try++) {
-//            //Prepare
-//            client.Register("Hadas", "123");
-//            client.Login("Hadas", "123");
-//            String store_name = "Mania Jeans";
-//            client.openStore(store_name);
-//            List<DummyStore> stores = client.showAllStores();
-//            Integer storeID = getStoreID(stores, store_name);
-//            client.addProduct(storeID, "Short Pants", "Pants", 120.0, 1);
-//            List<DummyProduct> products = client.showStoreProducts(storeID);
-//            Integer productID = products.get(0).getProductID();
-//            client.Logout();
-//
-//
-//            //Create two clients with task to buy this product
-//            ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
-//
-//            List<PurchaseTask> taskList = new ArrayList<>();
-//            for (int i = 0; i < 2; i++) {
-//                PurchaseTask task = new PurchaseTask("Client-" + i, storeID, productID,
-//                        1, "123456", "052897878787", "sioot st. 5");
-//                taskList.add(task);
-//            }
-//
-//            //Execute all tasks and get reference to Future objects
-//            List<Future<Result>> resultList = null;
-//
-//            try {
-//                resultList = executor.invokeAll(taskList);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
-//
-//            executor.shutdown();
-//
-//            System.out.println("\n========Printing the results======");
-//            boolean[] isErrs = new boolean[2];
-//            for (int i = 0; i < resultList.size(); i++) {
-//                Future<Result> future = resultList.get(i);
-//                try {
-//                    Result result = future.get();
-////                System.out.println(result.getName() + ": " + result.getTimestamp());
-//                    Response response = result.getResponse();
-//                    System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
-//                    isErrs[i] = response.getIsErr();
-//                } catch (InterruptedException | ExecutionException e) {
-//                    e.printStackTrace();
-//                }
-//            }
-//            //Check that one of the client failed and the other succeed.
-//            assertTrue((isErrs[0] && !isErrs[1]) || (isErrs[1] && !isErrs[0]));
-//            tearDown();
-//            setUp();
-//        }
-//
-//    }
 
-//    @Test
-//    void PurchaseParallel_Happy_TwoBuyersProduct()
-//    {
-//        //Prepare
-//        client.Register("Hadas", "123");
-//        client.Login("Hadas", "123");
-//        String store_name = "Mania Jeans";
-//        client.openStore(store_name);
-//        List<DummyStore> stores = client.showAllStores();
-//        Integer storeID = getStoreID(stores, store_name);
-//        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-//        List<DummyProduct> products = client.showStoreProducts(storeID);
-//        Integer productID = products.get(0).getProductID();
-//        client.Logout();
-//
-//
-//        //Create two clients with task to buy this product
-//        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
-//
-//        List<PurchaseTask> taskList = new ArrayList<>();
-//        for (int i = 0; i < 2; i++) {
-//            PurchaseTask task = new PurchaseTask("Client-" + i, storeID, productID,
-//                    1,"123456", "052897878787", "sioot st. 5");
-//            taskList.add(task);
-//        }
-//
-//        //Execute all tasks and get reference to Future objects
-//        List<Future<Result>> resultList = null;
-//
-//        try {
-//            resultList = executor.invokeAll(taskList);
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
-//
-//        executor.shutdown();
-//
-//        System.out.println("\n========Printing the results======");
-//        boolean[] isErrs = new boolean[2];
-//        for (int i = 0; i < resultList.size(); i++) {
-//            Future<Result> future = resultList.get(i);
-//            try {
-//                Result result = future.get();
-////                System.out.println(result.getName() + ": " + result.getTimestamp());
-//                Response response = result.getResponse();
-//                System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
-//                isErrs[i] = response.getIsErr();
-//            } catch (InterruptedException | ExecutionException e) {
-//                e.printStackTrace();
-//            }
-//        }
-//        //Check that one of the client failed and the other succeed.
-//        assertTrue(!isErrs[0] && !isErrs[1]);
-//    }
-    //Todo: 2 clients wants to buy different products, sleep 10 seconds, check that they aren't wait for 20 sec
+    /*
+    @Test
+    void PurchaseParallel_HappyFailed_TwoBuyersLastProduct_10times()
+    {
+        for(int test_try = 1; test_try <= 10; test_try++) {
+            //Prepare
+            client.Register("Hadas", "123");
+            client.Login("Hadas", "123");
+            String store_name = "Mania Jeans";
+            client.openStore(store_name);
+            List<DummyStore> stores = client.showAllStores().getStores();
+            Integer storeID = getStoreID(stores, store_name);
+            client.addProduct(storeID, "Short Pants", "Pants", 120.0, 1);
+            List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
+            Integer productID = products.get(0).getProductID();
+            client.Logout();
 
+
+            //Create two clients with task to buy this product
+            ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+            List<PurchaseTask> taskList = new ArrayList<>();
+            for (int i = 0; i < 2; i++) {
+                PurchaseTask task = new PurchaseTask("Client-" + i, storeID, productID,
+                        1, "123456", "052897878787", "sioot st. 5");
+                taskList.add(task);
+            }
+
+            //Execute all tasks and get reference to Future objects
+            List<Future<Result>> resultList = null;
+
+            try {
+                resultList = executor.invokeAll(taskList);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            executor.shutdown();
+
+            System.out.println("\n========Printing the results======");
+            boolean[] isErrs = new boolean[2];
+            for (int i = 0; i < resultList.size(); i++) {
+                Future<Result> future = resultList.get(i);
+                try {
+                    Result result = future.get();
+//                System.out.println(result.getName() + ": " + result.getTimestamp());
+                    Response response = result.getResponse();
+                    System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                    isErrs[i] = response.getIsErr();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Check that one of the client failed and the other succeed.
+            assertTrue((isErrs[0] && !isErrs[1]) || (isErrs[1] && !isErrs[0]));
+            tearDown();
+            setUp();
+        }
+
+    }
+
+    @Test
+    void PurchaseParallel_Happy_TwoBuyersProduct()
+    {
+        //Prepare
+        client.Register("Hadas", "123");
+        client.Login("Hadas", "123");
+        String store_name = "Mania Jeans";
+        client.openStore(store_name);
+        List<DummyStore> stores = client.showAllStores().getStores();
+        Integer storeID = getStoreID(stores, store_name);
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
+        Integer productID = products.get(0).getProductID();
+        client.Logout();
+
+
+        //Create two clients with task to buy this product
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<PurchaseTask> taskList = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            PurchaseTask task = new PurchaseTask("Client-" + i, storeID, productID,
+                    1,"123456", "052897878787", "sioot st. 5");
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<Result>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+        boolean[] isErrs = new boolean[2];
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<Result> future = resultList.get(i);
+            try {
+                Result result = future.get();
+//                System.out.println(result.getName() + ": " + result.getTimestamp());
+                Response response = result.getResponse();
+                System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                isErrs[i] = response.getIsErr();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        //Check that one of the client failed and the other succeed.
+        assertTrue(!isErrs[0] && !isErrs[1]);
+    }
+
+     */
     //endregion
 
 

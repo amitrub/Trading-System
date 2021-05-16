@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
@@ -9,12 +8,15 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.PurchaseTaskUnitTests;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.ResultUnitTests;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -97,6 +99,10 @@ class TradingSystemImplTest {
         Response response2= tradingSystemImpl.AddNewOwner(userID,connID,storeid,ElinorID);
 
         Nstore = tradingSystemImpl.stores.get(NofetStore);
+    }
+
+    public static void tearDown(){
+        tradingSystemImpl.ClearSystem();
     }
 
     //region requirement 2
@@ -822,7 +828,6 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToStore(NofetID, NconnID, NofetStore, "computer", "Technology", 3000.0,20);
         tradingSystemImpl.AddProductToStore(NofetID, NconnID, NofetStore, "Bag", "Beauty", 100.0,50);
         tradingSystemImpl.AddProductToStore(NofetID, NconnID, NofetStore, "Bed", "Fun", 4500.0,30);
-
     }
 
 
@@ -889,6 +894,99 @@ class TradingSystemImplTest {
         assertEquals(preQuantity, newQuantity);
     }
 
+    //Parallel tests
+    @Test
+    void PurchaseParallel_Happy_TwoBuyersProduct() {
+        //Prepare
+        tradingSystemImpl.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,2);
+        Integer newProduct = tradingSystemImpl.stores.get(ElinorStore).getProductID("computer");
+        //Create two clients with task to buy this product
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
+        for (int i = 0; i < 2; i++) {
+            PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
+                    1,"123456", "052897878787", "sioot st. 5");
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<ResultUnitTests>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+        boolean[] isErrs = new boolean[2];
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<ResultUnitTests> future = resultList.get(i);
+            try {
+                ResultUnitTests result = future.get();
+//                System.out.println(result.getName() + ": " + result.getTimestamp());
+                Response response = result.getResponse();
+                System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                isErrs[i] = response.getIsErr();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        //Check that one of the client failed and the other succeed.
+        assertTrue(!isErrs[0] && !isErrs[1]);
+    }
+
+    @Test
+    void PurchaseParallel_HappyFailed_TwoBuyersLastProduct_10times() {
+        for(int test_try = 1; test_try <= 10; test_try++) {
+            //Prepare
+            tradingSystemImpl.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,1);
+            Integer newProduct = tradingSystemImpl.stores.get(ElinorStore).getProductID("computer");
+            //Create two clients with task to buy this product
+            ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+            List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
+            for (int i = 0; i < 2; i++) {
+                PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
+                        1,"123456", "052897878787", "sioot st. 5");
+                taskList.add(task);
+            }
+
+            //Execute all tasks and get reference to Future objects
+            List<Future<ResultUnitTests>> resultList = null;
+
+            try {
+                resultList = executor.invokeAll(taskList);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            executor.shutdown();
+
+            System.out.println("\n========Printing the results======");
+            boolean[] isErrs = new boolean[2];
+            for (int i = 0; i < resultList.size(); i++) {
+                Future<ResultUnitTests> future = resultList.get(i);
+                try {
+                    ResultUnitTests result = future.get();
+//                System.out.println(result.getName() + ": " + result.getTimestamp());
+                    Response response = result.getResponse();
+                    System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                    isErrs[i] = response.getIsErr();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Check that one of the client failed and the other succeed.
+            assertTrue((isErrs[0] && !isErrs[1]) || (isErrs[1] && !isErrs[0]));
+            tearDown();
+            setup();
+        }
+
+    }
 
     //endregion
 
