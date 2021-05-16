@@ -145,11 +145,6 @@ public class Store extends Observable {
         this.ownersPermission.remove(ownerId);
         return "The Manager removed";
     }
-    //todo - ensure that only the Trading Administrator can access this function.
-    public List<ShoppingHistory> GetShoppingHistory()
-    {
-        return this.shoppingHistory;
-    }
 
     public Integer getProductID(String computer)
     {
@@ -432,6 +427,10 @@ public class Store extends Observable {
 
     public ConcurrentHashMap<Integer,OwnerPermission> getOwnersIDs(){
        return this.ownersPermission;
+    }
+
+    public List<Integer> OwnersID (){
+        return this.ownersIDs;
     }
 
     public ConcurrentHashMap<Integer,ManagerPermission> getManagerIDs(){
