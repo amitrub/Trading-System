@@ -173,7 +173,6 @@ public class GuestServiceHttp {
     @GetMapping("store/{storeID}/products")
     public Response ShowStoreProducts(@PathVariable int storeID) {
         Response res = this.tradingSystem.ShowStoreProducts(storeID);
-        System.out.println(res);
         WriteToLogger(res);
         return res;
     }
@@ -270,7 +269,6 @@ public class GuestServiceHttp {
         }
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
-        System.out.println(res);
         tradingSystem.printUsers();
         WriteToLogger(res);
         return res;
@@ -356,7 +354,6 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/edit_product")
     public Response EditProductQuantityFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        System.out.println("EditProductQuantityFromCart");
         int storeID, productID, quantity;
         try {
             storeID = (int) obj.get("storeID");
@@ -371,7 +368,6 @@ public class GuestServiceHttp {
             return res;
         }
         Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
-        System.out.println(res);
         res.AddConnID(connID);
         WriteToLogger(res);
         return res;

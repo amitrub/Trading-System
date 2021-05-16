@@ -118,6 +118,7 @@ public  class User implements Observer {
 
     public void notify(String topic, Response res) {
         if(publisher!=null){
+            System.out.println("-------------------notify-------------------");
             publisher.SendMessage(topic, res);
         }
     }
@@ -348,13 +349,12 @@ public  class User implements Observer {
     //Observable pattern
     public void update(Object arg) {
         Response res = (Response) arg;
-        this.notify(res.returnConnID(), res);
+        this.notify(tradingSystem.getUserConnID(this.id), res);
     }
 
     @Override
     public void update(Observable o, Object arg) {
-        //update(arg);
-        System.out.println("--------------------->update<------------------");
+        update(arg);
     }
 
     public void addMessage(Object arg){

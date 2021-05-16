@@ -473,20 +473,21 @@ public class Store extends Observable {
     public void sendAlertToOwners(Response message){
         for(Integer ID : ownersIDs) {
             User user = tradingSystem.subscribers.get(ID);
+            System.out.println(user);
             this.addObserver(user);
         }
+        this.setChanged();
         this.notifyObservers(message);
-        //TODO - need to remove all observers from the list after update??
-        //this.deleteObservers();
+        this.deleteObservers();
     }
 
     //send alert to specific owner
     public void sendAlert(Integer ownerID, Response message){
         User user = tradingSystem.subscribers.get(ownerID);
         this.addObserver(user);
+        this.setChanged();
         this.notifyObservers(message);
-        //TODO - need to remove all observers from the list??
-        //this.deleteObserver(user);
+        this.deleteObserver(user);
     }
 
 
