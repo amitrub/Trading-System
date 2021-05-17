@@ -6,7 +6,7 @@ import MyPopup from "../../OtherComponents/MyPopup/MyPopup";
 
 const apiHttp = createApiClientHttp();
 
-function Product(props) {
+function OwnerProduct(props) {
   const [quantityToBuy, setQuantityToBuy] = useState(0);
   const [popUpProduct, setPopUpProduct] = useState(false);
   const [popupMsg, setPopMsg] = useState("");
@@ -55,7 +55,9 @@ function Product(props) {
   return (
     <div className="plan-box">
       <div>
-        <h3>{product.productName}</h3>
+        <h3>
+          {product.productName}, id={product.productID}
+        </h3>
         <p className="plan-price">${product.price}</p>
         <p className="plan-price-meal">
           {product.quantity} units on '{product.storeName}'
@@ -94,4 +96,4 @@ function Product(props) {
   );
 }
 
-export default Product;
+export default OwnerProduct;

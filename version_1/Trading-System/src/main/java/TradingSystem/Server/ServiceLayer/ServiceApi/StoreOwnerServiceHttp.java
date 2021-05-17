@@ -113,6 +113,7 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/store/{storeID}/add_new_product")
     public Response AddProductToStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
+        System.out.println("---------------------------------- check 11111");
         String productName, category;
         int quantity, price_int;
         Double price;

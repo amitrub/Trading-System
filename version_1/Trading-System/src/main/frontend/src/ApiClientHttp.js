@@ -336,8 +336,8 @@ export const createApiClientHttp = () => {
       const body = {
         productName: productName,
         category: category,
-        quantity: quantity,
-        price: price,
+        quantity: parseInt(quantity),
+        price: parseInt(price),
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -355,7 +355,7 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        quantity: quantity,
+        quantity: parseInt(quantity),
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -384,8 +384,8 @@ export const createApiClientHttp = () => {
       const body = {
         productName: productName,
         category: category,
-        quantity: quantity,
-        price: price,
+        quantity: parseInt(quantity),
+        price: parseInt(price),
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
