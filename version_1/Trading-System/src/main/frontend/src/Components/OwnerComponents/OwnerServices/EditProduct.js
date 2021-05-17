@@ -73,7 +73,7 @@ function EditProduct(props) {
     <section>
       <div>
         <div className="row">
-          <h2>Edit product of "{props.storeName}"</h2>
+          <h2>Edit product</h2>
         </div>
 
         <div className="row">

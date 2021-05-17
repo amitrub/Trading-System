@@ -67,7 +67,7 @@ function AddProduct(props) {
     <section>
       <div>
         <div className="row">
-          <h2>Add product to {props.storeName} store</h2>
+          <h2>Add product to store</h2>
         </div>
 
         <div className="row">

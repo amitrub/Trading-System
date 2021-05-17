@@ -549,6 +549,20 @@ export const createApiClientHttp = () => {
       });
     },
 
+    RemoveManager: (connID, userID, storeID, managerID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/remove_manager/${managerID}`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     EditManagerPermissions: (
       connID,
       userID,
@@ -598,20 +612,6 @@ export const createApiClientHttp = () => {
     GetPossiblePermissionsToManager: (connID, userID) => {
       let path = ownerURL.concat(
         `${userID}/store/get_possible_permissions_to_manager`
-      );
-      const headers = {
-        "Content-Type": "application/json; utf-8",
-        Accept: "application/json",
-        connID: connID,
-      };
-      return axios.get(path, { headers: headers }).then((res) => {
-        return res.data;
-      });
-    },
-
-    RemoveManager: (connID, userID, storeID, managerID) => {
-      let path = ownerURL.concat(
-        `${userID}/store/${storeID}/remove_manager/${managerID}`
       );
       const headers = {
         "Content-Type": "application/json; utf-8",
@@ -712,6 +712,18 @@ export const createApiClientHttp = () => {
 
     AdminStoreHistory: (connID, adminID, storeID) => {
       let path = adminURL.concat(`${adminID}/store_history_admin/${storeID}`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    GetAllSubscribers: (connID) => {
+      let path = ownerURL.concat(`get_all_subscribers`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",

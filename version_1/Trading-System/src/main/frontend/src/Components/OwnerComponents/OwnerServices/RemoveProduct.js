@@ -48,7 +48,7 @@ function RemoveProduct(props) {
     <section>
       <div>
         <div className="row">
-          <h2>{props.storeName} - Remove product</h2>
+          <h2>Remove product</h2>
         </div>
 
         <div className="row">
