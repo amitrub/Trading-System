@@ -344,12 +344,13 @@ public class TradingSystemImpl implements TradingSystem {
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
+            Thread thread = new Thread();
 //            try {
 //                Thread.sleep(10000);
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-//            myUser.updateAfterLogin();
+            myUser.updateAfterLogin();
         }
         return res;
     }
@@ -989,8 +990,12 @@ public class TradingSystemImpl implements TradingSystem {
         OwnerPermission OP = new OwnerPermission(newOwner, storeID);
         OP.setAppointmentId(userID);
         NO.AddStoreInOwner(storeID, OP);
-        stores.get(storeID).addNewOwner(userID, newOwner);
-        stores.get(storeID).addOwnerPermission(newOwner,OP);
+        Store store = stores.get(storeID);
+        store.addNewOwner(userID, newOwner);
+        store.addOwnerPermission(newOwner,OP);
+        //Alert
+        Response resAlert = new Response(false, "You are now owning the store: " + store.getName());
+        store.sendAlert(newOwner, resAlert);
         //this.subscribers.get(newOwner).unlockUser();
         NO.unlockUser();
         Response res = new Response(false, "AddNewOwner: The owner Added successfully");
