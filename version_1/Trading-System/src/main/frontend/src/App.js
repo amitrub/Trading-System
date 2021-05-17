@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import "./App.css";
 import "./Design/grid.css";
 import "./Design/style.css";
@@ -48,8 +48,7 @@ class App extends React.Component {
       products: [],
       searchedProducts: [],
       showPopup: false,
-      popupHeader: "",
-      popupMassge: "",
+      popupMassages: [],
     };
   }
 
@@ -60,11 +59,16 @@ class App extends React.Component {
   };
 
   onClosePopupApp = () => {
-    this.setState((prevState) => ({
-      showPopup: false,
-      popupHeader: "",
-      popupMassge: "",
-    }));
+    this.setState(
+      (prevState) => ({
+        popupMassages: prevState.popupMassages.slice(1),
+      }),
+      () => {
+        this.setState((prevState) => ({
+          showPopup: prevState.popupMassages.length !== 0,
+        }));
+      }
+    );
   };
 
   loadStores = () => {
@@ -157,20 +161,17 @@ class App extends React.Component {
       if (msg.body) {
         var jsonBody = JSON.parse(msg.body);
         console.log(jsonBody);
-        // if (jsonBody.message) {
-        //   this.setState(
-        //     {
-        //       response: jsonBody,
-        //       showPopup: true,
-        //       popupHeader: jsonBody.header,
-        //       popupMassge: jsonBody.message,
-        //     },
-        //     () => {
-        //       this.onRefresh();
-        //     }
-        //   );
-        //   console.log(jsonBody);
-        // }
+        if (jsonBody.message) {
+          this.setState(
+            (prevState) => ({
+              popupMassages: [...prevState.popupMassages, jsonBody.message],
+            }),
+            () => {
+              this.onRefresh();
+            }
+          );
+          // console.log(jsonBody);
+        }
       }
     });
   };
@@ -249,35 +250,16 @@ class App extends React.Component {
   }
 
   render() {
-    const {
-      refresh,
-      clientConnection,
-      response,
-      username,
-      pass,
-      userID,
-      connID,
-      guest,
-      manager,
-      owner,
-      founder,
-      admin,
-      stores,
-      products,
-      searchedProducts,
-      showPopup,
-      popupHeader,
-      popupMassge,
-    } = this.state;
+    const { userID, connID, showPopup, popupMassages } = this.state;
     return !this.state.clientConnection ? (
       <Fragment>
         <h3>Connecting To System...</h3>
       </Fragment>
     ) : (
       <div className="App">
-        {showPopup ? (
+        {popupMassages.length > 0 ? (
           <MyPopup
-            errMsg={popupMassge}
+            errMsg={popupMassages[0]}
             onClosePopup={this.onClosePopupApp}
           ></MyPopup>
         ) : (
