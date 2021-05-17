@@ -6,44 +6,50 @@ import MyPopup from "../../OtherComponents/MyPopup/MyPopup";
 
 const apiHttp = createApiClientHttp();
 
-function AddProduct(props) {
+function EditProduct(props) {
   const [productName, setProductName] = useState("");
+  const [productID, setProductID] = useState(-1);
   const [category, setCategory] = useState("");
   const [quantity, setQuantity] = useState(-1);
   const [price, setPrice] = useState(-1);
 
-  const [popupAddProduct, setPopupAddProduct] = useState(false);
+  const [popupEditProduct, setPopupEditProduct] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
 
-  async function submitAddProductHandler(event) {
+  async function submitEditProductHandler(event) {
     event.preventDefault();
-    // console.log("before AddProduct");
+    // console.log("before EditProduct");
 
-    const addProductResponse = await apiHttp.AddProductToStore(
+    const editProductResponse = await apiHttp.EditProduct(
       props.connID,
       props.userID,
       props.storeID,
+      productID,
       productName,
       category,
       quantity,
       price
     );
 
-    // console.log("AddProduct");
-    // console.log(addProductResponse);
+    // console.log("EditProduct");
+    // console.log(editProductResponse);
 
-    if (addProductResponse) {
-      setPopupMsg(addProductResponse.message);
-      setPopupAddProduct(true);
+    if (editProductResponse) {
+      setPopupMsg(editProductResponse.message);
+      setPopupEditProduct(true);
     }
-    if (addProductResponse.isErr) {
-      console.log(addProductResponse.message);
+    if (editProductResponse.isErr) {
+      console.log(editProductResponse.message);
     }
     props.onRefresh();
   }
 
   function updateProductName(event) {
     setProductName(event.target.value);
+  }
+
+  function updateProductID(event) {
+    setProductID(event.target.value);
   }
 
   function updateCategory(event) {
@@ -58,8 +64,8 @@ function AddProduct(props) {
     setPrice(event.target.value);
   }
 
-  function onClosePopupAddProduct() {
-    setPopupAddProduct(false);
+  function onClosePopup() {
+    setPopupEditProduct(false);
     props.onRefresh();
   }
 
@@ -67,19 +73,35 @@ function AddProduct(props) {
     <section>
       <div>
         <div className="row">
-          <h2>Add product to {props.storeName} store</h2>
+          <h2>Edit product of "{props.storeName}"</h2>
         </div>
 
         <div className="row">
           <form
             method="post"
             className="contact-form"
-            onSubmit={submitAddProductHandler}
+            onSubmit={submitEditProductHandler}
           >
+            {/* product  ID */}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Current ID</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="number"
+                  name="id"
+                  id="id"
+                  required
+                  onChange={updateProductID}
+                  placeholder={"product id to edit"}
+                />
+              </div>
+            </div>
             {/* product name */}
             <div className="row">
               <div className="col span-1-of-3">
-                <label htmlFor="name">Product name</label>
+                <label htmlFor="name">New name</label>
               </div>
               <div className="col span-2-of-3">
                 <input
@@ -95,7 +117,7 @@ function AddProduct(props) {
             {/* category */}
             <div className="row">
               <div className="col span-1-of-3">
-                <label htmlFor="name">Category</label>
+                <label htmlFor="name">New Category</label>
               </div>
               <div className="col span-2-of-3">
                 <input
@@ -111,7 +133,7 @@ function AddProduct(props) {
             {/* Quantity */}
             <div className="row">
               <div className="col span-1-of-3">
-                <label htmlFor="name">Quantity</label>
+                <label htmlFor="name">New Quantity</label>
               </div>
               <div className="col span-2-of-3">
                 <input
@@ -126,7 +148,7 @@ function AddProduct(props) {
             {/* Price */}
             <div className="row">
               <div className="col span-1-of-3">
-                <label htmlFor="name">Price</label>
+                <label htmlFor="name">New Price</label>
               </div>
               <div className="col span-2-of-3">
                 <input
@@ -143,17 +165,14 @@ function AddProduct(props) {
                 <label>&nbsp;</label>
               </div>
               <div className="col span-1-of-3">
-                <input type="submit" value="Add Product!" />
+                <input type="submit" value="Edit Product!" />
               </div>
             </div>
           </form>
         </div>
       </div>
-      {popupAddProduct ? (
-        <MyPopup
-          errMsg={popupMsg}
-          onClosePopup={onClosePopupAddProduct}
-        ></MyPopup>
+      {popupEditProduct ? (
+        <MyPopup errMsg={popupMsg} onClosePopup={onClosePopup}></MyPopup>
       ) : (
         ""
       )}
@@ -161,4 +180,4 @@ function AddProduct(props) {
   );
 }
 
-export default AddProduct;
+export default EditProduct;

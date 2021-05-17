@@ -1,5 +1,6 @@
 import React from "react";
 import "./MyPopup.css";
+import Modal from "../Modal/Modal";
 
 const MyPopup = (props) => {
   function onClosePopup() {
@@ -7,14 +8,16 @@ const MyPopup = (props) => {
   }
 
   return (
-    <div className="alert">
-      <div>
-        <p>{props.errMsg}</p>
-        <button className="buttunus" onClick={onClosePopup}>
-          OK
-        </button>
+    <Modal>
+      <div className="alert">
+        <div>
+          <p>{props.errMsg}</p>
+          <button className="buttunus" onClick={onClosePopup}>
+            OK
+          </button>
+        </div>
       </div>
-    </div>
+    </Modal>
   );
 };
 export default MyPopup;

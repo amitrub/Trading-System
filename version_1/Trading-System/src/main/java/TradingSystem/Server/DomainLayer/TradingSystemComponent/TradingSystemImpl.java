@@ -344,12 +344,12 @@ public class TradingSystemImpl implements TradingSystem {
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            myUser.updateAfterLogin();
+//            try {
+//                Thread.sleep(10000);
+//            } catch (InterruptedException e) {
+//                e.printStackTrace();
+//            }
+//            myUser.updateAfterLogin();
         }
         return res;
     }
