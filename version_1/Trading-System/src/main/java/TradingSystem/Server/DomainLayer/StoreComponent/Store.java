@@ -472,11 +472,12 @@ public class Store extends Observable {
     //Observable pattern
     //send alert to all owners of the store
     public void sendAlertToOwners(Response message){
-        Enumeration<Integer> ownersID = this.getOwnersIDs().keys();
-        while(ownersID.hasMoreElements()){
-            Integer ID = ownersID.nextElement();
-            User user = tradingSystem.subscribers.get(ID);
+
+        Set<Integer> ownersID = this.getOwnersIDs().keySet();
+        for(Integer id : ownersID) {
+            User user = tradingSystem.subscribers.get(id);
             this.addObserver(user);
+            System.out.println("\n\nadded observer id: " + id + "\n\n");
         }
         this.notifyObservers(message);
         //TODO - need to remove all observers from the list??
