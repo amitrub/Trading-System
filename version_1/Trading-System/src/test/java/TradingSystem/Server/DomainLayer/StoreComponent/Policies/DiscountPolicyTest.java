@@ -5,6 +5,8 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfPro
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Cheaper;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Decision;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 
@@ -226,10 +228,50 @@ class DiscountPolicyTest {
 
     @Test
     void HappyXorRule() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        PriceForGetSale exp1 = new PriceForGetSale( 1000.0);
+        ProductSale PS1=new ProductSale(productID1,15.0);
+        PS1.setExpression(exp1);
+        QuantityForGetSale exp2 = new QuantityForGetSale(productID2,2);
+        ProductSale PS2=new ProductSale(productID2,15.0);
+        PS2.setExpression(exp2);
+        Cheaper c=new Cheaper();
+        XorComposite xorExpression = new XorComposite();
+        xorExpression.add(PS1);
+        xorExpression.add(PS2);
+        xorExpression.setDes(c);
+        DiscountPolicy dc=new DiscountPolicy(store.getId(),xorExpression);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 2);
+        products.put(productID2, 2);
+        tradingSystem.AddStoreToList(store);
+        Double newPrice = dc.calculatePrice(products,2,6200.0);
+        assertEquals(6170.0, newPrice,0);
     }
 
     @Test
     void SadXorRule() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        PriceForGetSale exp1 = new PriceForGetSale( 6000.0);
+        ProductSale PS1=new ProductSale(productID1,15.0);
+        PS1.setExpression(exp1);
+        QuantityForGetSale exp2 = new QuantityForGetSale(productID2,3);
+        ProductSale PS2=new ProductSale(productID2,15.0);
+        PS2.setExpression(exp2);
+        Cheaper c=new Cheaper();
+        XorComposite xorExpression = new XorComposite();
+        xorExpression.add(PS1);
+        xorExpression.add(PS2);
+        xorExpression.setDes(c);
+        DiscountPolicy dc=new DiscountPolicy(store.getId(),xorExpression);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 1);
+        products.put(productID2, 2);
+        tradingSystem.AddStoreToList(store);
+        Double newPrice = dc.calculatePrice(products,2,3200.0);
+        assertEquals(3200.0, newPrice,0);
     }
 
     //endregion

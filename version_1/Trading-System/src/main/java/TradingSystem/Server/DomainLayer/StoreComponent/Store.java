@@ -145,11 +145,6 @@ public class Store extends Observable {
         this.ownersPermission.remove(ownerId);
         return "The Manager removed";
     }
-    //todo - ensure that only the Trading Administrator can access this function.
-    public List<ShoppingHistory> GetShoppingHistory()
-    {
-        return this.shoppingHistory;
-    }
 
     public Integer getProductID(String computer)
     {
@@ -434,6 +429,10 @@ public class Store extends Observable {
        return this.ownersPermission;
     }
 
+    public List<Integer> OwnersID (){
+        return this.ownersIDs;
+    }
+
     public ConcurrentHashMap<Integer,ManagerPermission> getManagerIDs(){
         return this.managersPermission;
     }
@@ -472,23 +471,23 @@ public class Store extends Observable {
     //Observable pattern
     //send alert to all owners of the store
     public void sendAlertToOwners(Response message){
-
-        Set<Integer> ownersID = this.getOwnersIDs().keySet();
-        for(Integer id : ownersID) {
-            User user = tradingSystem.subscribers.get(id);
+        for(Integer ID : ownersIDs) {
+            User user = tradingSystem.subscribers.get(ID);
+            System.out.println(user);
             this.addObserver(user);
-            System.out.println("\n\nadded observer id: " + id + "\n\n");
         }
+        this.setChanged();
         this.notifyObservers(message);
-        //TODO - need to remove all observers from the list??
+        this.deleteObservers();
     }
 
     //send alert to specific owner
     public void sendAlert(Integer ownerID, Response message){
         User user = tradingSystem.subscribers.get(ownerID);
         this.addObserver(user);
+        this.setChanged();
         this.notifyObservers(message);
-        //TODO - need to remove all observers from the list??
+        this.deleteObserver(user);
     }
 
 

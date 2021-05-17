@@ -1,19 +1,19 @@
-package TradingSystem.Acceptence_test;
+package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
 
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-class Result
-{
+public class ResultUnitTests {
     private String name;
     private String timestamp;
     private Response response;
 
-    public Result(String name, String timestamp) {
+    public ResultUnitTests(String name, String timestamp) {
         super();
         this.name = name;
         this.timestamp = timestamp;
     }
-    public Result(String name, String timestamp, Response response) {
+    public ResultUnitTests(String name, String timestamp, Response response) {
         super();
         this.name = name;
         this.timestamp = timestamp;
@@ -35,6 +35,6 @@ class Result
 
     @Override
     public String toString() {
-        return "Result [name=" + name + ", value=" + timestamp + "]";
+        return "ResultUnitTests [name=" + name + ", value=" + timestamp + "]";
     }
 }

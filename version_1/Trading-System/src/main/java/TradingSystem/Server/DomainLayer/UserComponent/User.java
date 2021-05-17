@@ -118,6 +118,7 @@ public  class User implements Observer {
 
     public void notify(String topic, Response res) {
         if(publisher!=null){
+            System.out.println("-------------------notify-------------------");
             publisher.SendMessage(topic, res);
         }
     }
@@ -330,25 +331,47 @@ public  class User implements Observer {
     }
 
     public void editPermissions(int userID,int storeID, List<User.Permission> permissions) {
-    ManagerPermission MP=managerPermission.get(storeID);
-    if(MP==null){
-        MP=new ManagerPermission(this.id,storeID);
-        MP.setAppointmentId(userID);
-        MP.setPermissions(permissions);
-        this.managerPermission.put(storeID,MP);
+        ManagerPermission MP=managerPermission.get(storeID);
+        if(MP==null){
+            MP=new ManagerPermission(this.id,storeID);
+            MP.setAppointmentId(userID);
+            MP.setPermissions(permissions);
+            this.managerPermission.put(storeID,MP);
+        }
+        else{
+            MP.setPermissions(permissions);
+            this.managerPermission.remove(storeID);
+            this.managerPermission.put(storeID,MP);
+        }
     }
-    else{
-        MP.setPermissions(permissions);
-        this.managerPermission.remove(storeID);
-        this.managerPermission.put(storeID,MP);
+
+    public boolean isConnected(){
+        if(tradingSystem.getConnectedSubscribers().containsValue(id))
+            return true;
+        return false;
     }
+
+    public boolean isSubscriber(){
+        if(tradingSystem.subscribers.containsKey(id))
+            return true;
+        return false;
     }
 
 
     //Observable pattern
     public void update(Object arg) {
-        Response res = (Response) arg;
-        this.notify(res.returnConnID(), res);
+        if(isSubscriber()) {
+            if (isConnected()) {
+                Response res = (Response) arg;
+                this.notify(tradingSystem.getUserConnID(this.id), res);
+            } else {
+                addMessage(arg);
+            }
+        }
+        else {
+            Response res = (Response) arg;
+            this.notify(tradingSystem.getUserConnID(this.id), res);
+        }
     }
 
     @Override
@@ -368,7 +391,7 @@ public  class User implements Observer {
         synchronized (messages) {
             for (Object arg : messages) {
                 Response res = (Response) arg;
-                this.notify(res.returnConnID(), res);
+                this.notify(tradingSystem.getUserConnID(this.id), res);
                 messages.remove(arg);
             }
         }
