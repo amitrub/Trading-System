@@ -7,6 +7,8 @@ import AddProduct from "../OwnerServices/AddProduct";
 import EditProduct from "../OwnerServices/EditProduct";
 import RemoveProduct from "../OwnerServices/RemoveProduct";
 import ChangeQuantityProduct from "../OwnerServices/ChangeQuantityProduct";
+import Add_RemoveEmployee from "../OwnerServices/Add_RemoveEmployee";
+import EditPermissions from "../OwnerServices/EditPermissions";
 
 const apiHttp = createApiClientHttp();
 
@@ -14,11 +16,14 @@ function OwnerStoreService(props) {
   const [productsOfStore, setProductsOfStore] = useState([]);
   const [showStore, setShowStore] = useState(false);
   const [showAddProduct, setShowAddProduct] = useState(false);
-  const [showChangeQuantityProduct, setShowChangeQuantityProduct] = useState(
-    false
-  );
+  const [showChangeQuantity, setShowChangeQuantity] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
   const [showRemoveProduct, setShowRemoveProduct] = useState(false);
+  const [showAddOwner, setShowAddOwner] = useState(false);
+  const [showRemoveOwner, setShowRemoveOwner] = useState(false);
+  const [showAddManager, setShowAddManager] = useState(false);
+  const [showRemoveManager, setShowRemoveManager] = useState(false);
+  const [showPerssionsManager, setShowPerssionsManager] = useState(false);
 
   const store = props.currStore;
 
@@ -41,9 +46,14 @@ function OwnerStoreService(props) {
   function submitLoadProducts() {
     setShowStore(true);
     setShowAddProduct(false);
-    setShowChangeQuantityProduct(false);
+    setShowChangeQuantity(false);
     setShowEditProduct(false);
     setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
 
     props.onRefresh();
   }
@@ -54,11 +64,16 @@ function OwnerStoreService(props) {
 
   //Add Product Btn
   function showAddProductsHandler() {
-    setShowAddProduct(true);
     setShowStore(false);
-    setShowChangeQuantityProduct(false);
+    setShowAddProduct(true);
+    setShowChangeQuantity(false);
     setShowEditProduct(false);
     setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
 
     props.onRefresh();
   }
@@ -69,26 +84,36 @@ function OwnerStoreService(props) {
 
   //Change quantity Btn
   function showChangeQuantityHandler() {
-    setShowChangeQuantityProduct(true);
-    setShowAddProduct(false);
     setShowStore(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(true);
     setShowEditProduct(false);
     setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
 
     props.onRefresh();
   }
   function hideChangeQuantityHandler() {
-    setShowChangeQuantityProduct(false);
+    setShowChangeQuantity(false);
     props.onRefresh();
   }
 
   //Edit prod Btn
   function showEditProductHandler() {
-    setShowEditProduct(true);
-    setShowAddProduct(false);
     setShowStore(false);
-    setShowChangeQuantityProduct(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(true);
     setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
 
     props.onRefresh();
   }
@@ -99,16 +124,126 @@ function OwnerStoreService(props) {
 
   //Remove prod Btn
   function showRemoveProductHandler() {
-    setShowRemoveProduct(true);
-    setShowEditProduct(false);
-    setShowAddProduct(false);
     setShowStore(false);
-    setShowChangeQuantityProduct(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(false);
+    setShowRemoveProduct(true);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
 
     props.onRefresh();
   }
   function hideRemoveProductHandler() {
     setShowRemoveProduct(false);
+    props.onRefresh();
+  }
+
+  //Add Owner Btn
+  function showAddOwnerHandler() {
+    setShowStore(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(false);
+    setShowRemoveProduct(false);
+    setShowAddOwner(true);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
+
+    props.onRefresh();
+  }
+  function hideAddOwnerHandler() {
+    setShowAddOwner(false);
+
+    props.onRefresh();
+  }
+
+  //Remove Owner Btn
+  function showRemoveOwnerHandler() {
+    setShowStore(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(false);
+    setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(true);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
+
+    props.onRefresh();
+  }
+  function hideRemoveOwnerHandler() {
+    setShowRemoveOwner(false);
+
+    props.onRefresh();
+  }
+
+  //Add Manager Btn
+  function showAddManagerHandler() {
+    setShowStore(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(false);
+    setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(true);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
+
+    props.onRefresh();
+  }
+  function hideAddManagerHandler() {
+    setShowAddManager(false);
+
+    props.onRefresh();
+  }
+
+  //Remove Manager Btn
+  function showRemoveManagerHandler() {
+    setShowStore(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(false);
+    setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(true);
+    setShowPerssionsManager(false);
+
+    props.onRefresh();
+  }
+  function hideRemoveManagerHandler() {
+    setShowRemoveManager(false);
+
+    props.onRefresh();
+  }
+
+  //Edit Permissions Manager Btn
+  function showPermissionsManagerHandler() {
+    setShowStore(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(false);
+    setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(true);
+
+    props.onRefresh();
+  }
+  function hidePermissionsManagerHandler() {
+    setShowPerssionsManager(false);
+
     props.onRefresh();
   }
 
@@ -143,12 +278,12 @@ function OwnerStoreService(props) {
           className="buttonus"
           value="load our stores..."
           onClick={
-            showChangeQuantityProduct
+            showChangeQuantity
               ? hideChangeQuantityHandler
               : showChangeQuantityHandler
           }
         >
-          {showChangeQuantityProduct ? "Hide" : "Change Quantity"}
+          {showChangeQuantity ? "Hide" : "Change Quantity"}
         </button>
         {/* Edit product Btn */}
         <button
@@ -172,6 +307,66 @@ function OwnerStoreService(props) {
         >
           {showRemoveProduct ? "Hide" : "Remove product"}
         </button>
+      </div>
+      <div className="row">
+        <p>---------------</p>
+      </div>
+      <div className="row">
+        {/* Add Owner Btn */}
+        <button
+          className="buttonus"
+          value="load our stores..."
+          onClick={showAddOwner ? hideAddOwnerHandler : showAddOwnerHandler}
+        >
+          {showAddOwner ? "Hide" : "Add Owner"}
+        </button>
+        {/* Remove Owner Btn */}
+        <button
+          className="buttonus"
+          value="load our stores..."
+          onClick={
+            showRemoveOwner ? hideRemoveOwnerHandler : showRemoveOwnerHandler
+          }
+        >
+          {showRemoveOwner ? "Hide" : "Remove Owner"}
+        </button>
+        {/* Add Manager Btn */}
+        <button
+          className="buttonus"
+          value="load our stores..."
+          onClick={
+            showAddManager ? hideAddManagerHandler : showAddManagerHandler
+          }
+        >
+          {showAddManager ? "Hide" : "Add Manager"}
+        </button>
+        {/* Remove Manager Btn */}
+        <button
+          className="buttonus"
+          value="load our stores..."
+          onClick={
+            showRemoveManager
+              ? hideRemoveManagerHandler
+              : showRemoveManagerHandler
+          }
+        >
+          {showRemoveManager ? "Hide" : "Remove Manager"}
+        </button>
+        {/* Edit Permissions Manager Btn */}
+        <button
+          className="buttonus"
+          value="load our stores..."
+          onClick={
+            showPerssionsManager
+              ? hidePermissionsManagerHandler
+              : showPermissionsManagerHandler
+          }
+        >
+          {showPerssionsManager ? "Hide" : "Permissions"}
+        </button>
+      </div>
+      <div className="row">
+        <p>---------------</p>
       </div>
 
       {/* Show Stores */}
@@ -197,33 +392,27 @@ function OwnerStoreService(props) {
           ""
         )}
       </div>
-
       {/* Add Product */}
       <div className="row">
         {showAddProduct ? (
           <AddProduct
-            refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
             storeID={props.currStore.id}
-            storeName={props.currStore.name}
           />
         ) : (
           ""
         )}
       </div>
-
       {/* Change Quantity */}
       <div className="row">
-        {showChangeQuantityProduct ? (
+        {showChangeQuantity ? (
           <ChangeQuantityProduct
-            refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
             storeID={props.currStore.id}
-            storeName={props.currStore.name}
           />
         ) : (
           ""
@@ -233,12 +422,10 @@ function OwnerStoreService(props) {
       <div className="row">
         {showEditProduct ? (
           <EditProduct
-            refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
             storeID={props.currStore.id}
-            storeName={props.currStore.name}
           />
         ) : (
           ""
@@ -248,12 +435,90 @@ function OwnerStoreService(props) {
       <div className="row">
         {showRemoveProduct ? (
           <RemoveProduct
+            onRefresh={props.onRefresh}
+            connID={props.connID}
+            userID={props.userID}
+            storeID={props.currStore.id}
+          />
+        ) : (
+          ""
+        )}
+      </div>
+
+      {/* ------------------------ */}
+      {/* Add Owner */}
+      <div className="row">
+        {showAddOwner ? (
+          <Add_RemoveEmployee
+            onRefresh={props.onRefresh}
+            connID={props.connID}
+            userID={props.userID}
+            storeID={props.currStore.id}
+            job="Add Owner"
+            label="addOwner"
+            action={apiHttp.AddNewOwner}
+          />
+        ) : (
+          ""
+        )}
+      </div>
+      {/* Remvoe Owner */}
+      <div className="row">
+        {showRemoveOwner ? (
+          <Add_RemoveEmployee
+            onRefresh={props.onRefresh}
+            connID={props.connID}
+            userID={props.userID}
+            storeID={props.currStore.id}
+            job="Remvoe Owner"
+            label="removeOwner"
+            action={apiHttp.RemoveOwner}
+          />
+        ) : (
+          ""
+        )}
+      </div>
+      {/* Add Manger */}
+      <div className="row">
+        {showAddManager ? (
+          <Add_RemoveEmployee
+            onRefresh={props.onRefresh}
+            connID={props.connID}
+            userID={props.userID}
+            storeID={props.currStore.id}
+            job="Add Manger"
+            label="addManager"
+            action={apiHttp.AddNewManager}
+          />
+        ) : (
+          ""
+        )}
+      </div>
+      {/* Remvoe Manager */}
+      <div className="row">
+        {showRemoveManager ? (
+          <Add_RemoveEmployee
+            onRefresh={props.onRefresh}
+            connID={props.connID}
+            userID={props.userID}
+            storeID={props.currStore.id}
+            job="Remvoe Manager"
+            label="removeManager"
+            action={apiHttp.RemoveManager}
+          />
+        ) : (
+          ""
+        )}
+      </div>
+      {/* Edit Manager Permissions */}
+      <div className="row">
+        {showPerssionsManager ? (
+          <EditPermissions
             refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
             storeID={props.currStore.id}
-            storeName={props.currStore.name}
           />
         ) : (
           ""

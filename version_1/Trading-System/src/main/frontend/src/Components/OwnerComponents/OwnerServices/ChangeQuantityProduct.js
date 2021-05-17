@@ -55,7 +55,7 @@ function ChangeQuantityProduct(props) {
     <section>
       <div>
         <div className="row">
-          <h2>{props.storeName} - Add quantity to product</h2>
+          <h2>Add quantity to product</h2>
         </div>
 
         <div className="row">
