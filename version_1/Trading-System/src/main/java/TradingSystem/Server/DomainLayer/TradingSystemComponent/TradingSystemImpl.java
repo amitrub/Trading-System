@@ -344,13 +344,12 @@ public class TradingSystemImpl implements TradingSystem {
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
-            Thread thread = new Thread();
 //            try {
 //                Thread.sleep(10000);
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-            myUser.updateAfterLogin();
+//            myUser.updateAfterLogin();
         }
         return res;
     }
@@ -571,19 +570,28 @@ public class TradingSystemImpl implements TradingSystem {
         }
         else {
             User myGuest= guests.get(connID);
-            List<Store> storesToUpdate = new ArrayList<>();
-            for (ShoppingBag s:myGuest.getShoppingCart().getShoppingBags().values())
-            {
-                Integer storeID = s.getStoreID();
-                Store store = stores.get(storeID);
-                storesToUpdate.add(store);
-            }
+            Collection<ShoppingBag> shoppingBags = myGuest.getShoppingCart().getShoppingBags().values();
+//            List<Store> storesToUpdate = new ArrayList<>();
+//            for (ShoppingBag s:myGuest.getShoppingCart().getShoppingBags().values())
+//            {
+//                Integer storeID = s.getStoreID();
+//                Store store = stores.get(storeID);
+//                storesToUpdate.add(store);
+//            }
             Response res = myGuest.guestPurchase(name, credit_number, phone_number, address);
             if(!res.getIsErr())
             {
-                for(Store s:storesToUpdate){
-                    Response resAlert = new Response(false, "A product has been purchased from your store");
-                    s.sendAlertToOwners(resAlert);
+//                for(Store s:storesToUpdate){
+//                    Response resAlert = new Response(false, "The client " + myGuest.getUserName() +" has been purchased the product from your store:" + s.getName());
+//                    s.sendAlertToOwners(resAlert);
+//                }
+                for (ShoppingBag bag:shoppingBags){
+                    Store store = tradingSystem.stores.get(bag.getStoreID());
+                    List<Integer> productsID = bag.getProductsList();
+                    String productsList = makeProductsList(store.getId(), productsID);
+                    Response resAlert = new Response(false, "The guest " + myGuest.getUserName() +
+                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
+                    store.sendAlertToOwners(resAlert);
                 }
             }
             res.AddUserGuest();
@@ -610,19 +618,28 @@ public class TradingSystemImpl implements TradingSystem {
         }
         else {
             User user = subscribers.get(userID);
-            List<Store> storesToUpdate = new ArrayList<>();
-            for (ShoppingBag s:user.getShoppingCart().getShoppingBags().values())
-            {
-                Integer storeID = s.getStoreID();
-                Store store = stores.get(storeID);
-                storesToUpdate.add(store);
-            }
+            Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
+//            List<Store> storesToUpdate = new ArrayList<>();
+////            for (ShoppingBag s:user.getShoppingCart().getShoppingBags().values())
+////            {
+////                Integer storeID = s.getStoreID();
+////                Store store = stores.get(storeID);
+////                storesToUpdate.add(store);
+////            }
             Response res = user.subscriberPurchase(credit_number, phone_number, address);
             if(!res.getIsErr())
             {
-                for(Store s:storesToUpdate){
-                    Response resAlert = new Response(false, "A product has been purchased from your store");
-                    s.sendAlertToOwners(resAlert);
+//                for(Store s:storesToUpdate){
+//                    Response resAlert = new Response(false, "A product has been purchased from your store:" + s.getName());
+//                    s.sendAlertToOwners(resAlert);
+//                }
+                for (ShoppingBag bag:shoppingBags){
+                    Store store = tradingSystem.stores.get(bag.getStoreID());
+                    List<Integer> productsID = bag.getProductsList();
+                    String productsList = makeProductsList(store.getId(), productsID);
+                    Response resAlert = new Response(false, "The client " + user.getUserName() +
+                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
+                    store.sendAlertToOwners(resAlert);
                 }
             }
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -994,7 +1011,8 @@ public class TradingSystemImpl implements TradingSystem {
         store.addNewOwner(userID, newOwner);
         store.addOwnerPermission(newOwner,OP);
         //Alert
-        Response resAlert = new Response(false, "You are now owning the store: " + store.getName());
+        String ownerName = this.subscribers.get(userID).getUserName();
+        Response resAlert = new Response(false, ownerName + " appointed you to own the store: " + store.getName());
         store.sendAlert(newOwner, resAlert);
         //this.subscribers.get(newOwner).unlockUser();
         NO.unlockUser();
@@ -1033,12 +1051,14 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " has no permissions to do this operation");
         }
         else{
-            stores.get(storeID).removeOwner(removeOwnerID);
-            subscribers.get(removeOwnerID).removeOwnedStore(storeID);
-            //alert the removed owner
+            User owner=subscribers.get(ownerID);
             Store store = stores.get(storeID);
+            store.removeOwner(removeOwnerID);
+            subscribers.get(removeOwnerID).removeOwnedStore(storeID);
+
+            //alert the removed owner
             String storeName = store.getName();
-            Response resAlert = new Response(false, "You are removed from owning the store: " + storeName);
+            Response resAlert = new Response(false, owner.getUserName() + " removed you from owning the store: " + storeName);
             store.sendAlert(removeOwnerID, resAlert);
 
             ConcurrentHashMap<Integer,OwnerPermission> ownerPermissionHashMap=stores.get(storeID).getOwnersIDs();
@@ -1056,8 +1076,8 @@ public class TradingSystemImpl implements TradingSystem {
                     stores.get(storeID).removeManager(permission.getUserId());
             }
         }
-        Response res = new Response(false, "RemoveOwnerByOwner: Successfully removed the owner " + removeOwnerID);
         User user=subscribers.get(ownerID);
+        Response res = new Response(false, "RemoveOwnerByOwner: Successfully removed the owner " + removeOwnerID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(ownerID));
         return res; 
     }
@@ -2132,6 +2152,17 @@ public class TradingSystemImpl implements TradingSystem {
             return res;
         }
         return null;
+    }
+
+    private String makeProductsList(Integer storeID, List<Integer> productsID){
+        String output = "";
+        for(Integer ID : productsID){
+            Product product = this.stores.get(storeID).getProduct(ID);
+            String productName = product.getProductName();
+            output = output + productName + ", ";
+        }
+        output = output.substring(0, output.length()-3);
+        return output;
     }
 
 
