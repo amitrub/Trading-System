@@ -17,12 +17,25 @@ import java.util.List;
 import static org.junit.Assert.*;
 
 public class ManagerTests {
+
     Client_Interface client = Client_Driver.getClient();
+    Integer storeID;
+    Integer newUserID;
 
     @BeforeEach
     void setUp() {
         client.clearSystem();
         client.connectSystem();
+        newUserID = client.Register("Reut", "123");
+        client.Logout();
+
+        client.connectSystem();
+        client.Register("Elinor", "123");
+        client.Login("Elinor", "123");
+        client.openStore("Adidas");
+        List<DummyStore> stores = client.showAllStores().getStores();
+        storeID = getStoreID(stores, "Adidas");
+        client.addManager(storeID, newUserID);
     }
 
     @AfterEach
@@ -47,38 +60,27 @@ public class ManagerTests {
 
     @Test
     void PermissionsHappy() {
-        Integer newUserID = client.Register("Reut", "123");
-
-        client.Register("Elinor", "123");
-        client.Login("Elinor", "123");
-        client.openStore("Adidas");
-        Integer storeID = getStoreID(client.showAllStores().getStores(),"Adidas");
-        client.addManager(storeID, newUserID);
+        //prepare
         LinkedList<User.Permission> p=new LinkedList<>();
         p.add(User.Permission.AddProduct);
         client.editManagerPermissions(storeID, newUserID, p);
         client.Logout();
 
+        //Issue
         client.Login("Reut", "123");
         Response response = client.addProduct(storeID, "T-Shirt", "Tops", 100.0, 20);
-        assertFalse(response.getIsErr());
 
+        //Assert
+        assertFalse(response.getIsErr());
         List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
         assertEquals(storeProducts1.size(), 1);
     }
 
-
     @Test
     void PermissionsSad() {
-        Integer newUserID = client.Register("Reut", "123");
-
-        client.Register("Elinor", "123");
-        client.Login("Elinor", "123");
-        client.openStore("Adidas");
-        Integer storeID = getStoreID(client.showAllStores().getStores(),"Adidas");
-        client.addManager(storeID, newUserID);
         LinkedList<User.Permission> p=new LinkedList<>();
         p.add(User.Permission.AppointmentOwner);
+        client.editManagerPermissions(storeID, newUserID, p);
         client.Logout();
 
         client.Login("Reut", "123");

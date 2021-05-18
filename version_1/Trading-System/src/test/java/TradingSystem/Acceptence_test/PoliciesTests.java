@@ -28,7 +28,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class PoliciesTests {
 
     Client_Interface client = Client_Driver.getClient();
-    TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     Integer storeID;
 
     //region other functions
