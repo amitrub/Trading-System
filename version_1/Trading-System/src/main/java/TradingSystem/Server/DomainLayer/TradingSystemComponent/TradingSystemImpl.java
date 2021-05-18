@@ -6,8 +6,6 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ConditionRole;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ExistProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -1821,6 +1819,18 @@ public class TradingSystemImpl implements TradingSystem {
             }
             s=sale;
         }
+        if(saleName.equals("XorComposite")){
+            LinkedList<Sale> list=new LinkedList<Sale>();
+            XorComposite sale=new XorComposite(list);
+            for (String mapKey:o.keySet()
+            ) {
+                Map<String, Object> tosend = new HashMap<>();
+                tosend.put(mapKey,(Map<String, Object>) o.get(mapKey));
+                CreateDiscountPolicy(storeID,sale,tosend);
+            }
+            sale.setDes(new Cheaper());
+            s=sale;
+        }
         return s;
     }
 
@@ -1855,13 +1865,14 @@ public class TradingSystemImpl implements TradingSystem {
                     XorComposite xorComposite = new XorComposite();
                     Map<String, Object> map0 = (Map<String, Object>) o.get("XorComposite");
                     Map<String, Object> Decision=(  Map<String, Object>) map0.get("Decision");
-                    Decision dec=createDecision(Decision);
+                    Decision dec=new Cheaper();
                     for (String mapKey:map0.keySet()
                     ) {
                         Map<String, Object> tosend = new HashMap<>();
                         tosend.put(mapKey,(Map<String, Object>) map0.get(mapKey));
                         CreateDiscountPolicy(storeID,xorComposite,tosend);
                     }
+                    xorComposite.setDes(dec);
                     sale.setSale(xorComposite);
                     return xorComposite;
                 case "StoreSale":
@@ -2031,7 +2042,7 @@ public class TradingSystemImpl implements TradingSystem {
                     Conditioning conditioning = new Conditioning();
                     Map<String, Object> map4 = (Map<String, Object>) exp.get("Conditioning");
                     Map<String, Object> cond = (Map<String, Object>) map4.get("cond");
-                    ConditionRole e1 = createConditingRole(storeID, cond);
+                    Expression e1 = createLimitExp(storeID, cond);
                     Map<String, Object> condIf = (Map<String, Object>) map4.get("condIf");
                     Expression e2 = createLimitExp(storeID, condIf);
                     conditioning.setCond(e1);
@@ -2075,7 +2086,7 @@ public class TradingSystemImpl implements TradingSystem {
         }
         return null;
     }
-
+/*
     private ConditionRole createConditingRole(int storeID, Map<String, Object> cond) {
         String role=(String) cond.get("Role");
         if(role.equals("ExistProduct")){
@@ -2083,10 +2094,8 @@ public class TradingSystemImpl implements TradingSystem {
             return new ExistProduct(productId);
         }
         return null;
-
-
     }
-
+*/
     //for the tests
     public void AddStoreToList(Store store) {
         this.stores.put(store.getId(), store);

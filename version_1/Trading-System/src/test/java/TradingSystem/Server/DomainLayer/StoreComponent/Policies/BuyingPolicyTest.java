@@ -1,8 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ConditionRole;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ExistProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Conditioning;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForCategory;
@@ -225,10 +223,10 @@ class BuyingPolicyTest {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
         QuantityLimitForProduct exp1 = new QuantityLimitForProduct(5, productID1);
-        ConditionRole conRole1=new ExistProduct(productID2);
+        QuantityLimitForProduct exp2 = new QuantityLimitForProduct(4, productID2);
         Conditioning conditioning = new Conditioning();
         conditioning.setCondIf(exp1);
-        conditioning.setCond(conRole1);
+        conditioning.setCond(exp2);
         BuyingPolicy b=new BuyingPolicy(store.getId(),conditioning);
         store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
@@ -244,15 +242,16 @@ class BuyingPolicyTest {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
         QuantityLimitForProduct exp1 = new QuantityLimitForProduct(5, productID1);
-        ConditionRole conRole1=new ExistProduct(productID2);
+        QuantityLimitForProduct exp2 = new QuantityLimitForProduct(4, productID2);
         Conditioning conditioning = new Conditioning();
         conditioning.setCondIf(exp1);
-        conditioning.setCond(conRole1);
+        conditioning.setCond(exp2);
         BuyingPolicy b=new BuyingPolicy(store.getId(),conditioning);
         store.setBuyingPolicy(b);
         tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 6);
+        products.put(productID2, 8);
         Boolean isLegal = store.checkBuyingPolicy(2, products);
         assertFalse(isLegal);
     }
