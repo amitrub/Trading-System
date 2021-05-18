@@ -395,13 +395,18 @@ public  class User implements Observer {
 
     public List<String> updateAfterLogin(){
         List<String> strMessages = new ArrayList<>();
+        System.out.println(messages.size());
         try {
             synchronized (messages) {
-                for (Object arg : messages) {
-                    Response res = (Response) arg;
+                int size = messages.size();
+                for (int i = 0; i < size; i++) {
+                    Response res = (Response) messages.get(i);
+                    System.out.println(i + ": " + res.getMessage());
                     strMessages.add(res.getMessage());
 //                this.notify(tradingSystem.getUserConnID(this.id), res);
-                    messages.remove(arg);
+                }
+                while(messages.isEmpty()) {
+                    messages.remove(0);
                 }
                 messages.notifyAll();
             }

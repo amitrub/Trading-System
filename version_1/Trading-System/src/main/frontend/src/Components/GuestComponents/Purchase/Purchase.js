@@ -46,7 +46,7 @@ function Purchase(props) {
       );
     }
 
-    console.log("purchase");
+    // console.log("purchase");
     console.log(purchaseResponse);
 
     if (purchaseResponse) {

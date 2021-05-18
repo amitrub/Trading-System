@@ -431,7 +431,7 @@ export const createApiClientHttp = () => {
       });
     },
 
-    AddBuyingPolicy: (connID, userID, storeID) => {
+    AddBuyingPolicy: (connID, userID, storeID, expression) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_buying_policy`
       );
@@ -441,7 +441,7 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        // TODO
+        // expression: expression,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -651,10 +651,9 @@ export const createApiClientHttp = () => {
       });
     },
 
-    //DONE
-    GetPossiblePermissionsToManager: (connID, userID) => {
+    GetPossiblePermissionsToManager: (connID, userID, storeID) => {
       let path = ownerURL.concat(
-        `${userID}/store/get_possible_permissions_to_manager`
+        `${userID}/store/${storeID}/get_permissions_to_manager`
       );
       const headers = {
         "Content-Type": "application/json; utf-8",

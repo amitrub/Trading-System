@@ -63,7 +63,7 @@ function SubscriberServices(props) {
     props.onRefresh();
   }
   function hideUserHistoryHandler() {
-    setShowOpenStore(false);
+    setShowUserHistory(false);
     props.onRefresh();
   }
 
@@ -129,18 +129,19 @@ function SubscriberServices(props) {
       </div>
 
       {/* UserHistory */}
-      <div className="row">
+      {/* <div className="row">
         {showUserHistory ? (
           <UserHistory
+            refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
-            storeID={props.currStore.id}
+            username={props.username}
           />
         ) : (
           ""
         )}
-      </div>
+      </div> */}
     </section>
   );
 }

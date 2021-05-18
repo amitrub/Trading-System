@@ -95,7 +95,7 @@ function StoresOwner(props) {
             value="load our stores..."
             onClick={showStores ? submitCloseStores : submitShowStores}
           >
-            {showStores ? "Hide Your Stores" : "Show All Your Stores"}
+            {showStores ? "Hide Your Stores" : "Stores Services"}
           </button>
 
           {showStores ? (
