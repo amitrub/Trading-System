@@ -119,7 +119,7 @@ public class DummyProduct {
 
     @Override
     public String toString() {
-        return "DummySearch{" +
+        return "DummyProduct{" +
                 "storeID=" + storeID +
                 ", storeName='" + storeName + '\'' +
                 ", productID=" + productID +

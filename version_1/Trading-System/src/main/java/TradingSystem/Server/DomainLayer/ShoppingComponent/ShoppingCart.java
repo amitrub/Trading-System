@@ -107,8 +107,8 @@ public class ShoppingCart {
             this.shoppingBags.get(storeID).RemoveProduct(productID);
             return new Response(true, "Adding the product "+productID+" is against the store policy");
         }
-        Double priceForBug = tradingSystemImpl.calculateBugPrice(productID, storeID, products);
-        shoppingBags.get(storeID).setFinalPrice(priceForBug);
+        Double priceForBag = tradingSystemImpl.calculateBugPrice(productID, storeID, products);
+        shoppingBags.get(storeID).setFinalPrice(priceForBag);
         Response res =new Response("The product added successfully");
         return res;
     }
@@ -162,6 +162,7 @@ public class ShoppingCart {
         }
         //TODO add charge to a payment
         //TODO Add payment to each store for the products
+
         addShoppingHistory(isGuest);
         this.storesReducedProductsVain=new HashSet<>();
         this.shoppingBags = new ConcurrentHashMap<>();
@@ -226,7 +227,7 @@ public class ShoppingCart {
             ShoppingBag SB = this.shoppingBags.get(storeID);
             res = tradingSystemImpl.reduceProducts(SB.getProducts(), storeID);
             if (res.getIsErr()) {
-                this.cancilReduceProducts();
+                this.cancelReduceProducts();
                 this.storesReducedProductsVain=new HashSet<>();
                 return res;
             }
@@ -236,9 +237,9 @@ public class ShoppingCart {
         return res;
     }
 
-    private void cancilReduceProducts() {
+    private void cancelReduceProducts() {
         for (Integer storeID : this.storesReducedProductsVain) {
-            tradingSystemImpl.cancilReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
+            tradingSystemImpl.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
         }
     }
 

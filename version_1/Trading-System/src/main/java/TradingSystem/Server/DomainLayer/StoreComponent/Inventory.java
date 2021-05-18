@@ -118,7 +118,7 @@ public class Inventory {
         return new Response(false, "Purchase: Product inventory successfully updated");
     }
 
-    public void cancilReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
+    public void cancelReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
         Set<Integer> PQ = products.keySet();
         for (Integer PID : PQ) {
             int quantityToAdd = products.get(PID);

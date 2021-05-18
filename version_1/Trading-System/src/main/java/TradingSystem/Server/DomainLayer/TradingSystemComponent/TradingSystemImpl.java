@@ -342,11 +342,6 @@ public class TradingSystemImpl implements TradingSystem {
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
-//            try {
-//                Thread.sleep(10000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             List<String> notConnectedMessages = myUser.updateAfterLogin();
             res.AddPair("messages", notConnectedMessages);
         }
@@ -570,20 +565,9 @@ public class TradingSystemImpl implements TradingSystem {
         else {
             User myGuest= guests.get(connID);
             Collection<ShoppingBag> shoppingBags = myGuest.getShoppingCart().getShoppingBags().values();
-//            List<Store> storesToUpdate = new ArrayList<>();
-//            for (ShoppingBag s:myGuest.getShoppingCart().getShoppingBags().values())
-//            {
-//                Integer storeID = s.getStoreID();
-//                Store store = stores.get(storeID);
-//                storesToUpdate.add(store);
-//            }
             Response res = myGuest.guestPurchase(name, credit_number, phone_number, address);
             if(!res.getIsErr())
             {
-//                for(Store s:storesToUpdate){
-//                    Response resAlert = new Response(false, "The client " + myGuest.getUserName() +" has been purchased the product from your store:" + s.getName());
-//                    s.sendAlertToOwners(resAlert);
-//                }
                 for (ShoppingBag bag:shoppingBags){
                     Store store = tradingSystem.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
@@ -618,20 +602,9 @@ public class TradingSystemImpl implements TradingSystem {
         else {
             User user = subscribers.get(userID);
             Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
-//            List<Store> storesToUpdate = new ArrayList<>();
-////            for (ShoppingBag s:user.getShoppingCart().getShoppingBags().values())
-////            {
-////                Integer storeID = s.getStoreID();
-////                Store store = stores.get(storeID);
-////                storesToUpdate.add(store);
-////            }
             Response res = user.subscriberPurchase(credit_number, phone_number, address);
             if(!res.getIsErr())
             {
-//                for(Store s:storesToUpdate){
-//                    Response resAlert = new Response(false, "A product has been purchased from your store:" + s.getName());
-//                    s.sendAlertToOwners(resAlert);
-//                }
                 for (ShoppingBag bag:shoppingBags){
                     Store store = tradingSystem.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
@@ -753,8 +726,10 @@ public class TradingSystemImpl implements TradingSystem {
         }
         Product product = stores.get(storeId).getProduct(productId);
         product.addComment(userId, comment);
+        String storeName = stores.get(storeId).getName();
 
-        Response resAlert = new Response(false, "There is a new comment on one of your store's products");
+        Response resAlert = new Response(false, "There is a new comment on your product: " + product.getProductName() +
+                " from the store: " + storeName);
         stores.get(storeId).sendAlertToOwners(resAlert);
 
         Response res = new Response(false, "WriteComment: The comment added successfully to product " + productId);
@@ -1606,8 +1581,8 @@ public class TradingSystemImpl implements TradingSystem {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
-    public void cancilReduceProducts(Integer storeID, ConcurrentHashMap<Integer, Integer> products) {
-      this.stores.get(storeID).cancilReduceProducts(products);
+    public void cancelReduceProducts(Integer storeID, ConcurrentHashMap<Integer, Integer> products) {
+      this.stores.get(storeID).cancelReduceProducts(products);
     }
 
     public List<DummyShoppingHistory> ShowStoreHistory(int storeId){
@@ -1634,7 +1609,7 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public Double calculateBugPrice(int userID, int storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        if(this.subscribers.contains(userID))
+        if(this.subscribers.containsKey(userID))
             return this.stores.get(storeID).calculateBugPrice(userID,productsInTheBug);
         else
             return this.stores.get(storeID).calculateBugPrice(userID,productsInTheBug);
