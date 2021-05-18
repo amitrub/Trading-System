@@ -1036,11 +1036,14 @@ class TradingSystemImplTest {
     @Test
     void HappyPurchase() {
         setUpBeforePurchase();
-        QuantityLimitForStore exp = new QuantityLimitForStore(2, NofetStore);
+        QuantityLimitForStore exp = new QuantityLimitForStore(3, NofetStore);
         tradingSystemImpl.addBuyingPolicy(NofetID, NconnID, NofetStore, exp);
         Integer productID1 = Nstore.getProductID("computer");
+        Integer productID2 = Nstore.getProductID("Bag");
         Integer preQuantity = Nstore.getQuantity(productID1);
+        tradingSystemImpl.Logout(NconnID);
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
         Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
         assertFalse(response.getIsErr());
 
