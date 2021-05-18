@@ -384,7 +384,7 @@ public  class User implements Observer {
         synchronized (messages){
             this.messages.add(arg);
         }
-        notifyAll();
+        //notifyAll();
     }
 
     public void updateAfterLogin(){
@@ -395,7 +395,7 @@ public  class User implements Observer {
                 messages.remove(arg);
             }
         }
-        notifyAll();
+        //notifyAll();
     }
 }
 

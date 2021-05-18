@@ -2161,7 +2161,7 @@ public class TradingSystemImpl implements TradingSystem {
             String productName = product.getProductName();
             output = output + productName + ", ";
         }
-        output = output.substring(0, output.length()-3);
+        output = output.substring(0, output.length()-2);
         return output;
     }
 
