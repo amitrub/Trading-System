@@ -17,6 +17,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     ConnectSystem: () => {
       let path = guestURL.concat(`home`);
       return axios.get(path).then((res) => {
@@ -36,6 +37,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     Register: (connID, name, pass) => {
       let path = guestURL.concat(`register`);
       const headers = {
@@ -53,6 +55,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     Login: (connID, name, pass) => {
       let path = guestURL.concat(`login`);
       const headers = {
@@ -70,6 +73,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     ShowAllStores: () => {
       let path = guestURL.concat(`stores`);
       return axios.get(path).then((res) => {
@@ -77,6 +81,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     ShowStoreProducts: (storeID) => {
       let path = guestURL.concat(`store/${storeID}/products`);
       return axios.get(path).then((res) => {
@@ -84,6 +89,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     Search: (
       name,
       ProductName,
@@ -113,6 +119,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     AddProductToCart: (connID, storeID, productID, quantity) => {
       let path = guestURL.concat(`shopping_cart/add_product`);
       const headers = {
@@ -131,6 +138,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     ShowShoppingCart: (connID) => {
       let path = guestURL.concat(`shopping_cart`);
       const headers = {
@@ -143,6 +151,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     RemoveProductFromCart: (connID, storeID, productID) => {
       let path = guestURL.concat(`shopping_cart/remove_product`);
       const headers = {
@@ -160,6 +169,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     EditProductQuantityFromCart: (connID, storeID, productID, quantity) => {
       let path = guestURL.concat(`shopping_cart/edit_product`);
       const headers = {
@@ -178,6 +188,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     guestPurchase: (connID, name, credit_number, phone_number, address) => {
       let path = guestURL.concat(`shopping_cart/purchase`);
       const headers = {
@@ -198,6 +209,7 @@ export const createApiClientHttp = () => {
     },
 
     //Subscriber
+    //DONE
     Logout: (connID, userID) => {
       let path = subscriberURL.concat(`${userID}/logout`);
       const headers = {
@@ -210,6 +222,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     AddStore: (connID, userID, storeName) => {
       let path = subscriberURL.concat(`${userID}/add_store`);
       const headers = {
@@ -233,10 +246,11 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        storeID: storeID,
-        productID: productID,
+        storeID: parseInt(storeID),
+        productID: parseInt(productID),
         comment: comment,
       };
+      console.log(body);
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -255,6 +269,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     subscriberPurchase: (
       connID,
       userID,
@@ -278,7 +293,8 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-    //Owner
+    //Owne
+    //DONE
     ShowAllFoundedStores: (connID, userID) => {
       // console.log("ShowAllFoundedStores");
       // console.log(connID);
@@ -294,6 +310,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     ShowAllOwnedStores: (connID, userID) => {
       let path = ownerURL.concat(`${userID}/owned_stores`);
       const headers = {
@@ -306,6 +323,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     ShowAllManagedStores: (connID, userID) => {
       let path = ownerURL.concat(`${userID}/managed_stores`);
       const headers = {
@@ -318,6 +336,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     AddProductToStore: (
       connID,
       userID,
@@ -345,6 +364,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     ChangeQuantityProduct: (connID, userID, storeID, productID, quantity) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/change_quantity_product/${productID}`
@@ -363,6 +383,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     EditProduct: (
       connID,
       userID,
@@ -393,6 +414,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     RemoveProduct: (connID, userID, storeID, productID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_product/${productID}`
@@ -507,6 +529,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     AddNewOwner: (connID, userID, storeID, newOwnerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_new_owner/${newOwnerID}`
@@ -521,6 +544,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     RemoveOwner: (connID, userID, storeID, OwnerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_owner/${OwnerID}`
@@ -535,6 +559,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     AddNewManager: (connID, userID, storeID, newManagerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_new_manager/${newManagerID}`
@@ -549,6 +574,20 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE - STILL NOT IMPL IN SERVER
+    GetAllSubscribers: (connID) => {
+      let path = ownerURL.concat(`get_all_subscribers`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    //DONE
     RemoveManager: (connID, userID, storeID, managerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_manager/${managerID}`
@@ -563,6 +602,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     EditManagerPermissions: (
       connID,
       userID,
@@ -582,7 +622,7 @@ export const createApiClientHttp = () => {
       GetStoreHistory
     ) => {
       let path = ownerURL.concat(
-        `${userID}/store/${storeID}/edit_discount_policy/${managerID}`
+        `${userID}/store/${storeID}/edit_manager_permissions/${managerID}`
       );
       const headers = {
         "Content-Type": "application/json; utf-8",
@@ -609,6 +649,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     GetPossiblePermissionsToManager: (connID, userID) => {
       let path = ownerURL.concat(
         `${userID}/store/get_possible_permissions_to_manager`
@@ -712,18 +753,6 @@ export const createApiClientHttp = () => {
 
     AdminStoreHistory: (connID, adminID, storeID) => {
       let path = adminURL.concat(`${adminID}/store_history_admin/${storeID}`);
-      const headers = {
-        "Content-Type": "application/json; utf-8",
-        Accept: "application/json",
-        connID: connID,
-      };
-      return axios.get(path, { headers: headers }).then((res) => {
-        return res.data;
-      });
-    },
-
-    GetAllSubscribers: (connID) => {
-      let path = ownerURL.concat(`get_all_subscribers`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
