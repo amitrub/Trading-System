@@ -518,7 +518,7 @@ public class OwnerTests {
         Integer storeID = getStoreID(client.showAllStores().getStores(), "Store");
         client.addManager(storeID, managerId);
 
-        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager(storeID);
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
@@ -539,7 +539,7 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores().getStores(), "Store");
 
-        Response optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForMannager = client.GetPossiblePermissionsToManager(storeID);
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
@@ -569,7 +569,7 @@ public class OwnerTests {
         client.openStore("Store");
         Integer storeID = getStoreID(client.showAllStores().getStores(), "Store");
 
-        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager(storeID);
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
@@ -602,7 +602,7 @@ public class OwnerTests {
         client.Logout();
 
         client.Login("NewOwnerId", "123");
-        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager(storeID);
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();

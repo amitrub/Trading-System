@@ -255,8 +255,8 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response GetPossiblePermissionsToManager() {
-        return tradingSystem.GetPossiblePermissionsToManager(userID,ConnID);
+    public Response GetPossiblePermissionsToManager(int storeID) {
+        return tradingSystem.GetPossiblePermissionsToManager(userID,ConnID,storeID);
     }
 
     @Override

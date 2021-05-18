@@ -1299,20 +1299,22 @@ public class TradingSystemImpl implements TradingSystem {
      *      "connID": String
      *      }
      */
-    public Response GetPossiblePermissionsToManager(int userID, String connID) {
+    public Response GetPossiblePermissionsToManager(int userID, String connID, int storeID) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "GetPossiblePermissionsToManager: The user " + userID + " is not connected");
         }
-        //List<String> permissions = new ArrayList<>();
-        OwnerPermission OP = new OwnerPermission(userID, -1);
-        //for (User.Permission P : OP.getPermissions()
-        //) {
-        //    permissions.add(P.toString());
-        //}
-        Response res = new Response(false, "GetPossiblePermissionsToManager: Viewing permissions was successful");
-        //res.AddPair("permissions", permissions);
-        res.AddPair("permissions", OP.getPermissions());
         User user=subscribers.get(userID);
+        if(user==null) {
+            return new Response(true, "GetPossiblePermissionsToManager: The user " + userID + " is not in the list from some reason");
+        }
+        ManagerPermission MP= user.getManagerPermission(storeID);
+        Response res = new Response(false, "GetPossiblePermissionsToManager: Viewing permissions was successful");
+        if(MP!=null){
+            res.AddPair("permissions", MP.getPermissions());
+        }
+       else {
+            res.AddPair("permissions", new LinkedList<User.Permission>());
+        }
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
     }

@@ -464,9 +464,9 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response GetPossiblePermissionsToManager(int userID, String connID) {
+    public Response GetPossiblePermissionsToManager(int userID, String connID, int storeID) {
         if(real!=null)
-            return real.GetPossiblePermissionsToManager(userID,connID);
+            return real.GetPossiblePermissionsToManager(userID,connID,storeID);
         return null;
     }
 

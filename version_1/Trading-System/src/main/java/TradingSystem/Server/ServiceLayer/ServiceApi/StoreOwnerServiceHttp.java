@@ -476,9 +476,9 @@ public class StoreOwnerServiceHttp {
      *  permissions:String]
      * }
     */
-    @GetMapping("{userID}/store/get_possible_permissions_to_manager")
-    public Response GetPossiblePermissionsToManager(@PathVariable int userID, @RequestHeader("connID") String connID)  {
-        Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID);
+    @GetMapping("{userID}/store/{storeID}/get_permissions_to_manager")
+    public Response GetPossiblePermissionsToManager(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
+        Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID, storeID);
         res.AddConnID(connID);
         WriteToLogger(res);
         return res;
