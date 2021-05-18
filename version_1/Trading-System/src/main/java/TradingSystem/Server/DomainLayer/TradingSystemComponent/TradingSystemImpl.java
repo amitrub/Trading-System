@@ -349,7 +349,8 @@ public class TradingSystemImpl implements TradingSystem {
 //            } catch (InterruptedException e) {
 //                e.printStackTrace();
 //            }
-//            myUser.updateAfterLogin();
+            List<String> notConnectedMessages = myUser.updateAfterLogin();
+            res.AddPair("messages", notConnectedMessages);
         }
         return res;
     }
@@ -589,7 +590,7 @@ public class TradingSystemImpl implements TradingSystem {
                     Store store = tradingSystem.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
                     String productsList = makeProductsList(store.getId(), productsID);
-                    Response resAlert = new Response(false, "The guest " + myGuest.getUserName() +
+                    Response resAlert = new Response(false, "The guest " + name +
                             " has been purchased the products: " + productsList + " from your store: " + store.getName());
                     store.sendAlertToOwners(resAlert);
                 }

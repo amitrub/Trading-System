@@ -46,8 +46,8 @@ function Purchase(props) {
       );
     }
 
-    // console.log("purchase");
-    // console.log(purchaseResponse);
+    console.log("purchase");
+    console.log(purchaseResponse);
 
     if (purchaseResponse) {
       setPopupMsg(purchaseResponse.message);

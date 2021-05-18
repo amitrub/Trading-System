@@ -16,7 +16,7 @@ import OwnerStores from "./Components/OwnerComponents/OwnerStores/OwnerStores";
 import Logout from "./Components/SubscriberComponents/Logout/Logout";
 import MyPopup from "./Components/OtherComponents/MyPopup/MyPopup";
 import createApiClientHttp from "./ApiClientHttp";
-import OpenStore from "./Components/SubscriberComponents/OpenStore/OpenStore";
+import SubscriberServices from "./Components/SubscriberComponents/SubscriberServices/SubscriberServices";
 
 const apiHttp = createApiClientHttp();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -121,19 +121,12 @@ class App extends React.Component {
         }),
         () => {
           this.subscribeToTopic(this.state.clientConnection, this.state.connID);
-          console.log(this.state.connID);
-
-          // this.state.founderStoresNames.forEach((storeName, index) => {
-          //   this.subscribeToTopic(this.state.clientConnection, storeName);
-          // });
-
-          // this.state.ownerStoresNames.forEach((storeName, index) => {
-          //   this.subscribeToTopic(this.state.clientConnection, storeName);
-          // });
-
-          // this.state.managerStoresNames.forEach((storeName, index) => {
-          //   this.subscribeToTopic(this.state.clientConnection, storeName);
-          // });
+          console.log(res.returnObject.messages);
+          res.returnObject.messages.map((msg) => {
+            this.setState((prevState) => ({
+              popupMassages: [...prevState.popupMassages, msg],
+            }));
+          });
 
           this.onRefresh();
         }
@@ -318,7 +311,7 @@ class App extends React.Component {
   };
 
   subscriberContent = () => {
-    const { username, userID, connID } = this.state;
+    const { username, userID, connID, refresh } = this.state;
     return (
       <Fragment>
         <section className="section-plans js--section-plans" id="subscribers">
@@ -328,14 +321,13 @@ class App extends React.Component {
             </h2>
           </div>
           {this.state.userID !== -1 ? (
-            <div>
-              <OpenStore
-                connID={connID}
-                userID={userID}
-                username={username}
-                onRefresh={this.onRefresh}
-              ></OpenStore>
-            </div>
+            <SubscriberServices
+              connID={connID}
+              userID={userID}
+              username={username}
+              refresh={refresh}
+              onRefresh={this.onRefresh}
+            />
           ) : (
             <p>You are guest, login for subscriber permissions!</p>
           )}

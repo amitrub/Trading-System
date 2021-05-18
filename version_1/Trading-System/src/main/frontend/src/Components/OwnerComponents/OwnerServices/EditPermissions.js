@@ -68,8 +68,8 @@ function EditPermissions(props) {
       getStoreHistory
     );
 
-    console.log("EditPermissions");
-    console.log(editPermissionsResponse);
+    // console.log("EditPermissions");
+    // console.log(editPermissionsResponse);
 
     if (editPermissionsResponse) {
       setPopupMsg(editPermissionsResponse.message);

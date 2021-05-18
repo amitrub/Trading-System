@@ -9,6 +9,7 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -381,21 +382,35 @@ public  class User implements Observer {
     }
 
     public void addMessage(Object arg){
-        synchronized (messages){
-            this.messages.add(arg);
+        try {
+            synchronized (messages){
+                this.messages.add(arg);
+                messages.notifyAll();
+            }
+        } catch (Exception e) {
+            System.out.println("catch notify all error!!!");
+            System.out.println(e);
         }
-        //notifyAll();
     }
 
-    public void updateAfterLogin(){
-        synchronized (messages) {
-            for (Object arg : messages) {
-                Response res = (Response) arg;
-                this.notify(tradingSystem.getUserConnID(this.id), res);
-                messages.remove(arg);
+    public List<String> updateAfterLogin(){
+        List<String> strMessages = new ArrayList<>();
+        try {
+            synchronized (messages) {
+                for (Object arg : messages) {
+                    Response res = (Response) arg;
+                    strMessages.add(res.getMessage());
+//                this.notify(tradingSystem.getUserConnID(this.id), res);
+                    messages.remove(arg);
+                }
+                messages.notifyAll();
             }
+        } catch (Exception e) {
+            System.out.println("catch notify all error!!!");
+            System.out.println(e);
         }
-        //notifyAll();
+
+        return strMessages;
     }
 }
 
