@@ -238,6 +238,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     WriteComment: (connID, userID, storeID, productID, comment) => {
       let path = subscriberURL.concat(`${userID}/write_comment`);
       const headers = {
@@ -293,7 +294,8 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-    //Owne
+
+    //Owner
     //DONE
     ShowAllFoundedStores: (connID, userID) => {
       // console.log("ShowAllFoundedStores");

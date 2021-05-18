@@ -50,7 +50,7 @@ function SubscriberServices(props) {
     props.onRefresh();
   }
   function hideWriteCommentHandler() {
-    setShowOpenStore(false);
+    setShowWriteComment(false);
     props.onRefresh();
   }
 

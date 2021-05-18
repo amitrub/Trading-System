@@ -121,19 +121,12 @@ class App extends React.Component {
         }),
         () => {
           this.subscribeToTopic(this.state.clientConnection, this.state.connID);
-          console.log(this.state.connID);
-
-          // this.state.founderStoresNames.forEach((storeName, index) => {
-          //   this.subscribeToTopic(this.state.clientConnection, storeName);
-          // });
-
-          // this.state.ownerStoresNames.forEach((storeName, index) => {
-          //   this.subscribeToTopic(this.state.clientConnection, storeName);
-          // });
-
-          // this.state.managerStoresNames.forEach((storeName, index) => {
-          //   this.subscribeToTopic(this.state.clientConnection, storeName);
-          // });
+          console.log(res.returnObject.messages);
+          res.returnObject.messages.map((msg) => {
+            this.setState((prevState) => ({
+              popupMassages: [...prevState.popupMassages, msg],
+            }));
+          });
 
           this.onRefresh();
         }
