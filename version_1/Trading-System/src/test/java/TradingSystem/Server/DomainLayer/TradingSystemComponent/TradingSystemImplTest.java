@@ -8,22 +8,18 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.PurchaseTaskUnitTests;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.RegisterTaskUnitTests;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.RemoveProductTaskUnitTests;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.ResultUnitTests;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.*;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 
 import java.util.*;
 import java.util.concurrent.*;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import static org.junit.Assert.assertTrue;
-
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -751,6 +747,79 @@ class TradingSystemImplTest {
         assertTrue(r.getIsErr());
     }
 
+    // requirement 4.5
+    @Test
+    void AddManager_Parallel_TwoOwnerAppointManagerTogether() {
+        List<boolean[]> isErrsTotal = new ArrayList<>();
+        for(int test_i = 0; test_i < 100; test_i++) {
+            //Prepare
+
+            //appoint Nofet to owner
+            tradingSystemImpl.AddNewOwner(ElinorID, EconnID, ElinorStore, NofetID);
+            Integer size = tradingSystemImpl.stores.get(ElinorStore).OwnersID().size();
+            assertTrue(size == 2);
+
+            //Create two clients with task to buy this product
+            ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+            //Prepare tasks for clients
+            List<Callable<ResultUnitTests>> taskList = new ArrayList<>();
+            Callable<ResultUnitTests> addManagerTask_1 = new AddManagerTaskUnitTests("Elinor", "123", ElinorStore, userID, ElinorID, EconnID);
+            taskList.add(addManagerTask_1);
+            Callable<ResultUnitTests> addManagerTask_2 = new AddManagerTaskUnitTests("Nofet", "123", ElinorStore, userID, NofetID, NconnID);
+            taskList.add(addManagerTask_2);
+
+            //Execute all tasks and get reference to Future objects
+            List<Future<ResultUnitTests>> resultList = null;
+
+            try {
+                resultList = executor.invokeAll(taskList);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            executor.shutdown();
+
+            System.out.println("\n========Printing the results======");
+            boolean[] isErrs = new boolean[2];
+            for (int i = 0; i < resultList.size(); i++) {
+                Future<ResultUnitTests> future = resultList.get(i);
+                try {
+                    ResultUnitTests result = future.get();
+//                System.out.println(result.getName() + ": " + result.getTimestamp());
+                    Response response = result.getResponse();
+                    System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                    isErrs[i] = response.getIsErr();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Check that one of the client failed and the other succeed.
+//            assertTrue((isErrs[0] && !isErrs[1]) || (isErrs[1] && !isErrs[0]));
+            isErrsTotal.add(isErrs);
+            tearDown();
+            setup();
+        }
+
+        boolean ans = true;
+        for(boolean[] errArr : isErrsTotal) {
+            if ((errArr[0] && errArr[1]) || (!errArr[1] && !errArr[0])) {
+                ans = false;
+                break;
+            }
+        }
+        System.out.println("========Printing the results - TOTAL PARALLEL ======");
+        for(int i=0; i<isErrsTotal.size(); i++) {
+            System.out.printf("%d: purchase: %s remove: %s\n", i, isErrsTotal.get(i)[0], isErrsTotal.get(i)[1]);
+        }
+        assertTrue(ans);
+
+        Response res = tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, userID);
+        boolean isManager = tradingSystemImpl.stores.get(ElinorStore).checkManager(userID);
+        assertFalse(res.getIsErr());
+        assertTrue(isManager);
+    }
+
     // requirement 4.6
     @Test
     void EditManagerPermissionsSuccess() {
@@ -967,11 +1036,14 @@ class TradingSystemImplTest {
     @Test
     void HappyPurchase() {
         setUpBeforePurchase();
-        QuantityLimitForStore exp = new QuantityLimitForStore(2, NofetStore);
+        QuantityLimitForStore exp = new QuantityLimitForStore(3, NofetStore);
         tradingSystemImpl.addBuyingPolicy(NofetID, NconnID, NofetStore, exp);
         Integer productID1 = Nstore.getProductID("computer");
+        Integer productID2 = Nstore.getProductID("Bag");
         Integer preQuantity = Nstore.getQuantity(productID1);
+        tradingSystemImpl.Logout(NconnID);
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
         Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
         assertFalse(response.getIsErr());
 
