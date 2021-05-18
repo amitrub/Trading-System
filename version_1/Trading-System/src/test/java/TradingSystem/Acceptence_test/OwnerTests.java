@@ -405,7 +405,7 @@ public class OwnerTests {
     void HappyAddPermissions() {
         client.addManager(storeID, newUserID);
 
-        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager(storeID);
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
@@ -421,7 +421,7 @@ public class OwnerTests {
     //case 4.6.2 sad edit permissions, manager id not ok
     @Test
     void SadAddPermissions() {
-        Response optionalPermissionsForMannager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForMannager = client.GetPossiblePermissionsToManager(storeID);
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
@@ -437,7 +437,7 @@ public class OwnerTests {
     //case 4.6.3 sad edit permissions, manager is not manage the store
     @Test
     void SadAddPermissionsNotManage() {
-        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager(storeID);
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();
@@ -463,8 +463,9 @@ public class OwnerTests {
         client.addManager(storeID, managerId);
         client.Logout();
 
+
         client.Login("Nofet", "123");
-        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager();
+        Response optionalPermissionsForManager = client.GetPossiblePermissionsToManager(storeID);
 
         //this test give all permissions to manager
         HashMap<String, Boolean> permissionToGive = new HashMap<>();

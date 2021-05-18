@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.UserComponent;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class OwnerPermission implements Permission {
@@ -55,6 +56,9 @@ public class OwnerPermission implements Permission {
     }
 
     public List<User.Permission> getPermissions() {
+      if(permissions==null){
+          return new LinkedList<User.Permission>();
+      }
         return permissions;
     }
 

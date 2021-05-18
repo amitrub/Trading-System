@@ -244,7 +244,7 @@ public interface Client_Interface {
      * @return Response
      */
     public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions);
-    public Response GetPossiblePermissionsToManager();
+    public Response GetPossiblePermissionsToManager(int storeId);
 
     /**
      * @requirement 4.7

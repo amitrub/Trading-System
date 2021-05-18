@@ -599,8 +599,8 @@ public class Client implements Client_Interface {
         System.out.println(ANSI_YELLOW + "(editManagerPermissions) response: " + response + ANSI_RESET);
         return response;
     }
-    public Response GetPossiblePermissionsToManager() {
-        String path = String.format("%s/store/get_possible_permissions_to_manager", this.userID);
+    public Response GetPossiblePermissionsToManager(int storeId) {
+        String path = String.format("%s/store/%s/get_permissions_to_manager", this.userID,storeId);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         //if(response.getIsErr()) {

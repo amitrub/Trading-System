@@ -1197,7 +1197,7 @@ class TradingSystemImplTest {
 
     //region template tests
     @Test
-    void tmpTest1() {
+    void CreateSaleTest() {
 
 
         Map<String, Object> storeSale = new HashMap<>();
@@ -1262,12 +1262,11 @@ class TradingSystemImplTest {
 
         Map<String, Object> Max = new HashMap<>();
         Max.put("MaxComposite", MaxElement);
-
         Sale s = tradingSystemImpl.createSaleForDiscount(1,  Max);
         assertTrue(true);
     }
     @Test
-    void tmpTest2() {
+    void CreateExpTest2() {
 
         Map<String, Object> QuantityLimitForProductElement =new HashMap<> ();
         QuantityLimitForProductElement.put("maxQuantity",30);
