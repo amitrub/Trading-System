@@ -2,6 +2,8 @@ package TradingSystem.Server.ServiceLayer.DummyObject;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -79,11 +81,27 @@ public class DummyShoppingHistory {
 
     @Override
     public String toString() {
-        return "DummyShoppingHistory{" +
-                "userID=" + userID +
-                ", storeID=" + storeID +
-                ", products=" + products +
-                ", finalPrice=" + finalPrice +
-                '}';
+//        return "DummyShoppingHistory{" +
+//                "userID=" + userID +
+//                ", storeID=" + storeID +
+//                ", products=" + products +
+//                ", date=" + date +
+//                ", finalPrice=" + finalPrice +
+//                '}';
+        JSONObject JO = new JSONObject();
+        try {
+            JO.put("userID", userID);
+            JO.put("storeID", storeID);
+//            JSONArray prods = new JSONArray();
+//            for(DummyProduct p : products.keySet()) {
+//                prods.put()
+//            }
+            JO.put("products", products);
+            JO.put("date", date);
+            JO.put("finalPrice", finalPrice);
+        } catch (Exception e) {
+            System.out.println("DummyShoppingHistory toString error");
+        }
+        return JO.toString();
     }
 }

@@ -262,7 +262,7 @@ export const createApiClientHttp = () => {
       let path = subscriberURL.concat(`${userID}/user_history`);
       const headers = {
         "Content-Type": "application/json; utf-8",
-        Accept: "application/json",
+        Accept: "application/json; utf-8",
         connID: connID,
       };
       return axios.get(path, { headers: headers }).then((res) => {

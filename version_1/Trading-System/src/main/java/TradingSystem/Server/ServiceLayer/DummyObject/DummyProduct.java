@@ -119,13 +119,25 @@ public class DummyProduct {
 
     @Override
     public String toString() {
-        return "DummyProduct{" +
-                "storeID=" + storeID +
-                ", storeName='" + storeName + '\'' +
-                ", productID=" + productID +
-                ", productName='" + productName + '\'' +
-                ", price=" + price +
-                ", category='" + category + '\'' +
-                '}';
+//        return "DummyProduct{" +
+//                "storeID=" + storeID +
+//                ", storeName='" + storeName + '\'' +
+//                ", productID=" + productID +
+//                ", productName='" + productName + '\'' +
+//                ", price=" + price +
+//                ", category='" + category + '\'' +
+//                '}';
+        JSONObject JO = new JSONObject();
+        try {
+            JO.put("storeID", storeID);
+            JO.put("storeName", storeName);
+            JO.put("productID", productID);
+            JO.put("productName", productName);
+            JO.put("price", price);
+            JO.put("category", category);
+        } catch (Exception e) {
+            System.out.println("DummyProduct toString error");
+        }
+        return JO.toString();
     }
 }
