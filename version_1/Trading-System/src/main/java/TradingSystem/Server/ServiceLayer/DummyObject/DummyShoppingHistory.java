@@ -76,4 +76,14 @@ public class DummyShoppingHistory {
     public Double getFinalPrice() {
         return finalPrice;
     }
+
+    @Override
+    public String toString() {
+        return "DummyShoppingHistory{" +
+                "userID=" + userID +
+                ", storeID=" + storeID +
+                ", products=" + products +
+                ", finalPrice=" + finalPrice +
+                '}';
+    }
 }

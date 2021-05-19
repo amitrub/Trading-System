@@ -28,7 +28,7 @@ function WriteComment(props) {
   }
 
   async function fetchStoreProducts() {
-    if (chosenStoreID != -1) {
+    if (chosenStoreID !== -1) {
       const productsOfStoresResponse = await apiHttp.ShowStoreProducts(
         chosenStoreID
       );

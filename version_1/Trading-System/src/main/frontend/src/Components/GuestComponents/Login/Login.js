@@ -11,24 +11,39 @@ function Login(props) {
   const [enteredPass, setPassState] = useState("");
   const [popUpLogin, setPopUpLogin] = useState(false);
   const [popupMsg, setPopMsg] = useState("");
+  const [response, setResponse] = useState("");
 
   function onClosePopupLogin() {
     setPopUpLogin(false);
+    props.onSubmitLogin(enteredName, enteredPass, response);
+    setNameState("");
+    setPassState("");
+    props.onRefresh();
   }
 
   async function submitHandler(event) {
     event.preventDefault();
 
-    await apiHttp.Login(props.connID, enteredName, enteredPass).then((res) => {
-      // console.log(res);
+    const loginResponse = await apiHttp.Login(
+      props.connID,
+      enteredName,
+      enteredPass
+    );
+    // console.log(res);
 
-      props.onSubmitLogin(enteredName, enteredPass, res);
-      setNameState("");
-      setPassState("");
-      setPopMsg(res.message);
+    if (loginResponse) {
+      setPopMsg(loginResponse.message);
       setPopUpLogin(true);
-      // props.onRefresh();
-    });
+    }
+    if (loginResponse.isErr) {
+      console.log(loginResponse.message);
+    }
+
+    setResponse(loginResponse);
+
+    // props.onSubmitLogin(enteredName, enteredPass, loginResponse);
+    // setNameState("");
+    // setPassState("");
   }
 
   function nameChangeHandler(event) {

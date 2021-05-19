@@ -1,32 +1,14 @@
-import React, { useState, useEffect } from "react";
-import createApiClientHttp from "../../../ApiClientHttp";
+import React, { useState } from "react";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import OpenStore from "../OpenStore/OpenStore";
 import WriteComment from "../WriteComment/WriteComment";
 import UserHistory from "../UserHistory/UserHistory";
 
-const apiHttp = createApiClientHttp();
-
 function SubscriberServices(props) {
   const [showOpenStore, setShowOpenStore] = useState(false);
   const [showWriteComment, setShowWriteComment] = useState(false);
   const [showUserHistory, setShowUserHistory] = useState(false);
-
-  //   async function fetchHistory() {
-  //     const productsOfStoresResponse = await apiHttp.ShowStoreProducts(store.id);
-  //     // console.log(productsOfStoresResponse);
-
-  //     if (productsOfStoresResponse.isErr) {
-  //       console.log(productsOfStoresResponse.message);
-  //     } else {
-  //       setProductsOfStore(productsOfStoresResponse.returnObject.products);
-  //     }
-  //   }
-
-  //   useEffect(() => {
-  //     fetchHistory();
-  //   }, [props.refresh]);
 
   //Open Store Btn
   function showOpenStoreHandler() {
@@ -129,7 +111,7 @@ function SubscriberServices(props) {
       </div>
 
       {/* UserHistory */}
-      {/* <div className="row">
+      <div className="row">
         {showUserHistory ? (
           <UserHistory
             refresh={props.refresh}
@@ -141,7 +123,7 @@ function SubscriberServices(props) {
         ) : (
           ""
         )}
-      </div> */}
+      </div>
     </section>
   );
 }

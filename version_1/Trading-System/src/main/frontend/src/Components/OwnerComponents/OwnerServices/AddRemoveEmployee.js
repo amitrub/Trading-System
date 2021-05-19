@@ -1,12 +1,9 @@
 import React, { useState } from "react";
-import createApiClientHttp from "../../../ApiClientHttp";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import MyPopup from "../../OtherComponents/MyPopup/MyPopup";
 
-const apiHttp = createApiClientHttp();
-
-function Add_RemoveEmployee(props) {
+function AddRemoveEmployee(props) {
   const [employeeID, setEmployeeID] = useState(-1);
   const [popupRemove, setPopupRemove] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
@@ -114,4 +111,4 @@ function Add_RemoveEmployee(props) {
   );
 }
 
-export default Add_RemoveEmployee;
+export default AddRemoveEmployee;

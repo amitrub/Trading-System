@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import createApiClientHttp from "../../../ApiClientHttp";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
@@ -14,6 +14,23 @@ function Purchase(props) {
   const [adrress, setAdrress] = useState("");
   const [popupPurchase, setPopupPurchase] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
+
+  const [cartSize, setCartSize] = useState("");
+
+  async function fetchShopingCart() {
+    const showCartResponse = await apiHttp.ShowShoppingCart(props.connID);
+    // console.log(showCartResponse);
+
+    if (showCartResponse.isErr) {
+      console.log(showCartResponse.message);
+    } else {
+      setCartSize(showCartResponse.returnObject.products.length);
+    }
+  }
+
+  useEffect(() => {
+    fetchShopingCart();
+  }, [props.refresh]);
 
   function submitCheckoutHideForm() {
     setShowPurchaseForm(false);
@@ -47,7 +64,7 @@ function Purchase(props) {
     }
 
     // console.log("purchase");
-    console.log(purchaseResponse);
+    // console.log(purchaseResponse);
 
     if (purchaseResponse) {
       setPopupMsg(purchaseResponse.message);
@@ -56,7 +73,6 @@ function Purchase(props) {
     if (purchaseResponse.isErr) {
       console.log(purchaseResponse.message);
     }
-    props.onRefresh();
     setShowPurchaseForm(false);
     setGuestName("");
     setCreditNumber("");
@@ -82,127 +98,136 @@ function Purchase(props) {
 
   function onClosePopupPurchase() {
     setPopupPurchase(false);
+    props.onRefresh();
   }
 
   return (
     <section>
-      <div>
-        <button
-          className="buttonus"
-          value="Checkout"
-          onClick={
-            showPurchaseForm ? submitCheckoutHideForm : submitCheckoutShowForm
-          }
-        >
-          {showPurchaseForm ? "Hide Checkout" : "Checkout"}
-        </button>
-      </div>
-
-      {showPurchaseForm ? (
+      {cartSize !== 0 ? (
         <div>
-          {props.userID === -1 ? (
-            <div className="row">
-              <h2>Guest purchase details</h2>
-            </div>
-          ) : (
-            <div className="row">
-              <h2>Subscriber purchase details</h2>
-            </div>
-          )}
-
-          <div className="row">
-            <form
-              method="post"
-              className="contact-form"
-              onSubmit={submitPurchaseHandler}
+          <div>
+            <button
+              className="buttonus"
+              value="Checkout"
+              onClick={
+                showPurchaseForm
+                  ? submitCheckoutHideForm
+                  : submitCheckoutShowForm
+              }
             >
-              {/* input name */}
+              {showPurchaseForm ? "Hide Checkout" : "Checkout"}
+            </button>
+          </div>
+
+          {showPurchaseForm ? (
+            <div>
               {props.userID === -1 ? (
                 <div className="row">
-                  <div className="col span-1-of-3">
-                    <label htmlFor="name">Full Name</label>
-                  </div>
-                  <div className="col span-2-of-3">
-                    <input
-                      type="text"
-                      name="Name"
-                      id="Name"
-                      required
-                      onChange={updateGusetName}
-                      value={guestName}
-                    />
-                  </div>
+                  <h2>Guest purchase details</h2>
                 </div>
               ) : (
-                ""
+                <div className="row">
+                  <h2>Subscriber purchase details</h2>
+                </div>
               )}
-              {/* input credit_number */}
+
               <div className="row">
-                <div className="col span-1-of-3">
-                  <label htmlFor="name">Credit Number</label>
-                </div>
-                <div className="col span-2-of-3">
-                  <input
-                    type="text"
-                    name="credit"
-                    id="credit"
-                    required
-                    onChange={updateCreditNumber}
-                    value={creditNumber}
-                  />
-                </div>
+                <form
+                  method="post"
+                  className="contact-form"
+                  onSubmit={submitPurchaseHandler}
+                >
+                  {/* input name */}
+                  {props.userID === -1 ? (
+                    <div className="row">
+                      <div className="col span-1-of-3">
+                        <label htmlFor="name">Full Name</label>
+                      </div>
+                      <div className="col span-2-of-3">
+                        <input
+                          type="text"
+                          name="Name"
+                          id="Name"
+                          required
+                          onChange={updateGusetName}
+                          value={guestName}
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    ""
+                  )}
+                  {/* input credit_number */}
+                  <div className="row">
+                    <div className="col span-1-of-3">
+                      <label htmlFor="name">Credit Number</label>
+                    </div>
+                    <div className="col span-2-of-3">
+                      <input
+                        type="text"
+                        name="credit"
+                        id="credit"
+                        required
+                        onChange={updateCreditNumber}
+                        value={creditNumber}
+                      />
+                    </div>
+                  </div>
+                  {/* input phone_number */}
+                  <div className="row">
+                    <div className="col span-1-of-3">
+                      <label htmlFor="name">Phone</label>
+                    </div>
+                    <div className="col span-2-of-3">
+                      <input
+                        type="text"
+                        name="phone"
+                        id="phone"
+                        required
+                        onChange={updatePhone}
+                        value={phone}
+                      />
+                    </div>
+                  </div>
+                  {/* input adrress */}
+                  <div className="row">
+                    <div className="col span-1-of-3">
+                      <label htmlFor="name">Adrress</label>
+                    </div>
+                    <div className="col span-2-of-3">
+                      <input
+                        type="text"
+                        name="adrress"
+                        id="adrress"
+                        required
+                        onChange={updateAdrress}
+                        value={adrress}
+                      />
+                    </div>
+                  </div>
+                  <div className="row">
+                    <div className="col span-1-of-3">
+                      <label>&nbsp;</label>
+                    </div>
+                    <div className="col span-1-of-3">
+                      <input type="submit" value="Purchase" />
+                    </div>
+                  </div>
+                </form>
               </div>
-              {/* input phone_number */}
-              <div className="row">
-                <div className="col span-1-of-3">
-                  <label htmlFor="name">Phone</label>
-                </div>
-                <div className="col span-2-of-3">
-                  <input
-                    type="text"
-                    name="phone"
-                    id="phone"
-                    required
-                    onChange={updatePhone}
-                    value={phone}
-                  />
-                </div>
-              </div>
-              {/* input adrress */}
-              <div className="row">
-                <div className="col span-1-of-3">
-                  <label htmlFor="name">Adrress</label>
-                </div>
-                <div className="col span-2-of-3">
-                  <input
-                    type="text"
-                    name="adrress"
-                    id="adrress"
-                    required
-                    onChange={updateAdrress}
-                    value={adrress}
-                  />
-                </div>
-              </div>
-              <div className="row">
-                <div className="col span-1-of-3">
-                  <label>&nbsp;</label>
-                </div>
-                <div className="col span-1-of-3">
-                  <input type="submit" value="Purchase" />
-                </div>
-              </div>
-            </form>
-          </div>
+            </div>
+          ) : (
+            ""
+          )}
+          {popupPurchase ? (
+            <MyPopup
+              errMsg={popupMsg}
+              onClosePopup={onClosePopupPurchase}
+            ></MyPopup>
+          ) : (
+            ""
+          )}
         </div>
-      ) : (
-        ""
-      )}
-      {popupPurchase ? (
-        <MyPopup
-          errMsg={popupMsg}
-          onClosePopup={onClosePopupPurchase}
-        ></MyPopup>
       ) : (
         ""
       )}
