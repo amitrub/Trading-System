@@ -4,16 +4,24 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
+@Entity(name = "Store")
 public class DummyStore {
 
+    @Id
     private Integer id;
     private String name;
     private Double storeRate;
+
+    public DummyStore(){
+
+    }
 
     public DummyStore(Integer id, String name, Double storeRate) {
         this.id = id;

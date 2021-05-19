@@ -1,9 +1,13 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
+import TradingSystem.Server.DataAccessLayer.StoreService;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -12,9 +16,12 @@ import java.util.Map;
 @RestController
 @RequestMapping(path = "api/subscriber")
 @CrossOrigin("*")
+@Transactional
 public class SubscriberServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
+    @Autowired
+    private StoreService storeService;
 
     /**
      * @requirement 3.1
@@ -35,6 +42,14 @@ public class SubscriberServiceHttp {
         return res;
     }
 
+    @GetMapping("{storeId}/findstore")
+    public Response findStore(@PathVariable int storeId){
+        if(storeService.findDummyStoreById(storeId)!=null)
+            return new Response("success");
+        else
+            return new Response(true,"failed to find store");
+    }
+
     /**
      * @requirement 3.2
      *
@@ -46,6 +61,30 @@ public class SubscriberServiceHttp {
      *  "connID": String
      * }
      */
+    @PostMapping("test")
+    public Response testAddStore(){
+        System.out.println("adding store");
+        DummyStore store=new DummyStore(5,"test",5.0);
+        DummyStore store1= storeService.addStore(store);
+        if(store1!=null){
+            System.out.println(store1.getId());
+            return new Response("success adding store");
+        }
+        return new Response(true,"error");
+    }
+    @GetMapping("findstore")
+    public Response testfindStore(){
+        System.out.println("helllo");
+        DummyStore dummyStore= storeService.findDummyStoreById(5);
+        if(dummyStore!=null)
+        {
+            Response response=new Response();
+            response.AddPair("store",dummyStore);
+            return response;
+        }
+        return new Response(true,"error");
+    }
+
     @PostMapping("{userID}/add_store")
     public Response AddStore(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String storeName;

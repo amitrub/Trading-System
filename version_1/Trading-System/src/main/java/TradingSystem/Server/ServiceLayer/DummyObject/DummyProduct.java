@@ -4,20 +4,23 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
+@Entity(name = "Product")
 public class DummyProduct {
-
+    @Id
+    private final int productID;
     private final int storeID;
     private final String storeName;
-    private final int productID;
     private final String productName;
     private final double price;
     private final String category;
     private int quantity;
+
 
     public DummyProduct(){
         this.storeID = -1;

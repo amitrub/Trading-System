@@ -7,20 +7,20 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
+@EnableJpaRepositories("ProductRepository.DataAccessLayer")
 @RestController
 @RequestMapping(path = "api/owner")
 @CrossOrigin("*")
 public class StoreOwnerServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
-
 
     /**
      * @requirement
