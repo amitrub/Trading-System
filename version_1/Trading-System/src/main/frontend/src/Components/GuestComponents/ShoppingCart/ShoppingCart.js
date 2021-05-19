@@ -3,7 +3,6 @@ import createApiClientHttp from "../../../ApiClientHttp";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import ProductInCart from "./ProductInCart";
-import Purchase from "../Purchase/Purchase";
 
 const apiHttp = createApiClientHttp();
 
@@ -57,16 +56,6 @@ function ShoppingCart(props) {
           )}
         </div>
       </section>
-      {shoppingCart.length !== 0 ? (
-        <Purchase
-          refresh={props.refresh}
-          onRefresh={props.onRefresh}
-          connID={props.connID}
-          userID={props.userID}
-        ></Purchase>
-      ) : (
-        ""
-      )}
     </Fragment>
   );
 }

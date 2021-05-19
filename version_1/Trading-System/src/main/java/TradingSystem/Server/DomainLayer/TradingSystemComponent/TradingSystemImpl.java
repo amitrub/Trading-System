@@ -344,6 +344,7 @@ public class TradingSystemImpl implements TradingSystem {
             myUser.setPublisher(publisher);
             List<String> notConnectedMessages = myUser.updateAfterLogin();
             res.AddPair("messages", notConnectedMessages);
+            System.out.println(res.getReturnObject().get("messages"));
         }
         return res;
     }

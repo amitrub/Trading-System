@@ -112,7 +112,7 @@ function Search(props) {
       searchSRank
     );
 
-    console.log(searchResponse);
+    // console.log(searchResponse);
 
     if (searchResponse.isErr) {
       console.log(searchResponse.message);

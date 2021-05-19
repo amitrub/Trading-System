@@ -12,9 +12,12 @@ import EditPermissions from "../OwnerServices/EditPermissions";
 
 const apiHttp = createApiClientHttp();
 
-function OwnerStoreService(props) {
+function ManagerStoreService(props) {
   const [productsOfStore, setProductsOfStore] = useState([]);
   const [showStore, setShowStore] = useState(false);
+  const [permissions, setPermissions] = useState([]);
+
+  //Show Permissions
   const [showAddProduct, setShowAddProduct] = useState(false);
   const [showChangeQuantity, setShowChangeQuantity] = useState(false);
   const [showEditProduct, setShowEditProduct] = useState(false);
@@ -27,6 +30,10 @@ function OwnerStoreService(props) {
 
   const store = props.currStore;
 
+  function hasPermission(perm) {
+    return permissions.includes(perm);
+  }
+
   async function fetchStoreProducts() {
     const productsOfStoresResponse = await apiHttp.ShowStoreProducts(store.id);
     // console.log(productsOfStoresResponse);
@@ -38,8 +45,24 @@ function OwnerStoreService(props) {
     }
   }
 
+  async function fetchPermissions() {
+    const permissionsResponse = await apiHttp.GetPossiblePermissionsToManager(
+      props.connID,
+      props.userID,
+      props.currStore.id
+    );
+    // console.log(permissionsResponse);
+
+    if (permissionsResponse.isErr) {
+      console.log(permissionsResponse.message);
+    } else {
+      setPermissions(permissionsResponse.returnObject.permissions);
+    }
+  }
+
   useEffect(() => {
     fetchStoreProducts();
+    fetchPermissions();
   }, [props.refresh]);
 
   //Show Product Btn
@@ -270,6 +293,7 @@ function OwnerStoreService(props) {
           onClick={
             showAddProduct ? hideAddProductsHandler : showAddProductsHandler
           }
+          disabled={!hasPermission("AddProduct")}
         >
           {showAddProduct ? "Hide" : "Add products"}
         </button>
@@ -282,6 +306,7 @@ function OwnerStoreService(props) {
               ? hideChangeQuantityHandler
               : showChangeQuantityHandler
           }
+          disabled={!hasPermission("ReduceProduct")}
         >
           {showChangeQuantity ? "Hide" : "Change Quantity"}
         </button>
@@ -292,6 +317,7 @@ function OwnerStoreService(props) {
           onClick={
             showEditProduct ? hideEditProductHandler : showEditProductHandler
           }
+          disabled={!hasPermission("EditProduct")}
         >
           {showEditProduct ? "Hide" : "Edit product"}
         </button>
@@ -304,6 +330,7 @@ function OwnerStoreService(props) {
               ? hideRemoveProductHandler
               : showRemoveProductHandler
           }
+          disabled={!hasPermission("DeleteProduct")}
         >
           {showRemoveProduct ? "Hide" : "Remove product"}
         </button>
@@ -317,6 +344,7 @@ function OwnerStoreService(props) {
           className="buttonus"
           value="load our stores..."
           onClick={showAddOwner ? hideAddOwnerHandler : showAddOwnerHandler}
+          disabled={!hasPermission("AppointmentOwner")}
         >
           {showAddOwner ? "Hide" : "Add Owner"}
         </button>
@@ -327,6 +355,7 @@ function OwnerStoreService(props) {
           onClick={
             showRemoveOwner ? hideRemoveOwnerHandler : showRemoveOwnerHandler
           }
+          disabled={!hasPermission("AppointmentOwner")}
         >
           {showRemoveOwner ? "Hide" : "Remove Owner"}
         </button>
@@ -337,6 +366,7 @@ function OwnerStoreService(props) {
           onClick={
             showAddManager ? hideAddManagerHandler : showAddManagerHandler
           }
+          disabled={!hasPermission("AppointmentManager")}
         >
           {showAddManager ? "Hide" : "Add Manager"}
         </button>
@@ -349,6 +379,7 @@ function OwnerStoreService(props) {
               ? hideRemoveManagerHandler
               : showRemoveManagerHandler
           }
+          disabled={!hasPermission("RemoveManager")}
         >
           {showRemoveManager ? "Hide" : "Remove Manager"}
         </button>
@@ -361,6 +392,8 @@ function OwnerStoreService(props) {
               ? hidePermissionsManagerHandler
               : showPermissionsManagerHandler
           }
+          //   disabled={!hasPermission("EditManagerPermission")}
+          disabled
         >
           {showPerssionsManager ? "Hide" : "Permissions"}
         </button>
@@ -528,4 +561,4 @@ function OwnerStoreService(props) {
   );
 }
 
-export default OwnerStoreService;
+export default ManagerStoreService;
