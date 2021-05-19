@@ -1,5 +1,6 @@
 package TradingSystem.Acceptence_test;
 
+import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
@@ -178,15 +179,37 @@ public class SubscriberTests {
     //case 3.7.1 have purchases
     @Test
     void showUsersHistory_Happy() {
-        Integer storeID = setUpBeforePurchase();
-        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
+        Client c = new Client();
+        c.clearSystem();
+        c.connectSystem();
+        c.Register("Roee", "123");
+        c.Login("Roee", "123");
+        Response r = c.openStore("Adidas");
+        List<DummyStore> stores = c.showAllStores().getStores();
+        Integer storeID = getStoreID(stores, "Adidas");
+        c.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        List<DummyProduct> products = c.showStoreProducts(storeID).returnProductList();
         Integer productID = getProductID(products, "Short Pants");
-        client.addProductToCart(storeID, productID, 1);
-        client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+        c.addProductToCart(storeID, productID, 1);
+        c.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+        c.addProductToCart(storeID, productID, 1);
+        c.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
 
-        Response response = client.showUserHistory();
+        Response response = c.showUserHistory();
         assertFalse(response.getIsErr());
         assertEquals(response.returnHistoryList().size(), 1);
+
+        //Integer storeID = setUpBeforePurchase();
+        //List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
+        //Integer productID = getProductID(products, "Short Pants");
+        //client.addProductToCart(storeID, productID, 1);
+        //client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+        //client.addProductToCart(storeID, productID, 1);
+        //client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+
+        //Response response = client.showUserHistory();
+        //assertFalse(response.getIsErr());
+        //assertEquals(response.returnHistoryList().size(), 1);
     }
     //case 3.7.2 no history for this user
     @Test

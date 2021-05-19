@@ -363,7 +363,7 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
         tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
 
-        DummyUser test = new DummyUser("ala", "123");
+        //DummyUser test = new DummyUser("ala", "123");
         Response res = tradingSystemImpl.ShowSubscriberHistory(ElinorID, EconnID);
         assertFalse(res.getIsErr());
         List<DummyShoppingHistory> list = (List<DummyShoppingHistory>) res.getReturnObject().get("history");

@@ -130,7 +130,8 @@ public class SubscriberServiceHttp {
      */
     @GetMapping("{userID}/user_history")
     public Response ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
-        return tradingSystem.ShowSubscriberHistory(userID, connID);
+        Response res = tradingSystem.ShowSubscriberHistory(userID, connID);
+        return res;
     }
 
 
