@@ -36,10 +36,11 @@ public class SubscriberTests {
 
     //region other functions
     Integer getStoreID(List<DummyStore> stores, String storename) {
-        for (int i=0; i<stores.size(); i++)
+        for (DummyStore s : stores)
         {
-            if(stores.get(i).getName().equals(storename))
-                return stores.get(i).getId();
+            String name = s.getName();
+            if(name.equals(storename))
+                return s.getId();
         }
         return -1;
     }
@@ -184,13 +185,20 @@ public class SubscriberTests {
         c.connectSystem();
         c.Register("Roee", "123");
         c.Login("Roee", "123");
-        Response r = c.openStore("Adidas");
-        List<DummyStore> stores = c.showAllStores().getStores();
-        Integer storeID = getStoreID(stores, "Adidas");
+
+        c.openStore("Test");
+        //Response r =c.showAllStores();
+        //List<DummyStore> stores = r.getStores();
+        //Integer storeID = getStoreID(stores, "Test");
+        Integer storeID = 3;
         c.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        List<DummyProduct> products = c.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(products, "Short Pants");
+        c.addProduct(storeID, "Shorts", "Pants", 100.0, 2);
+
+        //List<DummyProduct> products = c.showStoreProducts(storeID).returnProductList();
+        //Integer productID = getProductID(products, "Short Pants");
+        Integer productID = 1;
         c.addProductToCart(storeID, productID, 1);
+        c.addProductToCart(storeID, 2, 1);
         c.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
         c.addProductToCart(storeID, productID, 1);
         c.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
@@ -207,9 +215,9 @@ public class SubscriberTests {
         //client.addProductToCart(storeID, productID, 1);
         //client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
 
-        //Response response = client.showUserHistory();
-        //assertFalse(response.getIsErr());
-        //assertEquals(response.returnHistoryList().size(), 1);
+//        Response response = client.showUserHistory();
+//        assertFalse(response.getIsErr());
+//        assertEquals(response.returnHistoryList().size(), 1);
     }
     //case 3.7.2 no history for this user
     @Test

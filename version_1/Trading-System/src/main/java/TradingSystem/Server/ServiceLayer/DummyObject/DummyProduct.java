@@ -119,14 +119,6 @@ public class DummyProduct {
 
     @Override
     public String toString() {
-//        return "DummyProduct{" +
-//                "storeID=" + storeID +
-//                ", storeName='" + storeName + '\'' +
-//                ", productID=" + productID +
-//                ", productName='" + productName + '\'' +
-//                ", price=" + price +
-//                ", category='" + category + '\'' +
-//                '}';
         JSONObject JO = new JSONObject();
         try {
             JO.put("storeID", storeID);

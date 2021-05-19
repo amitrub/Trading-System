@@ -90,13 +90,24 @@ public class DummyShoppingHistory {
 //                '}';
         JSONObject JO = new JSONObject();
         try {
-            JO.put("userID", userID);
+            JO.put("userIDDDD", userID);
             JO.put("storeID", storeID);
-//            JSONArray prods = new JSONArray();
-//            for(DummyProduct p : products.keySet()) {
-//                prods.put()
-//            }
-            JO.put("products", products);
+            JSONArray prods = new JSONArray();
+            for(DummyProduct p : products.keySet()) {
+                JSONObject JProduct = new JSONObject();
+                try {
+                    JProduct.put("storeIDDDD", p.getStoreID());
+                    JProduct.put("storeName", p.getStoreName());
+                    JProduct.put("productID", p.getProductID());
+                    JProduct.put("productName", p.getProductName());
+                    JProduct.put("price", p.getPrice());
+                    JProduct.put("category", p.getCategory());
+                } catch (Exception e) {
+                    System.out.println("DummyProduct toString error");
+                }
+                prods.put(JProduct);
+            }
+            JO.put("products", prods);
             JO.put("date", date);
             JO.put("finalPrice", finalPrice);
         } catch (Exception e) {
