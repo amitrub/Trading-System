@@ -262,7 +262,7 @@ class App extends React.Component {
         )}
         {this.guestContent()}
         {this.subscriberContent()}
-        {this.ownerContent(connID, userID)}
+        {this.ownerContent()}
         {this.endOfPage()}
       </div>
     );
@@ -345,7 +345,8 @@ class App extends React.Component {
     );
   };
 
-  ownerContent = (connID, userID) => {
+  ownerContent = () => {
+    const { username, userID, connID, refresh, admin } = this.state;
     return (
       <Fragment>
         <OwnerStores
@@ -353,6 +354,7 @@ class App extends React.Component {
           userID={userID}
           refresh={this.state.refresh}
           onRefresh={this.onRefresh}
+          admin={admin}
         ></OwnerStores>
       </Fragment>
     );

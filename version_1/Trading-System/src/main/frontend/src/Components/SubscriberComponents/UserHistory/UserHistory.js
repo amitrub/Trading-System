@@ -16,7 +16,9 @@ function UserHistory(props) {
     );
 
     console.log(historyResponse);
-    const history = JSON.stringify(historyResponse.returnObject.history);
+    const history = historyResponse.returnObject.history;
+    const products = history.products;
+    // const p = product[0]
     console.log(history);
 
     if (historyResponse.isErr) {

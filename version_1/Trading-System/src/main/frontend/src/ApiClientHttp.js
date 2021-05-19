@@ -576,9 +576,9 @@ export const createApiClientHttp = () => {
       });
     },
 
-    //DONE - STILL NOT IMPL IN SERVER
-    GetAllSubscribers: (connID) => {
-      let path = ownerURL.concat(`get_all_subscribers`);
+    //DONE
+    GetAllSubscribers: (connID, userID) => {
+      let path = subscriberURL.concat(`${userID}/get_all_subscribers`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
@@ -651,6 +651,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    //DONE
     GetPossiblePermissionsToManager: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/get_permissions_to_manager`

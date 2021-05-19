@@ -35,6 +35,7 @@ public class DummyProduct {
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.category = product.getCategory();
+        this.quantity = product.getQuantity();
     }
 
     public DummyProduct(Map<String, Object> map) {

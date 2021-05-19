@@ -16,6 +16,15 @@ public class SubscriberServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
 
+
+    @GetMapping("{userID}/get_all_subscribers")
+    public Response GetAllSubscribers(@PathVariable int userID, @RequestHeader("connID") String connID) {
+        Response res = tradingSystem.GetAllSubscribers(connID, userID);
+        tradingSystem.printUsers();
+        WriteToLogger(res);
+        return res;
+    }
+
     /**
      * @requirement 3.1
      *
@@ -27,6 +36,7 @@ public class SubscriberServiceHttp {
      *  "connID": String
      * }
      */
+
     @GetMapping("{userID}/logout")
     public Response Logout(@PathVariable int userID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.Logout(connID);
@@ -131,6 +141,7 @@ public class SubscriberServiceHttp {
     @GetMapping("{userID}/user_history")
     public Response ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.ShowSubscriberHistory(userID, connID);
+        System.out.println(res);
         return res;
     }
 

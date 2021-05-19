@@ -5,9 +5,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DummyShoppingHistory {
@@ -17,7 +15,7 @@ public class DummyShoppingHistory {
 
     //productID_quantity
     //private ConcurrentHashMap<DummyProduct,Integer> products;
-    private LinkedHashMap<DummyProduct,Integer> products;
+    private List<DummyProduct> products;
 
     private Date date;
     private Double finalPrice;
@@ -28,10 +26,10 @@ public class DummyShoppingHistory {
         this.date = toCopyShoppingHistory.getDate();
         this.finalPrice = toCopyShoppingHistory.getFinalPrice();
         //this.products = new ConcurrentHashMap<>();
-        this.products = new LinkedHashMap<>();
-        for (Product p : toCopyShoppingHistory.getProducts().keySet()){
+        this.products = new ArrayList<>();
+        for (Product p : toCopyShoppingHistory.getProducts()){
             DummyProduct dp = new DummyProduct(p);
-           this.products.put(dp, toCopyShoppingHistory.getProducts().get(p));
+           this.products.add(dp);
         }
     }
 
@@ -47,7 +45,7 @@ public class DummyShoppingHistory {
             tmpFinalPrice = new Double((Integer) map.get("finalPrice"));
         }
         this.finalPrice = tmpFinalPrice;
-        this.products = (LinkedHashMap<DummyProduct, Integer>) map.get("products");
+        this.products = (List<DummyProduct>) map.get("products");
     }
 
     public Integer getUserID() {
@@ -64,7 +62,7 @@ public class DummyShoppingHistory {
     }
 
      */
-    public LinkedHashMap<DummyProduct, Integer> getProducts() {
+    public List<DummyProduct> getProducts() {
         return products;
     }
 
@@ -90,13 +88,13 @@ public class DummyShoppingHistory {
 //                '}';
         JSONObject JO = new JSONObject();
         try {
-            JO.put("userIDDDD", userID);
+            JO.put("userID", userID);
             JO.put("storeID", storeID);
             JSONArray prods = new JSONArray();
-            for(DummyProduct p : products.keySet()) {
+            for(DummyProduct p : products) {
                 JSONObject JProduct = new JSONObject();
                 try {
-                    JProduct.put("storeIDDDD", p.getStoreID());
+                    JProduct.put("storeID", p.getStoreID());
                     JProduct.put("storeName", p.getStoreName());
                     JProduct.put("productID", p.getProductID());
                     JProduct.put("productName", p.getProductName());

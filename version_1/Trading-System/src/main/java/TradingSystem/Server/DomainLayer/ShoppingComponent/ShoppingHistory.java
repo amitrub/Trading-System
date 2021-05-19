@@ -8,6 +8,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 
 import java.text.SimpleDateFormat;
 
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ShoppingHistory {
@@ -16,7 +17,7 @@ public class ShoppingHistory {
     private Integer storeID;
 
     //product_quantity
-    private final ConcurrentHashMap<Product, Integer> products;
+    private final List<Product> products;
 
     private Date date;
 
@@ -27,13 +28,12 @@ public class ShoppingHistory {
         return userID;
     }
 
-    public ShoppingHistory(ShoppingBag toCopyShoppingBag, ConcurrentHashMap<Product, Integer> products) {
+    public ShoppingHistory(ShoppingBag toCopyShoppingBag, List<Product> products) {
         this.userID = toCopyShoppingBag.getUserID();
         this.storeID = toCopyShoppingBag.getStoreID();
         this.products = products;
         this.date = new Date(System.currentTimeMillis());
         this.finalPrice = toCopyShoppingBag.getFinalPrice();
-
     }
 
 
@@ -41,7 +41,7 @@ public class ShoppingHistory {
         return storeID;
     }
 
-    public ConcurrentHashMap<Product, Integer> getProducts() {
+    public List<Product> getProducts() {
         return products;
     }
 
@@ -54,7 +54,7 @@ public class ShoppingHistory {
     }
 
     public boolean isProductExist(int productId){
-        for(Product product: this.products.keySet()){
+        for(Product product: this.products){
             if(product.getProductID()==productId)
                 return true;
         }

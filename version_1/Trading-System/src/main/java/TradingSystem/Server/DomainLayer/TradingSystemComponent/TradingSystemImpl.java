@@ -2153,5 +2153,19 @@ public class TradingSystemImpl implements TradingSystem {
         return output;
     }
 
+    public Response GetAllSubscribers(String connID, int userID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "Error in Subscriber details");
+        }
+        List<DummySubscriber> dummySubscribers = new ArrayList<>();
+        for(Integer id : this.subscribers.keySet()) {
+            User u = this.subscribers.get(id);
+            DummySubscriber dummySubscriber = new DummySubscriber(u.getId(), u.getUserName());
+            dummySubscribers.add(dummySubscriber);
+        }
+        Response res = new Response("Get All Subscribers succeed");
+        res.AddPair("subscribers", dummySubscribers);
+        return res;
+    }
 
 }

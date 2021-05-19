@@ -4,6 +4,7 @@ import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import OwnerStoreService from "./OwnerStoreService";
 import ManagerStoreService from "./ManagerStoreService";
+import AdminServices from "./AdminServices/AdminServices";
 
 const apiHttp = createApiClientHttp();
 
@@ -131,6 +132,21 @@ function StoresOwner(props) {
               {showManagedStores ? "Hide" : "Managers"}
             </button>
           </div>
+
+          {/* Admins */}
+          {showAdminStores && props.admin ? (
+            <div>
+              <p>------</p>
+              <AdminServices
+                refresh={props.refresh}
+                onRefresh={props.onRefresh}
+                connID={props.connID}
+                userID={props.userID}
+              />
+            </div>
+          ) : (
+            ""
+          )}
 
           {/* Founders */}
           {showFoundedStores ? (
