@@ -254,7 +254,7 @@ public class Store extends Observable {
     }
 
     public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer,Integer> productsInTheBug){
-       if(this.discountPolicy!=null) {
+       if(this.discountPolicy.getSale()!=null) {
            return this.discountPolicy.calculatePrice(productsInTheBug, userId, this.CalculatePriceBeforeSale(productsInTheBug));
        }
        return this.CalculatePriceBeforeSale(productsInTheBug);
@@ -314,8 +314,8 @@ public class Store extends Observable {
         return this.inventory.reduceProducts(products_quantity);
     }
 
-    public void cancilReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
-        this.inventory.cancilReduceProducts(products);
+    public void cancelReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
+        this.inventory.cancelReduceProducts(products);
     }
 
     public Response WriteComment(int userId, int productId, String comment) {

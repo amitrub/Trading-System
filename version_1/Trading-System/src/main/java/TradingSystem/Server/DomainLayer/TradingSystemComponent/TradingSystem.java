@@ -90,7 +90,7 @@ public interface TradingSystem {
     public Response AllUsersHistoryAdmin(int AdminID, String connID);
     public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions);
     public User.Permission changeToPermission(String per);
-    public Response GetPossiblePermissionsToManager(int userID, String connID);
+    public Response GetPossiblePermissionsToManager(int userID, String connID, int storeID);
     public Response ShowStoreWorkers(int userID, String connID, int storeID);
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID);
     public Response ShowAllMyStores(String connID, int userID, boolean founder,boolean owner,boolean manager) ;

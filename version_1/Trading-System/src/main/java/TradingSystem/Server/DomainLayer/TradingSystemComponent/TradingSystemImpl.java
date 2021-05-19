@@ -6,8 +6,6 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ConditionRole;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.ConditionRoles.ExistProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -344,11 +342,6 @@ public class TradingSystemImpl implements TradingSystem {
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
-//            try {
-//                Thread.sleep(10000);
-//            } catch (InterruptedException e) {
-//                e.printStackTrace();
-//            }
             List<String> notConnectedMessages = myUser.updateAfterLogin();
             res.AddPair("messages", notConnectedMessages);
             System.out.println(res.getReturnObject().get("messages"));
@@ -573,20 +566,9 @@ public class TradingSystemImpl implements TradingSystem {
         else {
             User myGuest= guests.get(connID);
             Collection<ShoppingBag> shoppingBags = myGuest.getShoppingCart().getShoppingBags().values();
-//            List<Store> storesToUpdate = new ArrayList<>();
-//            for (ShoppingBag s:myGuest.getShoppingCart().getShoppingBags().values())
-//            {
-//                Integer storeID = s.getStoreID();
-//                Store store = stores.get(storeID);
-//                storesToUpdate.add(store);
-//            }
             Response res = myGuest.guestPurchase(name, credit_number, phone_number, address);
             if(!res.getIsErr())
             {
-//                for(Store s:storesToUpdate){
-//                    Response resAlert = new Response(false, "The client " + myGuest.getUserName() +" has been purchased the product from your store:" + s.getName());
-//                    s.sendAlertToOwners(resAlert);
-//                }
                 for (ShoppingBag bag:shoppingBags){
                     Store store = tradingSystem.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
@@ -621,20 +603,9 @@ public class TradingSystemImpl implements TradingSystem {
         else {
             User user = subscribers.get(userID);
             Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
-//            List<Store> storesToUpdate = new ArrayList<>();
-////            for (ShoppingBag s:user.getShoppingCart().getShoppingBags().values())
-////            {
-////                Integer storeID = s.getStoreID();
-////                Store store = stores.get(storeID);
-////                storesToUpdate.add(store);
-////            }
             Response res = user.subscriberPurchase(credit_number, phone_number, address);
             if(!res.getIsErr())
             {
-//                for(Store s:storesToUpdate){
-//                    Response resAlert = new Response(false, "A product has been purchased from your store:" + s.getName());
-//                    s.sendAlertToOwners(resAlert);
-//                }
                 for (ShoppingBag bag:shoppingBags){
                     Store store = tradingSystem.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
@@ -756,8 +727,10 @@ public class TradingSystemImpl implements TradingSystem {
         }
         Product product = stores.get(storeId).getProduct(productId);
         product.addComment(userId, comment);
+        String storeName = stores.get(storeId).getName();
 
-        Response resAlert = new Response(false, "There is a new comment on one of your store's products");
+        Response resAlert = new Response(false, "There is a new comment on your product: " + product.getProductName() +
+                " from the store: " + storeName);
         stores.get(storeId).sendAlertToOwners(resAlert);
 
         Response res = new Response(false, "WriteComment: The comment added successfully to product " + productId);
@@ -1300,20 +1273,22 @@ public class TradingSystemImpl implements TradingSystem {
      *      "connID": String
      *      }
      */
-    public Response GetPossiblePermissionsToManager(int userID, String connID) {
+    public Response GetPossiblePermissionsToManager(int userID, String connID, int storeID) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "GetPossiblePermissionsToManager: The user " + userID + " is not connected");
         }
-        //List<String> permissions = new ArrayList<>();
-        OwnerPermission OP = new OwnerPermission(userID, -1);
-        //for (User.Permission P : OP.getPermissions()
-        //) {
-        //    permissions.add(P.toString());
-        //}
-        Response res = new Response(false, "GetPossiblePermissionsToManager: Viewing permissions was successful");
-        //res.AddPair("permissions", permissions);
-        res.AddPair("permissions", OP.getPermissions());
         User user=subscribers.get(userID);
+        if(user==null) {
+            return new Response(true, "GetPossiblePermissionsToManager: The user " + userID + " is not in the list from some reason");
+        }
+        ManagerPermission MP= user.getManagerPermission(storeID);
+        Response res = new Response(false, "GetPossiblePermissionsToManager: Viewing permissions was successful");
+        if(MP!=null){
+            res.AddPair("permissions", MP.getPermissions());
+        }
+       else {
+            res.AddPair("permissions", new LinkedList<User.Permission>());
+        }
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
     }
@@ -1607,8 +1582,8 @@ public class TradingSystemImpl implements TradingSystem {
        return this.stores.get(storeID).reduceProducts(products);
     }
 
-    public void cancilReduceProducts(Integer storeID, ConcurrentHashMap<Integer, Integer> products) {
-      this.stores.get(storeID).cancilReduceProducts(products);
+    public void cancelReduceProducts(Integer storeID, ConcurrentHashMap<Integer, Integer> products) {
+      this.stores.get(storeID).cancelReduceProducts(products);
     }
 
     public List<DummyShoppingHistory> ShowStoreHistory(int storeId){
@@ -1635,7 +1610,7 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public Double calculateBugPrice(int userID, int storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        if(this.subscribers.contains(userID))
+        if(this.subscribers.containsKey(userID))
             return this.stores.get(storeID).calculateBugPrice(userID,productsInTheBug);
         else
             return this.stores.get(storeID).calculateBugPrice(userID,productsInTheBug);
@@ -1820,6 +1795,18 @@ public class TradingSystemImpl implements TradingSystem {
             }
             s=sale;
         }
+        if(saleName.equals("XorComposite")){
+            LinkedList<Sale> list=new LinkedList<Sale>();
+            XorComposite sale=new XorComposite(list);
+            for (String mapKey:o.keySet()
+            ) {
+                Map<String, Object> tosend = new HashMap<>();
+                tosend.put(mapKey,(Map<String, Object>) o.get(mapKey));
+                CreateDiscountPolicy(storeID,sale,tosend);
+            }
+            sale.setDes(new Cheaper());
+            s=sale;
+        }
         return s;
     }
 
@@ -1854,13 +1841,14 @@ public class TradingSystemImpl implements TradingSystem {
                     XorComposite xorComposite = new XorComposite();
                     Map<String, Object> map0 = (Map<String, Object>) o.get("XorComposite");
                     Map<String, Object> Decision=(  Map<String, Object>) map0.get("Decision");
-                    Decision dec=createDecision(Decision);
+                    Decision dec=new Cheaper();
                     for (String mapKey:map0.keySet()
                     ) {
                         Map<String, Object> tosend = new HashMap<>();
                         tosend.put(mapKey,(Map<String, Object>) map0.get(mapKey));
                         CreateDiscountPolicy(storeID,xorComposite,tosend);
                     }
+                    xorComposite.setDes(dec);
                     sale.setSale(xorComposite);
                     return xorComposite;
                 case "StoreSale":
@@ -2030,7 +2018,7 @@ public class TradingSystemImpl implements TradingSystem {
                     Conditioning conditioning = new Conditioning();
                     Map<String, Object> map4 = (Map<String, Object>) exp.get("Conditioning");
                     Map<String, Object> cond = (Map<String, Object>) map4.get("cond");
-                    ConditionRole e1 = createConditingRole(storeID, cond);
+                    Expression e1 = createLimitExp(storeID, cond);
                     Map<String, Object> condIf = (Map<String, Object>) map4.get("condIf");
                     Expression e2 = createLimitExp(storeID, condIf);
                     conditioning.setCond(e1);
@@ -2074,7 +2062,7 @@ public class TradingSystemImpl implements TradingSystem {
         }
         return null;
     }
-
+/*
     private ConditionRole createConditingRole(int storeID, Map<String, Object> cond) {
         String role=(String) cond.get("Role");
         if(role.equals("ExistProduct")){
@@ -2082,10 +2070,8 @@ public class TradingSystemImpl implements TradingSystem {
             return new ExistProduct(productId);
         }
         return null;
-
-
     }
-
+*/
     //for the tests
     public void AddStoreToList(Store store) {
         this.stores.put(store.getId(), store);

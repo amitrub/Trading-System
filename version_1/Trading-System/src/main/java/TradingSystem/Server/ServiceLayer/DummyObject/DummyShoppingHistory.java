@@ -17,25 +17,26 @@ public class DummyShoppingHistory {
     //private ConcurrentHashMap<DummyProduct,Integer> products;
     private LinkedHashMap<DummyProduct,Integer> products;
 
-    //private Date date;
+    private Date date;
     private Double finalPrice;
 
     public DummyShoppingHistory(ShoppingHistory toCopyShoppingHistory) {
         this.userID = toCopyShoppingHistory.getUserID();
         this.storeID = toCopyShoppingHistory.getStoreID();
-        //this.date = toCopyShoppingHistory.getDate();
+        this.date = toCopyShoppingHistory.getDate();
         this.finalPrice = toCopyShoppingHistory.getFinalPrice();
         //this.products = new ConcurrentHashMap<>();
         this.products = new LinkedHashMap<>();
         for (Product p : toCopyShoppingHistory.getProducts().keySet()){
-            this.products.put(new DummyProduct(p), toCopyShoppingHistory.getProducts().get(p));
+            DummyProduct dp = new DummyProduct(p);
+           this.products.put(dp, toCopyShoppingHistory.getProducts().get(p));
         }
     }
 
     public DummyShoppingHistory(Map<String, Object> map) {
         this.userID = (Integer) map.get("userID");
         this.storeID = (Integer) map.get("storeID");
-        //this.date = (Date) map.get("date");
+        this.date = (Date) map.get("date");
         Double tmpFinalPrice;
         try {
             tmpFinalPrice = (Double) map.get("finalPrice");
@@ -44,7 +45,6 @@ public class DummyShoppingHistory {
             tmpFinalPrice = new Double((Integer) map.get("finalPrice"));
         }
         this.finalPrice = tmpFinalPrice;
-        //this.products = (ConcurrentHashMap<DummyProduct, Integer>) map.get("products");
         this.products = (LinkedHashMap<DummyProduct, Integer>) map.get("products");
     }
 

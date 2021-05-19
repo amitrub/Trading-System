@@ -16,6 +16,7 @@ import java.util.concurrent.*;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -356,13 +357,17 @@ class TradingSystemImplTest {
     void UserHistorySuccess() {
         setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
+        Integer productID2 = Nstore.getProductID("Bag");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
         tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
 
+        DummyUser test = new DummyUser("ala", "123");
         Response res = tradingSystemImpl.ShowSubscriberHistory(ElinorID, EconnID);
         assertFalse(res.getIsErr());
         List<DummyShoppingHistory> list = (List<DummyShoppingHistory>) res.getReturnObject().get("history");
-        assertEquals(list.size(), 1);
+        assertEquals(list.size(), 2);
     }
 
     // requirement 3.7
@@ -1197,7 +1202,7 @@ class TradingSystemImplTest {
 
     //region template tests
     @Test
-    void tmpTest1() {
+    void CreateSaleTest() {
 
 
         Map<String, Object> storeSale = new HashMap<>();
@@ -1262,12 +1267,11 @@ class TradingSystemImplTest {
 
         Map<String, Object> Max = new HashMap<>();
         Max.put("MaxComposite", MaxElement);
-
         Sale s = tradingSystemImpl.createSaleForDiscount(1,  Max);
         assertTrue(true);
     }
     @Test
-    void tmpTest2() {
+    void CreateExpTest2() {
 
         Map<String, Object> QuantityLimitForProductElement =new HashMap<> ();
         QuantityLimitForProductElement.put("maxQuantity",30);

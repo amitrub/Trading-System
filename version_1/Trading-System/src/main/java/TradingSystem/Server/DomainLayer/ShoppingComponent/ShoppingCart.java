@@ -101,13 +101,14 @@ public class ShoppingCart {
                   return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
             }
         }
+        this.shoppingBags.get(storeID).addProduct(productID, quantity);
         ConcurrentHashMap<Integer,Integer> products=this.shoppingBags.get(storeID).getProducts();
         if (!tradingSystemImpl.validation.checkBuyingPolicy(this.userID, storeID,products)) {
+            this.shoppingBags.get(storeID).RemoveProduct(productID);
             return new Response(true, "Adding the product "+productID+" is against the store policy");
         }
-        Double priceForBug = tradingSystemImpl.calculateBugPrice(productID, storeID, products);
-        shoppingBags.get(storeID).setFinalPrice(priceForBug);
-        this.shoppingBags.get(storeID).addProduct(productID, quantity);
+        Double priceForBag = tradingSystemImpl.calculateBugPrice(productID, storeID, products);
+        shoppingBags.get(storeID).setFinalPrice(priceForBag);
         Response res =new Response("The product added successfully");
         return res;
     }
@@ -161,6 +162,7 @@ public class ShoppingCart {
         }
         //TODO add charge to a payment
         //TODO Add payment to each store for the products
+
         addShoppingHistory(isGuest);
         this.storesReducedProductsVain=new HashSet<>();
         this.shoppingBags = new ConcurrentHashMap<>();
@@ -225,7 +227,7 @@ public class ShoppingCart {
             ShoppingBag SB = this.shoppingBags.get(storeID);
             res = tradingSystemImpl.reduceProducts(SB.getProducts(), storeID);
             if (res.getIsErr()) {
-                this.cancilReduceProducts();
+                this.cancelReduceProducts();
                 this.storesReducedProductsVain=new HashSet<>();
                 return res;
             }
@@ -235,9 +237,9 @@ public class ShoppingCart {
         return res;
     }
 
-    private void cancilReduceProducts() {
+    private void cancelReduceProducts() {
         for (Integer storeID : this.storesReducedProductsVain) {
-            tradingSystemImpl.cancilReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
+            tradingSystemImpl.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
         }
     }
 
@@ -298,15 +300,18 @@ public class ShoppingCart {
         if(this.shoppingBags.isEmpty()){
             return new Response(true,"EditCart: The shoppingCart empty, cannot be edited");
         }
-        else if(this.shoppingBags.get(storeID)==null||
+        if(this.shoppingBags.get(storeID)==null||
         !this.shoppingBags.get(storeID).getProductsList().contains(productID)){
             return new Response(true,"EditCart: The product isn't in the shoppingCart, so it cannot be edited");
         }
-        else if(!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID,productID,quantity)){
+        if(!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID,productID,quantity)){
             return new Response(true,"EditCart: The product isn't in the stock, so it cannot be edited");
         }
-        else if(!tradingSystemImpl.validation.checkBuyingPolicy(userID,storeID,this.shoppingBags.get(storeID).getProducts())){
-                return new Response(true,"EditCart: The quantity of the product is against tha store policy, so it cannot be edited");
+        Integer preQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
+        this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
+        if(!tradingSystemImpl.validation.checkBuyingPolicy(userID,storeID,this.shoppingBags.get(storeID).getProducts())){
+            this.shoppingBags.get(storeID).editProductQuantity(productID, preQuantity);
+            return new Response(true,"EditCart: The quantity of the product is against tha store policy, so it cannot be edited");
         }
         else{
             this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);

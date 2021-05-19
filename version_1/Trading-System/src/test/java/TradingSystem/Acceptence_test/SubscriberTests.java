@@ -17,13 +17,14 @@ import static org.junit.Assert.*;
 public class SubscriberTests {
 
     Client_Interface client = Client_Driver.getClient();
-    TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     @BeforeEach
     void setUp() {
       //  this.client = new Client();
         client.clearSystem();
         client.connectSystem();
+        client.Register("Elinor", "123");
+        client.Login("Elinor", "123");
     }
 
     @AfterEach
@@ -32,8 +33,8 @@ public class SubscriberTests {
         client.clearSystem();
     }
 
-    Integer getStoreID(List<DummyStore> stores, String storename)
-    {
+    //region other functions
+    Integer getStoreID(List<DummyStore> stores, String storename) {
         for (int i=0; i<stores.size(); i++)
         {
             if(stores.get(i).getName().equals(storename))
@@ -42,46 +43,51 @@ public class SubscriberTests {
         return -1;
     }
 
+    Integer getProductID(List<DummyProduct> storeProducts, String productName)
+    {
+        for (int i=0; i<storeProducts.size(); i++)
+        {
+            if(storeProducts.get(i).getProductName().equals(productName))
+                return storeProducts.get(i).getProductID();
+        }
+        return -1;
+    }
+
+    //endregion
+
     //region requirement 3.1: logout Tests
     @Test
     void logoutHappy(){
-        client.connectSystem();
-        client.Register("Gal", "123");
-        client.Login("Gal", "123");
-        Response respone = client.Logout();
+        Response response = client.Logout();
         assertEquals(client.getUserID(), -1); //-1 means client is a guest in the system now
-        assertFalse(respone.getIsErr());
+        assertFalse(response.getIsErr());
     }
     //endregion
     //region requirement 3.2: open store tests
     //case 3.2.1
     @Test
     void openStore_Happy() {
-        client.Register("Lee", "123");
-        client.Login("Lee", "123");
         Integer preSize = client.showAllStores().getStores().size();
 
-        Response response = client.openStore("Mania1");
+        Response response = client.openStore("Mania");
         assertFalse(response.getIsErr());
         assertEquals(preSize+1, client.showAllStores().getStores().size());
     }
     //case 3.2.2
     @Test
     void openStore_SadDuplicateName() {
-        client.Register("Lin", "123");
-        client.Login("Lin", "123");
-        //Integer preSize = client.showAllStores().size();
-
-        client.openStore("Mania2");
-        Response response = client.openStore("Mania2");
+        client.openStore("Mania");
+        Integer preSize = client.showAllStores().getStores().size();
+        Response response = client.openStore("Mania");
+        Integer newSize = client.showAllStores().getStores().size();
         assertTrue(response.getIsErr());
+        assertEquals(preSize, newSize);
     }
 
     //case 3.2.3
-        @Test
+    @Test
     void sad_openStoreNotRegistered() {
-        client.Register("Lior", "123");
-//        client.Login("Lior", "123");
+        client.Logout();
         Response response = client.openStore("American Eagle11");
         assertTrue(response.getIsErr());
     }
@@ -91,109 +97,90 @@ public class SubscriberTests {
     @Test
     void writeComment() {
         // Prepare
-        client.Register("Hadas", "123");
-        client.Login("Hadas", "123");
-        String store_name = "Mania Jeans";
-        client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores().getStores();
-        Integer storeID = getStoreID(stores, store_name);
-        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        Integer storeID = setUpBeforePurchase();
         List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = products.get(0).getProductID();
+        Integer productID = getProductID(products, "Short Pants");
         client.addProductToCart(storeID, productID, 1);
-
         client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+
+        //Issue
         Response response = client.writeComment(storeID, productID, 3, "The product is nice");
         assertFalse(response.getIsErr());
     }
     //case: 3.3.2, trying comment on product sub didn't buy
     @Test
     void sad_didntBuy_writeComment() {
-        client.Register("Sapir", "123");
-        client.Login("Sapir", "123");
-        client.openStore("Fox");
-        List<DummyStore> store = client.showAllStores().getStores();
-        Integer storeID = store.get(0).getId();
-        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        //prepare
+        Integer storeID = setUpBeforePurchase();
         List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
-        Integer productID = products.get(0).getProductID();
+        Integer productID = getProductID(products, "Short Pants");
+
+        //Issue
         Response response = client.writeComment(storeID, productID, 3, "The product is nice");
         assertTrue(response.getIsErr());
     }
     //endregion
     //region requirement 3.4: User Purchase
+
+    Integer setUpBeforePurchase(){
+        client.openStore("Adidas");
+        List<DummyStore> stores = client.showAllStores().getStores();
+        Integer storeID = getStoreID(stores, "Adidas");
+        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        return storeID;
+    }
+
     //case 3.4.1 simple purchase
     @Test
     void Purchase_Happy() {
         // Prepare
-        client.Register("Hadas", "123");
-        client.Login("Hadas", "123");
-        String store_name = "Mania Jeans";
-        client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores().getStores();
-        Integer storeID = getStoreID(stores, store_name);
-        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        Integer storeID = setUpBeforePurchase();
         List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = products.get(0).getProductID();
-//        client.Logout();
+        Integer productID = getProductID(products, "Short Pants");
+
         client.addProductToCart(storeID, productID, 1);
         String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
 
         //Issue
-        boolean purchaseFailed = client.subscriberPurchase( "12345678",
-                "052897878787", "sioot st. 5").getIsErr();
+        Integer preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
+        Response response = client.subscriberPurchase( "12345678",
+                "052897878787", "sioot st. 5");
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
         List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
-        DummyProduct shortPants = products.get(0);
-        DummyProduct shortPantsAfter = productsAfter.get(0);
 
         //Assert
-        if(!purchaseFailed)
-            System.out.println("purchase Succeed");
-        assertFalse(purchaseFailed);
+        assertFalse(response.getIsErr());
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
-        assertEquals(shortPantsAfter.getQuantity(), shortPants.getQuantity() - 1); //check decrease quantity in store
+        assertEquals(productsAfter.get(0).getQuantity(), preQuantity - 1); //check decrease quantity in store
     }
 
     //case 3.4.2 input doesn't fit
     @Test
     void Purchase_Sad() {
         // Prepare
-        client.Register("Hadas", "123");
-        client.Login("Hadas", "123");
-        String store_name = "Mania Jeans";
-        client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores().getStores();
-        Integer storeID = getStoreID(stores, store_name);
-        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        Integer storeID = setUpBeforePurchase();
         List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = products.get(0).getProductID();
-//        client.Logout();
+
         client.addProductToCart(storeID, productID, 1);
         String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
 
-//        //Issue, not valid credit number and phone number
-//        boolean purchaseFailed = client.subscriberPurchase( "1", "7", "sioot st. 5");
-//
-//        //Assert
-//        assertTrue(purchaseFailed);
+        //Issue, not valid credit number and phone number
+        Response response = client.subscriberPurchase( "123456", "0534550335", "sioot st. 5");
+
+        //Assert
+        assertTrue(response.getIsErr());
     }
     // endregion
     //region requirement 3.7: User History Tests
-    //case 3.7.1 have parchuses
+    //case 3.7.1 have purchases
     @Test
     void showUsersHistory_Happy() {
-        client.Register("Hadas", "123");
-        client.Login("Hadas", "123");
-        String store_name = "Mania Jeans";
-        client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores().getStores();
-        Integer storeID = getStoreID(stores, store_name);
-        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        Integer storeID = setUpBeforePurchase();
         List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = products.get(0).getProductID();
+        Integer productID = getProductID(products, "Short Pants");
         client.addProductToCart(storeID, productID, 1);
         client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
 
@@ -205,13 +192,7 @@ public class SubscriberTests {
     @Test
     void showUserHistory_Sad_NoHistory() {
         // Prepare
-        client.Register("Hadas", "123");
-        client.Login("Hadas", "123");
-        String store_name = "Mania Jeans";
-        client.openStore(store_name);
-        List<DummyStore> stores = client.showAllStores().getStores();
-        Integer storeID = getStoreID(stores, store_name);
-        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
+        setUpBeforePurchase();
 
         Response response = client.showUserHistory();
         assertTrue(response.getIsErr());

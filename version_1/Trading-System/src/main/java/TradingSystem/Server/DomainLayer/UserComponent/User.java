@@ -215,8 +215,8 @@ public  class User implements Observer {
 
     public List<DummyShoppingHistory> ShowUserHistory(){
         List<DummyShoppingHistory> shoppingHistories=new ArrayList<>();
-        for(ShoppingHistory shoppingHistory : shoppingHistory){
-            shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
+        for(ShoppingHistory s : shoppingHistory){
+            shoppingHistories.add(new DummyShoppingHistory(s));
         }
         return shoppingHistories;
     }
