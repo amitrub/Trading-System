@@ -16,6 +16,8 @@ function UserHistory(props) {
     );
 
     console.log(historyResponse);
+    const history = JSON.stringify(historyResponse.returnObject.history);
+    console.log(history);
 
     if (historyResponse.isErr) {
       console.log(historyResponse.message);
