@@ -23,6 +23,7 @@ public class SubscriberServiceHttp {
     @Autowired
     private StoreService storeService;
 
+
     /**
      * @requirement 3.1
      *
@@ -64,7 +65,12 @@ public class SubscriberServiceHttp {
     @PostMapping("test")
     public Response testAddStore(){
         System.out.println("adding store");
+//        MongoDatabase database = mongoClient.getDatabase("test");
+//        database.createCollection("students");
         DummyStore store=new DummyStore(5,"test",5.0);
+//        Document document = new Document();
+//        document.append("student1",store);
+//        database.getCollection("students").insertOne(store);
         DummyStore store1= storeService.addStore(store);
         if(store1!=null){
             System.out.println(store1.getId());
