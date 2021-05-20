@@ -17,15 +17,15 @@ public class DummyShoppingHistory {
     //private ConcurrentHashMap<DummyProduct,Integer> products;
     private List<DummyProduct> products;
 
-    private Date date;
+    private String date;
     private Double finalPrice;
 
     public DummyShoppingHistory(ShoppingHistory toCopyShoppingHistory) {
         this.userID = toCopyShoppingHistory.getUserID();
         this.storeID = toCopyShoppingHistory.getStoreID();
-        this.date = toCopyShoppingHistory.getDate();
+        this.date = toCopyShoppingHistory.getDate().toString();
+//        this.date = 777;
         this.finalPrice = toCopyShoppingHistory.getFinalPrice();
-        //this.products = new ConcurrentHashMap<>();
         this.products = new ArrayList<>();
         for (Product p : toCopyShoppingHistory.getProducts()){
             DummyProduct dp = new DummyProduct(p);
@@ -36,7 +36,7 @@ public class DummyShoppingHistory {
     public DummyShoppingHistory(Map<String, Object> map) {
         this.userID = (Integer) map.get("userID");
         this.storeID = (Integer) map.get("storeID");
-        this.date = (Date) map.get("date");
+        this.date = ((Date) map.get("date")).toString();
         Double tmpFinalPrice;
         try {
             tmpFinalPrice = (Double) map.get("finalPrice");

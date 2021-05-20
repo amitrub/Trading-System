@@ -1,96 +1,97 @@
-// import React, { useState } from "react";
-// import "../../../Design/grid.css";
-// import "../../../Design/style.css";
-// import createApiClientHttp from "../../../ApiClientHttp";
+import React, { useState, useEffect } from "react";
+import "../../../Design/grid.css";
+import "../../../Design/style.css";
+import createApiClientHttp from "../../../ApiClientHttp";
+import MyPopup from "../../OtherComponents/MyPopup/MyPopup";
 
-// const apiHtml = createApiClientHttp();
+const apiHttp = createApiClientHttp();
 
-// function ProductInHistory(props) {
-//   const history = props.currHistory;
-//   const products = history.products;
+function ProductInHistory(props) {
+  const [quantityToBuy, setQuantityToBuy] = useState(0);
+  const [popUpProduct, setPopUpProduct] = useState(false);
+  const [popupMsg, setPopMsg] = useState("");
 
-//   function submitNewQuantity(event) {
-//     const strQuantity = event.target.value;
-//     setEditedQuantity(parseInt(strQuantity));
-//   }
+  const product = props.currProduct;
 
-//   async function submitEditQuantity() {
-//     console.log("Edit quantity in cart");
-//     const editCartResponse = await apiHtml.EditProductQuantityFromCart(
-//       props.connID,
-//       product.storeID,
-//       product.productID,
-//       editedQuantity
-//     );
+  function onClosePopupProduct() {
+    setPopUpProduct(false);
+  }
 
-//     if (editCartResponse.isErr) {
-//       console.log(editCartResponse.message);
-//     } else {
-//       //we make the shopping cart refresh on the other component
-//       props.onRefresh();
-//     }
-//   }
+  function insertQuantity(event) {
+    setQuantityToBuy(event.target.value);
+  }
 
-//   async function sumbitRemoveProduct() {
-//     console.log("sumbitRemoveProduct");
-//     const removeProdFromCartResponse = await apiHtml.RemoveProductFromCart(
-//       props.connID,
-//       product.storeID,
-//       product.productID
-//     );
+  async function submitBuyProductHandler(event) {
+    event.preventDefault();
+    // console.log(
+    //   "Product: " +
+    //     product.productName +
+    //     " added to Cart! quantity added: " +
+    //     quantityToBuy +
+    //     "prodID=" +
+    //     product.productID +
+    //     " storeID=" +
+    //     product.storeID
+    // );
 
-//     if (removeProdFromCartResponse.isErr) {
-//       console.log(removeProdFromCartResponse.message);
-//     } else {
-//       //we make the shopping cart refresh on the other component
-//       props.onRefresh();
-//     }
-//   }
+    const quantityToBuyInt = parseInt(quantityToBuy);
+    const responseAddProductToCart = await apiHttp.AddProductToCart(
+      props.connID,
+      product.storeID,
+      product.productID,
+      quantityToBuyInt
+    );
 
-//   return (
-//     <div className="plan-box">
-//       <div>
-//         <h3>{product.productName}</h3>
-//         <p className="plan-price">${product.price}</p>
-//         <p className="plan-price-meal">{product.quantity} units in cart</p>
-//         <p className="plan-price-meal">
-//           from store '{product.storeName}' (id={product.storeID})
-//         </p>
-//       </div>
-//       <div>
-//         <p>Category: {product.category}</p>
-//       </div>
-//       <div>
-//         {/* <form onSubmit={submitBuyProductHandler} method="post" action="#"> */}
-//         {/* Edit Product Quantity */}
-//         <div className="">
-//           <input
-//             type="number"
-//             name="edit"
-//             placeholder="insert new quantity"
-//             min="1"
-//             onChange={submitNewQuantity}
-//           />
-//           <button
-//             className="buttonus"
-//             value="edit product cart"
-//             onClick={submitEditQuantity}
-//           >
-//             Edit quantity
-//           </button>
-//         </div>
+    // console.log("Product.js:");
+    // console.log(responseAddProductToCart);
 
-//         <button
-//           className="buttonus"
-//           value="Remove from cart"
-//           onClick={sumbitRemoveProduct}
-//         >
-//           Remove from cart
-//         </button>
-//         {/* </form> */}
-//       </div>
-//     </div>
-//   );
-// }
+    props.onRefresh();
+    setPopMsg(responseAddProductToCart.message);
+    setPopUpProduct(true);
+  }
 
-// export default ProductInHistory;
+  useEffect(() => {}, [props.refresh]);
+
+  return (
+    <div className="plan-box">
+      <div>
+        <h3>{product.productName}</h3>
+        <p className="plan-price">${product.price}</p>
+        <p className="plan-price-meal">
+          {product.quantity} units on '{product.storeName}'
+        </p>
+      </div>
+      <div>
+        <p>Category: {product.category}</p>
+      </div>
+      <div>
+        <form
+          onSubmit={submitBuyProductHandler}
+          method="post"
+          // action="#"
+        >
+          <div className="">
+            <input
+              type="number"
+              name="quantity"
+              placeholder="enter quantity"
+              required
+              min="1"
+              onChange={insertQuantity}
+            />
+          </div>
+          <div className="btn btn-ghost">
+            <input type="submit" value="Add to cart!" />
+          </div>
+        </form>
+      </div>
+      {popUpProduct ? (
+        <MyPopup errMsg={popupMsg} onClosePopup={onClosePopupProduct}></MyPopup>
+      ) : (
+        ""
+      )}
+    </div>
+  );
+}
+
+export default ProductInHistory;
