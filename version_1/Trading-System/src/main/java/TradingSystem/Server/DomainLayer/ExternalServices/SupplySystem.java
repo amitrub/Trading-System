@@ -33,6 +33,21 @@ public class SupplySystem implements ExternalServices {
     }
 
     private Response handshake(){
+//        RestTemplate template = new RestTemplate();
+//        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+//        map.add("action_type", "handshake");
+//        HttpHeaders headers = new HttpHeaders();
+//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+//        HttpEntity<MultiValueMap<String, String>> requestEntity=
+//                new HttpEntity<MultiValueMap<String, String>>(map, headers);
+//        String token = "";
+//        try{
+//            Response response = template.postForObject(urlbaseExternalSystems, requestEntity,  Response.class);
+//            token = response.getMessage();
+//        }
+//        catch(Exception e){
+//            token = e.getMessage();
+//        }
         JSONObject post_data = new JSONObject();
         String message = "Failed";
         String actionType = "handshake";
@@ -73,9 +88,28 @@ public class SupplySystem implements ExternalServices {
         }catch (Exception e){
             System.out.println(e);
         }
-
         return new Response(true, message);
     }
 
+    @Override
+    public Response Cancel(Integer transactionId) {
+        JSONObject post_data = new JSONObject();
+        String message = "Failed";
+        String actionType = "cancel_supply";
+        try {
+            post_data.put("action_type", actionType);
+            post_data.put("transaction_id", transactionId);
+        } catch (Exception e){
+            System.out.println(e);
+        }
+        JSONObject jsonResponse = ExternalHttpRequest.sendPOSTRequest(urlbaseExternalSystems, post_data.toString());
+        try{
+            String str = jsonResponse.toString();
+            return new Response(false, str);
+        }catch (Exception e){
+            System.out.println(e);
+        }
 
+        return new Response(true, message);
+    }
 }

@@ -77,9 +77,31 @@ public class PaymentSystem implements ExternalServices {
             post_data.put("month", paymentInfo.getMonth());
             post_data.put("year", paymentInfo.getYear());
             post_data.put("holder", paymentInfo.getFullName());
-            post_data.put("cvv", paymentInfo.getCvv());
+            post_data.put("ccv", paymentInfo.getCvv());
             post_data.put("id", paymentInfo.getID());
 
+        } catch (Exception e){
+            System.out.println(e);
+        }
+        JSONObject jsonResponse = ExternalHttpRequest.sendPOSTRequest(urlbaseExternalSystems, post_data.toString());
+        try{
+            String str = jsonResponse.toString();
+            return new Response(false, str);
+        }catch (Exception e){
+            System.out.println(e);
+        }
+
+        return new Response(true, message);
+    }
+
+    @Override
+    public Response Cancel(Integer transactionId) {
+        JSONObject post_data = new JSONObject();
+        String message = "Failed";
+        String actionType = "cancel_pay";
+        try {
+            post_data.put("action_type", actionType);
+            post_data.put("transaction_id", transactionId);
         } catch (Exception e){
             System.out.println(e);
         }

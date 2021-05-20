@@ -22,4 +22,9 @@ public class SupplySystemProxy implements ExternalServices {
         }
         return new Response(false, "Can Supply");
     }
+
+    @Override
+    public Response Cancel(Integer transactionId) {
+        return new Response("Supply with transaction ID: " + transactionId + " canceled successfully");
+    }
 }

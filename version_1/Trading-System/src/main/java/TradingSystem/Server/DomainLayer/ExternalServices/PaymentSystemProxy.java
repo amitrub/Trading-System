@@ -31,4 +31,9 @@ public class PaymentSystemProxy implements ExternalServices {
 
         return new Response(false, "Payment confirmed");
     }
+
+    @Override
+    public Response Cancel(Integer transactionId) {
+        return new Response(false, "Payment with transaction ID: " + transactionId + " canceled successfully");
+    }
 }
