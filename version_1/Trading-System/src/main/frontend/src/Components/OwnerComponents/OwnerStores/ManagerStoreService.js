@@ -392,8 +392,8 @@ function ManagerStoreService(props) {
               ? hidePermissionsManagerHandler
               : showPermissionsManagerHandler
           }
-          //   disabled={!hasPermission("EditManagerPermission")}
-          disabled
+          disabled={!hasPermission("EditManagerPermission")}
+          // disabled
         >
           {showPerssionsManager ? "Hide" : "Permissions"}
         </button>

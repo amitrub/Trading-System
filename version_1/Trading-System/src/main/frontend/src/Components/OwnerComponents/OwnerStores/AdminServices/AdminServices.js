@@ -2,32 +2,14 @@ import React, { useState } from "react";
 import createApiClientHttp from "../../../../ApiClientHttp";
 import "../../../../Design/grid.css";
 import "../../../../Design/style.css";
-import AllUsersHistories from "./AllUsersHistories/AllUsersHistories";
+import UserStoreHistory from "./UserStoreHistory";
 
 const apiHttp = createApiClientHttp();
 
 function AdminServices(props) {
   //Buttons
-  const [showUsersHistories, setShowUsersHistories] = useState(false);
-  const [showAllStores, setShowAllStores] = useState(false);
   const [showUserHistory, setShowUserHistory] = useState(false);
   const [showStoreHistory, setShowStoreHistory] = useState(false);
-
-  // Users Histories
-  function hideUsersHistoriesHandler() {
-    setShowUsersHistories(false);
-  }
-  function showUsersHistoriesHandler() {
-    setShowUsersHistories(true);
-  }
-
-  // All Stores Btn
-  function hideAllStoresHandler() {
-    setShowAllStores(false);
-  }
-  function showAllStoresHandler() {
-    setShowAllStores(true);
-  }
 
   // User History
   function hideUserHistoryHandler() {
@@ -35,6 +17,7 @@ function AdminServices(props) {
   }
   function showUserHistoryHandler() {
     setShowUserHistory(true);
+    setShowStoreHistory(false);
   }
 
   // Store History
@@ -43,6 +26,7 @@ function AdminServices(props) {
   }
   function showStoreHistoryHandler() {
     setShowStoreHistory(true);
+    setShowUserHistory(false);
   }
 
   return (
@@ -55,28 +39,6 @@ function AdminServices(props) {
 
       <div>
         <div className="row">
-          {/* All Users Histories Btn */}
-          <button
-            className="buttonus"
-            value="load our stores..."
-            onClick={
-              showUsersHistories
-                ? hideUsersHistoriesHandler
-                : showUsersHistoriesHandler
-            }
-          >
-            {showUsersHistories ? "Hide" : "All User's History"}
-          </button>
-          {/* All Stores Btn */}
-          <button
-            className="buttonus"
-            value="load our stores..."
-            onClick={
-              showAllStores ? hideAllStoresHandler : showAllStoresHandler
-            }
-          >
-            {showAllStores ? "Hide" : "All Stores"}
-          </button>
           {/* User History Btn */}
           <button
             className="buttonus"
@@ -101,20 +63,50 @@ function AdminServices(props) {
           </button>
         </div>
 
-        {/* All Users Histories  */}
+        {/* User History */}
         <div>
-          {showUsersHistories ? (
-            <AllUsersHistories userID={props.userID} connID={props.connID} />
+          {showUserHistory ? (
+            <div className="row">
+              {showUserHistory ? (
+                <UserStoreHistory
+                  refresh={props.refresh}
+                  onRefresh={props.onRefresh}
+                  connID={props.connID}
+                  userID={props.userID}
+                  job="User History"
+                  label="userHistory"
+                  action={apiHttp.AdminUserHistory}
+                />
+              ) : (
+                ""
+              )}
+            </div>
           ) : (
             ""
           )}
         </div>
-        {/* All Stores Btn  */}
-        <div>{showAllStores ? "Hide" : "All Stores"}</div>
-        {/* User History Btn  */}
-        <div>{showUserHistory ? "Hide" : "User history"}</div>
-        {/* Store History Btn  */}
-        <div>{showStoreHistory ? "Hide" : "Store History"}</div>
+        {/* Store History */}
+        <div>
+          {showStoreHistory ? (
+            <div className="row">
+              {showStoreHistory ? (
+                <UserStoreHistory
+                  refresh={props.refresh}
+                  onRefresh={props.onRefresh}
+                  connID={props.connID}
+                  userID={props.userID}
+                  job="Store History"
+                  label="storeHistory"
+                  action={apiHttp.AdminStoreHistory}
+                />
+              ) : (
+                ""
+              )}
+            </div>
+          ) : (
+            ""
+          )}
+        </div>
       </div>
     </section>
   );
