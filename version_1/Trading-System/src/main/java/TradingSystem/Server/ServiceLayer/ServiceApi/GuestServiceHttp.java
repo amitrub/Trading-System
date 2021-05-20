@@ -177,7 +177,6 @@ public class GuestServiceHttp {
         return res;
     }
 
-
     /**
      * @requirement 2.6
      *
@@ -235,7 +234,6 @@ public class GuestServiceHttp {
 
 
     }
-
 
     /**
      * @requirement 2.7
@@ -391,11 +389,14 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/purchase")
     public Response guestPurchase(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String name, credit_number, phone_number, address;
+        String name, credit_number, month, year, cvv, ID, address;
         try {
             name = (String) obj.get("name");
             credit_number = (String) obj.get("credit_number");
-            phone_number = (String) obj.get("phone_number");
+            month = (String) obj.get("month");
+            year = (String) obj.get("year");
+            cvv = (String) obj.get("cvv");
+            ID = (String) obj.get("ID");
             address = (String) obj.get("address");
         }
         catch (Exception e){
@@ -406,7 +407,7 @@ public class GuestServiceHttp {
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
+        Response res = tradingSystem.guestPurchase(connID, name, credit_number, month, year, cvv, ID, address);
         WriteToLogger(res);
         return res;
     }

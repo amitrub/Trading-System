@@ -3,7 +3,6 @@ package TradingSystem.Acceptence_test;
 import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -103,7 +102,7 @@ public class SubscriberTests {
         List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = getProductID(products, "Short Pants");
         client.addProductToCart(storeID, productID, 1);
-        client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+        client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
 
         //Issue
         Response response = client.writeComment(storeID, productID, 3, "The product is nice");
@@ -146,8 +145,7 @@ public class SubscriberTests {
 
         //Issue
         Integer preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
-        Response response = client.subscriberPurchase( "12345678",
-                "052897878787", "sioot st. 5");
+        Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
         List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
 
@@ -170,7 +168,7 @@ public class SubscriberTests {
         assertEquals(ans1, "Short Pants");
 
         //Issue, not valid credit number and phone number
-        Response response = client.subscriberPurchase( "123456", "0534550335", "sioot st. 5");
+        Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
 
         //Assert
         assertTrue(response.getIsErr());
@@ -199,9 +197,9 @@ public class SubscriberTests {
         Integer productID = 1;
         c.addProductToCart(storeID, productID, 1);
         c.addProductToCart(storeID, 2, 1);
-        c.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+        c.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
         c.addProductToCart(storeID, productID, 1);
-        c.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
+        c.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
 
         Response response = c.showUserHistory();
         assertFalse(response.getIsErr());

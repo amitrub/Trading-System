@@ -15,8 +15,6 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
@@ -302,7 +300,7 @@ class TradingSystemImplTest {
         setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
 
         Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
         assertFalse(response.getIsErr());
@@ -316,7 +314,7 @@ class TradingSystemImplTest {
         setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
 
         Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, 100, productID1, "Amazing");
         assertTrue(response.getIsErr());
@@ -343,7 +341,7 @@ class TradingSystemImplTest {
         setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
 
         tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
         Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "WTF");
@@ -359,9 +357,9 @@ class TradingSystemImplTest {
         Integer productID1 = Nstore.getProductID("computer");
         Integer productID2 = Nstore.getProductID("Bag");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
 
         //DummyUser test = new DummyUser("ala", "123");
         Response res = tradingSystemImpl.ShowSubscriberHistory(ElinorID, EconnID);
@@ -510,7 +508,7 @@ class TradingSystemImplTest {
 
             //Prepare tasks for clients
             List<Callable<ResultUnitTests>> taskList = new ArrayList<>();
-            Callable<ResultUnitTests> purchaseTask = new PurchaseTaskUnitTests("guestBuyer", ElinorStore, newProduct, 25, "123456", "052897878787", "sioot st. 5");
+            Callable<ResultUnitTests> purchaseTask = new PurchaseTaskUnitTests("guestBuyer", ElinorStore, newProduct, 25, "123456789", "4", "2022" ,"123" ,"123456789" ,"sioot st. 5");
             taskList.add(purchaseTask);
             Callable<ResultUnitTests> removeTask = new RemoveProductTaskUnitTests("Client-StoreOwner",ElinorStore, newProduct);
             taskList.add(removeTask);
@@ -1049,7 +1047,7 @@ class TradingSystemImplTest {
         tradingSystemImpl.Logout(NconnID);
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
         assertFalse(response.getIsErr());
 
         //check Inventory after happy purchase
@@ -1064,7 +1062,7 @@ class TradingSystemImplTest {
         Integer productID1 = Nstore.getProductID("computer");
         Integer preQuantity = Nstore.getQuantity(productID1);
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 5);
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
         Assertions.assertTrue(response.getIsErr());
 
         //check Inventory after happy purchase
@@ -1079,7 +1077,7 @@ class TradingSystemImplTest {
 
     @Test
     void SadPurchase_EmptyCart() {
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
         Assertions.assertTrue(response.getIsErr());
     }
 
@@ -1092,11 +1090,11 @@ class TradingSystemImplTest {
 
         //another user is buying this product
         tradingSystemImpl.AddProductToCart(connID, NofetStore, productID1, 15);
-        tradingSystemImpl.subscriberPurchase(userID, connID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(userID, connID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
 
         //the previous user make the purchase
         Integer preQuantity = Nstore.getQuantity(productID1);
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
         Assertions.assertTrue(response.getIsErr());
 
         //check Inventory after happy purchase
@@ -1116,7 +1114,7 @@ class TradingSystemImplTest {
         List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
-                    1,"123456", "052897878787", "sioot st. 5");
+                    1,"123456789", "4", "2022" ,"123" ,"123456789" ,"sioot st. 5");
             taskList.add(task);
         }
 
@@ -1161,7 +1159,7 @@ class TradingSystemImplTest {
             List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
             for (int i = 0; i < 2; i++) {
                 PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
-                        1,"123456", "052897878787", "sioot st. 5");
+                        1,"123456789", "4", "2022" ,"123" ,"123456789" ,"sioot st. 5");
                 taskList.add(task);
             }
 

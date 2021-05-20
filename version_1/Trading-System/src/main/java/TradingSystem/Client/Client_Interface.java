@@ -1,18 +1,11 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface Client_Interface {
 
@@ -93,11 +86,14 @@ public interface Client_Interface {
      * @requirement 2.9
      * @param name
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
      * @return
      */
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address);
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address);
 
     //Subscriber
 
@@ -134,11 +130,14 @@ public interface Client_Interface {
     /**
      * @requirement 3.4 subscriber (user) purchase
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
      * @return
      */
-    public Response subscriberPurchase(String credit_number, String phone_number, String address);
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address);
     //Store Owner Service
 
     /**

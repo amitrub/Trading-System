@@ -551,7 +551,6 @@ public class TradingSystemImpl implements TradingSystem {
      * @param connID
      * @param name
      * @param credit_number
-     * @param phone_number
      * @param address
      * @return Response{
      *      "isErr: boolean
@@ -559,14 +558,14 @@ public class TradingSystemImpl implements TradingSystem {
      *      "connID": String
      *      }
      */
-    public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address){
+    public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address){
         if(!guests.containsKey(connID)){
             return new Response(true, "guestPurchase: The user is not connected to the system");
         }
         else {
             User myGuest= guests.get(connID);
             Collection<ShoppingBag> shoppingBags = myGuest.getShoppingCart().getShoppingBags().values();
-            Response res = myGuest.guestPurchase(name, credit_number, phone_number, address);
+            Response res = myGuest.guestPurchase(name, credit_number, month, year, cvv, ID, address);
             if(!res.getIsErr())
             {
                 for (ShoppingBag bag:shoppingBags){
@@ -588,7 +587,6 @@ public class TradingSystemImpl implements TradingSystem {
      * @param userID
      * @param connID
      * @param credit_number
-     * @param phone_number
      * @param address
      * @return Response{
      *      "isErr: boolean
@@ -596,14 +594,14 @@ public class TradingSystemImpl implements TradingSystem {
      *      "connID": String
      *      }
      */
-    public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
+    public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address){
         if(!ValidConnectedUser(userID, connID)){
             return new Response(true, "subscriberPurchase: The user is not connected to the system");
         }
         else {
             User user = subscribers.get(userID);
             Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
-            Response res = user.subscriberPurchase(credit_number, phone_number, address);
+            Response res = user.subscriberPurchase(credit_number, month, year, cvv, ID, address);
             if(!res.getIsErr())
             {
                 for (ShoppingBag bag:shoppingBags){

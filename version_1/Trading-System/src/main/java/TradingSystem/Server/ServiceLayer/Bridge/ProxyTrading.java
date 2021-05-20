@@ -7,7 +7,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
@@ -195,16 +194,16 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address) {
+    public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address) {
         if(real!=null)
-            return real.guestPurchase(connID,name,credit_number,phone_number,address);
+            return real.guestPurchase(connID,name,credit_number,month,year,cvv,ID,address);
         return null;
     }
 
     @Override
-    public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address) {
+    public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address) {
         if(real!=null)
-            return real.subscriberPurchase(userID,connID,credit_number,phone_number,address);
+            return real.subscriberPurchase(userID,connID,credit_number,month,year,cvv,ID,address);
         return null;
     }
 

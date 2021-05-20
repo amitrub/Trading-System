@@ -11,11 +11,9 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
 
@@ -558,7 +556,7 @@ public class OwnerTests {
 
         client.Login("Nofet", "123");
         client.addProductToCart(storeID, productID, 2);
-        client.subscriberPurchase("123456789", "0521234567", "Kiryat Gat");
+        client.subscriberPurchase("123456789", "4","2022" , "123", "123456789", "Tel Aviv");
         client.Logout();
 
         client.Login("Elinor", "123");

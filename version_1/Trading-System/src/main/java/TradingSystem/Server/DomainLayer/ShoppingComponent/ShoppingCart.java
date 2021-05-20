@@ -130,7 +130,7 @@ public class ShoppingCart {
         return this.shoppingBags;
     }
 
-    public Response Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
+    public Response Purchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address){
         if (shoppingBags.size()==0){
             return new Response(true, "Purchase: There is no products in the shopping cart");
         }
@@ -156,8 +156,8 @@ public class ShoppingCart {
 //            this.releaseLocks(lockList);
 //            return new Response(true,"Purchase: The payment is not approve");
 //        }
-        PaymentInfo paymentInfo = new PaymentInfo(credit_number, "5", "2021", name, "123", "123456789");
-        AddressInfo addressInfo = new AddressInfo(name, "Israel", "Beer Sheva", "Rager 101", "8458527");
+        PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
+        AddressInfo addressInfo = new AddressInfo(name, "Israel", "Beer Sheba", address, "8458527");
         if(supplySystem.purchase(paymentInfo, addressInfo).getIsErr()){
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The Supply is not approve");

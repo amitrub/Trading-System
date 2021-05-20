@@ -44,8 +44,8 @@ public interface TradingSystem {
     public Response ShowStoreProducts(int storeID);
     public Response AddProductToCart(String connID, int StoreId, int productId, int quantity);
     public Response ShowShoppingCart(String connID);
-    public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address);
-    public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address);
+    public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address);
+    public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address);
     public String getUserConnID(Integer userID);
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest);
     public Response SearchProduct(String name, String category, int minprice, int maxprice);
