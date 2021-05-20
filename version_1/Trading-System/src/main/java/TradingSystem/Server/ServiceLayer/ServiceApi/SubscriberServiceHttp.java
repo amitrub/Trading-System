@@ -92,7 +92,6 @@ public class SubscriberServiceHttp {
      *  "connID": String
      * }
      */
-    //TODO: not check yet
     @PostMapping("{userID}/write_comment")
     public Response WriteComment(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID,productID;
@@ -126,6 +125,8 @@ public class SubscriberServiceHttp {
      *  "history": List [{
      *      "userID": int
      *      "storeID": int
+     *      "finalPrice": int
+     *      "date": String
      *      "products": List [{
      *          "storeID": int
      *          "storeName": String
@@ -141,7 +142,7 @@ public class SubscriberServiceHttp {
     @GetMapping("{userID}/user_history")
     public Response ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.ShowSubscriberHistory(userID, connID);
-        System.out.println(res);
+        WriteToLogger(res);
         return res;
     }
 

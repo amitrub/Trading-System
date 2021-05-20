@@ -170,4 +170,8 @@ public class ShoppingBag {
     public void RemoveProduct(int productID) {
         this.products.remove(productID);
     }
+
+    public String getStoreName() {
+        return tradingSystemImpl.stores.get(storeID).getName();
+    }
 }

@@ -493,7 +493,7 @@ class TradingSystemImplTest {
     void RemoveProductNotExist(){
         Store store= new Store("store11", userID);
         tradingSystemImpl.AddStore(userID,connID,"store11");
-        Product product=new Product(4,"prod4","food",7.0,11);
+        Product product=new Product(store.getId(), store.getName(),4,"prod4","food",7.0,11);
         Response response= tradingSystemImpl.RemoveProduct(userID,storeid,product.getProductID(),connID);
         assertTrue(response.getIsErr());
     }

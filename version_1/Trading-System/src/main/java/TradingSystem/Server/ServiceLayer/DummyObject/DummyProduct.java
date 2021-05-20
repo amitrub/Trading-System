@@ -11,8 +11,8 @@ import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
 public class DummyProduct {
 
-    private final int storeID;
-    private final String storeName;
+    private int storeID;
+    private String storeName;
     private final int productID;
     private final String productName;
     private final double price;
@@ -29,8 +29,8 @@ public class DummyProduct {
     }
 
     public DummyProduct(Product product){
-        this.storeID = -1;
-        this.storeName = "";
+        this.storeID = product.getStoreID();
+        this.storeName = product.getStoreName();
         this.productID = product.getProductID();
         this.productName = product.getProductName();
         this.price = product.getPrice();
@@ -65,7 +65,13 @@ public class DummyProduct {
         this.quantity = quantity;
     }
 
+    public void setStoreID(int storeId){
+        this.storeID = storeId;
+    }
 
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
 
     public int getStoreID() {
         return storeID;
@@ -110,13 +116,14 @@ public class DummyProduct {
                     DummyProduct dummyProduct = new DummyProduct(storeID, storeName, productID, productName, price, category, quantity);
                     dummySearchArr.add(dummyProduct);
                 }
-
                 return dummySearchArr;
             } catch (Exception e) {
                 System.out.println(errMsgGenerator("Service", "DummySearch", "36", "error in making dummySearch from JSON object"));
             }
         return dummySearchArr;
     }
+
+
 
     @Override
     public String toString() {

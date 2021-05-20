@@ -6,17 +6,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class DummyShoppingHistory {
 
     private Integer userID;
     private Integer storeID;
-
-    //productID_quantity
-    //private ConcurrentHashMap<DummyProduct,Integer> products;
     private List<DummyProduct> products;
-
     private String date;
     private Double finalPrice;
 
@@ -24,12 +19,11 @@ public class DummyShoppingHistory {
         this.userID = toCopyShoppingHistory.getUserID();
         this.storeID = toCopyShoppingHistory.getStoreID();
         this.date = toCopyShoppingHistory.getDate().toString();
-//        this.date = 777;
         this.finalPrice = toCopyShoppingHistory.getFinalPrice();
         this.products = new ArrayList<>();
         for (Product p : toCopyShoppingHistory.getProducts()){
             DummyProduct dp = new DummyProduct(p);
-           this.products.add(dp);
+            this.products.add(dp);
         }
     }
 
@@ -56,22 +50,14 @@ public class DummyShoppingHistory {
         return storeID;
     }
 
-    /*
-    public ConcurrentHashMap<DummyProduct, Integer> getProducts() {
-        return products;
-    }
-
-     */
     public List<DummyProduct> getProducts() {
         return products;
     }
 
-    /*
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-     */
 
     public Double getFinalPrice() {
         return finalPrice;
@@ -79,13 +65,6 @@ public class DummyShoppingHistory {
 
     @Override
     public String toString() {
-//        return "DummyShoppingHistory{" +
-//                "userID=" + userID +
-//                ", storeID=" + storeID +
-//                ", products=" + products +
-//                ", date=" + date +
-//                ", finalPrice=" + finalPrice +
-//                '}';
         JSONObject JO = new JSONObject();
         try {
             JO.put("userID", userID);

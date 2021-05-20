@@ -47,7 +47,7 @@ public class Inventory {
     public Response addProduct(String productName, String category, Double price, int quantity){
         if (!IsProductNameExist(productName)){
             Integer productID=getNextProductID();
-            Product p=new Product(productID, productName, category, price, quantity);
+            Product p=new Product(storeID, storeName, productID, productName, category, price, quantity);
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());
@@ -201,7 +201,7 @@ public class Inventory {
             Map.Entry pair = (Map.Entry) it.next();
             int id = (int) pair.getKey();
             if (id == productId) {
-                Product p = new Product(productId, productName, category, price, quantity);
+                Product p = new Product(storeID, storeName, productId, productName, category, price, quantity);
                 this.products.remove(productId);
                 this.products.put(id, p);
                 return new Response(false, "EditProduct: The product " + productName + " update successfully");

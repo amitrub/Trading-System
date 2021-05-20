@@ -330,6 +330,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/user_history", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(showUserHistory) response: " + response + ANSI_RESET);
         return response;
     }
 
