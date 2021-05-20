@@ -65,8 +65,6 @@ public  class User implements Observer {
         this.userName = "guest";
         this.password = "";
         this.shoppingCart = new ShoppingCart(this.id);
-        this.ownerPermission = null;
-        this.managerPermission = null;
         this.myManagedStoresIDs=new ArrayList<>();
         this.myManagedStoresIDs=new ArrayList<>();
         this.myFoundedStoresIDs=new ArrayList<>();

@@ -1471,28 +1471,29 @@ public class TradingSystemImpl implements TradingSystem {
 
     //other functions
     public boolean hasPermission(int userID, int storeID, User.Permission p) {
+        boolean hasPer=false;
         if(this.subscribers.containsKey(userID)){
             User u=this.subscribers.get(userID);
-            if(u.getOwnerPermission(storeID)!=null){
-                return u.getOwnerPermission(storeID).hasPermission(p);
+            if(!hasPer && u.getOwnerPermission(storeID)!=null){
+                hasPer = u.getOwnerPermission(storeID).hasPermission(p);
             }
-            if (u.getManagerPermission(storeID)!=null){
-                return u.getManagerPermission(storeID).hasPermission(p);
+            if (!hasPer && u.getManagerPermission(storeID)!=null){
+                hasPer = u.getManagerPermission(storeID).hasPermission(p);
             }
-            if(this.systemManagerPermissions.get(userID)!=null){
-                return this.systemManagerPermissions.get(userID).hasPermission(p);
+            if(!hasPer && this.systemManagerPermissions.get(userID)!=null){
+                hasPer = this.systemManagerPermissions.get(userID).hasPermission(p);
             }
         }
-        return false;
+        return hasPer ;
     }
 
     public boolean hasPermission(int userID, User.Permission p) {
-        if (this.subscribers.containsKey(userID)) {
-            User u = this.subscribers.get(userID);
+        //if (this.subscribers.containsKey(userID)) {
+          //  User u = this.subscribers.get(userID);
             if (this.systemManagerPermissions.get(userID) != null) {
                 return this.systemManagerPermissions.get(userID).hasPermission(p);
             }
-        }
+        //}
         return false;
     }
 
