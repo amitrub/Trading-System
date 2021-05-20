@@ -104,4 +104,6 @@ public interface TradingSystem {
     public Sale createSaleForDiscount(int storeID, Map<String, Object> obj);
 
     public Response GetAllSubscribers(String connID, int userID);
+
+    Response getDailyIncomeForStore(int userID, int storeID, String connID);
 }

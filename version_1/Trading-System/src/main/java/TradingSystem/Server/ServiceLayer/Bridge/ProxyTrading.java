@@ -552,4 +552,11 @@ public class ProxyTrading implements TradingSystem {
             return real.GetAllSubscribers(connID, userID);
         return null;
     }
+
+    @Override
+    public Response getDailyIncomeForStore(int userID, int storeID, String connID) {
+        if(real!=null)
+            return real.getDailyIncomeForStore(userID,storeID,connID);
+        return null;
+    }
 }

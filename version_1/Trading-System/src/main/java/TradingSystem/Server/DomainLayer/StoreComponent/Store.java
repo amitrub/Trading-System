@@ -491,5 +491,7 @@ public class Store extends Observable {
     }
 
 
-
+    public Double getDailyIncome() {
+    return  0.0;
+    }
 }

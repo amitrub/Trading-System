@@ -1715,6 +1715,10 @@ public class TradingSystemImpl implements TradingSystem {
                 return User.Permission.GetHistoryPurchasing;
             case "GetStoreHistory":
                 return User.Permission.GetStoreHistory;
+            case "GetDailyIncomeForStore":
+                return User.Permission.GetDailyIncomeForStore;
+            case "GetDailyIncomeForSystem":
+                return User.Permission.GetDailyIncomeForSystem;
         }
         return null;
     }
@@ -2166,6 +2170,30 @@ public class TradingSystemImpl implements TradingSystem {
         }
         Response res = new Response("Get All Subscribers succeed");
         res.AddPair("subscribers", dummySubscribers);
+        return res;
+    }
+
+    @Override
+    public Response getDailyIncomeForStore(int userID, int storeID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "getDailyIncomeForStore: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "getDailyIncomeForStore: The user "+userID+" is not in the list");
+        }
+        if(!stores.containsKey(storeID)){
+            return new Response(true, "getDailyIncomeForStore: The store " + storeID + " doesn't exist in the system");
+        }
+        Store store=this.stores.get(storeID);
+        if(!store.checkOwner(userID)){
+            return new Response(true, "getDailyIncomeForStore: The user " + userID + " is not the owner of the store");
+        }
+        if(!this.hasPermission(userID,storeID,User.Permission.GetDailyIncomeForStore)){
+            return new Response(true, "getDailyIncomeForStore: The user " + userID + " has no permissions to see this information");
+        }
+        Double DailyIncome=store.getDailyIncome();
+        Response res =new Response(false, "the income can be displayed");
+        res.AddPair("DailyIncome", DailyIncome);
         return res;
     }
 
