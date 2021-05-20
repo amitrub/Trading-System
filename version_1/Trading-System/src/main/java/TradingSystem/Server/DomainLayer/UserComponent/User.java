@@ -405,9 +405,10 @@ public  class User implements Observer {
                     strMessages.add(res.getMessage());
 //                this.notify(tradingSystem.getUserConnID(this.id), res);
                 }
-                while(messages.isEmpty()) {
-                    messages.remove(0);
-                }
+                messages = new ArrayList<>();
+//                while(messages.isEmpty()) {
+//                    messages.remove(0);
+//                }
                 messages.notifyAll();
             }
         } catch (Exception e) {

@@ -15,7 +15,7 @@ function UserHistory(props) {
       props.connID,
       props.userID
     );
-    // console.log(historyResponse);
+    console.log(historyResponse);
 
     if (historyResponse.isErr) {
       console.log(historyResponse.message);
@@ -38,23 +38,19 @@ function UserHistory(props) {
           </h2>
         </div>
 
-        <div className="row">
-          <section className="section-form">
-            {userHistory.length > 0
-              ? userHistory.map((currHistory, index) => (
-                  <div className="col span-1-of-4">
-                    <li key={index} className="curr product">
-                      <PurchaseHistory
-                        onRefresh={props.onRefresh}
-                        connID={props.connID}
-                        currHistory={currHistory}
-                      />
-                    </li>
-                  </div>
-                ))
-              : "No history, Go Shop bitch!"}
-          </section>
-        </div>
+        <section className="section-form">
+          {userHistory.length > 0
+            ? userHistory.map((currHistory, index) => (
+                <li key={index} className="curr product">
+                  <PurchaseHistory
+                    onRefresh={props.onRefresh}
+                    connID={props.connID}
+                    currHistory={currHistory}
+                  />
+                </li>
+              ))
+            : "No history, Go Shop bitch!"}
+        </section>
       </section>
     </Fragment>
   );

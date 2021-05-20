@@ -666,6 +666,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    // NOT IN USE
     ShowStoreWorkers: (connID, userID, storeID) => {
       let path = ownerURL.concat(`${userID}/store/${storeID}/workers`);
       const headers = {
@@ -677,7 +678,7 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-
+    // NOT IN USE
     OwnerStoreHistory: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/store_history_owner`
@@ -691,7 +692,7 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-
+    // NOT IN USE
     ShowOwnerStores: (connID, userID) => {
       let path = ownerURL.concat(`${userID}/stores_owner`);
       const headers = {
@@ -703,7 +704,7 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-
+    // NOT IN USE
     ShowManagerStores: (connID, userID) => {
       let path = ownerURL.concat(`${userID}/stores_manager`);
       const headers = {
@@ -717,6 +718,7 @@ export const createApiClientHttp = () => {
     },
 
     // Admin
+    // NOT IN USE
     AdminAllUsers: (connID, adminID) => {
       let path = adminURL.concat(`${adminID}/users`);
       const headers = {
@@ -728,7 +730,7 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-
+    // NOT IN USE
     AdminAllStores: (connID, adminID) => {
       let path = adminURL.concat(`${adminID}/stores`);
       const headers = {
