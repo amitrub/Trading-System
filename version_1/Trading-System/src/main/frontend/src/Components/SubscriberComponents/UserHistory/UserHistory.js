@@ -39,10 +39,9 @@ function UserHistory(props) {
         </div>
 
         <div className="row">
-          {userHistory.length > 0 ? (
-            <div>
-              <div>
-                {userHistory.map((currHistory, index) => (
+          <section className="section-form">
+            {userHistory.length > 0
+              ? userHistory.map((currHistory, index) => (
                   <div className="col span-1-of-4">
                     <li key={index} className="curr product">
                       <PurchaseHistory
@@ -52,12 +51,9 @@ function UserHistory(props) {
                       />
                     </li>
                   </div>
-                ))}
-              </div>
-            </div>
-          ) : (
-            "No history, Go Shop bitch!"
-          )}
+                ))
+              : "No history, Go Shop bitch!"}
+          </section>
         </div>
       </section>
     </Fragment>

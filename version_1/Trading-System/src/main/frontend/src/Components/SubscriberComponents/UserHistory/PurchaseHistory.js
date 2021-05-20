@@ -3,6 +3,7 @@ import createApiClientHttp from "../../../ApiClientHttp";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import ProductInHistory from "./ProductInHistory";
+import Product from "../../GuestComponents/Stores/Product";
 
 const apiHttp = createApiClientHttp();
 
@@ -22,7 +23,7 @@ function PurchaseHistory(props) {
   }
 
   return (
-    <section className="section-plans js--section-plans" id="store">
+    <section className="section-plans js--section-plans" id="purch history">
       <div className="row">
         <h2>
           <strong>History {history.date}</strong>
@@ -41,12 +42,12 @@ function PurchaseHistory(props) {
           ? products.map((currProduct, index) => (
               <div className="col span-1-of-4">
                 <li key={index} className="curr product">
-                  <ProductInHistory
+                  <Product
                     refresh={props.refresh}
                     onRefresh={props.onRefresh}
                     connID={props.connID}
                     currProduct={currProduct}
-                  ></ProductInHistory>
+                  ></Product>
                 </li>
               </div>
             ))
