@@ -2,24 +2,24 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
+import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public  class User {
+public  class User implements Observer {
 
 
+    private List<Object> messages = new ArrayList<>();
 
     public enum Permission {
         AddProduct,
@@ -37,7 +37,7 @@ public  class User {
         GetStoreHistory
     }
 
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     private static int nextUserID = 0;
 
     private final Integer id;
@@ -56,10 +56,9 @@ public  class User {
 
     private ShoppingCart shoppingCart;
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
+    private Publisher publisher;
 
     private final Lock Lock = new ReentrantLock();
-
-    private static final LoggerController loggerController=LoggerController.getInstance();
 
     public User() {
         this.id = -1;
@@ -99,9 +98,30 @@ public  class User {
         this.managerPermission=new ConcurrentHashMap<>();
     }
 
+    public boolean isFounder(){
+        return myFoundedStoresIDs!=null && myFoundedStoresIDs.size()>0;
+    }
+    public boolean isOwner(){
+        return myOwnedStoresIDs!=null && myOwnedStoresIDs.size()>0;
+    }
+    public boolean isManaged(){
+        return myManagedStoresIDs!=null && myManagedStoresIDs.size()>0;
+    }
+
     private static synchronized int getNextUserID() {
         nextUserID++;
         return nextUserID;
+    }
+
+    public void setPublisher(Publisher publisher) {
+        this.publisher = publisher;
+    }
+
+    public void notify(String topic, Response res) {
+        if(publisher!=null){
+            System.out.println("-------------------notify-------------------");
+            publisher.SendMessage(topic, res);
+        }
     }
 
     public static void ClearSystem() {
@@ -195,8 +215,8 @@ public  class User {
 
     public List<DummyShoppingHistory> ShowUserHistory(){
         List<DummyShoppingHistory> shoppingHistories=new ArrayList<>();
-        for(ShoppingHistory shoppingHistory : shoppingHistory){
-            shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
+        for(ShoppingHistory s : shoppingHistory){
+            shoppingHistories.add(new DummyShoppingHistory(s));
         }
         return shoppingHistories;
     }
@@ -223,7 +243,6 @@ public  class User {
         this.managerPermission.put(storeID, om);
     }
 
-
     public OwnerPermission getOwnerPermission(int storeID) {
         return this.ownerPermission.get(storeID);
     }
@@ -232,16 +251,22 @@ public  class User {
         return this.managerPermission.get(storeID);
     }
 
-    public void removeStore(int storeID) {
+    public void removeManagedStore(int storeID) {
         int index=this.myManagedStoresIDs.indexOf(storeID);
         this.myManagedStoresIDs.remove(index);
         this.managerPermission.remove(storeID);
     }
 
+    public void removeOwnedStore(int storeID){
+        int index=this.myOwnedStoresIDs.indexOf(storeID);
+        this.myOwnedStoresIDs.remove(index);
+        this.ownerPermission.remove(storeID);
+    }
 
     public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
         return this.shoppingCart.editProductQuantityFromCart(storeID,productID, quantity);
 }
+
     public Response RemoveProductFromCart(int storeID, int productID) {
       return this.shoppingCart.RemoveProductFromCart(storeID, productID);
     }
@@ -255,25 +280,19 @@ public  class User {
         return false;
     }
 
-
-
-
     public Response AbleToAddOwner(int userID, int storeID) {
         if (this.checkOwner(storeID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+this.id+" to be the owner of store "+storeID + " and failed. "+ this.id+" is already owner the store");
-            return new Response(true, "User "+this.id+" is owner the store, so he can not appoint to owner again");
+            return new Response(true, "AddOwner: User "+userID+" is owner the store, so he can not appoint to owner again");
         }
         if (this.checkManager(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to Add " +this.id+" to be the owner of store " + storeID + " and failed. "+ this.id+" is already manages the store");
-            return new Response(true, "User "+this.id+" is manages the store, so he can not be owner");
+            return new Response(true, "AddOwner: User "+userID+" is manages the store, so he can not be owner");
         }
-        return new Response(false,"It is possible to add the user as the owner");
+        return new Response(false,"AddOwner: It is possible to add the user as the owner");
 }
 
     public boolean checkOwner(int storeID) {
     return this.myOwnedStoresIDs.contains(storeID);
     }
-
 
     public boolean checkManager(int storeID) {
     return this.myManagedStoresIDs.contains(storeID);
@@ -281,58 +300,124 @@ public  class User {
 
     public Response AbleToRemoveManager(int userID, int storeID) {
         if (!this.myManagedStoresIDs.contains(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to remove " +this.id+" from be the manager of store " + storeID + " and failed. "+ this.id+" is not manages the store");
-            return new Response(true, "The user "+this.id+" is not manages the store, so he can not be removed from Manages the store.");
+            return new Response(true, "RemoveManager: The user "+this.id+" is not manages the store, so he can not be removed from Manages the store.");
         }
         if (this.managerPermission.get(storeID)!=null&&
             this.managerPermission.get(storeID).getAppointmentId()!=userID) {
-            loggerController.WriteErrorMsg("User " + userID + " try to remove " + this.id + " from be the manager of store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
-            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+            return new Response(true, "RemoveManager: The user " + userID + " is not the one who appointed the manager");
         }
-        return new Response("It is possible to add the user as the owner");
+        return new Response(false, "It is possible to add the user as the owner");
     }
 
     public Response AbleToAddManager(int userID, int storeID, int newManager) {
         if (this.checkOwner(storeID)) {
-            loggerController.WriteErrorMsg("User " + userID + " try to Add "+newManager+" to be the owner of store "+storeID + " and failed. "+ newManager+" is already owner the store");
-            return new Response(true, "The user "+newManager+" is owner the store, so he can not appoint to Manager");
+            return new Response(true, "AddNewManager: The user "+newManager+" is owner the store, so he can not appoint to Manager");
 
         }
         if (this.checkManager(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to Add " +newManager+" to be the Manager of store " + storeID + " and failed. "+ newManager+" is already manages the store");
-            return new Response(true, "The user "+newManager+" is manages the store, so he can not appoint to Manager again");
+            return new Response(true, "AddNewManager: The user "+newManager+" is manages the store, so he can not appoint to Manager again");
         }
-        return new Response("It is possible to add the user as the owner");
+        return new Response(false, "It is possible to add the user as the owner");
     }
 
     public Response AbleToEditPermissions(int userID, int storeID) {
         if (!this.myManagedStoresIDs.contains(storeID)){
-            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " +this.id+" for store " + storeID + " and failed. "+ this.id+" is not manages the store");
-            return new Response(true, "The user "+this.id+" is not manages the store, so it impossible to edit his permissions.");
+            return new Response(true, "EditPermissions: The user "+this.id+" is not manages the store, so it impossible to edit his permissions.");
         }
         if (this.managerPermission.get(storeID)!=null&&
                 this.managerPermission.get(storeID).getAppointmentId()!=userID) {
-            loggerController.WriteErrorMsg("User " + userID + " try to edit permissions to " + this.id + " for store " + storeID + " and failed. " + userID + " is not the one who appointed the manager.");
-            return new Response(true, "The user " + userID + " is not the one who appointed the manager");
+            return new Response(true, "EditPermissions: The user " + userID + " is not the one who appointed the manager");
         }
-        return new Response("It is possible to edit the manager permissions");
+        return new Response(false, "EditPermissions: It is possible to edit the manager permissions");
     }
 
     public void editPermissions(int userID,int storeID, List<User.Permission> permissions) {
-    ManagerPermission MP=managerPermission.get(storeID);
-    if(MP==null){
-        MP=new ManagerPermission(this.id,storeID);
-        MP.setAppointmentId(userID);
-        MP.setPermissions(permissions);
-        this.managerPermission.put(storeID,MP);
-    }
-    else{
-        MP.setPermissions(permissions);
-        this.managerPermission.remove(storeID);
-        this.managerPermission.put(storeID,MP);
-    }
+        ManagerPermission MP=managerPermission.get(storeID);
+        if(MP==null){
+            MP=new ManagerPermission(this.id,storeID);
+            MP.setAppointmentId(userID);
+            MP.setPermissions(permissions);
+            this.managerPermission.put(storeID,MP);
+        }
+        else{
+            MP.setPermissions(permissions);
+            this.managerPermission.remove(storeID);
+            this.managerPermission.put(storeID,MP);
+        }
     }
 
+    public boolean isConnected(){
+        if(tradingSystem.getConnectedSubscribers().containsValue(id))
+            return true;
+        return false;
+    }
+
+    public boolean isSubscriber(){
+        if(tradingSystem.subscribers.containsKey(id))
+            return true;
+        return false;
+    }
+
+
+    //Observable pattern
+    public void update(Object arg) {
+        if(isSubscriber()) {
+            if (isConnected()) {
+                Response res = (Response) arg;
+                this.notify(tradingSystem.getUserConnID(this.id), res);
+            } else {
+                addMessage(arg);
+            }
+        }
+        else {
+            Response res = (Response) arg;
+            this.notify(tradingSystem.getUserConnID(this.id), res);
+        }
+    }
+
+    @Override
+    public void update(Observable o, Object arg) {
+        update(arg);
+//        System.out.println("\n\n------>>>> update, username: " + userName + "\n\n");
+    }
+
+    public void addMessage(Object arg){
+        try {
+            synchronized (messages){
+                this.messages.add(arg);
+                messages.notifyAll();
+            }
+        } catch (Exception e) {
+            System.out.println("catch notify all error!!!");
+            System.out.println(e);
+        }
+    }
+
+    public List<String> updateAfterLogin(){
+        List<String> strMessages = new ArrayList<>();
+        System.out.println(messages.size());
+        try {
+            synchronized (messages) {
+                int size = messages.size();
+                for (int i = 0; i < size; i++) {
+                    Response res = (Response) messages.get(i);
+                    System.out.println(i + ": " + res.getMessage());
+                    strMessages.add(res.getMessage());
+//                this.notify(tradingSystem.getUserConnID(this.id), res);
+                }
+                messages = new ArrayList<>();
+//                while(messages.isEmpty()) {
+//                    messages.remove(0);
+//                }
+                messages.notifyAll();
+            }
+        } catch (Exception e) {
+            System.out.println("catch notify all error!!!");
+            System.out.println(e);
+        }
+
+        return strMessages;
+    }
 }
 
 

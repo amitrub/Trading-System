@@ -3,7 +3,7 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 
@@ -16,7 +16,7 @@ import java.util.concurrent.locks.Lock;
 
 public class ShoppingBag {
 
-    private final TradingSystem tradingSystem = TradingSystem.getInstance();
+    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
     private Integer userID;
     private Integer storeID;
@@ -129,7 +129,7 @@ public class ShoppingBag {
         List<Lock> output = new ArrayList<>();
         Set<Integer> productsSet = this.getProducts().keySet();
         for (Integer productID : productsSet){
-            Lock lock = tradingSystem.getProductLock(this.storeID, productID);
+            Lock lock = tradingSystemImpl.getProductLock(this.storeID, productID);
             output.add(lock);
         }
         return output;
@@ -139,10 +139,10 @@ public class ShoppingBag {
         Set<Integer> productsSet = this.getProducts().keySet();
         for (Integer productID : productsSet){
             int productQuantity = this.getProducts().get(productID);
-            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
-                String storeName = tradingSystem.getStoreName(storeID);
-                String productName = tradingSystem.getProductName(storeID, productID);
-                String err = productName + " in The store" + storeName + " is not exist in the stock";
+            if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
+                String storeName = tradingSystemImpl.getStoreName(storeID);
+                String productName = tradingSystemImpl.getProductName(storeID, productID);
+                String err = "Purchase: " + productName + " in The store: " + storeName + " is not exist in the stock";
                 return new Response(true, err);
             }
         }
@@ -150,15 +150,16 @@ public class ShoppingBag {
     }
 
     public ShoppingHistory createShoppingHistory(){
-        ConcurrentHashMap<Product, Integer> productsToHistory = new ConcurrentHashMap<>();
-        Set<Integer> productQuantitySet = this.getProducts().keySet();
-        for (Integer productID: productQuantitySet){
+        List productsToHistory = new ArrayList();
+        Set<Integer> productIDs = this.getProducts().keySet();
+        for (Integer productID: productIDs){
             Integer quantity = this.getProducts().get(productID);
-            Product p = tradingSystem.getProduct(storeID,productID);
+            Product p = tradingSystemImpl.getProduct(storeID,productID);
             Product newProduct = new Product(p);
-            productsToHistory.put(newProduct, quantity);
+            newProduct.setQuantity(quantity);
+            productsToHistory.add(newProduct);
         }
-        return new ShoppingHistory(this,productsToHistory);
+        return new ShoppingHistory(this, productsToHistory);
     }
 
     public void editProductQuantity(int productID, int quantity) {
@@ -168,5 +169,9 @@ public class ShoppingBag {
   
     public void RemoveProduct(int productID) {
         this.products.remove(productID);
+    }
+
+    public String getStoreName() {
+        return tradingSystemImpl.stores.get(storeID).getName();
     }
 }

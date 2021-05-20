@@ -1,12 +1,12 @@
-//package TradingSystem.Client;
+//package TradingSystemImpl.Client;
 //
-//import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-//import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+//import TradingSystemImpl.Server.ServiceLayer.DummyObject.DummyProduct;
+//import TradingSystemImpl.Server.ServiceLayer.DummyObject.DummyStore;
 //
 //import java.util.ArrayList;
 //import java.util.List;
 //import java.util.Scanner;
-//import static TradingSystem.Server.ServiceLayer.Configuration.*;
+//import static TradingSystemImpl.Server.ServiceLayer.Configuration.*;
 //
 //public class ApiClient {
 //    private static Scanner sc = new Scanner(System.in);

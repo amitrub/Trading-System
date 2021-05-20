@@ -10,6 +10,7 @@ import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 public class Response {
     private boolean isErr = false;
     private String message = "";
+    private String header = "";
     Map<String, Object> returnObject = new HashMap<>();
 
 
@@ -23,8 +24,30 @@ public class Response {
         this.message = message;
     }
 
+    public void AddUserGuest(){
+        this.returnObject.put("guest", true);
+        this.returnObject.put("manager", false);
+        this.returnObject.put("owner", false);
+        this.returnObject.put("founder", false);
+    }
+    public void AddUserSubscriber(boolean isManager, boolean isOwner, boolean isFounder){
+        this.returnObject.put("guest", false);
+        this.returnObject.put("manager", isManager);
+        this.returnObject.put("owner", isOwner);
+        this.returnObject.put("founder", isFounder);
+    }
+    public void AddUserSubscriber(boolean isManager, boolean isOwner, boolean isFounder,boolean isAdmin){
+        this.returnObject.put("guest", false);
+        this.returnObject.put("manager", isManager);
+        this.returnObject.put("owner", isOwner);
+        this.returnObject.put("founder", isFounder);
+        this.returnObject.put("admin", isAdmin);
+    }
     public void AddPair(String key, Object value){
         this.returnObject.put(key, value);
+    }
+    public void AddTag(String value){
+        this.returnObject.put("tag", value);
     }
     public void AddConnID(String value){
         this.returnObject.put("connID", value);
@@ -49,41 +72,56 @@ public class Response {
         else
             return "";
     }
+
+    public List<DummyStore> getStores(){
+        List<DummyStore> hashMap= (List<DummyStore>)this.returnObject.get("stores");
+        return hashMap;
+    }
+/*
     public List<DummyStore> returnStoreList(){
         if(!this.isErr){
-            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("stores");
+            //List
+            List<HashMap<String, DummyStore>> storeList = (List<HashMap<String, DummyStore>>) this.returnObject.get("stores");
+            System.out.println(Arrays.asList(storeList));
             List<DummyStore> output = new ArrayList<>();
-            for (Map<String, Object> map: storeList){
-                output.add(new DummyStore(map));
+            for (HashMap<String, DummyStore> map: storeList){
+                output.add(map.get("Store"));
             }
             return output;
         }
         else
             return new ArrayList<>();
     }
+ */
+
     public List<DummyProduct> returnProductList(){
-        if(!this.isErr){
-            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("products");
-            List<DummyProduct> output = new ArrayList<>();
-            for (Map<String, Object> map: storeList){
-                output.add(new DummyProduct(map));
-            }
-            return output;
-        }
-        else
-            return new ArrayList<>();
+//        if(!this.isErr){
+//            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("products");
+//            List<DummyProduct> output = new ArrayList<>();
+//            for (Map<String, Object> map: storeList){
+//                output.add(new DummyProduct(map));
+//            }
+//            return output;
+//        }
+//        else
+//            return new ArrayList<>();
+        List<DummyProduct> hashMap= (List<DummyProduct>)this.returnObject.get("products");
+        return hashMap;
     }
+
     public List<DummyShoppingHistory> returnHistoryList(){
-        if(!this.isErr){
-            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("history");
-            List<DummyShoppingHistory> output = new ArrayList<>();
-            for (Map<String, Object> map: storeList){
-                output.add(new DummyShoppingHistory(map));
-            }
-            return output;
-        }
-        else
-            return new ArrayList<>();
+//        if(!this.isErr){
+//            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("history");
+//            List<DummyShoppingHistory> output = new ArrayList<>();
+//            for (Map<String, Object> map: storeList){
+//                output.add(new DummyShoppingHistory(map));
+//            }
+//            return output;
+//        }
+//        else
+//            return new ArrayList<>();
+        List<DummyShoppingHistory> hashMap= (List<DummyShoppingHistory>)this.returnObject.get("history");
+        return hashMap;
     }
     public List<String> returnPermissionList() {
 //        TODO: DEBUG ERROR BADOOK
@@ -124,6 +162,13 @@ public class Response {
     }
     private void setReturnObject(Map<String, Object> returnObject) {
         this.returnObject = returnObject;
+    }
+
+    public String getHeader() {
+        return header;
+    }
+    public void setHeader(String header) {
+        this.header = header;
     }
 
     public static Response makeResponseFromJSON(JSONObject jsonResponse) {

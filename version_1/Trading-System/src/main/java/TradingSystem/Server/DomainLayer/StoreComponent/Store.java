@@ -3,22 +3,26 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
-import TradingSystem.Server.DomainLayer.UserComponent.Permission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import javafx.util.Pair;
+//import javafx.util.Pair;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 
-public class Store {
+public class Store extends Observable {
 
     private static int nextStoreID=0;
+
+    private static int nextExpressionID=0;
 
     private Integer id;
     private String name;
@@ -43,6 +47,8 @@ public class Store {
 
     private Inventory inventory;
 
+    private TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
+
     public Store(String name, Integer founderID,  DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy) {
         this.id = getNextStoreID();
         this.name = name;
@@ -61,6 +67,8 @@ public class Store {
         this.ownersIDs.add(founderID);
         this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
+        this.discountPolicy=new DiscountPolicy(this.id,null);
+        this.buyingPolicy=new BuyingPolicy(this.id,null);
     }
 
     public Integer getId() {
@@ -70,6 +78,11 @@ public class Store {
     private static synchronized int getNextStoreID() {
         nextStoreID++;
         return nextStoreID;
+    }
+
+    private static synchronized int getNextExpressionID() {
+        nextExpressionID++;
+        return nextExpressionID;
     }
 
     public static void ClearSystem() {
@@ -82,6 +95,10 @@ public class Store {
 
     public boolean checkOwner(int userID){
         return this.ownersIDs.contains(userID);
+    }
+
+    public boolean checkManager(int newOwner) {
+        return this.managersIDs.contains(newOwner);
     }
 
     public List<DummyProduct> ShowStoreProducts(){
@@ -100,8 +117,7 @@ public class Store {
         return inventory.deleteProduct(productId);
     }
 
-    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity)
-    {
+    public Response editProductDetails(Integer ownerId,Integer productId, String productName , Double price, String category, Integer quantity) {
         return inventory.editProductDetails(productId,productName,price,category,quantity);
     }
 
@@ -118,15 +134,16 @@ public class Store {
         return "";
     }
 
-    public String removeManager(Integer userId, Integer managerId) {
+    public String removeManager(Integer managerId) {
         this.managersIDs.remove(managerId);
         this.managersPermission.remove(managerId);
         return "The Manager removed";
     }
-    //todo - ensure that only the Trading Administrator can access this function.
-    public List<ShoppingHistory> GetShoppingHistory()
-    {
-        return this.shoppingHistory;
+
+    public String removeOwner(Integer ownerId) {
+        this.ownersIDs.remove(ownerId);
+        this.ownersPermission.remove(ownerId);
+        return "The Manager removed";
     }
 
     public Integer getProductID(String computer)
@@ -192,7 +209,7 @@ public class Store {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-*/
+
     public List<DummyProduct> SearchByName(String name, int minprice, int maxprice, int prank){
        List<Integer> FinalID=new ArrayList<>();
        if(name!=null){
@@ -220,7 +237,7 @@ public class Store {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-
+*/
     public Double getRate() {
         return rate;
     }
@@ -229,13 +246,32 @@ public class Store {
         return this.inventory.checkProductsExistInTheStore(productID,quantity);
     }
 
-    public boolean checkBuyingPolicy(Integer productID, Integer quantity, ConcurrentHashMap<Integer,Integer> productsInTheBug){
+    public boolean checkBuyingPolicy(Integer userID,ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        if(this.buyingPolicy!=null)
+        return this.buyingPolicy.checkEntitlement(productsInTheBug,userID,this.CalculatePriceBeforeSale(productsInTheBug));
+        else
         return true;
     }
 
-    public Double calculateBugPrice(Integer productID, Integer quantity,ConcurrentHashMap<Integer,Integer> productsInTheBug){
-        return 1.0;
+    public Double calculateBugPrice(Integer userId, ConcurrentHashMap<Integer,Integer> productsInTheBug){
+       if(this.discountPolicy.getSale()!=null) {
+           return this.discountPolicy.calculatePrice(productsInTheBug, userId, this.CalculatePriceBeforeSale(productsInTheBug));
+       }
+       return this.CalculatePriceBeforeSale(productsInTheBug);
+       }
+
+
+    public Double CalculatePriceBeforeSale (ConcurrentHashMap<Integer,Integer> productsInTheBug){
+        Double priceBefore = 0.0;
+        for (Integer pId : productsInTheBug.keySet()) {
+            Integer quantity=productsInTheBug.get(pId);
+            Double price=inventory.getProduct(pId).getPrice();
+            priceBefore = priceBefore + price*quantity;
+        }
+        return priceBefore;
     }
+
+
 
     public boolean productIsLock(Integer productID){
         return inventory.productIsLock(productID);
@@ -253,6 +289,14 @@ public class Store {
         this.inventory.unlockProduct(productID);
     }
 
+    public DiscountPolicy getDiscountPolicy() {
+        return discountPolicy;
+    }
+
+    public BuyingPolicy getBuyingPolicy() {
+        return buyingPolicy;
+    }
+
     public String getName() {
         return name;
     }
@@ -268,6 +312,10 @@ public class Store {
 
     public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products_quantity) {
         return this.inventory.reduceProducts(products_quantity);
+    }
+
+    public void cancelReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
+        this.inventory.cancelReduceProducts(products);
     }
 
     public Response WriteComment(int userId, int productId, String comment) {
@@ -348,22 +396,10 @@ public class Store {
     public void pay(Double finalPrice) {
     }
 
-    public boolean checkManager(int newOwner) {
-        return this.managersIDs.contains(newOwner);
-    }
+
 
     public boolean isProductExist(int id){
         return inventory.checkProductsExistInTheStore(id,1);
-    }
-
-
-    //TODO implement! by the policy
-    public Double calculateBugPrice(boolean userSubscribe, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        if(userSubscribe){
-            return 1.0;
-        }
-        else
-            return 2.0;
     }
 
     public void addOwnerPermission(int newOwner, OwnerPermission op) {
@@ -393,7 +429,67 @@ public class Store {
        return this.ownersPermission;
     }
 
+    public List<Integer> OwnersID (){
+        return this.ownersIDs;
+    }
+
     public ConcurrentHashMap<Integer,ManagerPermission> getManagerIDs(){
         return this.managersPermission;
     }
+
+    public void setDiscountPolicy(DiscountPolicy d){
+        this.discountPolicy=d;
+    }
+
+    public void setBuyingPolicy(BuyingPolicy buyingPolicy) {
+        this.buyingPolicy = buyingPolicy;
+    }
+
+    //todo syncronize?
+    public Response RemoveBuyingPolicy() {
+        if(this.getBuyingPolicy()==null||
+                this.getBuyingPolicy().getExp()==null){
+            return new Response(true,"there is no policy");
+        }
+        this.buyingPolicy=null;
+        return new Response("the buyingPolicy removed successfully");
+    }
+
+    public Response RemoveDiscountPolicy() {
+        if(this.getDiscountPolicy()==null||
+        this.getDiscountPolicy().getSale()==null){
+            return new Response(true,"there is no policy");
+        }
+        this.discountPolicy=null;
+        return new Response("the discountPolicy removed successfully");
+    }
+
+    public OwnerPermission getPermission(int key){
+        return ownersPermission.get(key);
+    }
+
+    //Observable pattern
+    //send alert to all owners of the store
+    public void sendAlertToOwners(Response message){
+        for(Integer ID : ownersIDs) {
+            User user = tradingSystem.subscribers.get(ID);
+            System.out.println(user);
+            this.addObserver(user);
+        }
+        this.setChanged();
+        this.notifyObservers(message);
+        this.deleteObservers();
+    }
+
+    //send alert to specific owner
+    public void sendAlert(Integer ownerID, Response message){
+        User user = tradingSystem.subscribers.get(ownerID);
+        this.addObserver(user);
+        this.setChanged();
+        this.notifyObservers(message);
+        this.deleteObserver(user);
+    }
+
+
+
 }
