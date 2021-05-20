@@ -3,14 +3,21 @@ package TradingSystem.Server.ServiceLayer.DummyObject;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Entity(name = "ShoppingHistory")
+@IdClass(DummyKeyShopping.class)
 public class DummyShoppingHistory {
 
+    @Id
     private Integer userID;
+    @Id
     private Integer storeID;
 
     //productID_quantity

@@ -1,9 +1,12 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
+import TradingSystem.Server.DataLayer.Services.StoreService;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,6 +16,8 @@ import java.util.Map;
 @RequestMapping(path = "api/subscriber")
 @CrossOrigin("*")
 public class SubscriberServiceHttp {
+    @Autowired
+    StoreService storeService;
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
 
@@ -65,6 +70,16 @@ public class SubscriberServiceHttp {
         WriteToLogger(res);
         return res;
     }
+
+    @PostMapping("add_store")
+    public Response AddStore(){
+        DummyStore store;
+        store=new DummyStore(5,"reut",5.0);
+        store= storeService.Addstore(store);
+        Response res = new Response(true, "Error in parse body : AddStore");
+        return res;
+    }
+
 
     /**
      * @requirement 3.3
