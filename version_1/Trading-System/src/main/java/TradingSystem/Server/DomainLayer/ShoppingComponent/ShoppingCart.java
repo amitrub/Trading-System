@@ -1,7 +1,6 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
-import TradingSystem.Server.DomainLayer.ExternalServices.PaymentSystem;
-import TradingSystem.Server.DomainLayer.ExternalServices.SupplySystem;
+import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -16,8 +15,10 @@ import java.util.concurrent.locks.Lock;
 public class ShoppingCart {
 
     private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
-    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
-    private final SupplySystem supplySystem = SupplySystem.getInstance();
+//    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
+//    private final SupplySystem supplySystem = SupplySystem.getInstance();
+    private ExternalServices paymentSystem = PaymentSystem_Driver.getPaymentSystem();
+    private ExternalServices supplySystem = SupplySystem_Driver.getSupplySystem();
 
     private final Integer userID;
     
@@ -146,11 +147,23 @@ public class ShoppingCart {
                 return new Response(true, "Purchase in the store "+ storeID+" is against the store policy");
             }
         }
-        if (!supplySystem.canSupply(address)) {
+//        if (!supplySystem.canSupply(address)) {
+//            this.releaseLocks(lockList);
+//            return new Response(true,"Purchase: The Supply is not approve");
+//        }
+
+//        if (!paymentSystem.checkCredit(name, credit_number, phone_number)) {
+//            this.releaseLocks(lockList);
+//            return new Response(true,"Purchase: The payment is not approve");
+//        }
+        PaymentInfo paymentInfo = new PaymentInfo(credit_number, "5", "2021", name, "123", "123456789");
+        AddressInfo addressInfo = new AddressInfo(name, "Israel", "Beer Sheva", "Rager 101", "8458527");
+        if(supplySystem.purchase(paymentInfo, addressInfo).getIsErr()){
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The Supply is not approve");
         }
-        if (!paymentSystem.checkCredit(name, credit_number, phone_number)) {
+
+        if(paymentSystem.purchase(paymentInfo, addressInfo).getIsErr()){
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The payment is not approve");
         }

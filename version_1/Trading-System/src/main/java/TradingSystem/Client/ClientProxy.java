@@ -35,26 +35,6 @@ public class ClientProxy implements Client_Interface {
     }
 
 
-//    @Override
-//    public String getUserName() {
-//        return null;
-//    }
-//
-//    @Override
-//    public boolean isSubscriber() {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean isOwner() {
-//        return false;
-//    }
-//
-//    @Override
-//    public String getConnID() {
-//        return null;
-//    }
-
     @Override
     public String getUserName() {
         return userName;
