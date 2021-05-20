@@ -150,15 +150,16 @@ public class ShoppingBag {
     }
 
     public ShoppingHistory createShoppingHistory(){
-        ConcurrentHashMap<Product, Integer> productsToHistory = new ConcurrentHashMap<>();
-        Set<Integer> productQuantitySet = this.getProducts().keySet();
-        for (Integer productID: productQuantitySet){
+        List productsToHistory = new ArrayList();
+        Set<Integer> productIDs = this.getProducts().keySet();
+        for (Integer productID: productIDs){
             Integer quantity = this.getProducts().get(productID);
             Product p = tradingSystemImpl.getProduct(storeID,productID);
             Product newProduct = new Product(p);
-            productsToHistory.put(newProduct, quantity);
+            newProduct.setQuantity(quantity);
+            productsToHistory.add(newProduct);
         }
-        return new ShoppingHistory(this,productsToHistory);
+        return new ShoppingHistory(this, productsToHistory);
     }
 
     public void editProductQuantity(int productID, int quantity) {
@@ -168,5 +169,9 @@ public class ShoppingBag {
   
     public void RemoveProduct(int productID) {
         this.products.remove(productID);
+    }
+
+    public String getStoreName() {
+        return tradingSystemImpl.stores.get(storeID).getName();
     }
 }

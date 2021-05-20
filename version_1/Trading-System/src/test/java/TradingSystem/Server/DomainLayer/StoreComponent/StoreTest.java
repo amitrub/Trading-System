@@ -55,54 +55,54 @@ class StoreTest {
     //endregion
 
     //region history tests
-    @Test
-    void showStoreHistorySuccess() {
-        Product p1=new Product(1,"1","1",1.0);
-        Product p2=new Product(2,"2","2",1.0);
-        Product p3=new Product(3,"3","3",1.0);
-        Product p4=new Product(4,"4","4",1.0);
-        ConcurrentHashMap<Product,Integer> PSH1=new ConcurrentHashMap<>();
-        PSH1.put(p1,3);
-        PSH1.put(p2,2);
-        PSH1.put(p4,5);
-        ConcurrentHashMap<Product,Integer> PSH2=new ConcurrentHashMap<>();
-        PSH2.put(p1,10);
-        PSH2.put(p2,2);
-        PSH2.put(p3,8);
-        ShoppingBag SB1=new ShoppingBag(1,1);
-        ShoppingBag SB2=new ShoppingBag(2,2);
-        ShoppingHistory SH1=new ShoppingHistory(SB1,PSH1);
-        ShoppingHistory SH2=new ShoppingHistory(SB2,PSH2);
-        store.addHistory(SH1);
-        store.addHistory(SH2);
-        List<DummyShoppingHistory> list = store.ShowStoreHistory();
-        assertTrue(list.size()==2);
-
-        Set<Integer > DP1exist=new HashSet<>();
-        Set<Integer > DP2exist=new HashSet<>();
-        for (DummyShoppingHistory DSH:list
-        ) {
-            if(DSH.getStoreID()==1){
-                Set<DummyProduct> DP1=DSH.getProducts().keySet();
-                for (DummyProduct DP:DP1
-                ) {
-                    DP1exist.add(DP.getProductID());
-                    System.out.println(DP.getProductID()+" "+DP.getProductName()+" "+ DP.getQuantity()+ " "+ DP.getPrice()+" "+DP.getCategory()+" "+DP.getStoreID()+" "+DP.getStoreID());
-                }
-            }
-            if(DSH.getStoreID()==2){
-                Set<DummyProduct> DP2=DSH.getProducts().keySet();
-                for (DummyProduct DP:DP2
-                ) {
-                    DP2exist.add(DP.getProductID());
-                    System.out.println(DP.getProductID()+" "+DP.getProductName()+" "+ DP.getQuantity()+ " "+ DP.getPrice()+" "+DP.getCategory()+" "+DP.getStoreID()+" "+DP.getStoreID());
-                }
-            }
-        }
-        assertTrue(DP1exist.contains(1)&&DP1exist.contains(2)&&DP1exist.contains(4));
-        assertTrue(DP2exist.contains(1)&&DP2exist.contains(2)&&DP2exist.contains(3));
-
-    }
+//    @Test
+//    void showStoreHistorySuccess() {
+//        Product p1=new Product(1,"1","1",1.0);
+//        Product p2=new Product(2,"2","2",1.0);
+//        Product p3=new Product(3,"3","3",1.0);
+//        Product p4=new Product(4,"4","4",1.0);
+//        ConcurrentHashMap<Product,Integer> PSH1=new ConcurrentHashMap<>();
+//        PSH1.put(p1,3);
+//        PSH1.put(p2,2);
+//        PSH1.put(p4,5);
+//        ConcurrentHashMap<Product,Integer> PSH2=new ConcurrentHashMap<>();
+//        PSH2.put(p1,10);
+//        PSH2.put(p2,2);
+//        PSH2.put(p3,8);
+//        ShoppingBag SB1=new ShoppingBag(1,1);
+//        ShoppingBag SB2=new ShoppingBag(2,2);
+//        ShoppingHistory SH1=new ShoppingHistory(SB1,PSH1);
+//        ShoppingHistory SH2=new ShoppingHistory(SB2,PSH2);
+//        store.addHistory(SH1);
+//        store.addHistory(SH2);
+//        List<DummyShoppingHistory> list = store.ShowStoreHistory();
+//        assertTrue(list.size()==2);
+//
+//        Set<Integer > DP1exist=new HashSet<>();
+//        Set<Integer > DP2exist=new HashSet<>();
+//        for (DummyShoppingHistory DSH:list
+//        ) {
+//            if(DSH.getStoreID()==1){
+//                Set<DummyProduct> DP1=DSH.getProducts().keySet();
+//                for (DummyProduct DP:DP1
+//                ) {
+//                    DP1exist.add(DP.getProductID());
+//                    System.out.println(DP.getProductID()+" "+DP.getProductName()+" "+ DP.getQuantity()+ " "+ DP.getPrice()+" "+DP.getCategory()+" "+DP.getStoreID()+" "+DP.getStoreID());
+//                }
+//            }
+//            if(DSH.getStoreID()==2){
+//                Set<DummyProduct> DP2=DSH.getProducts().keySet();
+//                for (DummyProduct DP:DP2
+//                ) {
+//                    DP2exist.add(DP.getProductID());
+//                    System.out.println(DP.getProductID()+" "+DP.getProductName()+" "+ DP.getQuantity()+ " "+ DP.getPrice()+" "+DP.getCategory()+" "+DP.getStoreID()+" "+DP.getStoreID());
+//                }
+//            }
+//        }
+//        assertTrue(DP1exist.contains(1)&&DP1exist.contains(2)&&DP1exist.contains(4));
+//        assertTrue(DP2exist.contains(1)&&DP2exist.contains(2)&&DP2exist.contains(3));
+//
+//    }
 
     @Test
     void showStoreEmpty() {

@@ -28,7 +28,7 @@ function WriteComment(props) {
   }
 
   async function fetchStoreProducts() {
-    if (chosenStoreID != -1) {
+    if (chosenStoreID !== -1) {
       const productsOfStoresResponse = await apiHttp.ShowStoreProducts(
         chosenStoreID
       );
@@ -117,6 +117,10 @@ function WriteComment(props) {
                   onChange={(e) => updateStoreID(e)}
                   about="Show number of results:"
                 >
+                  <option value={-1} disabled>
+                    {" "}
+                    choose store{" "}
+                  </option>
                   {stores.map((store) => (
                     <option value={store.id}>
                       {store.id}:{store.name}
@@ -139,6 +143,10 @@ function WriteComment(props) {
                   onChange={(e) => updateProductID(e)}
                   about="Show number of results:"
                 >
+                  <option value={-1} disabled>
+                    {" "}
+                    choose product{" "}
+                  </option>
                   {storeProducts.map((product) => (
                     <option value={product.productID}>
                       {product.productID}:{product.productName}

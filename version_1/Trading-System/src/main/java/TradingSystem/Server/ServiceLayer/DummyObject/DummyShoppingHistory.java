@@ -2,41 +2,35 @@ package TradingSystem.Server.ServiceLayer.DummyObject;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
-import java.util.Date;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.*;
 
 public class DummyShoppingHistory {
 
     private Integer userID;
     private Integer storeID;
-
-    //productID_quantity
-    //private ConcurrentHashMap<DummyProduct,Integer> products;
-    private LinkedHashMap<DummyProduct,Integer> products;
-
-    private Date date;
+    private List<DummyProduct> products;
+    private String date;
     private Double finalPrice;
 
     public DummyShoppingHistory(ShoppingHistory toCopyShoppingHistory) {
         this.userID = toCopyShoppingHistory.getUserID();
         this.storeID = toCopyShoppingHistory.getStoreID();
-        this.date = toCopyShoppingHistory.getDate();
+        this.date = toCopyShoppingHistory.getDate().toString();
         this.finalPrice = toCopyShoppingHistory.getFinalPrice();
-        //this.products = new ConcurrentHashMap<>();
-        this.products = new LinkedHashMap<>();
-        for (Product p : toCopyShoppingHistory.getProducts().keySet()){
+        this.products = new ArrayList<>();
+        for (Product p : toCopyShoppingHistory.getProducts()){
             DummyProduct dp = new DummyProduct(p);
-           this.products.put(dp, toCopyShoppingHistory.getProducts().get(p));
+            this.products.add(dp);
         }
     }
 
     public DummyShoppingHistory(Map<String, Object> map) {
         this.userID = (Integer) map.get("userID");
         this.storeID = (Integer) map.get("storeID");
-        this.date = (Date) map.get("date");
+        this.date = ((Date) map.get("date")).toString();
         Double tmpFinalPrice;
         try {
             tmpFinalPrice = (Double) map.get("finalPrice");
@@ -45,7 +39,7 @@ public class DummyShoppingHistory {
             tmpFinalPrice = new Double((Integer) map.get("finalPrice"));
         }
         this.finalPrice = tmpFinalPrice;
-        this.products = (LinkedHashMap<DummyProduct, Integer>) map.get("products");
+        this.products = (List<DummyProduct>) map.get("products");
     }
 
     public Integer getUserID() {
@@ -56,24 +50,46 @@ public class DummyShoppingHistory {
         return storeID;
     }
 
-    /*
-    public ConcurrentHashMap<DummyProduct, Integer> getProducts() {
+    public List<DummyProduct> getProducts() {
         return products;
     }
 
-     */
-    public LinkedHashMap<DummyProduct, Integer> getProducts() {
-        return products;
-    }
-
-    /*
-    public Date getDate() {
+    public String getDate() {
         return date;
     }
 
-     */
 
     public Double getFinalPrice() {
         return finalPrice;
+    }
+
+    @Override
+    public String toString() {
+        JSONObject JO = new JSONObject();
+        try {
+            JO.put("userID", userID);
+            JO.put("storeID", storeID);
+            JSONArray prods = new JSONArray();
+            for(DummyProduct p : products) {
+                JSONObject JProduct = new JSONObject();
+                try {
+                    JProduct.put("storeID", p.getStoreID());
+                    JProduct.put("storeName", p.getStoreName());
+                    JProduct.put("productID", p.getProductID());
+                    JProduct.put("productName", p.getProductName());
+                    JProduct.put("price", p.getPrice());
+                    JProduct.put("category", p.getCategory());
+                } catch (Exception e) {
+                    System.out.println("DummyProduct toString error");
+                }
+                prods.put(JProduct);
+            }
+            JO.put("products", prods);
+            JO.put("date", date);
+            JO.put("finalPrice", finalPrice);
+        } catch (Exception e) {
+            System.out.println("DummyShoppingHistory toString error");
+        }
+        return JO.toString();
     }
 }
