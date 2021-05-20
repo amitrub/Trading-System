@@ -102,6 +102,7 @@ public class Client implements Client_Interface {
      * @param pass pass
      * @return int if ok
      */
+    
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
