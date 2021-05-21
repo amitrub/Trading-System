@@ -1,22 +1,40 @@
-import React, { useState } from "react";
-import createApiClientHttp from "../../../ApiClientHttp";
+import React, { useState, useEffect } from "react";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import MyPopup from "../../OtherComponents/MyPopup/MyPopup";
+import createApiClientHttp from "../../../ApiClientHttp";
 
 const apiHttp = createApiClientHttp();
 
-function Add_RemoveEmployee(props) {
+function AddRemoveEmployee(props) {
   const [employeeID, setEmployeeID] = useState(-1);
   const [popupRemove, setPopupRemove] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
+  const [workers, setWorkers] = useState([]);
 
-  // const workersResponse = await apiHttp.GetAllSubscribers(props.connID);
-  const workers = [
-    { id: 1, name: "roee" },
-    { id: 2, name: "hadas" },
-    { id: 3, name: "chango" },
-  ];
+  async function fetchWorkers() {
+    const workersResponse = await apiHttp.GetAllSubscribers(
+      props.connID,
+      props.userID
+    );
+    // console.log(workersResponse);
+
+    if (workersResponse.isErr) {
+      console.log(workersResponse.message);
+    } else {
+      setWorkers(workersResponse.returnObject.subscribers);
+    }
+
+    // const workers = [
+    //   { id: 1, name: "roee" },
+    //   { id: 2, name: "hadas" },
+    //   { id: 3, name: "chango" },
+    // ];
+  }
+
+  useEffect(() => {
+    fetchWorkers();
+  }, [props.refresh]);
 
   async function submitRemoveHandler(event) {
     event.preventDefault();
@@ -75,7 +93,9 @@ function Add_RemoveEmployee(props) {
                 >
                   {/* TOOD: change map to workersResponse.workers */}
                   {workers.map((currWorker) => (
-                    <option value={currWorker.id}>{currWorker.name}</option>
+                    <option value={currWorker.userID}>
+                      {currWorker.userName}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -114,4 +134,4 @@ function Add_RemoveEmployee(props) {
   );
 }
 
-export default Add_RemoveEmployee;
+export default AddRemoveEmployee;

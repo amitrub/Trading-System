@@ -65,8 +65,6 @@ public  class User implements Observer {
         this.userName = "guest";
         this.password = "";
         this.shoppingCart = new ShoppingCart(this.id);
-        this.ownerPermission = null;
-        this.managerPermission = null;
         this.myManagedStoresIDs=new ArrayList<>();
         this.myManagedStoresIDs=new ArrayList<>();
         this.myFoundedStoresIDs=new ArrayList<>();
@@ -395,14 +393,20 @@ public  class User implements Observer {
 
     public List<String> updateAfterLogin(){
         List<String> strMessages = new ArrayList<>();
+        System.out.println(messages.size());
         try {
             synchronized (messages) {
-                for (Object arg : messages) {
-                    Response res = (Response) arg;
+                int size = messages.size();
+                for (int i = 0; i < size; i++) {
+                    Response res = (Response) messages.get(i);
+                    System.out.println(i + ": " + res.getMessage());
                     strMessages.add(res.getMessage());
 //                this.notify(tradingSystem.getUserConnID(this.id), res);
-                    messages.remove(arg);
                 }
+                messages = new ArrayList<>();
+//                while(messages.isEmpty()) {
+//                    messages.remove(0);
+//                }
                 messages.notifyAll();
             }
         } catch (Exception e) {

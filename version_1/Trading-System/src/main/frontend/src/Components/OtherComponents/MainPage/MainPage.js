@@ -45,7 +45,9 @@ function mainPage(props) {
                 <a href="#">hello {props.username}</a>
               </li>
               <li>
-                <a href="#sign">sign</a>
+                <a href="#sign">
+                  {props.userID === -1 ? "sign in" : "sign out"}
+                </a>
               </li>
               <li>
                 <a href="#stores">stores</a>

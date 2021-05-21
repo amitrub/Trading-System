@@ -102,4 +102,6 @@ public interface TradingSystem {
     public Response GetPoliciesInfo(int userID, int storeID, String connID);
     public Expression CreateExpForBuy(Integer storeID,Map<String, Object> map);
     public Sale createSaleForDiscount(int storeID, Map<String, Object> obj);
+
+    public Response GetAllSubscribers(String connID, int userID);
 }

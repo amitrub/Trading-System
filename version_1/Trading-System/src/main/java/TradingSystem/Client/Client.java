@@ -102,6 +102,7 @@ public class Client implements Client_Interface {
      * @param pass pass
      * @return int if ok
      */
+    
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
@@ -230,8 +231,6 @@ public class Client implements Client_Interface {
         JSONObject jsonArray = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonArray);
         System.out.println(ANSI_YELLOW + "(addProductToCart) response: " + response + ANSI_RESET);
-        //List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-        //return dummyProductResponeArr;
         return response;
     }
     public Response removeFromShoppingCart(int storeID, int productID) {
@@ -312,7 +311,13 @@ public class Client implements Client_Interface {
      */
     public Response openStore(String storeName){
         String path = String.format("%s/add_store", this.userID);
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber + path, storeName, this.connID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("storeName", storeName);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addProduct, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber + path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(openStore) response: " + response + ANSI_RESET);
         return response;
@@ -326,6 +331,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/user_history", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(showUserHistory) response: " + response + ANSI_RESET);
         return response;
     }
 

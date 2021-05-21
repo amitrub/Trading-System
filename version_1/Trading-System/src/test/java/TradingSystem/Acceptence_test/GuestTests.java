@@ -144,7 +144,8 @@ public class GuestTests {
     void showAllStores_Happy() {
         Integer preSize = client.showAllStores().getStores().size();
         client.openStore("Adidas");
-        Integer newSize = client.showAllStores().getStores().size();
+        Response response = client.showAllStores();
+        Integer newSize = response.getStores().size();
         assertTrue(newSize == preSize+1);
     }
     @Test

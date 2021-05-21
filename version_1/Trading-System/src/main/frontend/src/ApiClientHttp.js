@@ -262,7 +262,7 @@ export const createApiClientHttp = () => {
       let path = subscriberURL.concat(`${userID}/user_history`);
       const headers = {
         "Content-Type": "application/json; utf-8",
-        Accept: "application/json",
+        Accept: "application/json; utf-8",
         connID: connID,
       };
       return axios.get(path, { headers: headers }).then((res) => {
@@ -431,7 +431,7 @@ export const createApiClientHttp = () => {
       });
     },
 
-    AddBuyingPolicy: (connID, userID, storeID) => {
+    AddBuyingPolicy: (connID, userID, storeID, expression) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_buying_policy`
       );
@@ -441,7 +441,7 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        // TODO
+        // expression: expression,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -576,9 +576,9 @@ export const createApiClientHttp = () => {
       });
     },
 
-    //DONE - STILL NOT IMPL IN SERVER
-    GetAllSubscribers: (connID) => {
-      let path = ownerURL.concat(`get_all_subscribers`);
+    //DONE
+    GetAllSubscribers: (connID, userID) => {
+      let path = subscriberURL.concat(`${userID}/get_all_subscribers`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
@@ -652,9 +652,9 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
-    GetPossiblePermissionsToManager: (connID, userID) => {
+    GetPossiblePermissionsToManager: (connID, userID, storeID) => {
       let path = ownerURL.concat(
-        `${userID}/store/get_possible_permissions_to_manager`
+        `${userID}/store/${storeID}/get_permissions_to_manager`
       );
       const headers = {
         "Content-Type": "application/json; utf-8",
@@ -666,6 +666,7 @@ export const createApiClientHttp = () => {
       });
     },
 
+    // NOT IN USE
     ShowStoreWorkers: (connID, userID, storeID) => {
       let path = ownerURL.concat(`${userID}/store/${storeID}/workers`);
       const headers = {
@@ -677,7 +678,7 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-
+    // NOT IN USE
     OwnerStoreHistory: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/store_history_owner`
@@ -691,7 +692,7 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-
+    // NOT IN USE
     ShowOwnerStores: (connID, userID) => {
       let path = ownerURL.concat(`${userID}/stores_owner`);
       const headers = {
@@ -703,7 +704,7 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-
+    // NOT IN USE
     ShowManagerStores: (connID, userID) => {
       let path = ownerURL.concat(`${userID}/stores_manager`);
       const headers = {
@@ -717,6 +718,7 @@ export const createApiClientHttp = () => {
     },
 
     // Admin
+    // NOT IN USE
     AdminAllUsers: (connID, adminID) => {
       let path = adminURL.concat(`${adminID}/users`);
       const headers = {
@@ -728,7 +730,7 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
-
+    // NOT IN USE
     AdminAllStores: (connID, adminID) => {
       let path = adminURL.concat(`${adminID}/stores`);
       const headers = {

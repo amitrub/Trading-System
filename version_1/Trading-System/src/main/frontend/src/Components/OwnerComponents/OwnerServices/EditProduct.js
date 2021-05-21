@@ -31,8 +31,8 @@ function EditProduct(props) {
       price
     );
 
-    // console.log("EditProduct");
-    // console.log(editProductResponse);
+    console.log("EditProduct");
+    console.log(editProductResponse);
 
     if (editProductResponse) {
       setPopupMsg(editProductResponse.message);

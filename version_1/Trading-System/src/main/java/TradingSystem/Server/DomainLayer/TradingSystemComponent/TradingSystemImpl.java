@@ -344,6 +344,7 @@ public class TradingSystemImpl implements TradingSystem {
             myUser.setPublisher(publisher);
             List<String> notConnectedMessages = myUser.updateAfterLogin();
             res.AddPair("messages", notConnectedMessages);
+            System.out.println(res.getReturnObject().get("messages"));
         }
         return res;
     }
@@ -1470,28 +1471,29 @@ public class TradingSystemImpl implements TradingSystem {
 
     //other functions
     public boolean hasPermission(int userID, int storeID, User.Permission p) {
+        boolean hasPer=false;
         if(this.subscribers.containsKey(userID)){
             User u=this.subscribers.get(userID);
-            if(u.getOwnerPermission(storeID)!=null){
-                return u.getOwnerPermission(storeID).hasPermission(p);
+            if(!hasPer && u.getOwnerPermission(storeID)!=null){
+                hasPer = u.getOwnerPermission(storeID).hasPermission(p);
             }
-            if (u.getManagerPermission(storeID)!=null){
-                return u.getManagerPermission(storeID).hasPermission(p);
+            if (!hasPer && u.getManagerPermission(storeID)!=null){
+                hasPer = u.getManagerPermission(storeID).hasPermission(p);
             }
-            if(this.systemManagerPermissions.get(userID)!=null){
-                return this.systemManagerPermissions.get(userID).hasPermission(p);
+            if(!hasPer && this.systemManagerPermissions.get(userID)!=null){
+                hasPer = this.systemManagerPermissions.get(userID).hasPermission(p);
             }
         }
-        return false;
+        return hasPer ;
     }
 
     public boolean hasPermission(int userID, User.Permission p) {
-        if (this.subscribers.containsKey(userID)) {
-            User u = this.subscribers.get(userID);
+        //if (this.subscribers.containsKey(userID)) {
+          //  User u = this.subscribers.get(userID);
             if (this.systemManagerPermissions.get(userID) != null) {
                 return this.systemManagerPermissions.get(userID).hasPermission(p);
             }
-        }
+        //}
         return false;
     }
 
@@ -2152,5 +2154,19 @@ public class TradingSystemImpl implements TradingSystem {
         return output;
     }
 
+    public Response GetAllSubscribers(String connID, int userID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "Error in Subscriber details");
+        }
+        List<DummySubscriber> dummySubscribers = new ArrayList<>();
+        for(Integer id : this.subscribers.keySet()) {
+            User u = this.subscribers.get(id);
+            DummySubscriber dummySubscriber = new DummySubscriber(u.getId(), u.getUserName());
+            dummySubscribers.add(dummySubscriber);
+        }
+        Response res = new Response("Get All Subscribers succeed");
+        res.AddPair("subscribers", dummySubscribers);
+        return res;
+    }
 
 }

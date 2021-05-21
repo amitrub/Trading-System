@@ -201,6 +201,12 @@ input[type="submit"]:active {
   width: 120px;
   cursor: pointer;
 }
+
+.buttonus:disabled {
+  cursor: not-allowed;
+  pointer-events: all !important;
+}
+
 /* .buttonus-ghost:link,
 .buttonus-ghost:visited {
   border: px solid #ce4b46;

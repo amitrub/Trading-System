@@ -84,7 +84,6 @@ function Stores(props) {
       ) : (
         ""
       )}
-      <section className="section-form"></section>
       <section className="section-form">
         {stores
           ? allStores.map((currStore, index) => (

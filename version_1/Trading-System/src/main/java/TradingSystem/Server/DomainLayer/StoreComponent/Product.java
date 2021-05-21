@@ -9,7 +9,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Product {
 
-
+    private Integer storeID;
+    private String storeName;
     private Integer productID;
     private String productName;
     private String category;
@@ -23,7 +24,9 @@ public class Product {
     //userID_Rate
     private ConcurrentHashMap<Integer, Double> productRating;
 
-    public Product(Integer productID, String productName, String category, Double price) {
+    public Product(Integer storeID, String storeName, Integer productID, String productName, String category, Double price) {
+        this.storeID = storeID;
+        this.storeName = storeName;
         this.productID = productID;
         this.productName = productName;
         this.category = category;
@@ -33,7 +36,9 @@ public class Product {
         this.quantity = 0;
     }
 
-    public Product(Integer productID, String productName, String category, Double price, int quantity) {
+    public Product(Integer storeID, String storeName, Integer productID, String productName, String category, Double price, int quantity) {
+        this.storeID = storeID;
+        this.storeName = storeName;
         this.productID = productID;
         this.productName = productName;
         this.category = category;
@@ -44,6 +49,8 @@ public class Product {
     }
 
     public Product(Product toCopyProduct) {
+        this.storeID = toCopyProduct.storeID;
+        this.storeName = toCopyProduct.storeName;
         this.productID = toCopyProduct.productID;
         this.productName = toCopyProduct.productName;
         this.category = toCopyProduct.category;
@@ -191,4 +198,11 @@ public class Product {
     }
 
 
+    public int getStoreID() {
+        return this.storeID;
+    }
+
+    public String getStoreName() {
+        return this.storeName;
+    }
 }

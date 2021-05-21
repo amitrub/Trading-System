@@ -363,7 +363,7 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
         tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
 
-        DummyUser test = new DummyUser("ala", "123");
+        //DummyUser test = new DummyUser("ala", "123");
         Response res = tradingSystemImpl.ShowSubscriberHistory(ElinorID, EconnID);
         assertFalse(res.getIsErr());
         List<DummyShoppingHistory> list = (List<DummyShoppingHistory>) res.getReturnObject().get("history");
@@ -493,7 +493,7 @@ class TradingSystemImplTest {
     void RemoveProductNotExist(){
         Store store= new Store("store11", userID);
         tradingSystemImpl.AddStore(userID,connID,"store11");
-        Product product=new Product(4,"prod4","food",7.0,11);
+        Product product=new Product(store.getId(), store.getName(),4,"prod4","food",7.0,11);
         Response response= tradingSystemImpl.RemoveProduct(userID,storeid,product.getProductID(),connID);
         assertTrue(response.getIsErr());
     }

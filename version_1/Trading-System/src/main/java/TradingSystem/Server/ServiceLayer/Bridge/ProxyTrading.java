@@ -545,4 +545,11 @@ public class ProxyTrading implements TradingSystem {
             return real.createSaleForDiscount( storeID, obj);
         return null;
     }
+
+    @Override
+    public Response GetAllSubscribers(String connID, int userID) {
+        if(real!=null)
+            return real.GetAllSubscribers(connID, userID);
+        return null;
+    }
 }

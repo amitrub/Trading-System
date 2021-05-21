@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment } from "react";
 import "./App.css";
 import "./Design/grid.css";
 import "./Design/style.css";
@@ -17,6 +17,7 @@ import Logout from "./Components/SubscriberComponents/Logout/Logout";
 import MyPopup from "./Components/OtherComponents/MyPopup/MyPopup";
 import createApiClientHttp from "./ApiClientHttp";
 import SubscriberServices from "./Components/SubscriberComponents/SubscriberServices/SubscriberServices";
+import Purchase from "./Components/GuestComponents/Purchase/Purchase";
 
 const apiHttp = createApiClientHttp();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -121,14 +122,15 @@ class App extends React.Component {
         }),
         () => {
           this.subscribeToTopic(this.state.clientConnection, this.state.connID);
-          console.log(res.returnObject.messages);
+          // console.log(res.returnObject.messages);
           res.returnObject.messages.map((msg) => {
             this.setState((prevState) => ({
               popupMassages: [...prevState.popupMassages, msg],
             }));
+            return "stam";
           });
 
-          this.onRefresh();
+          // this.onRefresh();
         }
       );
     }
@@ -160,7 +162,7 @@ class App extends React.Component {
               popupMassages: [...prevState.popupMassages, jsonBody.message],
             }),
             () => {
-              this.onRefresh();
+              // this.onRefresh();
             }
           );
           // console.log(jsonBody);
@@ -243,7 +245,7 @@ class App extends React.Component {
   }
 
   render() {
-    const { userID, connID, showPopup, popupMassages } = this.state;
+    const { userID, connID, popupMassages } = this.state;
     return !this.state.clientConnection ? (
       <Fragment>
         <h3>Connecting To System...</h3>
@@ -260,7 +262,7 @@ class App extends React.Component {
         )}
         {this.guestContent()}
         {this.subscriberContent()}
-        {this.ownerContent(connID, userID)}
+        {this.ownerContent()}
         {this.endOfPage()}
       </div>
     );
@@ -270,7 +272,7 @@ class App extends React.Component {
     const { refresh, username, userID, connID } = this.state;
     return (
       <Fragment>
-        <MainPage username={username} />
+        <MainPage userID={userID} username={username} />
         {username === "guest" ? (
           <section className="row" id="sign">
             <div className="col span-1-of-2 box">
@@ -306,6 +308,13 @@ class App extends React.Component {
           username={username}
           userID={userID}
         />
+
+        <Purchase
+          refresh={refresh}
+          onRefresh={this.onRefresh}
+          connID={connID}
+          userID={userID}
+        ></Purchase>
       </Fragment>
     );
   };
@@ -336,7 +345,8 @@ class App extends React.Component {
     );
   };
 
-  ownerContent = (connID, userID) => {
+  ownerContent = () => {
+    const { username, userID, connID, refresh, admin } = this.state;
     return (
       <Fragment>
         <OwnerStores
@@ -344,6 +354,7 @@ class App extends React.Component {
           userID={userID}
           refresh={this.state.refresh}
           onRefresh={this.onRefresh}
+          admin={admin}
         ></OwnerStores>
       </Fragment>
     );

@@ -3,7 +3,6 @@ import createApiClientHttp from "../../../ApiClientHttp";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import MyPopup from "../../OtherComponents/MyPopup/MyPopup";
-import Modal from "../../OtherComponents/Modal/Modal";
 
 const apiHttp = createApiClientHttp();
 

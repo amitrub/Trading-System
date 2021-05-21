@@ -9,6 +9,7 @@ const apiHttp = createApiClientHttp();
 function Logout(props) {
   const [logouted, setLogouted] = useState(false);
   const [popupMsg, setPopUpMsg] = useState("");
+  const [response, setResponse] = useState("");
 
   async function submitHandler(event) {
     event.preventDefault();
@@ -22,12 +23,13 @@ function Logout(props) {
     if (logoutResponse.isErr) {
       console.log(logoutResponse.message);
     }
-    props.onLogout(logoutResponse);
-    props.onRefresh();
+    setResponse(logoutResponse);
   }
 
   function onClosePopupLogout() {
     setLogouted(false);
+    props.onLogout(response);
+    props.onRefresh();
   }
 
   return (
