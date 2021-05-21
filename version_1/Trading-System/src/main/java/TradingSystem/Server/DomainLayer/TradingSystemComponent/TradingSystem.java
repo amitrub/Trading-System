@@ -106,4 +106,6 @@ public interface TradingSystem {
     public Response GetAllSubscribers(String connID, int userID);
 
     Response getDailyIncomeForStore(int userID, int storeID, String connID);
+
+    Response getDailyIncomeForSystem(int userID, String connID);
 }

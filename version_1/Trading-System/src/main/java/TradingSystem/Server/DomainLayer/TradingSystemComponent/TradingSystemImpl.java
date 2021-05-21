@@ -2173,6 +2173,21 @@ public class TradingSystemImpl implements TradingSystem {
         return res;
     }
 
+    /**
+     * @requirement 4.12
+     *
+     * @param userID: int
+     * @param storeID: int
+     * @param connID: String
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "DailyIncome": {[Double]}
+     *  }
+     * }
+     */
+
     @Override
     public Response getDailyIncomeForStore(int userID, int storeID, String connID) {
         if (!ValidConnectedUser(userID, connID)) {
@@ -2192,6 +2207,30 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "getDailyIncomeForStore: The user " + userID + " has no permissions to see this information");
         }
         Double DailyIncome=store.getDailyIncome();
+        Response res =new Response(false, "the income can be displayed");
+        res.AddPair("DailyIncome", DailyIncome);
+        return res;
+    }
+
+    @Override
+    public Response getDailyIncomeForSystem(int userID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "getDailyIncomeForSystem: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "getDailyIncomeForSystem: The user "+userID+" is not in the list");
+        }
+        if(!this.systemAdmins.keySet().contains(userID)){
+            return new Response(true, "getDailyIncomeForSystem: The user "+userID+"  try to see the Daily Income for the system but he is not the admin of the system");
+        }
+        if(!this.hasPermission(userID,User.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getDailyIncomeForSystem: The user " + userID + " has no permissions to see this information");
+        }
+        Double DailyIncome=0.0;
+        for (Integer key:this.stores.keySet()
+        ) {
+            DailyIncome = DailyIncome+this.stores.get(key).getDailyIncome();
+        }
         Response res =new Response(false, "the income can be displayed");
         res.AddPair("DailyIncome", DailyIncome);
         return res;

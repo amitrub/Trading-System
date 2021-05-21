@@ -573,7 +573,7 @@ public class StoreOwnerServiceHttp {
      *  "isErr: boolean
      *  "message": String
      *  "connID: String
-     *  "DailyIncome": {[Integer]}
+     *  "DailyIncome": {[Double]}
      *  }
      * }
      */

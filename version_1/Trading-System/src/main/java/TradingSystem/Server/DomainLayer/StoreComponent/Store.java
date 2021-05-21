@@ -490,8 +490,19 @@ public class Store extends Observable {
         this.deleteObserver(user);
     }
 
-
     public Double getDailyIncome() {
-    return  0.0;
-    }
+            Double DailyIncome=0.0;
+            for (ShoppingHistory SH:this.shoppingHistory
+            ) {
+                Date today=new Date(System.currentTimeMillis());
+                Calendar calForTodey = Calendar.getInstance();
+                calForTodey.setTime(today);
+                Calendar calForHistory = Calendar.getInstance();
+                calForHistory.setTime(SH.getDate());
+                if(calForHistory.get(Calendar.DAY_OF_WEEK)==calForTodey.get(Calendar.DAY_OF_WEEK)){
+                    DailyIncome=DailyIncome+SH.getFinalPrice();
+                }
+            }
+            return DailyIncome;
+        }
 }
