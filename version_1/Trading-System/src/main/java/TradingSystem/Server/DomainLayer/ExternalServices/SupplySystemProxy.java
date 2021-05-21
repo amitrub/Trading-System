@@ -24,7 +24,7 @@ public class SupplySystemProxy implements ExternalServices {
     }
 
     @Override
-    public Response Cancel(Integer transactionId) {
+    public Response Cancel(String transactionId) {
         return new Response("Supply with transaction ID: " + transactionId + " canceled successfully");
     }
 }

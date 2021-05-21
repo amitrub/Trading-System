@@ -137,8 +137,8 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address) {
-        return tradingSystem.guestPurchase(ConnID,name,credit_number,month,year,cvv,ID,address);
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
+        return tradingSystem.guestPurchase(ConnID,name,credit_number,month,year,cvv,ID,address,city,country,zip);
     }
 
     @Override
@@ -165,8 +165,8 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address) {
-        return tradingSystem.subscriberPurchase(userID,ConnID,credit_number,month,year,cvv,ID,address);
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
+        return tradingSystem.subscriberPurchase(userID,ConnID,credit_number,month,year,cvv,ID,address,city,country,zip);
     }
 
     @Override

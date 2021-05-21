@@ -165,7 +165,7 @@ public class SubscriberServiceHttp {
      */
     @PostMapping("{userID}/shopping_cart/purchase")
     public Response subscriberPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String credit_number, month, year, cvv, ID, address;
+        String credit_number, month, year, cvv, ID, address, city, country, zip;
         try {
             credit_number = (String) obj.get("credit_number");
             month = (String) obj.get("month");
@@ -173,6 +173,9 @@ public class SubscriberServiceHttp {
             cvv = (String) obj.get("cvv");
             ID = (String) obj.get("ID");
             address = (String) obj.get("address");
+            city = (String) obj.get("city");
+            country = (String) obj.get("country");
+            zip = (String) obj.get("zip");
         }
         catch (Exception e){
             System.out.println(e);
@@ -181,7 +184,7 @@ public class SubscriberServiceHttp {
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, month, year, cvv, ID, address);
+        Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
         WriteToLogger(res);
         return res;
     }

@@ -33,7 +33,7 @@ public class PaymentSystemProxy implements ExternalServices {
     }
 
     @Override
-    public Response Cancel(Integer transactionId) {
+    public Response Cancel(String transactionId) {
         return new Response(false, "Payment with transaction ID: " + transactionId + " canceled successfully");
     }
 }

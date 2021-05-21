@@ -1,6 +1,9 @@
 package TradingSystem.Server.DomainLayer.ExternalServices;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import org.json.JSONObject;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
@@ -36,11 +39,21 @@ public class PaymentSystem implements ExternalServices {
 
     @Override
     public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {
-        Response responseHandShake = handshake();
+        Response responseHandShake = null;
+        try {
+            responseHandShake = handshake();
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
         if(!responseHandShake.getMessage().equals("OK")){
             return new Response(true, "The connection to Payment System Failed");
         }
-        Response responsePay = Pay(paymentInfo);
+        Response responsePay = null;
+        try {
+            responsePay = Pay(paymentInfo);
+        } catch (UnirestException e) {
+            e.printStackTrace();
+        }
         Integer transactionId = Integer.parseInt(responsePay.getMessage());
         if(transactionId == -1){
             return new Response(true, "The Payment Failed");
@@ -48,71 +61,49 @@ public class PaymentSystem implements ExternalServices {
         return new Response(false, "Payment confirmed");
     }
 
-    private Response handshake(){
-        JSONObject post_data = new JSONObject();
-        String message = "Failed";
-        String actionType = "handshake";
-        try {
-            post_data.put("action_type", actionType);
-        } catch (Exception e){
-            System.out.println(e);
-        }
-        JSONObject jsonResponse = ExternalHttpRequest.sendPOSTRequest(urlbaseExternalSystems, post_data.toString());
-        try{
-            message = jsonResponse.toString();
-        }catch (Exception e){
-            System.out.println(e);
-        }
-        Response response = new Response(false, message);
-        return response;
+    private Response handshake() throws UnirestException {
+        HttpResponse<String> response = Unirest.post(urlbaseExternalSystems)
+                .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
+                .header("cache-control", "no-cache")
+                .header("postman-token", "66ab157e-327a-05b6-1df2-a10698d4c6da")
+                .body("------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"action_type\"\r\n\r\nhandshake\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--")
+                .asString();
+
+        String message = response.getBody();
+        return new Response(false, message);
     }
 
-    private Response Pay(PaymentInfo paymentInfo) {
-        JSONObject post_data = new JSONObject();
-        String message = "Failed";
-        String actionType = "pay";
-        try {
-            post_data.put("action_type", actionType);
-            post_data.put("card_number", paymentInfo.getCardNumber());
-            post_data.put("month", paymentInfo.getMonth());
-            post_data.put("year", paymentInfo.getYear());
-            post_data.put("holder", paymentInfo.getFullName());
-            post_data.put("ccv", paymentInfo.getCvv());
-            post_data.put("id", paymentInfo.getID());
+    private Response Pay(PaymentInfo paymentInfo) throws UnirestException {
+        String action_type = "pay";
+        HttpResponse<String> response = Unirest.post("https://cs-bgu-wsep.herokuapp.com/")
+                .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
+                .header("cache-control", "no-cache")
+                .header("postman-token", "cdc35da7-e014-f8c7-31a6-fe981434f4a2")
+                .body(String.format( "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"action_type\"\r\n\r\n%s\r\n" +
+                        "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"card_number\"\r\n\r\n%s\r\n" +
+                        "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"month\"\r\n\r\n%s\r\n" +
+                        "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"year\"\r\n\r\n%s\r\n" +
+                        "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"holder\"\r\n\r\n%s\r\n" +
+                        "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"ccv\"\r\n\r\n%s\r\n" +
+                        "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"id\"\r\n\r\n%s\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--",action_type, paymentInfo.getCardNumber(), paymentInfo.getMonth(), paymentInfo.getYear(), paymentInfo.getFullName(), paymentInfo.getCvv(), paymentInfo.getID()))
+                .asString();
 
-        } catch (Exception e){
-            System.out.println(e);
-        }
-        JSONObject jsonResponse = ExternalHttpRequest.sendPOSTRequest(urlbaseExternalSystems, post_data.toString());
-        try{
-            String str = jsonResponse.toString();
-            return new Response(false, str);
-        }catch (Exception e){
-            System.out.println(e);
-        }
-
-        return new Response(true, message);
+        String message = response.getBody();
+        return new Response(false, message);
     }
 
     @Override
-    public Response Cancel(Integer transactionId) {
-        JSONObject post_data = new JSONObject();
-        String message = "Failed";
-        String actionType = "cancel_pay";
-        try {
-            post_data.put("action_type", actionType);
-            post_data.put("transaction_id", transactionId);
-        } catch (Exception e){
-            System.out.println(e);
-        }
-        JSONObject jsonResponse = ExternalHttpRequest.sendPOSTRequest(urlbaseExternalSystems, post_data.toString());
-        try{
-            String str = jsonResponse.toString();
-            return new Response(false, str);
-        }catch (Exception e){
-            System.out.println(e);
-        }
+    public Response Cancel(String transactionId) throws UnirestException {
+        String action_type = "cancel_pay";
+        HttpResponse<String> response = Unirest.post(urlbaseExternalSystems)
+                .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
+                .header("cache-control", "no-cache")
+                .header("postman-token", "66ab157e-327a-05b6-1df2-a10698d4c6da")
+                .body(String.format( "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"action_type\"\r\n\r\n%s\r\n" +
+                        "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"transaction_id\"\r\n\r\n%s\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--",action_type, transactionId))
+                .asString();
 
-        return new Response(true, message);
+        String message = response.getBody();
+        return new Response(false, message);
     }
 }

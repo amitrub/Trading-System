@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 
 import java.util.*;
@@ -130,7 +131,7 @@ public class ShoppingCart {
         return this.shoppingBags;
     }
 
-    public Response Purchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address){
+    public Response Purchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip){
         if (shoppingBags.size()==0){
             return new Response(true, "Purchase: There is no products in the shopping cart");
         }
@@ -157,13 +158,19 @@ public class ShoppingCart {
 //            return new Response(true,"Purchase: The payment is not approve");
 //        }
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
-        AddressInfo addressInfo = new AddressInfo(name, "Israel", "Beer Sheba", address, "8458527");
-        if(supplySystem.purchase(paymentInfo, addressInfo).getIsErr()){
+        AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
+        Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
+        if(supplyResponse.getIsErr()){
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The Supply is not approve");
         }
-
-        if(paymentSystem.purchase(paymentInfo, addressInfo).getIsErr()){
+        Response paymentResponse = paymentSystem.purchase(paymentInfo, addressInfo);
+        if(paymentResponse.getIsErr()){
+            try {
+                supplySystem.Cancel(supplyResponse.getMessage());
+            } catch (UnirestException e) {
+                e.printStackTrace();
+            }
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The payment is not approve");
         }

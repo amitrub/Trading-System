@@ -266,9 +266,12 @@ public class Client implements Client_Interface {
      * @param cvv
      * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address) {
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
         try {
@@ -279,6 +282,9 @@ public class Client implements Client_Interface {
             jsonPost.put("cvv", cvv);
             jsonPost.put("ID", ID);
             jsonPost.put("address", address);
+            jsonPost.put("city", city);
+            jsonPost.put("country", country);
+            jsonPost.put("zip", zip);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "157", "Error: guestPurchase, making post json"));
         }
@@ -368,9 +374,12 @@ public class Client implements Client_Interface {
      * @param cvv
      * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address) {
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         String path = String.format("%s/shopping_cart/purchase", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
@@ -380,6 +389,9 @@ public class Client implements Client_Interface {
             jsonPost.put("cvv", cvv);
             jsonPost.put("ID", ID);
             jsonPost.put("address", address);
+            jsonPost.put("city", city);
+            jsonPost.put("country", country);
+            jsonPost.put("zip", zip);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "197", "Error: subscriberPurchase, making post json"));
         }

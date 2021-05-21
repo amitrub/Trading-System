@@ -353,7 +353,7 @@ public class GuestTests {
         Integer preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
 
         //Issue
-        Response response = client.guestPurchase("Roee","123456789", "4","2022" , "123", "123456789", "Tel Aviv");
+        Response response = client.guestPurchase("Roee","123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertFalse(response.getIsErr());
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
         List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
@@ -369,7 +369,7 @@ public class GuestTests {
         assertEquals(productName, "Simple Dress");
 
         //Issue
-        response = client.guestPurchase("Roee", "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
+        response = client.guestPurchase("Roee", "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertFalse(response.getIsErr());
         cartAfter = client.showShoppingCart().returnProductList();
         productsAfter = client.showStoreProducts(storeID).returnProductList();
@@ -386,7 +386,7 @@ public class GuestTests {
         client.addProductToCart(storeID, productID1, 1);
 
         //Issue
-        Response response =client.guestPurchase("Roee", "123456789", "20","2022" , "123", "123456789", "Tel Aviv");
+        Response response =client.guestPurchase("Roee", "123456789", "20","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         List<DummyProduct> productsInBag = client.showShoppingCart().returnProductList();
 
         //Assert

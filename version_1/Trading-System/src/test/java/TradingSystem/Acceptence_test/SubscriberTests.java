@@ -102,7 +102,7 @@ public class SubscriberTests {
         List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
         Integer productID = getProductID(products, "Short Pants");
         client.addProductToCart(storeID, productID, 1);
-        client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
+        client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         //Issue
         Response response = client.writeComment(storeID, productID, 3, "The product is nice");
@@ -145,7 +145,7 @@ public class SubscriberTests {
 
         //Issue
         Integer preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
-        Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
+        Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
         List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
 
@@ -168,7 +168,7 @@ public class SubscriberTests {
         assertEquals(ans1, "Short Pants");
 
         //Issue, not valid credit number and phone number
-        Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
+        Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         //Assert
         assertTrue(response.getIsErr());
@@ -197,9 +197,9 @@ public class SubscriberTests {
         Integer productID = 1;
         c.addProductToCart(storeID, productID, 1);
         c.addProductToCart(storeID, 2, 1);
-        c.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
+        c.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         c.addProductToCart(storeID, productID, 1);
-        c.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Tel Aviv");
+        c.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         Response response = c.showUserHistory();
         assertFalse(response.getIsErr());

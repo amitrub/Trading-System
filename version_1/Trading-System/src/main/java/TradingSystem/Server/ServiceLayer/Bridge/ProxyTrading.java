@@ -194,16 +194,16 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address) {
+    public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         if(real!=null)
-            return real.guestPurchase(connID,name,credit_number,month,year,cvv,ID,address);
+            return real.guestPurchase(connID,name,credit_number,month,year,cvv,ID,address,city,country,zip);
         return null;
     }
 
     @Override
-    public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address) {
+    public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         if(real!=null)
-            return real.subscriberPurchase(userID,connID,credit_number,month,year,cvv,ID,address);
+            return real.subscriberPurchase(userID,connID,credit_number,month,year,cvv,ID,address,city,country,zip);
         return null;
     }
 

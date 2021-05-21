@@ -91,9 +91,12 @@ public interface Client_Interface {
      * @param cvv
      * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address);
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip);
 
     //Subscriber
 
@@ -135,9 +138,12 @@ public interface Client_Interface {
      * @param cvv
      * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address);
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip);
     //Store Owner Service
 
     /**

@@ -556,7 +556,7 @@ public class OwnerTests {
 
         client.Login("Nofet", "123");
         client.addProductToCart(storeID, productID, 2);
-        client.subscriberPurchase("123456789", "4","2022" , "123", "123456789", "Tel Aviv");
+        client.subscriberPurchase("123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         client.Logout();
 
         client.Login("Elinor", "123");
