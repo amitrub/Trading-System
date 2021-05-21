@@ -167,8 +167,8 @@ public class SubscriberTests {
         String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
         assertEquals(ans1, "Short Pants");
 
-        //Issue, not valid credit number and phone number
-        Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        //Issue, not valid month
+        Response response = client.subscriberPurchase( "123456789", "20","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         //Assert
         assertTrue(response.getIsErr());
@@ -178,44 +178,17 @@ public class SubscriberTests {
     //case 3.7.1 have purchases
     @Test
     void showUsersHistory_Happy() {
-        Client c = new Client();
-        c.clearSystem();
-        c.connectSystem();
-        c.Register("Roee", "123");
-        c.Login("Roee", "123");
+        Integer storeID = setUpBeforePurchase();
+        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
+        Integer productID = getProductID(products, "Short Pants");
+        client.addProductToCart(storeID, productID, 1);
+        client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        client.addProductToCart(storeID, productID, 1);
+        client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
-        c.openStore("Test");
-        //Response r =c.showAllStores();
-        //List<DummyStore> stores = r.getStores();
-        //Integer storeID = getStoreID(stores, "Test");
-        Integer storeID = 3;
-        c.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        c.addProduct(storeID, "Shorts", "Pants", 100.0, 2);
-
-        //List<DummyProduct> products = c.showStoreProducts(storeID).returnProductList();
-        //Integer productID = getProductID(products, "Short Pants");
-        Integer productID = 1;
-        c.addProductToCart(storeID, productID, 1);
-        c.addProductToCart(storeID, 2, 1);
-        c.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
-        c.addProductToCart(storeID, productID, 1);
-        c.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
-
-        Response response = c.showUserHistory();
+        Response response = client.showUserHistory();
         assertFalse(response.getIsErr());
-        assertEquals(response.returnHistoryList().size(), 1);
-
-        //Integer storeID = setUpBeforePurchase();
-        //List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
-        //Integer productID = getProductID(products, "Short Pants");
-        //client.addProductToCart(storeID, productID, 1);
-        //client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
-        //client.addProductToCart(storeID, productID, 1);
-        //client.subscriberPurchase( "12345678", "052897878787", "sioot st. 5");
-
-//        Response response = client.showUserHistory();
-//        assertFalse(response.getIsErr());
-//        assertEquals(response.returnHistoryList().size(), 1);
+        assertEquals(response.returnHistoryList().size(), 2);
     }
     //case 3.7.2 no history for this user
     @Test

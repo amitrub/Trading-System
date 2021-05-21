@@ -39,25 +39,25 @@ public class PaymentSystem implements ExternalServices {
 
     @Override
     public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {
-        Response responseHandShake = null;
         try {
-            responseHandShake = handshake();
+            Response responseHandShake = handshake();
+            if(!responseHandShake.getMessage().equals("OK")){
+                return new Response(true, "The connection to Payment System Failed");
+            }
         } catch (UnirestException e) {
             e.printStackTrace();
         }
-        if(!responseHandShake.getMessage().equals("OK")){
-            return new Response(true, "The connection to Payment System Failed");
-        }
-        Response responsePay = null;
+
         try {
-            responsePay = Pay(paymentInfo);
+            Response responsePay = Pay(paymentInfo);
+            Integer transactionId = Integer.parseInt(responsePay.getMessage());
+            if(transactionId == -1){
+                return new Response(true, "The Payment Failed");
+            }
         } catch (UnirestException e) {
             e.printStackTrace();
         }
-        Integer transactionId = Integer.parseInt(responsePay.getMessage());
-        if(transactionId == -1){
-            return new Response(true, "The Payment Failed");
-        }
+
         return new Response(false, "Payment confirmed");
     }
 

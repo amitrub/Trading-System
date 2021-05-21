@@ -16,6 +16,7 @@ import java.util.concurrent.*;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -1065,14 +1066,39 @@ class TradingSystemImplTest {
         Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         Assertions.assertTrue(response.getIsErr());
 
-        //check Inventory after happy purchase
+        //check Inventory after sad purchase
         Integer newQuantity = Nstore.getQuantity(productID1);
         assertEquals(preQuantity, newQuantity);
     }
 
     @Test
-    void SadPurchase_Payment() {
+    void SadPurchase_WrongPaymentDetails() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        Integer preQuantity = Nstore.getQuantity(productID1);
+        tradingSystemImpl.Logout(NconnID);
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "15","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        assertTrue(response.getIsErr());
 
+        //check Inventory after sad purchase
+        Integer newQuantity = Nstore.getQuantity(productID1);
+        assertEquals(preQuantity, newQuantity);
+    }
+
+    @Test
+    void SadPurchase_WrongSupplyDetails() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        Integer preQuantity = Nstore.getQuantity(productID1);
+        tradingSystemImpl.Logout(NconnID);
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Eilat","Israel","8458527");
+        assertTrue(response.getIsErr());
+
+        //check Inventory after sad purchase
+        Integer newQuantity = Nstore.getQuantity(productID1);
+        assertEquals(preQuantity, newQuantity);
     }
 
     @Test
@@ -1097,7 +1123,7 @@ class TradingSystemImplTest {
         Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         Assertions.assertTrue(response.getIsErr());
 
-        //check Inventory after happy purchase
+        //check Inventory after sad purchase
         Integer newQuantity = Nstore.getQuantity(productID1);
         assertEquals(preQuantity, newQuantity);
     }

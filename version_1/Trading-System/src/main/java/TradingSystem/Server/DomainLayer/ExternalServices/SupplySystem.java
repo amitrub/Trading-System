@@ -28,22 +28,24 @@ public class SupplySystem implements ExternalServices {
         Response responseHandShake = null;
         try {
             responseHandShake = handshake();
+            if(!responseHandShake.getMessage().equals("OK")){
+                return new Response(true, "The connection to Supply System Failed");
+            }
         } catch (UnirestException e) {
             e.printStackTrace();
         }
-        if(!responseHandShake.getMessage().equals("OK")){
-            return new Response(true, "The connection to Supply System Failed");
-        }
+
         Response responseSupply = null;
         try {
             responseSupply = Supply(addressInfo);
+            Integer transactionId = Integer.parseInt(responseSupply.getMessage());
+            if(transactionId == -1){
+                return new Response(true, "The Supply Failed");
+            }
         } catch (UnirestException e) {
             e.printStackTrace();
         }
-        Integer transactionId = Integer.parseInt(responseSupply.getMessage());
-        if(transactionId == -1){
-            return new Response(true, "The Supply Failed");
-        }
+
         return new Response(false, "Supply confirmed");
     }
 
