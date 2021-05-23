@@ -18,17 +18,29 @@ public class PurchaseTaskUnitTests implements Callable<ResultUnitTests> {
     private int productID;
     private int quantity;
     private String creditCard;
-    private String phoneNumber;
+    private String month;
+    private String year;
+    private String cvv;
+    private String ID;
     private String address;
+    private String city;
+    private String country;
+    private String zip;
 
-    public PurchaseTaskUnitTests(String name, int storeID, int productID, int quantity, String creditCard, String phoneNumber, String address) {
+    public PurchaseTaskUnitTests(String name, int storeID, int productID, int quantity, String creditCard, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         this.name = name;
         this.storeID = storeID;
         this.productID = productID;
         this.quantity = quantity;
         this.creditCard = creditCard;
-        this.phoneNumber = phoneNumber;
+        this.month = month;
+        this.year = year;
+        this.cvv = cvv;
+        this.ID = ID;
         this.address = address;
+        this.city = city;
+        this.country = country;
+        this.zip = zip;
         connID= tradingSystem.ConnectSystem().returnConnID();
     }
 
@@ -45,7 +57,7 @@ public class PurchaseTaskUnitTests implements Callable<ResultUnitTests> {
         tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
 
         //Issue
-        Response response = tradingSystem.guestPurchase(connID, name, creditCard, phoneNumber, address);
+        Response response = tradingSystem.guestPurchase(connID, name, creditCard, month, year, cvv, ID, address,city,country,zip);
         System.out.println(name + ": (Purchase task parallel) response: " + response);
 
         //Results to assert

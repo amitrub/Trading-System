@@ -5,15 +5,9 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public class ClientProxy implements Client_Interface {
 
@@ -34,26 +28,6 @@ public class ClientProxy implements Client_Interface {
             real = implementation;
     }
 
-
-//    @Override
-//    public String getUserName() {
-//        return null;
-//    }
-//
-//    @Override
-//    public boolean isSubscriber() {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean isOwner() {
-//        return false;
-//    }
-//
-//    @Override
-//    public String getConnID() {
-//        return null;
-//    }
 
     @Override
     public String getUserName() {
@@ -163,8 +137,8 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address) {
-        return tradingSystem.guestPurchase(ConnID,name,credit_number,phone_number,address);
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
+        return tradingSystem.guestPurchase(ConnID,name,credit_number,month,year,cvv,ID,address,city,country,zip);
     }
 
     @Override
@@ -191,8 +165,8 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response subscriberPurchase(String credit_number, String phone_number, String address) {
-        return tradingSystem.subscriberPurchase(userID,ConnID,credit_number,phone_number,address);
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
+        return tradingSystem.subscriberPurchase(userID,ConnID,credit_number,month,year,cvv,ID,address,city,country,zip);
     }
 
     @Override
