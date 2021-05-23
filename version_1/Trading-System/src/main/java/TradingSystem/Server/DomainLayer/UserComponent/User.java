@@ -33,7 +33,9 @@ public  class User implements Observer {
         GetInfoRequests,
         ResponseRequests,
         GetHistoryPurchasing,
-        GetStoreHistory
+        GetStoreHistory,
+        GetDailyIncomeForStore,
+        GetDailyIncomeForSystem
     }
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();

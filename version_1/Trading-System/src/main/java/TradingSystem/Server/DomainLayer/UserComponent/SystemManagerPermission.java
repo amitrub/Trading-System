@@ -10,6 +10,7 @@ public class SystemManagerPermission implements Permission{
     public SystemManagerPermission() {
         this.permissions=new ArrayList<User.Permission>();
         permissions.add(User.Permission.GetHistoryPurchasing);
+        permissions.add(User.Permission.GetDailyIncomeForSystem);
     }
 
     @Override
