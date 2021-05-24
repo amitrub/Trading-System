@@ -635,6 +635,14 @@ public class TradingSystemImpl implements TradingSystem {
         return "";
     }
 
+    public Integer getUserID(String name){
+        for(User user : subscribers.values()){
+            if(user.getUserName().equals(name))
+                return user.getId();
+        }
+        return -1;
+    }
+
 
     /**
      * @requirement 3.1

@@ -157,20 +157,17 @@ public class ShoppingCart {
 //            this.releaseLocks(lockList);
 //            return new Response(true,"Purchase: The payment is not approve");
 //        }
+        String connID = tradingSystemImpl.getUserConnID(userID);
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
         AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
-        Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
+        Response supplyResponse = supplySystem.purchase(connID, paymentInfo, addressInfo);
         if(supplyResponse.getIsErr()){
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The Supply is not approve");
         }
-        Response paymentResponse = paymentSystem.purchase(paymentInfo, addressInfo);
+        Response paymentResponse = paymentSystem.purchase(connID, paymentInfo, addressInfo);
         if(paymentResponse.getIsErr()){
-            try {
-                supplySystem.Cancel(supplyResponse.getMessage());
-            } catch (UnirestException e) {
-                e.printStackTrace();
-            }
+            supplySystem.Cancel(supplyResponse.getMessage());
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The payment is not approve");
         }

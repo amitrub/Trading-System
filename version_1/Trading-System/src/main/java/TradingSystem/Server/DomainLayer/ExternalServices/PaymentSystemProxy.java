@@ -16,7 +16,7 @@ public class PaymentSystemProxy implements ExternalServices {
     }
 
     @Override
-    public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {
+    public Response purchase(String topic, PaymentInfo paymentInfo, AddressInfo addressInfo) {
         try {
             int month = Integer.parseInt(paymentInfo.getMonth());
             int year = Integer.parseInt(paymentInfo.getYear());
