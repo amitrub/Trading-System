@@ -683,7 +683,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/store_history_owner/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(ownerStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
         return response;
     }
 
