@@ -6,9 +6,10 @@ import org.json.JSONObject;
 
 import javax.persistence.*;
 
-
+@Entity(name = "Guest")
 public class DummyUser {
 
+    @Id
     private final int userid;
     String userName;
     String password;
