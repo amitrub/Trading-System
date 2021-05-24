@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -20,5 +21,9 @@ public class StoreService {
 
     public DummyStore Addstore(DummyStore store){
         return storeRepository.saveAndFlush(store);
+    }
+
+    public List<DummyStore> getAllStores(){
+        return storeRepository.findAll();
     }
 }

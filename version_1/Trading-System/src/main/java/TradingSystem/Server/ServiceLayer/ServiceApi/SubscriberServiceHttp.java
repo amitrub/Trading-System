@@ -81,14 +81,14 @@ public class SubscriberServiceHttp {
         return res;
     }
 
-    @PostMapping("add_store")
-    public Response AddStore(){
-        DummyStore store;
-        store=new DummyStore(5,"reut",5.0);
-        store= storeService.Addstore(store);
-        Response res = new Response(true, "Error in parse body : AddStore");
-        return res;
-    }
+//    @PostMapping("add_store")
+//    public Response AddStore(){
+//        DummyStore store;
+//        store=new DummyStore(5,"reut",5.0);
+//        store= storeService.Addstore(store);
+//        Response res = new Response(true, "Error in parse body : AddStore");
+//        return res;
+//    }
 
 
     /**
