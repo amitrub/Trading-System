@@ -1,12 +1,15 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DataLayer.Services.*;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Conditioning;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -20,7 +23,6 @@ import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -28,20 +30,11 @@ import java.util.concurrent.locks.Lock;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
-@Service
+
 public class TradingSystemImpl implements TradingSystem {
+
     @Autowired
-    GuestService guestService;
-    @Autowired
-    SubscriberService subscriberService;
-    @Autowired
-    StoreService storeService;
-    @Autowired
-    ProductService productService;
-    @Autowired
-    ShoppingHistoryService shoppingHistoryService;
-    @Autowired
-    ShoppingCartService shoppingCartService;
+    public Data_Controller data_controller;
 
     public Validation validation;
 
@@ -65,6 +58,7 @@ public class TradingSystemImpl implements TradingSystem {
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.systemManagerPermissions=new ConcurrentHashMap<>();
+       // data_controller=Data_Controller.getInstance();
     }
 
     public static TradingSystemImpl getInstance() {
@@ -279,7 +273,7 @@ public class TradingSystemImpl implements TradingSystem {
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
             //Adds to the db
-            subscriberService.Addsubscriber(new DummySubscriber(newUser.getId(),newUser.getUserName()));
+            //subscriberService.Addsubscriber(new DummySubscriber(newUser.getId(),newUser.getUserName()));
             Response res = new Response(false,"Register: Registration of " + userName + " was successful");
             res.AddConnID(connID);
             res.AddUserID(newUser.getId());
@@ -708,7 +702,7 @@ public class TradingSystemImpl implements TradingSystem {
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
-                storeService.Addstore(new DummyStore(newStore.getId(),newStore.getName(),newStore.getRate()));
+         //       data_controller.AddStore(new DummyStore(newStore.getId(), storeName, newStore.getRate()));
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                 return res; 
@@ -1452,7 +1446,7 @@ public class TradingSystemImpl implements TradingSystem {
                 list.add(e);
             }
         }
-        List<DummyShoppingHistory> list1= shoppingHistoryService.getAllShoppingHistory();
+       // List<DummyShoppingHistory> list1= shoppingHistoryService.getAllShoppingHistory();
         Response res = new Response(false,"AllStoresHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         User user=subscribers.get(AdminID);

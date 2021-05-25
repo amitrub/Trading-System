@@ -15,10 +15,6 @@ public class StoreService {
     @Autowired
     StoreRepository storeRepository;
 
-    public StoreService(){
-
-    }
-
     public DummyStore Addstore(DummyStore store){
         return storeRepository.saveAndFlush(store);
     }
