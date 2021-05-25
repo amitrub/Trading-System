@@ -6,6 +6,7 @@ import org.json.JSONObject;
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
@@ -19,12 +20,12 @@ public class DataStore {
     private Double storeRate;
     @JoinColumn(table = "dummy_user", referencedColumnName = "userid")
     private Integer founderID;
-//    @ElementCollection
-//    @JoinColumn(table = "dummy_user", referencedColumnName = "userid")
-//    private List<Integer> ownersIDs;
-//    @ElementCollection
-//    @JoinColumn(table = "dummy_user", referencedColumnName = "userid")
-//    private List<Integer> managersIDs;
+    @ElementCollection
+    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
+    private List<Integer> ownersIDs;
+    @ElementCollection
+    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
+    private List<Integer> managersIDs;
 
     public DataStore(){
     }

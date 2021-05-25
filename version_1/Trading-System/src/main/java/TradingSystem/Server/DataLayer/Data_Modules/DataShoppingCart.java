@@ -15,6 +15,7 @@ public class DataShoppingCart {
     @JoinColumn(table = "store_data", referencedColumnName = "storeid")
     private Integer storeID;
     @OneToMany
+   // @CollectionTable(name="shopping_bag", joinColumns=@JoinColumn(name="storeid", referencedColumnName="storeid"), @JoinColumn(name="userid", referencedColumnName="userid"))
     public List<DataShoppingBag> shoppingBags;
     //StoreID
     @ElementCollection
