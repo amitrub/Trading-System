@@ -12,8 +12,12 @@ public class DataShoppingHistory {
     private Integer userID;
     @Id
     private Integer storeID;
-    //    @OneToMany(targetEntity = DummyProduct.class, mappedBy = "products")
-//    private List<DummyProduct> products;
+//    @ElementCollection
+//    @CollectionTable(
+//            name="product",
+//            joinColumns=@JoinColumn(name="productid")
+//    )
+//    private List<Integer> products;
     private String date;
     private Double finalPrice;
 

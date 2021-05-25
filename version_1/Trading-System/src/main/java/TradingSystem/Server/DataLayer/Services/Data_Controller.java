@@ -15,22 +15,17 @@ public class Data_Controller {
     private StoreService storeService;
     @Autowired
     private SubcriberService subscriberService;
-    @Autowired
-    private GuestService guestService;
-
     public Data_Controller(){
 
     }
 
-    public void AddStore(DataStore store){
-        storeService.Addstore(store);
-    }
+    public int AddStore(DataStore store){
 
-    public int AddGuest(){
-        return guestService.Addguest();
+        return storeService.Addstore(store);
     }
 
     public int AddSubscriber(DataSubscriber dataSubscriber){
         return subscriberService.AddSubscriber(dataSubscriber);
     }
+
 }

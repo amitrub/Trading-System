@@ -1,7 +1,5 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DataLayer.Data_Modules.DataGuest;
-import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -23,7 +21,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -63,7 +60,7 @@ public class TradingSystemImpl implements TradingSystem {
             tradingSystem = new TradingSystemImpl();
             tradingSystem.validation = new Validation();
             tradingSystem.ClearSystem();
-          //  tradingSystem.Initialization();
+            tradingSystem.Initialization();
         }
         return tradingSystem;
     }

@@ -72,9 +72,33 @@ public  class User implements Observer {
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
+    public User(int id) {
+        this.id = id;
+        this.userName = "guest";
+        this.password = "";
+        this.shoppingCart = new ShoppingCart(this.id);
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
+        this.ownerPermission=new ConcurrentHashMap<>();
+        this.managerPermission=new ConcurrentHashMap<>();
+    }
+
+    //FOR the db
+    public User(int id, String userName, String password) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.shoppingCart = new ShoppingCart(this.id);
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
+        this.ownerPermission=new ConcurrentHashMap<>();
+        this.managerPermission=new ConcurrentHashMap<>();
+    }
 
     public User(String userName, String password) {
-        this.id = getNextUserID();
+        this.id = nextUserID;
         this.userName = userName;
         this.password = password;
         this.shoppingCart = new ShoppingCart(this.id);

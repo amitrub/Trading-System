@@ -9,6 +9,7 @@ import java.util.List;
 @Repository
 public interface ProductRepository extends JpaRepository<DataProduct,Integer> {
 
+
     List<DataProduct> findDummyProductByStoreID(int storeid);
 
     List<DataProduct> findDummyProductByProductName(String productName);

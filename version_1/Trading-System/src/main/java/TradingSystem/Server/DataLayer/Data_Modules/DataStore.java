@@ -4,28 +4,32 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
-@Entity(name = "store")
+@Entity(name = "store_data")
+@SequenceGenerator(name="STORE_SEQUENCE_GENERATOR", sequenceName="STORE", initialValue=1, allocationSize=10)
 public class DataStore {
     @Id
-    private final Integer id;
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="STORE_SEQUENCE_GENERATOR")
+    private Integer id;
     private String name;
     private Double storeRate;
 
     public DataStore(){
-        id=0;
     }
 
 
-    public DataStore(Integer id, String name, Double storeRate) {
-        this.id = id;
+    public DataStore(String name, Double storeRate) {
         this.name = name;
         this.storeRate = storeRate;
+    }
+
+    public DataStore(String name) {
+        this.name = name;
+        this.storeRate = -1.0;
     }
 
     public DataStore(Store store) {
