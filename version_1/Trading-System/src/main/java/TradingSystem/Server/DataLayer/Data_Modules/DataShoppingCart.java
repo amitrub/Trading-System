@@ -2,21 +2,20 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 
 import javax.persistence.*;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity(name = "ShoppingCart")
 @IdClass(DummyKeyShopping.class)
 public class DataShoppingCart {
     @Id
-    @JoinColumn(table = "user", referencedColumnName = "userid")
+    @JoinColumn(table = "Subscriber", referencedColumnName = "userid")
     private Integer userID;
     @Id
-    @JoinColumn(table = "store", referencedColumnName = "storeid")
+    @JoinColumn(table = "store_data", referencedColumnName = "storeid")
     private Integer storeID;
-    //    @OneToMany(mappedBy="store")
-//    @MapKeyJoinColumn(name="ShoppingBag")
-//    //StoreID_ShoppingBag
-//    private HashMap<Integer, DummyShoppingBag> shoppingBags = new HashMap<>();
+    @OneToMany
+    public List<DataShoppingBag> shoppingBags;
     //StoreID
     @ElementCollection
     private Set<Integer> storesReducedProductsVain=new HashSet<>();
@@ -24,10 +23,10 @@ public class DataShoppingCart {
     public DataShoppingCart(){
     }
 
-    public DataShoppingCart(int userID, int storeID,Set<Integer> storesReducedProductsVain){
+    public DataShoppingCart(int userID, int storeID,List<DataShoppingBag> shoppingBags,Set<Integer> storesReducedProductsVain){
         this.userID=userID;
         this.storeID=storeID;
-        //  this.shoppingBags=shoppingBags;
+        this.shoppingBags=shoppingBags;
         this.storesReducedProductsVain=storesReducedProductsVain;
     }
 }

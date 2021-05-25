@@ -7,11 +7,15 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+//import com.journaldev.hibernate.util.HibernateUtil;
+
 @Service
 public class ProductService {
 
     @Autowired
     ProductRepository productRepository;
+  //  SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+
 
     public ProductService() {
 
@@ -19,6 +23,25 @@ public class ProductService {
 
     public DataProduct AddProduct(DataProduct product) {
         return productRepository.saveAndFlush(product);
+    }
+
+    //TODO make it transaction
+    public void editProduct(DataProduct product){
+//        Session session = null;
+//        Transaction tx = null;
+//
+//        try {
+//            session = sessionFactory.openSession();
+//            tx = session.beginTransaction();
+            productRepository.deleteById(product.getProductID());
+            productRepository.saveAndFlush(product);
+//            tx.commit();
+//
+//        }catch (Exception ex) {
+//            ex.printStackTrace();
+//            tx.rollback();
+//        }
+//        finally {session.close();}
     }
 
     public List<DataProduct> findDummyProductByStoreID(int storeId){

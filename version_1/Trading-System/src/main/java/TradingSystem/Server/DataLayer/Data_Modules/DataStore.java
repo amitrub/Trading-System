@@ -10,21 +10,32 @@ import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 @Entity(name = "store_data")
-@SequenceGenerator(name="STORE_SEQUENCE_GENERATOR", sequenceName="STORE", initialValue=1, allocationSize=10)
+@SequenceGenerator(name="STORE_SEQUENCE_GENERATOR", sequenceName="STORE", initialValue=1, allocationSize=1)
 public class DataStore {
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="STORE_SEQUENCE_GENERATOR")
     private Integer id;
     private String name;
     private Double storeRate;
+    @JoinColumn(table = "dummy_user", referencedColumnName = "userid")
+    private Integer founderID;
+//    @ElementCollection
+//    @JoinColumn(table = "dummy_user", referencedColumnName = "userid")
+//    private List<Integer> ownersIDs;
+//    @ElementCollection
+//    @JoinColumn(table = "dummy_user", referencedColumnName = "userid")
+//    private List<Integer> managersIDs;
 
     public DataStore(){
     }
 
 
-    public DataStore(String name, Double storeRate) {
+    public DataStore(String name, Double storeRate, Integer founderID) {
         this.name = name;
         this.storeRate = storeRate;
+        this.founderID=founderID;
+//        ownersIDs= new ArrayList<>();
+//        managersIDs= new ArrayList<>();
     }
 
     public DataStore(String name) {
@@ -97,4 +108,16 @@ public class DataStore {
         }
         return JO.toString();
     }
+
+    public Integer getFounderID() {
+        return founderID;
+    }
+
+//    public List<Integer> getOwnersIDs() {
+//        return ownersIDs;
+//    }
+//
+//    public List<Integer> getManagersIDs() {
+//        return managersIDs;
+//    }
 }

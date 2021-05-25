@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -22,5 +23,10 @@ public class StoreService {
 
     public List<DataStore> getAllStores(){
         return storeRepository.findAll();
+    }
+
+    public DataStore findStorebyId(int storeid){
+       Optional<DataStore> res= storeRepository.findById(storeid);
+        return res.orElse(null);
     }
 }

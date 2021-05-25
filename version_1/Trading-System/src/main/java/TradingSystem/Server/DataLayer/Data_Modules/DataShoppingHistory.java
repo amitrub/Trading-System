@@ -8,21 +8,18 @@ import java.util.List;
 public class DataShoppingHistory {
 
     @Id
-    @JoinColumn(table = "user", referencedColumnName = "userid")
+    @JoinColumn(table = "Subscriber", referencedColumnName = "userid")
     private Integer userID;
     @Id
-    @JoinColumn(table = "store", referencedColumnName = "storeid")
+    @JoinColumn(table = "store_data", referencedColumnName = "storeid")
     private Integer storeID;
-//    @ElementCollection
-//    @CollectionTable(
-//            name="product",
-//            joinColumns=@JoinColumn(name="productid")
-//    )
-//    public List<DataProduct> products;
+    @OneToMany
+    public List<DataProduct> products;
     private String date;
     private Double finalPrice;
 
     public DataShoppingHistory(){
+
 
     }
 
@@ -30,7 +27,7 @@ public class DataShoppingHistory {
         this.userID = userID;
 
         this.storeID = storeID;
-     //   this.products = products;
+        this.products = products;
         this.date = date;
         this.finalPrice = finalPrice;
     }

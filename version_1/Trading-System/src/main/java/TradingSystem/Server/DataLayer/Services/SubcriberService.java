@@ -18,4 +18,8 @@ public class SubcriberService {
         DataSubscriber ret= subscriberRepository.saveAndFlush(subscriber);
         return ret.getUserID();
     }
+
+    public void removeSubscriberByid(int id){
+        subscriberRepository.deleteByUserID(id);
+    }
 }

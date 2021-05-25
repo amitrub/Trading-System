@@ -3,7 +3,7 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 import javax.persistence.*;
 
 @Entity(name = "Subscriber")
-@SequenceGenerator(name="USER_SEQUENCE_GENERATOR", sequenceName="User", initialValue=1, allocationSize=10)
+@SequenceGenerator(name="USER_SEQUENCE_GENERATOR", sequenceName="USER_SEQUENCE_GENERATOR", initialValue=1, allocationSize=1)
 public class DataSubscriber {
 
     @Id

@@ -19,8 +19,16 @@ public class ShoppingHistoryService {
 
     }
 
+    public DataShoppingHistory findByuserId(int userId){
+        return shoppingHistoryRepository.findByUserID(userId);
+    }
+
     public DataShoppingHistory ShoppingHistory(DataShoppingHistory shoppingHistory){
         return shoppingHistoryRepository.saveAndFlush(shoppingHistory);
+    }
+
+    public List<DataShoppingHistory> getShoppingHistoryByStoreId(int storeId){
+        return shoppingHistoryRepository.findAllByStoreID(storeId);
     }
 
     public List<DataShoppingHistory> getAllShoppingHistory(){
