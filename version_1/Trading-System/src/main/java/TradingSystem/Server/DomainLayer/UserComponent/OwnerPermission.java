@@ -30,6 +30,9 @@ public class OwnerPermission implements Permission {
         this.permissions.add(User.Permission.ResponseRequests);
         this.permissions.add(User.Permission.GetStoreHistory);
         this.permissions.add(User.Permission.GetDailyIncomeForStore);
+        this.permissions.add(User.Permission.RequestBidding);
+        this.permissions.add(User.Permission.EditBuyingPolicy);
+        this.permissions.add(User.Permission.EditDiscountPolicy);
     }
 
     public Integer getUserId() {

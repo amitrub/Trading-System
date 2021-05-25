@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Bid;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
@@ -1723,6 +1724,12 @@ public class TradingSystemImpl implements TradingSystem {
                 return User.Permission.GetDailyIncomeForStore;
             case "GetDailyIncomeForSystem":
                 return User.Permission.GetDailyIncomeForSystem;
+            case "RequestBidding":
+                return User.Permission.RequestBidding;
+            case "EditDiscountPolicy":
+                return User.Permission.EditDiscountPolicy;
+            case "EditBuyingPolicy":
+                return User.Permission.EditBuyingPolicy;
         }
         return null;
     }
@@ -1756,17 +1763,10 @@ public class TradingSystemImpl implements TradingSystem {
 
     //Todo finish
     public Response addDiscountPolicy(int userID, String connID, int storeID,Sale sale){
-        if (!ValidConnectedUser(userID, connID)) {
-             return new Response(true, "Error in Admin details");
-        }
-        if (!subscribers.containsKey(userID)) {
-              return new Response(true, "the user is not subscriber to the system");
-        }
-        if(stores.get(storeID)==null){
-            return new Response(true, "the store not exist in the system");
-        }
-        if(!stores.get(storeID).checkOwner(userID)){
-             return new Response(true, "the user is not the owner of the store");
+        Response response = checkPermissionToPolicy(userID, connID, storeID, User.Permission.EditDiscountPolicy);
+        Response res = response;
+        if(res.getIsErr()){
+            return res;
         }
         Store s=this.stores.get(storeID);
         Response r=sale.checkValidity(storeID);
@@ -1777,7 +1777,6 @@ public class TradingSystemImpl implements TradingSystem {
         s.setDiscountPolicy(d);
         return new Response("the discountPolicy added successfully");
     }
-
 
     private Sale createSale(Integer storeID,String saleName, Map<String, Object> o) {
         Sale s=null;
@@ -1949,7 +1948,7 @@ public class TradingSystemImpl implements TradingSystem {
         return null;
     }
 
-    private Response checkPermissionToPolicy(int userID, String connID, int storeID){
+    private Response checkPermissionToPolicy(int userID, String connID, int storeID,User.Permission p){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "Error in Admin details");
         }
@@ -1962,12 +1961,16 @@ public class TradingSystemImpl implements TradingSystem {
         if(!stores.get(storeID).checkOwner(userID)){
             return new Response(true, "the user is not the owner of the store");
         }
+        if(!hasPermission(userID,storeID,p)){
+            return new Response(true, "the user does not have permission to do that");
+        }
         return new Response(false, "");
     }
 
     @Override
     public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp){
-        Response res = checkPermissionToPolicy(userID, connID, storeID);
+        Response response = checkPermissionToPolicy(userID, connID, storeID, User.Permission.EditBuyingPolicy);
+        Response res = response;
         if(res.getIsErr()){
             return res;
         }
@@ -1982,7 +1985,7 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public Response GetPoliciesInfo(int userID, int storeID, String connID){
-        Response res = checkPermissionToPolicy(userID, connID, storeID);
+        Response res = checkPermissionToPolicy(userID, connID, storeID,User.Permission.GetInfoOfficials);
         if(res.getIsErr()){
             return res;
         }
@@ -2191,7 +2194,6 @@ public class TradingSystemImpl implements TradingSystem {
      *  }
      * }
      */
-
     @Override
     public Response getDailyIncomeForStore(int userID, int storeID, String connID) {
         if (!ValidConnectedUser(userID, connID)) {
@@ -2204,6 +2206,9 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "getDailyIncomeForStore: The store " + storeID + " doesn't exist in the system");
         }
         Store store=this.stores.get(storeID);
+        if(store==null){
+            return new Response(true, "getDailyIncomeForStore: The user "+userID+" try to get the daily income for store that not in the system ");
+        }
         if(!store.checkOwner(userID)){
             return new Response(true, "getDailyIncomeForStore: The user " + userID + " is not the owner of the store");
         }
@@ -2216,6 +2221,17 @@ public class TradingSystemImpl implements TradingSystem {
         return res;
     }
 
+    /**
+     * @requirement 6.6
+     *
+     * @param userID: int
+     * @param connID: String
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "DailyIncome": {[Double]}
+     */
     @Override
     public Response getDailyIncomeForSystem(int userID, String connID) {
         if (!ValidConnectedUser(userID, connID)) {
@@ -2238,6 +2254,96 @@ public class TradingSystemImpl implements TradingSystem {
         Response res =new Response(false, "the income can be displayed");
         res.AddPair("DailyIncome", DailyIncome);
         return res;
+    }
+
+
+    @Override
+    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "subscriberBidding: The user " + userID + " is not connected");
+        }
+        User user=this.subscribers.get(userID);
+        if(user==null){
+            return new Response(true, "subscriberBidding: The user "+userID+" is not in the list of the subscriber");
+        }
+        Store store=this.stores.get(storeID);
+        if(store==null){
+            return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid for store that not in the system");
+        }
+        Product product=store.getProduct(productID);
+        if(product==null){
+            return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid for product that not in the store");
+        }
+        if(productPrice<=0||productPrice>product.getPrice()){
+            return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid with price " +productPrice +" but it is not in the range: 0-"+product.getPrice());
+        }
+        if(store.CheckBidForProductExist(userID,productID)){
+            return new Response(true, "subscriberBidding: The user "+userID+" try to to submit a bid for product " +productID +" but this product already has a bid");
+        }
+        store.AddBidForProduct(productID,userID,productPrice); //?
+        Response resAlert = new Response(false, "The subscriber " + userID +
+                    " has been submit a bid of "+productPrice+" for product: " + productID + " in your store: " + store.getName());
+        store.sendAlertToOwners(resAlert);
+        store.sendAlertOfBiddingToManager(resAlert);
+        return new Response(false,"The bid was submitted successfully");
+    }
+
+    @Override
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
+        }
+        User user=this.subscribers.get(userID);
+        if(user==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" is not in the subscriber");
+        }
+        if(this.subscribers.get(userWhoOffer)==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userWhoOffer+" is not in the subscriber");
+        }
+        Store store=this.stores.get(storeID);
+        if(store==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for store ("+storeID+ ") that not in the system");
+        }
+        Product product=store.getProduct(productID);
+        if(product==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for product ("+productID+ ") that not in the store");
+        }
+        if(productPrice<=0||productPrice>product.getPrice()){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response for submission bid with price " +productPrice +" but it is not in the range: 0-"+product.getPrice());
+        }
+        if(store.CheckBidForProductExist(userWhoOffer,productID)){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        store.RemoveProductForPurchaseOffer(productID,userWhoOffer); //?
+        user.AddSpacialProductForCart(productID,storeID,productPrice); //?
+        Response resAlert = new Response(false, "You have received a Response for your bidding.\n" +
+                    "You may purchase " + product.getProductName() + " in store " + store.getName() + "at a price- " + productPrice + " (The original price is- " + product.getPrice() + ").");
+        store.sendAlert(userWhoOffer,resAlert);
+        return null;
+    }
+
+    @Override
+    public Response ShowBids(int userID, String connID, int storeID) {
+        if(!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "ShowBids: The User is not connected");
+        }
+        else if (!subscribers.containsKey(userID)){
+            return new Response(true, "ShowBids: User is not subscriber");
+        }
+        else if (stores.get(storeID)==null){
+            return new Response(true, "ShowBids: Store is not exist");
+        }
+        else{
+            Store store = stores.get(storeID);
+            List<DummyBid> list = new ArrayList<>();
+            for (Bid bid: store.getBids()
+                 ) {
+                 list.add(new DummyBid(bid));
+            }
+            Response res = new Response(false, "ShowBids: Num of Bids in the store is " + list.size());
+            res.AddPair("Bids", list);
+            return res;
+        }
     }
 
 }

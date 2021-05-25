@@ -189,6 +189,45 @@ public class SubscriberServiceHttp {
         return res;
     }
 
+    /**
+     * @requirement 8.3.1
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @param obj:{
+     *  "storeID": Integer
+     *  "productID": Integer
+     *  "productPrice": Integer
+     * }
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     *
+     */
+    @PostMapping("{userID}/submission_bidding")
+    public Response submissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int storeID,productID;
+        Double productPrice;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            productPrice = (Double) obj.get("productPrice");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : submissionBidding");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.subscriberBidding(userID,connID,storeID,productID,productPrice);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
     private void WriteToLogger(Response res){
         if(res.getIsErr()) {
             loggerController.WriteErrorMsg("Guest Error: " + res.getMessage());

@@ -20,6 +20,7 @@ public  class User implements Observer {
 
     private List<Object> messages = new ArrayList<>();
 
+
     public enum Permission {
         AddProduct,
         ReduceProduct,
@@ -35,7 +36,10 @@ public  class User implements Observer {
         GetHistoryPurchasing,
         GetStoreHistory,
         GetDailyIncomeForStore,
-        GetDailyIncomeForSystem
+        GetDailyIncomeForSystem,
+        RequestBidding,
+        EditDiscountPolicy,
+        EditBuyingPolicy
     }
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
@@ -417,6 +421,17 @@ public  class User implements Observer {
 
         return strMessages;
     }
+
+    //TODO Implement
+   // public void AddProductForPurchaseOffer(int productID, int storeID, int productPrice) { }
+
+    public void AddSpacialProductForCart(int productID, int storeID, double productPrice) {
+
+
+    }
+
+
+
 }
 
 
