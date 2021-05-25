@@ -1,17 +1,12 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
@@ -267,18 +262,30 @@ public class Client implements Client_Interface {
      * @requirement 2.9
      * @param name
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address) {
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("name", name);
             jsonPost.put("credit_number", credit_number);
-            jsonPost.put("phone_number", phone_number);
+            jsonPost.put("month", month);
+            jsonPost.put("year", year);
+            jsonPost.put("cvv", cvv);
+            jsonPost.put("ID", ID);
             jsonPost.put("address", address);
+            jsonPost.put("city", city);
+            jsonPost.put("country", country);
+            jsonPost.put("zip", zip);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "157", "Error: guestPurchase, making post json"));
         }
@@ -363,17 +370,29 @@ public class Client implements Client_Interface {
     /**
      * @requirement 3.4 subscriber (user) purchase
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response subscriberPurchase(String credit_number, String phone_number, String address) {
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         String path = String.format("%s/shopping_cart/purchase", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("credit_number", credit_number);
-            jsonPost.put("phone_number", phone_number);
+            jsonPost.put("month", month);
+            jsonPost.put("year", year);
+            jsonPost.put("cvv", cvv);
+            jsonPost.put("ID", ID);
             jsonPost.put("address", address);
+            jsonPost.put("city", city);
+            jsonPost.put("country", country);
+            jsonPost.put("zip", zip);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "197", "Error: subscriberPurchase, making post json"));
         }
@@ -664,7 +683,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/store_history_owner/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(ownerStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
         return response;
     }
 

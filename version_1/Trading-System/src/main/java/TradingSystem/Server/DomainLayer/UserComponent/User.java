@@ -9,7 +9,6 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,7 +33,9 @@ public  class User implements Observer {
         GetInfoRequests,
         ResponseRequests,
         GetHistoryPurchasing,
-        GetStoreHistory
+        GetStoreHistory,
+        GetDailyIncomeForStore,
+        GetDailyIncomeForSystem
     }
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
@@ -198,12 +199,12 @@ public  class User implements Observer {
         return shoppingCart.ShowShoppingCart();
     }
 
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address){
-        return shoppingCart.Purchase(true, name, credit_number, phone_number, address);
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip){
+        return shoppingCart.Purchase(true, name, credit_number, month, year, cvv, ID, address,city,country,zip);
     }
 
-    public Response subscriberPurchase(String credit_number, String phone_number, String address){
-        return shoppingCart.Purchase(false, this.userName, credit_number, phone_number, address);
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip){
+        return shoppingCart.Purchase(false, this.userName, credit_number, month, year, cvv, ID, address,city,country,zip);
 
     }
 

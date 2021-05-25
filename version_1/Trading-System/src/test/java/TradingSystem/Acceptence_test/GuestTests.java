@@ -2,7 +2,6 @@ package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -354,7 +353,7 @@ public class GuestTests {
         Integer preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
 
         //Issue
-        Response response = client.guestPurchase("Roee", "12345678","052897878787", "sioot st. 5");
+        Response response = client.guestPurchase("Roee","123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertFalse(response.getIsErr());
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
         List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
@@ -370,7 +369,7 @@ public class GuestTests {
         assertEquals(productName, "Simple Dress");
 
         //Issue
-        response = client.guestPurchase("Roee", "12345678","052897878787", "sioot st. 5");
+        response = client.guestPurchase("Roee", "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertFalse(response.getIsErr());
         cartAfter = client.showShoppingCart().returnProductList();
         productsAfter = client.showStoreProducts(storeID).returnProductList();
@@ -387,7 +386,7 @@ public class GuestTests {
         client.addProductToCart(storeID, productID1, 1);
 
         //Issue
-        Response response =client.guestPurchase("Roee", "wrong paying details","wrong phone", "sioot st. 5");
+        Response response =client.guestPurchase("Roee", "123456789", "20","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         List<DummyProduct> productsInBag = client.showShoppingCart().returnProductList();
 
         //Assert

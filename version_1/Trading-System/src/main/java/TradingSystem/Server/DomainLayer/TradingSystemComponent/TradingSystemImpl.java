@@ -568,22 +568,24 @@ public class TradingSystemImpl implements TradingSystem {
      * @param connID
      * @param name
      * @param credit_number
-     * @param phone_number
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return Response{
      *      "isErr: boolean
      *      "message": String
      *      "connID": String
      *      }
      */
-    public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address){
+    public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip){
         if(!guests.containsKey(connID)){
             return new Response(true, "guestPurchase: The user is not connected to the system");
         }
         else {
             User myGuest= guests.get(connID);
             Collection<ShoppingBag> shoppingBags = myGuest.getShoppingCart().getShoppingBags().values();
-            Response res = myGuest.guestPurchase(name, credit_number, phone_number, address);
+            Response res = myGuest.guestPurchase(name, credit_number, month, year, cvv, ID, address,city,country,zip);
             if(!res.getIsErr())
             {
                 for (ShoppingBag bag:shoppingBags){
@@ -605,22 +607,24 @@ public class TradingSystemImpl implements TradingSystem {
      * @param userID
      * @param connID
      * @param credit_number
-     * @param phone_number
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return Response{
      *      "isErr: boolean
      *      "message": String
      *      "connID": String
      *      }
      */
-    public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address){
+    public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip){
         if(!ValidConnectedUser(userID, connID)){
             return new Response(true, "subscriberPurchase: The user is not connected to the system");
         }
         else {
             User user = subscribers.get(userID);
             Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
-            Response res = user.subscriberPurchase(credit_number, phone_number, address);
+            Response res = user.subscriberPurchase(credit_number, month, year, cvv, ID, address,city,country,zip);
             if(!res.getIsErr())
             {
                 for (ShoppingBag bag:shoppingBags){
@@ -646,6 +650,14 @@ public class TradingSystemImpl implements TradingSystem {
             }
         }
         return "";
+    }
+
+    public Integer getUserID(String name){
+        for(User user : subscribers.values()){
+            if(user.getUserName().equals(name))
+                return user.getId();
+        }
+        return -1;
     }
 
 
@@ -1734,6 +1746,10 @@ public class TradingSystemImpl implements TradingSystem {
                 return User.Permission.GetHistoryPurchasing;
             case "GetStoreHistory":
                 return User.Permission.GetStoreHistory;
+            case "GetDailyIncomeForStore":
+                return User.Permission.GetDailyIncomeForStore;
+            case "GetDailyIncomeForSystem":
+                return User.Permission.GetDailyIncomeForSystem;
         }
         return null;
     }
@@ -2185,6 +2201,69 @@ public class TradingSystemImpl implements TradingSystem {
         }
         Response res = new Response("Get All Subscribers succeed");
         res.AddPair("subscribers", dummySubscribers);
+        return res;
+    }
+
+    /**
+     * @requirement 4.12
+     *
+     * @param userID: int
+     * @param storeID: int
+     * @param connID: String
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "DailyIncome": {[Double]}
+     *  }
+     * }
+     */
+
+    @Override
+    public Response getDailyIncomeForStore(int userID, int storeID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "getDailyIncomeForStore: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "getDailyIncomeForStore: The user "+userID+" is not in the list");
+        }
+        if(!stores.containsKey(storeID)){
+            return new Response(true, "getDailyIncomeForStore: The store " + storeID + " doesn't exist in the system");
+        }
+        Store store=this.stores.get(storeID);
+        if(!store.checkOwner(userID)){
+            return new Response(true, "getDailyIncomeForStore: The user " + userID + " is not the owner of the store");
+        }
+        if(!this.hasPermission(userID,storeID,User.Permission.GetDailyIncomeForStore)){
+            return new Response(true, "getDailyIncomeForStore: The user " + userID + " has no permissions to see this information");
+        }
+        Double DailyIncome=store.getDailyIncome();
+        Response res =new Response(false, "the income can be displayed");
+        res.AddPair("DailyIncome", DailyIncome);
+        return res;
+    }
+
+    @Override
+    public Response getDailyIncomeForSystem(int userID, String connID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "getDailyIncomeForSystem: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "getDailyIncomeForSystem: The user "+userID+" is not in the list");
+        }
+        if(!this.systemAdmins.keySet().contains(userID)){
+            return new Response(true, "getDailyIncomeForSystem: The user "+userID+"  try to see the Daily Income for the system but he is not the admin of the system");
+        }
+        if(!this.hasPermission(userID,User.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getDailyIncomeForSystem: The user " + userID + " has no permissions to see this information");
+        }
+        Double DailyIncome=0.0;
+        for (Integer key:this.stores.keySet()
+        ) {
+            DailyIncome = DailyIncome+this.stores.get(key).getDailyIncome();
+        }
+        Response res =new Response(false, "the income can be displayed");
+        res.AddPair("DailyIncome", DailyIncome);
         return res;
     }
 

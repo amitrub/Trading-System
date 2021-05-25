@@ -1,12 +1,12 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
-import TradingSystem.Server.DomainLayer.ExternalServices.PaymentSystem;
-import TradingSystem.Server.DomainLayer.ExternalServices.SupplySystem;
+import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import com.mashape.unirest.http.exceptions.UnirestException;
 
 
 import java.util.*;
@@ -16,8 +16,10 @@ import java.util.concurrent.locks.Lock;
 public class ShoppingCart {
 
     private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
-    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
-    private final SupplySystem supplySystem = SupplySystem.getInstance();
+//    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
+//    private final SupplySystem supplySystem = SupplySystem.getInstance();
+    private ExternalServices paymentSystem = PaymentSystem_Driver.getPaymentSystem();
+    private ExternalServices supplySystem = SupplySystem_Driver.getSupplySystem();
 
     private final Integer userID;
     
@@ -129,7 +131,7 @@ public class ShoppingCart {
         return this.shoppingBags;
     }
 
-    public Response Purchase(boolean isGuest,String name, String credit_number, String phone_number, String address){
+    public Response Purchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip){
         if (shoppingBags.size()==0){
             return new Response(true, "Purchase: There is no products in the shopping cart");
         }
@@ -146,11 +148,26 @@ public class ShoppingCart {
                 return new Response(true, "Purchase in the store "+ storeID+" is against the store policy");
             }
         }
-        if (!supplySystem.canSupply(address)) {
+//        if (!supplySystem.canSupply(address)) {
+//            this.releaseLocks(lockList);
+//            return new Response(true,"Purchase: The Supply is not approve");
+//        }
+
+//        if (!paymentSystem.checkCredit(name, credit_number, phone_number)) {
+//            this.releaseLocks(lockList);
+//            return new Response(true,"Purchase: The payment is not approve");
+//        }
+        String connID = tradingSystemImpl.getUserConnID(userID);
+        PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
+        AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
+        Response supplyResponse = supplySystem.purchase(connID, paymentInfo, addressInfo);
+        if(supplyResponse.getIsErr()){
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The Supply is not approve");
         }
-        if (!paymentSystem.checkCredit(name, credit_number, phone_number)) {
+        Response paymentResponse = paymentSystem.purchase(connID, paymentInfo, addressInfo);
+        if(paymentResponse.getIsErr()){
+            supplySystem.Cancel(supplyResponse.getMessage());
             this.releaseLocks(lockList);
             return new Response(true,"Purchase: The payment is not approve");
         }

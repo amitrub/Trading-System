@@ -124,6 +124,31 @@ public class AdminServiceHttp {
         return tradingSystem.StoreHistoryAdmin(adminID,storeID,connID);
     }
 
+
+    /**
+     * @requirement 6.6
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "DailyIncome": {[Double]}
+     *  }
+     * }
+     */
+    @GetMapping("{userID}/store_history_owner")
+    public Response AdminDailyIncomeForSystem(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getDailyIncomeForSystem(userID,connID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+
+
+
     private void WriteToLogger(Response res){
         if(res.getIsErr()) {
             loggerController.WriteErrorMsg("Guest Error: " + res.getMessage());

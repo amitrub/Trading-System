@@ -563,6 +563,32 @@ public class StoreOwnerServiceHttp {
         return res;
     }
 
+     /**
+     * @requirement 4.12
+     *
+     * @param userID: int (Path)
+     * @param storeID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "DailyIncome": {[Double]}
+     *  }
+     * }
+     */
+    @GetMapping("{userID}/store/{storeID}/store_history_owner")
+    public Response OwnerDailyIncomeForStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getDailyIncomeForStore(userID,storeID,connID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+
+
+
+
     /**
      * @requirement none
      *

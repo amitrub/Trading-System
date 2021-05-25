@@ -1,5 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
@@ -15,9 +17,8 @@ import java.util.*;
 import java.util.concurrent.*;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -95,6 +96,32 @@ class TradingSystemImplTest {
         Response response2= tradingSystemImpl.AddNewOwner(userID,connID,storeid,ElinorID);
 
         Nstore = tradingSystemImpl.stores.get(NofetStore);
+        Product p1=new Product(NofetStore,"NofetStore",1,"1","1",2.0);
+        Product p2=new Product(NofetStore,"NofetStore",2,"2","2",4.0);
+        Product p3=new Product(NofetStore,"NofetStore",3,"3","3",13.0);
+        Product p4=new Product(NofetStore,"NofetStore",4,"4","4",21.0);
+
+        LinkedList<Product> PSH1=new LinkedList<>();
+        PSH1.add(p1);
+        PSH1.add(p2);
+        PSH1.add(p3);
+
+        LinkedList<Product> PSH2=new LinkedList<>();
+        PSH1.add(p2);
+        PSH1.add(p3);
+        PSH1.add(p4);
+
+        ShoppingBag SB1=new ShoppingBag(1,NofetStore);
+        ShoppingBag SB2=new ShoppingBag(2,NofetStore);
+        SB1.setFinalPrice(17.0);
+        SB2.setFinalPrice(33.0);
+
+        ShoppingHistory SH1=new ShoppingHistory(SB1,PSH1);
+        ShoppingHistory SH2=new ShoppingHistory(SB2,PSH2);
+
+        Nstore.addHistory(SH1);
+        Nstore.addHistory(SH2);
+
     }
 
     public static void tearDown(){
@@ -142,42 +169,6 @@ class TradingSystemImplTest {
         Response response= tradingSystemImpl.Register(connID,"reutlevy30","8111996");
         response= tradingSystemImpl.Register(connID,"reutlevy30","reut");
         assertTrue(response.getIsErr());
-    }
-
-    // requirement 2.3
-    @Test
-    void registerParallelHappy(){
-        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
-
-        List<RegisterTaskUnitTests> taskList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            RegisterTaskUnitTests task = new RegisterTaskUnitTests("Client-" + i);
-            taskList.add(task);
-        }
-
-        //Execute all tasks and get reference to Future objects
-        List<Future<ResultUnitTests>> resultList = null;
-
-        try {
-            resultList = executor.invokeAll(taskList);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        executor.shutdown();
-
-        System.out.println("\n========Printing the results======");
-
-        assert resultList != null;
-        for (int i = 0; i < resultList.size(); i++) {
-            Future<ResultUnitTests> future = resultList.get(i);
-            try {
-                ResultUnitTests result = future.get();
-                System.out.println(result.getName() + ": " + result.getTimestamp());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     // requirement 2.3
@@ -302,7 +293,7 @@ class TradingSystemImplTest {
         setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
         assertFalse(response.getIsErr());
@@ -316,7 +307,7 @@ class TradingSystemImplTest {
         setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, 100, productID1, "Amazing");
         assertTrue(response.getIsErr());
@@ -343,7 +334,7 @@ class TradingSystemImplTest {
         setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "Amazing");
         Response response = tradingSystemImpl.WriteComment(ElinorID,EconnID, NofetStore, productID1, "WTF");
@@ -359,9 +350,9 @@ class TradingSystemImplTest {
         Integer productID1 = Nstore.getProductID("computer");
         Integer productID2 = Nstore.getProductID("Bag");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
-        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         //DummyUser test = new DummyUser("ala", "123");
         Response res = tradingSystemImpl.ShowSubscriberHistory(ElinorID, EconnID);
@@ -510,7 +501,7 @@ class TradingSystemImplTest {
 
             //Prepare tasks for clients
             List<Callable<ResultUnitTests>> taskList = new ArrayList<>();
-            Callable<ResultUnitTests> purchaseTask = new PurchaseTaskUnitTests("guestBuyer", ElinorStore, newProduct, 25, "123456", "052897878787", "sioot st. 5");
+            Callable<ResultUnitTests> purchaseTask = new PurchaseTaskUnitTests("guestBuyer", ElinorStore, newProduct, 25, "123456789", "4", "2022" ,"123" ,"123456789" ,"Rager 101","Beer Sheva","Israel","8458527");
             taskList.add(purchaseTask);
             Callable<ResultUnitTests> removeTask = new RemoveProductTaskUnitTests("Client-StoreOwner",ElinorStore, newProduct);
             taskList.add(removeTask);
@@ -1049,7 +1040,7 @@ class TradingSystemImplTest {
         tradingSystemImpl.Logout(NconnID);
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID2, 1);
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertFalse(response.getIsErr());
 
         //check Inventory after happy purchase
@@ -1064,22 +1055,47 @@ class TradingSystemImplTest {
         Integer productID1 = Nstore.getProductID("computer");
         Integer preQuantity = Nstore.getQuantity(productID1);
         tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 5);
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         Assertions.assertTrue(response.getIsErr());
 
-        //check Inventory after happy purchase
+        //check Inventory after sad purchase
         Integer newQuantity = Nstore.getQuantity(productID1);
         assertEquals(preQuantity, newQuantity);
     }
 
     @Test
-    void SadPurchase_Payment() {
+    void SadPurchase_WrongPaymentDetails() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        Integer preQuantity = Nstore.getQuantity(productID1);
+        tradingSystemImpl.Logout(NconnID);
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "15","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        assertTrue(response.getIsErr());
 
+        //check Inventory after sad purchase
+        Integer newQuantity = Nstore.getQuantity(productID1);
+        assertEquals(preQuantity, newQuantity);
+    }
+
+    @Test
+    void SadPurchase_WrongSupplyDetails() {
+        setUpBeforePurchase();
+        Integer productID1 = Nstore.getProductID("computer");
+        Integer preQuantity = Nstore.getQuantity(productID1);
+        tradingSystemImpl.Logout(NconnID);
+        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Eilat","Israel","8458527");
+        assertTrue(response.getIsErr());
+
+        //check Inventory after sad purchase
+        Integer newQuantity = Nstore.getQuantity(productID1);
+        assertEquals(preQuantity, newQuantity);
     }
 
     @Test
     void SadPurchase_EmptyCart() {
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         Assertions.assertTrue(response.getIsErr());
     }
 
@@ -1092,14 +1108,14 @@ class TradingSystemImplTest {
 
         //another user is buying this product
         tradingSystemImpl.AddProductToCart(connID, NofetStore, productID1, 15);
-        tradingSystemImpl.subscriberPurchase(userID, connID, "123456789", "0524550335", "Kiryat Gat");
+        tradingSystemImpl.subscriberPurchase(userID, connID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         //the previous user make the purchase
         Integer preQuantity = Nstore.getQuantity(productID1);
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "0524550335", "Kiryat Gat");
+        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         Assertions.assertTrue(response.getIsErr());
 
-        //check Inventory after happy purchase
+        //check Inventory after sad purchase
         Integer newQuantity = Nstore.getQuantity(productID1);
         assertEquals(preQuantity, newQuantity);
     }
@@ -1116,7 +1132,7 @@ class TradingSystemImplTest {
         List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
         for (int i = 0; i < 2; i++) {
             PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
-                    1,"123456", "052897878787", "sioot st. 5");
+                    1,"123456789", "4", "2022" ,"123" ,"123456789" ,"Rager 101","Beer Sheva","Israel","8458527");
             taskList.add(task);
         }
 
@@ -1161,7 +1177,7 @@ class TradingSystemImplTest {
             List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
             for (int i = 0; i < 2; i++) {
                 PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
-                        1,"123456", "052897878787", "sioot st. 5");
+                        1,"123456789", "4", "2022" ,"123" ,"123456789" ,"Rager 101","Beer Sheva","Israel","8458527");
                 taskList.add(task);
             }
 
@@ -1197,14 +1213,186 @@ class TradingSystemImplTest {
         }
 
     }
-
     //endregion
 
+    //region Load tests
+
+    // requirement 2.3
+    @Test
+    void register_20_Clients(){
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<RegisterTaskUnitTests> taskList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            RegisterTaskUnitTests task = new RegisterTaskUnitTests("Client-" + i);
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<ResultUnitTests>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+
+        assert resultList != null;
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<ResultUnitTests> future = resultList.get(i);
+            try {
+                ResultUnitTests result = future.get();
+                System.out.println(result.getName() + ": " + result.getTimestamp());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    void purchase_20_Clients() {
+        //Prepare
+        tradingSystemImpl.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,50);
+        Integer newProduct = tradingSystemImpl.stores.get(ElinorStore).getProductID("computer");
+        //Create two clients with task to buy this product
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
+                    1,"123456789", "4", "2022" ,"123" ,"123456789" ,"Rager 101","Beer Sheva","Israel","8458527");
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<ResultUnitTests>> resultList = null;
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+        boolean[] isErrs = new boolean[20];
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<ResultUnitTests> future = resultList.get(i);
+            try {
+                ResultUnitTests result = future.get();
+                Response response = result.getResponse();
+                System.out.println("Assert correctness for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                isErrs[i] = response.getIsErr();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        //Check that all of the clients succeed.
+        for(int i = 0; i < 20; i++){
+            assertFalse(isErrs[i]);
+        }
+        Integer newQuantity = tradingSystemImpl.stores.get(ElinorStore).getQuantity(newProduct);
+        assertTrue(newQuantity == 30);
+    }
+
+    @Test
+    void Subscribers_AND_Stores() {
+        for(int i=0; i<100; i++){
+            String newConnID = tradingSystemImpl.ConnectSystem().returnConnID();
+            Response res1 = tradingSystemImpl.Register(newConnID, "Client-"+i,"123");
+            assertFalse(res1.getIsErr());
+            newConnID = res1.returnConnID();
+            Response res2 = tradingSystemImpl.Login(newConnID, "Client-"+i, "123");
+            assertFalse(res2.getIsErr());
+        }
+
+        for(int i=0; i<100; i++){
+            Integer newUserID = tradingSystemImpl.getUserID("Client-"+i);
+            String newConnID = tradingSystemImpl.getUserConnID(newUserID);
+            Response res = tradingSystemImpl.AddStore(newUserID, newConnID, "It's A Test Num-"+i);
+            assertFalse(res.getIsErr());
+        }
+
+    }
+
+    //endregion
+    
+
+
+   //region requirement 4.12, 6.6
+   @Test
+    void HappyDailyIncomeForStore(){
+       Response res= tradingSystemImpl.getDailyIncomeForStore(NofetID,NofetStore,NconnID);
+       Double DailyIncome=(Double) res.getReturnObject().get("DailyIncome");
+       assertEquals(DailyIncome, 50.0);
+    }
+
+   @Test
+   void HappyDailyIncomeForStore_NotExistPurchase(){
+       Store New=new Store("New",NofetID);
+       tradingSystemImpl.stores.put(New.getId(),New);
+       tradingSystemImpl.subscribers.get(NofetID).AddStore(New.getId());
+       Response res= tradingSystemImpl.getDailyIncomeForStore(NofetID,New.getId(),NconnID);
+       Double DailyIncome=(Double) res.getReturnObject().get("DailyIncome");
+       assertEquals(DailyIncome, 0);
+   }
+
+   @Test
+   void SadDailyIncomeForStore_UserNotOwnerOfTheStore(){
+       Store New=new Store("New",NofetID);
+       tradingSystemImpl.stores.put(New.getId(),New);
+       tradingSystemImpl.subscribers.get(NofetID).AddStore(New.getId());
+       Response res= tradingSystemImpl.getDailyIncomeForStore(ElinorID,New.getId(),EconnID);
+       assertEquals(res.getMessage(),"getDailyIncomeForStore: The user " + ElinorID + " is not the owner of the store");
+   }
+
+   @Test
+   void SadDailyIncomeForStore_StoreNotExistInTheSystem(){
+       Response res= tradingSystemImpl.getDailyIncomeForStore(ElinorID,100,EconnID);
+       assertEquals(res.getMessage(),"getDailyIncomeForStore: The store " + 100 + " doesn't exist in the system");
+   }
+
+   @Test
+   void HappyDailyIncomeForSystem(){
+       String tmpConn= tradingSystemImpl.ConnectSystem().returnConnID();
+       Response r1=tradingSystemImpl.Login(tmpConn,"amit","qweasd");
+
+       Store tmp=tradingSystemImpl.stores.get(storeid);
+       Product p1=new Product(NofetStore,"NofetStore",1,"1","1",2.0);
+       Product p2=new Product(NofetStore,"NofetStore",2,"2","2",4.0);
+       Product p3=new Product(NofetStore,"NofetStore",3,"3","3",13.0);
+       Product p4=new Product(NofetStore,"NofetStore",4,"4","4",21.0);
+
+       LinkedList<Product> PSH1=new LinkedList<>();
+       PSH1.add(p1);
+       PSH1.add(p2);
+       PSH1.add(p3);
+
+       ShoppingBag SB1=new ShoppingBag(1,NofetStore);
+       SB1.setFinalPrice(20.0);
+
+       ShoppingHistory SH1=new ShoppingHistory(SB1,PSH1);
+       tmp.addHistory(SH1);
+
+       Response r2=tradingSystemImpl.getDailyIncomeForSystem(r1.returnUserID(),r1.returnConnID());
+       Double DailyIncome=(Double) r2.getReturnObject().get("DailyIncome");
+       assertEquals(DailyIncome, 70.0);
+   }
+
+   @Test
+   void SadDailyIncomeForSystem_UserNotTheSystemManager(){
+        Response r=tradingSystemImpl.getDailyIncomeForSystem(NofetID,NconnID);
+        assertEquals(r.getMessage(),"getDailyIncomeForSystem: The user "+NofetID+"  try to see the Daily Income for the system but he is not the admin of the system");
+   }
+   //endregion
+/*
     //region template tests
     @Test
     void CreateSaleTest() {
-
-
         Map<String, Object> storeSale = new HashMap<>();
         Map<String, Object> storeSaleElements = new HashMap<>();
         storeSaleElements.put("storeID", 1);
@@ -1327,5 +1515,5 @@ class TradingSystemImplTest {
 
     //endregion
 
-
+*/
 }

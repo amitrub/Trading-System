@@ -2,6 +2,10 @@ package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -11,13 +15,12 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.*;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class OwnerTests {
 
@@ -94,6 +97,10 @@ public class OwnerTests {
                 Permissions.add(User.Permission.ResponseRequests);
             if((boolean) permissionToGive.get("GetStoreHistory"))
                 Permissions.add(User.Permission.GetStoreHistory);
+            if((boolean) permissionToGive.get("GetDailyIncomeForStore"))
+                Permissions.add(User.Permission.GetDailyIncomeForStore);
+            if((boolean) permissionToGive.get("GetDailyIncomeForSystem"))
+                Permissions.add(User.Permission.GetDailyIncomeForSystem);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -558,7 +565,7 @@ public class OwnerTests {
 
         client.Login("Nofet", "123");
         client.addProductToCart(storeID, productID, 2);
-        client.subscriberPurchase("123456789", "0521234567", "Kiryat Gat");
+        client.subscriberPurchase("123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         client.Logout();
 
         client.Login("Elinor", "123");
@@ -587,5 +594,35 @@ public class OwnerTests {
     }
     //endregion
 
+/*
+    //region requirement 4.12 : get daily Income for store tests
+    @Test
+    void HappyDailyIncomeForStore(){
+        client.
+        Response res= tradingSystemImpl.getDailyIncomeForStore(NofetID,NofetStore,NconnID);
+        Double DailyIncome=(Double) res.getReturnObject().get("DailyIncome");
+        assertEquals(DailyIncome, 50.0);
+    }
 
+    @Test
+    void HappyDailyIncomeForStore_NotExistPurchase(){
+        Store New=new Store("New",NofetID);
+        tradingSystemImpl.stores.put(New.getId(),New);
+        tradingSystemImpl.subscribers.get(NofetID).AddStore(New.getId());
+        Response res= tradingSystemImpl.getDailyIncomeForStore(NofetID,New.getId(),NconnID);
+        Double DailyIncome=(Double) res.getReturnObject().get("DailyIncome");
+        assertEquals(DailyIncome, 0);
+    }
+
+    @Test
+    void SadDailyIncomeForStore_UserNotOwnerOfTheStore(){
+        Store New=new Store("New",NofetID);
+        tradingSystemImpl.stores.put(New.getId(),New);
+        tradingSystemImpl.subscribers.get(NofetID).AddStore(New.getId());
+        Response res= tradingSystemImpl.getDailyIncomeForStore(ElinorID,New.getId(),EconnID);
+        assertEquals(res.getMessage(),"getDailyIncomeForStore: The user " + ElinorID + " is not the owner of the store");
+    }
+
+    // end region
+*/
 }
