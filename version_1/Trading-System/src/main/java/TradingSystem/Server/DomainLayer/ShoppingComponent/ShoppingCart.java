@@ -6,7 +6,6 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import com.mashape.unirest.http.exceptions.UnirestException;
 
 
 import java.util.*;
@@ -157,19 +156,18 @@ public class ShoppingCart {
 //            this.releaseLocks(lockList);
 //            return new Response(true,"Purchase: The payment is not approve");
 //        }
-        String connID = tradingSystemImpl.getUserConnID(userID);
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
         AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
-        Response supplyResponse = supplySystem.purchase(connID, paymentInfo, addressInfo);
+        Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
         if(supplyResponse.getIsErr()){
             this.releaseLocks(lockList);
-            return new Response(true,"Purchase: The Supply is not approve");
+            return supplyResponse;
         }
-        Response paymentResponse = paymentSystem.purchase(connID, paymentInfo, addressInfo);
+        Response paymentResponse = paymentSystem.purchase(paymentInfo, addressInfo);
         if(paymentResponse.getIsErr()){
             supplySystem.Cancel(supplyResponse.getMessage());
             this.releaseLocks(lockList);
-            return new Response(true,"Purchase: The payment is not approve");
+            return paymentResponse;
         }
 
         Response res = Buy();
@@ -184,7 +182,7 @@ public class ShoppingCart {
         this.storesReducedProductsVain=new HashSet<>();
         this.shoppingBags = new ConcurrentHashMap<>();
         this.releaseLocks(lockList);
-        return new Response("The purchase was made successfully ");
+        return new Response("The purchase was made successfully");
     }
 
     private List<Lock> getLockList() {

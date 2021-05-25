@@ -16,9 +16,9 @@ public class SupplySystemProxy implements ExternalServices {
     }
 
     @Override
-    public Response purchase(String topic, PaymentInfo paymentInfo, AddressInfo addressInfo) {
+    public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {
         if(addressInfo.getCity().equals("Eilat")){
-            return new Response(true, "Can't Deliver to Eilat");
+            return new Response(true, "The service is not available");
         }
         return new Response(false, "Can Supply");
     }

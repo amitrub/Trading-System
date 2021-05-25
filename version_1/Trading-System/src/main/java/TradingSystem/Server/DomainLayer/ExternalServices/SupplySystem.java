@@ -1,7 +1,6 @@
 package TradingSystem.Server.DomainLayer.ExternalServices;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -11,7 +10,6 @@ import static TradingSystem.Server.ServiceLayer.Configuration.urlbaseExternalSys
 public class SupplySystem implements ExternalServices {
 
     //Singleton
-    private Publisher publisher;
     private static SupplySystem supplySystem = null;
     private SupplySystem() {
     }
@@ -23,20 +21,15 @@ public class SupplySystem implements ExternalServices {
     }
 
     @Override
-    public Response purchase(String topic, PaymentInfo paymentInfo, AddressInfo addressInfo) {
-        Response resAlert = null;
+    public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {
         Response responseHandShake = handshake();
         if(!responseHandShake.getMessage().equals("OK")){
-            resAlert = new Response(true, "The connection to Supply System Failed");
-            publisher.SendMessage(topic, resAlert);
-            return resAlert;
+            return new Response(true, "The connection to Supply System Failed");
         }
         Response responseSupply = Supply(addressInfo);
         Integer transactionId = Integer.parseInt(responseSupply.getMessage());
         if(transactionId == -1){
-            resAlert = new Response(true, "The connection to Supply System Failed");
-            publisher.SendMessage(topic, resAlert);
-            return resAlert;
+            return new Response(true, "The connection to Supply System Failed");
         }
         return new Response(false, "Supply confirmed");
     }
