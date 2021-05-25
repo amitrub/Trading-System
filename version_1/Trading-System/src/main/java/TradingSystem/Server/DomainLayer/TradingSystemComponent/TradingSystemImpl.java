@@ -5,10 +5,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Conditioning;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -28,7 +25,9 @@ import java.util.concurrent.locks.Lock;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
+
 public class TradingSystemImpl implements TradingSystem {
+
 
     public Validation validation;
 
@@ -52,7 +51,6 @@ public class TradingSystemImpl implements TradingSystem {
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.systemManagerPermissions=new ConcurrentHashMap<>();
-       // data_controller=Data_Controller.getInstance();
     }
 
     public static TradingSystemImpl getInstance() {
@@ -186,7 +184,6 @@ public class TradingSystemImpl implements TradingSystem {
     public Response ConnectSystem() {
 
         User newGuest = new User();
-//        data_controller.AddGuest(new DataGuest());
         String connID = connectGuestToSystemConnID(newGuest);
         Response res = new Response(false, "Connect system was successful");
         res.AddConnID(connID);
@@ -259,7 +256,7 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "Register Error: error in connID");
         }
         else{
-            if (validation.IsUserNameExist(userName)) { 
+            if (validation.IsUserNameExist(userName)) {
                 return new Response(true, "Register Error: user name is taken");
             }
 //            if(!validation.VerifyPassword(userName, password)){
@@ -267,8 +264,6 @@ public class TradingSystemImpl implements TradingSystem {
 //            }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
-            //Adds to the db
-            //subscriberService.Addsubscriber(new DummySubscriber(newUser.getId(),newUser.getUserName()));
             Response res = new Response(false,"Register: Registration of " + userName + " was successful");
             res.AddConnID(connID);
             res.AddUserID(newUser.getId());
@@ -419,17 +414,10 @@ public class TradingSystemImpl implements TradingSystem {
      *      "price": double
      *      "category": String
      *      "quantity": int
-     *  
+     *
      */
     public Response SearchProduct(String name, String category, int minprice, int maxprice){
         List<DummyProduct> dummyProducts = new ArrayList<>();
-         //TODO check if valid
-//        if(name==null){
-//            dummyProducts=productService.findDummyProductByCategory(category, minprice,maxprice);
-//        }
-//        else if(category==null){
-//            dummyProducts=productService.findDummyProductByName(name, minprice,maxprice);
-//        }
         for(Store store: stores.values()){
             // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
             dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
@@ -709,10 +697,9 @@ public class TradingSystemImpl implements TradingSystem {
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
-         //       data_controller.AddStore(new DummyStore(newStore.getId(), storeName, newStore.getRate()));
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-                return res; 
+                return res;
             }
         }
     }
@@ -760,7 +747,7 @@ public class TradingSystemImpl implements TradingSystem {
 
         Response res = new Response(false, "WriteComment: The comment added successfully to product " + productId);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userId));
-        return res; 
+        return res;
     }
 
     /**
@@ -1019,7 +1006,7 @@ public class TradingSystemImpl implements TradingSystem {
         Response res = new Response(false, "AddNewOwner: The owner Added successfully");
         User user = subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res; 
+        return res;
     }
 
     /**
@@ -1079,7 +1066,7 @@ public class TradingSystemImpl implements TradingSystem {
         User user=subscribers.get(ownerID);
         Response res = new Response(false, "RemoveOwnerByOwner: Successfully removed the owner " + removeOwnerID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(ownerID));
-        return res; 
+        return res;
     }
 
     /**
@@ -1135,7 +1122,7 @@ public class TradingSystemImpl implements TradingSystem {
         Response res = new Response(false, "AddNewManager: The manager Added successfully");
         User user = subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res; 
+        return res;
     }
 
     /**
@@ -1178,7 +1165,7 @@ public class TradingSystemImpl implements TradingSystem {
         Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
         User user=subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
-        return res; 
+        return res;
     }
 
     /**
@@ -1311,7 +1298,7 @@ public class TradingSystemImpl implements TradingSystem {
         if(MP!=null){
             res.AddPair("permissions", MP.getPermissions());
         }
-       else {
+        else {
             res.AddPair("permissions", new LinkedList<User.Permission>());
         }
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -1453,7 +1440,6 @@ public class TradingSystemImpl implements TradingSystem {
                 list.add(e);
             }
         }
-       // List<DummyShoppingHistory> list1= shoppingHistoryService.getAllShoppingHistory();
         Response res = new Response(false,"AllStoresHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         User user=subscribers.get(AdminID);
@@ -1515,10 +1501,10 @@ public class TradingSystemImpl implements TradingSystem {
 
     public boolean hasPermission(int userID, User.Permission p) {
         //if (this.subscribers.containsKey(userID)) {
-          //  User u = this.subscribers.get(userID);
-            if (this.systemManagerPermissions.get(userID) != null) {
-                return this.systemManagerPermissions.get(userID).hasPermission(p);
-            }
+        //  User u = this.subscribers.get(userID);
+        if (this.systemManagerPermissions.get(userID) != null) {
+            return this.systemManagerPermissions.get(userID).hasPermission(p);
+        }
         //}
         return false;
     }
@@ -1595,10 +1581,10 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public Product getProduct(int storeID, int productID) {
-       if(this.stores.get(storeID)!=null) {
-           return this.stores.get(storeID).getProduct(productID);
-       }
-       return null;
+        if(this.stores.get(storeID)!=null) {
+            return this.stores.get(storeID).getProduct(productID);
+        }
+        return null;
     }
 
     public boolean ValidConnectedUser(int userID, String connID){
@@ -1606,11 +1592,11 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public Response reduceProducts(ConcurrentHashMap<Integer, Integer> products, int storeID) {
-       return this.stores.get(storeID).reduceProducts(products);
+        return this.stores.get(storeID).reduceProducts(products);
     }
 
     public void cancelReduceProducts(Integer storeID, ConcurrentHashMap<Integer, Integer> products) {
-      this.stores.get(storeID).cancelReduceProducts(products);
+        this.stores.get(storeID).cancelReduceProducts(products);
     }
 
     public List<DummyShoppingHistory> ShowStoreHistory(int storeId){
@@ -1779,16 +1765,16 @@ public class TradingSystemImpl implements TradingSystem {
     //Todo finish
     public Response addDiscountPolicy(int userID, String connID, int storeID,Sale sale){
         if (!ValidConnectedUser(userID, connID)) {
-             return new Response(true, "Error in Admin details");
+            return new Response(true, "Error in Admin details");
         }
         if (!subscribers.containsKey(userID)) {
-              return new Response(true, "the user is not subscriber to the system");
+            return new Response(true, "the user is not subscriber to the system");
         }
         if(stores.get(storeID)==null){
             return new Response(true, "the store not exist in the system");
         }
         if(!stores.get(storeID).checkOwner(userID)){
-             return new Response(true, "the user is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
         }
         Store s=this.stores.get(storeID);
         Response r=sale.checkValidity(storeID);
@@ -1919,7 +1905,7 @@ public class TradingSystemImpl implements TradingSystem {
     private Decision createDecision(  Map<String, Object> decision) {
         String des=(String) decision.get("decision");
         if(decision.equals("Cheaper")){
-          return new Cheaper();
+            return new Cheaper();
         }
         return null;
     }
@@ -2093,16 +2079,16 @@ public class TradingSystemImpl implements TradingSystem {
         }
         return null;
     }
-/*
-    private ConditionRole createConditingRole(int storeID, Map<String, Object> cond) {
-        String role=(String) cond.get("Role");
-        if(role.equals("ExistProduct")){
-           Integer productId=(Integer) cond.get("productID");
-            return new ExistProduct(productId);
+    /*
+        private ConditionRole createConditingRole(int storeID, Map<String, Object> cond) {
+            String role=(String) cond.get("Role");
+            if(role.equals("ExistProduct")){
+               Integer productId=(Integer) cond.get("productID");
+                return new ExistProduct(productId);
+            }
+            return null;
         }
-        return null;
-    }
-*/
+    */
     //for the tests
     public void AddStoreToList(Store store) {
         this.stores.put(store.getId(), store);
@@ -2114,32 +2100,32 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "Error in Admin details");
         }
         if (!subscribers.containsKey(userID)) {
-             return new Response(true, "the user is not subscriber to the system");
+            return new Response(true, "the user is not subscriber to the system");
         }
         if(stores.get(storeID)==null){
             return new Response(true, "the store not exist in the system");
         }
         if(!stores.get(storeID).checkOwner(userID)){
-              return new Response(true, "the user is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
         }
-       if(stores.get(storeID).getBuyingPolicy()==null){
-           return new Response(true,"there is not policy");
-       }
+        if(stores.get(storeID).getBuyingPolicy()==null){
+            return new Response(true,"there is not policy");
+        }
         return  stores.get(storeID).RemoveBuyingPolicy();
     }
 
     public Response RemoveDiscountPolicy(int userID, int storeID, String connID) {
         if (!ValidConnectedUser(userID, connID)) {
-               return new Response(true, "Error in Admin details");
+            return new Response(true, "Error in Admin details");
         }
         if (!subscribers.containsKey(userID)) {
-              return new Response(true, "the user is not subscriber to the system");
+            return new Response(true, "the user is not subscriber to the system");
         }
         if(stores.get(storeID)==null){
-             return new Response(true, "the store not exist in the system");
+            return new Response(true, "the store not exist in the system");
         }
         if(!stores.get(storeID).checkOwner(userID)){
-             return new Response(true, "the user is not the owner of the store");
+            return new Response(true, "the user is not the owner of the store");
         }
         return stores.get(storeID).RemoveDiscountPolicy();
     }
