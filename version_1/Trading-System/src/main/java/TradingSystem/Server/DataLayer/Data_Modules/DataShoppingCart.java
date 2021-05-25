@@ -1,9 +1,6 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
-import javax.persistence.ElementCollection;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,8 +8,10 @@ import java.util.Set;
 @IdClass(DummyKeyShopping.class)
 public class DataShoppingCart {
     @Id
+    @JoinColumn(table = "user", referencedColumnName = "userid")
     private Integer userID;
     @Id
+    @JoinColumn(table = "store", referencedColumnName = "storeid")
     private Integer storeID;
     //    @OneToMany(mappedBy="store")
 //    @MapKeyJoinColumn(name="ShoppingBag")

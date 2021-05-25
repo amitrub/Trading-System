@@ -1,11 +1,9 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 
 @Entity(name = "Subscriber")
+@SequenceGenerator(name="USER_SEQUENCE_GENERATOR", sequenceName="User", initialValue=1, allocationSize=10)
 public class DataSubscriber {
 
     @Id

@@ -5,15 +5,18 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.persistence.Embeddable;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
 @Entity(name = "Product")
-public class DataProduct {
+@Embeddable
+public class DataProduct implements Serializable {
 
     private int storeID;
     private String storeName;

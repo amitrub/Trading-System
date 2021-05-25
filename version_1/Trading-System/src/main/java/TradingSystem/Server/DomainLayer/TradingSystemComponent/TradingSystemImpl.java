@@ -58,7 +58,7 @@ public class TradingSystemImpl implements TradingSystem {
             tradingSystem = new TradingSystemImpl();
             tradingSystem.validation = new Validation();
             tradingSystem.ClearSystem();
-            tradingSystem.Initialization();
+      //      tradingSystem.Initialization();
         }
         return tradingSystem;
     }

@@ -5,6 +5,7 @@ import org.hibernate.annotations.Parameter;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.IdClass;
+import javax.persistence.JoinColumn;
 import java.util.HashMap;
 
 @Entity(name = "ShoppingBag")
@@ -12,8 +13,10 @@ import java.util.HashMap;
 public class DataShoppingBag {
 
     @Id
+    @JoinColumn(table = "user", referencedColumnName = "userid")
     private Integer userID;
     @Id
+    @JoinColumn(table = "store", referencedColumnName = "storeid")
     private Integer storeID;
     @org.hibernate.annotations.Type(
             type = "org.hibernate.type.SerializableToBlobType",
