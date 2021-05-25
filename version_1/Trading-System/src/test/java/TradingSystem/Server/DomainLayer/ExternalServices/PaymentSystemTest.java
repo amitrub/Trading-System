@@ -26,7 +26,7 @@ class PaymentSystemTest {
     void PaymentTestHappy() {
         PaymentInfo paymentInfo = new PaymentInfo("123456789","4","2021","Elinor","123","123456789");
         AddressInfo addressInfo = new AddressInfo();
-        Response response = paymentSystem.purchase(connID, paymentInfo, addressInfo);
+        Response response = paymentSystem.purchase(paymentInfo, addressInfo);
         assertFalse(response.getIsErr());
     }
 }

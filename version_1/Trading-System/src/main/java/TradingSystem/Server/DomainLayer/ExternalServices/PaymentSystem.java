@@ -1,7 +1,6 @@
 package TradingSystem.Server.DomainLayer.ExternalServices;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
@@ -11,11 +10,7 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 public class PaymentSystem implements ExternalServices {
 
     //Singleton
-    private Publisher publisher;
     private static PaymentSystem paymentSystem = null;
-    private PaymentSystem() {
-        this.publisher = new Publisher();
-    }
     public static PaymentSystem getInstance() {
         if (paymentSystem == null) {
             paymentSystem = new PaymentSystem();
@@ -23,23 +18,16 @@ public class PaymentSystem implements ExternalServices {
         return paymentSystem;
     }
 
-
-
     @Override
-    public Response purchase(String topic, PaymentInfo paymentInfo, AddressInfo addressInfo) {
-        Response resAlert = null;
+    public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {
         Response responseHandShake = handshake();
         if (!responseHandShake.getMessage().equals("OK")) {
-            resAlert = new Response(true, "The connection to Payment System Failed");
-            publisher.SendMessage(topic, resAlert);
-            return resAlert;
+            return new Response(true, "The connection to Payment System Failed");
         }
         Response responsePay = Pay(paymentInfo);
         Integer transactionId = Integer.parseInt(responsePay.getMessage());
         if (transactionId == -1) {
-            resAlert = new Response(true, "The Payment Failed");
-            publisher.SendMessage(topic, resAlert);
-            return resAlert;
+            return new Response(true, "The Payment Failed");
         }
         return new Response(false, "The connection to Payment System Failed");
         }
