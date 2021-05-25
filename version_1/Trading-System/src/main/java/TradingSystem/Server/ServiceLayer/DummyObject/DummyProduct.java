@@ -4,15 +4,19 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
+@Entity(name = "Product")
 public class DummyProduct {
 
+    @JoinColumn(name="id", referencedColumnName="store")
     private int storeID;
     private String storeName;
+    @Id
     private final int productID;
     private final String productName;
     private final double price;
@@ -116,14 +120,13 @@ public class DummyProduct {
                     DummyProduct dummyProduct = new DummyProduct(storeID, storeName, productID, productName, price, category, quantity);
                     dummySearchArr.add(dummyProduct);
                 }
+
                 return dummySearchArr;
             } catch (Exception e) {
                 System.out.println(errMsgGenerator("Service", "DummySearch", "36", "error in making dummySearch from JSON object"));
             }
         return dummySearchArr;
     }
-
-
 
     @Override
     public String toString() {
