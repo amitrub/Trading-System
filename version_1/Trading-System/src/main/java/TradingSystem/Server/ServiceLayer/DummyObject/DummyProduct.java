@@ -4,8 +4,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -14,9 +13,10 @@ import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 @Entity(name = "Product")
 public class DummyProduct {
 
-    @Id
+    @JoinColumn(name="id", referencedColumnName="store")
     private int storeID;
     private String storeName;
+    @Id
     private final int productID;
     private final String productName;
     private final double price;

@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -22,5 +23,9 @@ public class ShoppingHistoryService {
 
     public DummyShoppingHistory ShoppingHistory(DummyShoppingHistory shoppingHistory){
         return shoppingHistoryRepository.saveAndFlush(shoppingHistory);
+    }
+
+    public List<DummyShoppingHistory> getAllShoppingHistory(){
+        return shoppingHistoryRepository.findAll();
     }
 }

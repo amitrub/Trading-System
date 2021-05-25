@@ -1,9 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DataLayer.Services.GuestService;
-import TradingSystem.Server.DataLayer.Services.ProductService;
-import TradingSystem.Server.DataLayer.Services.StoreService;
-import TradingSystem.Server.DataLayer.Services.SubscriberService;
+import TradingSystem.Server.DataLayer.Services.*;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -23,6 +20,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -30,7 +28,7 @@ import java.util.concurrent.locks.Lock;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
-
+@Service
 public class TradingSystemImpl implements TradingSystem {
     @Autowired
     GuestService guestService;
@@ -40,6 +38,10 @@ public class TradingSystemImpl implements TradingSystem {
     StoreService storeService;
     @Autowired
     ProductService productService;
+    @Autowired
+    ShoppingHistoryService shoppingHistoryService;
+    @Autowired
+    ShoppingCartService shoppingCartService;
 
     public Validation validation;
 
@@ -276,7 +278,8 @@ public class TradingSystemImpl implements TradingSystem {
 //            }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
-            subscriberService.Addsubscriber(new DummySubscriber(newUser.getId(),newUser.getUserName())); //TODO-Check
+            //Adds to the db
+            subscriberService.Addsubscriber(new DummySubscriber(newUser.getId(),newUser.getUserName()));
             Response res = new Response(false,"Register: Registration of " + userName + " was successful");
             res.AddConnID(connID);
             res.AddUserID(newUser.getId());
@@ -383,7 +386,6 @@ public class TradingSystemImpl implements TradingSystem {
         if(list.isEmpty()){
             new Response(true,"ShowAllStores: There are no stores in the system");
         }
-        List<DummyStore> list1= storeService.getAllStores(); //TODO change after implement
         Response res = new Response(false, "ShowAllStores: Num of stores in the system is " + list.size());
         res.AddPair("stores", list);
         return res;
@@ -399,7 +401,6 @@ public class TradingSystemImpl implements TradingSystem {
      *      }
      */
     public Response ShowStoreProducts(int storeID) {
-        List<DummyProduct> dummyProducts= productService.findDummyProductByStoreID(storeID); //TODO- check
         if(stores.containsKey(storeID)){
             List<DummyProduct> list = stores.get(storeID).ShowStoreProducts();
             Response res = new Response(false, "ShowStoreProducts: Num of products in the store is " + list.size());
@@ -433,6 +434,13 @@ public class TradingSystemImpl implements TradingSystem {
      */
     public Response SearchProduct(String name, String category, int minprice, int maxprice){
         List<DummyProduct> dummyProducts = new ArrayList<>();
+         //TODO check if valid
+//        if(name==null){
+//            dummyProducts=productService.findDummyProductByCategory(category, minprice,maxprice);
+//        }
+//        else if(category==null){
+//            dummyProducts=productService.findDummyProductByName(name, minprice,maxprice);
+//        }
         for(Store store: stores.values()){
             // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
             dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
@@ -1444,6 +1452,7 @@ public class TradingSystemImpl implements TradingSystem {
                 list.add(e);
             }
         }
+        List<DummyShoppingHistory> list1= shoppingHistoryService.getAllShoppingHistory();
         Response res = new Response(false,"AllStoresHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         User user=subscribers.get(AdminID);
@@ -2175,7 +2184,6 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "Error in Subscriber details");
         }
         List<DummySubscriber> dummySubscribers = new ArrayList<>();
-        List<DummySubscriber> list= subscriberService.getAllSubscribers();
         for(Integer id : this.subscribers.keySet()) {
             User u = this.subscribers.get(id);
             DummySubscriber dummySubscriber = new DummySubscriber(u.getId(), u.getUserName());

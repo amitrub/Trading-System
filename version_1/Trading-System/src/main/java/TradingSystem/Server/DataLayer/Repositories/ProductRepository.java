@@ -10,4 +10,12 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<DummyProduct,Integer> {
 
     List<DummyProduct> findDummyProductByStoreID(int storeid);
+
+    List<DummyProduct> findDummyProductByProductName(String productName);
+
+    List<DummyProduct> findDummyProductByCategory(String category);
+
+    List<DummyProduct> findDummyProductByCategoryAndPriceBetween(String category, double minprice, double maxprice);
+
+    List<DummyProduct> findDummyProductByProductNameAndPriceBetween(String name, double minprice, double maxprice);
 }

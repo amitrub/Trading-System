@@ -297,6 +297,7 @@ public class GuestServiceHttp {
      *  }]
      * }
      */
+    //TODO figureout how to implement
     @GetMapping("shopping_cart")
     public Response ShowShoppingCart(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.ShowShoppingCart(connID);
