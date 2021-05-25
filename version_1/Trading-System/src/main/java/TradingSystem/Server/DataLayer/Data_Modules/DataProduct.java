@@ -1,25 +1,30 @@
-package TradingSystem.Server.ServiceLayer.DummyObject;
+package TradingSystem.Server.DataLayer.Data_Modules;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
-public class DummyProduct {
+@Entity(name = "Product")
+public class DataProduct {
 
     private int storeID;
     private String storeName;
+    @Id
     private final int productID;
     private final String productName;
     private final double price;
     private final String category;
     private int quantity;
 
-    public DummyProduct(){
+    public DataProduct(){
         this.storeID = -1;
         this.storeName = "";
         this.productID = -1;
@@ -28,7 +33,7 @@ public class DummyProduct {
         this.category = "";
     }
 
-    public DummyProduct(Product product){
+    public DataProduct(Product product){
         this.storeID = product.getStoreID();
         this.storeName = product.getStoreName();
         this.productID = product.getProductID();
@@ -38,7 +43,7 @@ public class DummyProduct {
         this.quantity = product.getQuantity();
     }
 
-    public DummyProduct(Map<String, Object> map) {
+    public DataProduct(Map<String, Object> map) {
         this.storeID = (Integer) map.get("storeID");
         this.storeName = (String) map.get("storeName");
         this.productID = (Integer) map.get("productID");
@@ -55,7 +60,7 @@ public class DummyProduct {
         this.quantity = (Integer) map.get("quantity");
     }
 
-    public DummyProduct(int storeID, String storeName, int productID, String productName, double price, String category, int quantity) {
+    public DataProduct(int storeID, String storeName, int productID, String productName, double price, String category, int quantity) {
         this.storeID = storeID;
         this.storeName = storeName;
         this.productID = productID;
@@ -103,24 +108,24 @@ public class DummyProduct {
 
     public static ArrayList<DummyProduct> makeDummySearchFromJSON(JSONArray jsonArray) {
         ArrayList dummySearchArr = new ArrayList();
-            try {
-                for (int i=0;i<jsonArray.length();i++) {
-                    JSONObject jsonResponse = jsonArray.getJSONObject(i);
-                    int storeID = jsonResponse.getInt("storeID");
-                    String storeName = jsonResponse.getString("storeName");
-                    int productID = jsonResponse.getInt("productID");
-                    String productName = jsonResponse.getString("productName");
-                    double price = jsonResponse.getDouble("price");
-                    String category = jsonResponse.getString("category");
-                    int quantity = jsonResponse.getInt("quantity");
-                    DummyProduct dummyProduct = new DummyProduct(storeID, storeName, productID, productName, price, category, quantity);
-                    dummySearchArr.add(dummyProduct);
-                }
-
-                return dummySearchArr;
-            } catch (Exception e) {
-                System.out.println(errMsgGenerator("Service", "DummySearch", "36", "error in making dummySearch from JSON object"));
+        try {
+            for (int i=0;i<jsonArray.length();i++) {
+                JSONObject jsonResponse = jsonArray.getJSONObject(i);
+                int storeID = jsonResponse.getInt("storeID");
+                String storeName = jsonResponse.getString("storeName");
+                int productID = jsonResponse.getInt("productID");
+                String productName = jsonResponse.getString("productName");
+                double price = jsonResponse.getDouble("price");
+                String category = jsonResponse.getString("category");
+                int quantity = jsonResponse.getInt("quantity");
+                DummyProduct dummyProduct = new DummyProduct(storeID, storeName, productID, productName, price, category, quantity);
+                dummySearchArr.add(dummyProduct);
             }
+
+            return dummySearchArr;
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Service", "DummySearch", "36", "error in making dummySearch from JSON object"));
+        }
         return dummySearchArr;
     }
 

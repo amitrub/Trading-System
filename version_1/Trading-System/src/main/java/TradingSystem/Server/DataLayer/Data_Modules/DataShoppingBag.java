@@ -1,4 +1,4 @@
-package TradingSystem.Server.ServiceLayer.DummyObject;
+package TradingSystem.Server.DataLayer.Data_Modules;
 
 import org.hibernate.annotations.Parameter;
 
@@ -9,7 +9,7 @@ import java.util.HashMap;
 
 @Entity(name = "ShoppingBag")
 @IdClass(DummyKeyShopping.class)
-public class DummyShoppingBag {
+public class DataShoppingBag {
 
     @Id
     private Integer userID;
@@ -23,14 +23,14 @@ public class DummyShoppingBag {
 
     private Double finalPrice;
 
-    public DummyShoppingBag(){
+    public DataShoppingBag(){
 
     }
 
-    public DummyShoppingBag(int userID, int storeID, HashMap<Integer,Integer> products, double finalPrice){
+    public DataShoppingBag(int userID, int storeID, HashMap<Integer,Integer> products, double finalPrice){
         this.userID=userID;
         this.storeID=storeID;
-    //    this.products= products;
+        this.products= products;
         this.finalPrice= finalPrice;
     }
 }

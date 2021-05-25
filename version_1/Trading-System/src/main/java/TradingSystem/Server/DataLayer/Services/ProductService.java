@@ -1,9 +1,7 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Repositories.ProductRepository;
-import TradingSystem.Server.DataLayer.Repositories.ShoppingHistoryRepository;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,14 +17,14 @@ public class ProductService {
 
     }
 
-    public DummyProduct AddProduct(DummyProduct product) {
+    public DataProduct AddProduct(DataProduct product) {
         return productRepository.saveAndFlush(product);
     }
 
-    public List<DummyProduct> findDummyProductByStoreID(int storeId){
+    public List<DataProduct> findDummyProductByStoreID(int storeId){
         return productRepository.findDummyProductByStoreID(storeId);
     }
-    public List<DummyProduct> findDummyProductByName(String storeName, double minprice, double maxprice){
+    public List<DataProduct> findDummyProductByName(String storeName, double minprice, double maxprice){
         if(maxprice!=-1 && minprice!=-1){
             return productRepository.findDummyProductByCategoryAndPriceBetween(storeName,minprice,minprice);
         }
@@ -35,7 +33,7 @@ public class ProductService {
         }
     }
 
-    public List<DummyProduct> findDummyProductByCategory(String category, int minprice, int maxprice){
+    public List<DataProduct> findDummyProductByCategory(String category, int minprice, int maxprice){
         if(maxprice!=-1 && minprice!=-1){
             return productRepository.findDummyProductByCategoryAndPriceBetween(category,minprice,minprice);
         }

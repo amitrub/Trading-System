@@ -1,27 +1,18 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
-import TradingSystem.Server.DomainLayer.ShoppingComponent.*;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
-import javax.persistence.OneToMany;
-import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
-@Entity(name = "ShoppingHistory")
-@IdClass(DummyKeyShopping.class)
 public class DummyShoppingHistory {
 
-    @Id
     private Integer userID;
-    @Id
     private Integer storeID;
-//    @OneToMany(targetEntity = DummyProduct.class, mappedBy = "products")
-//    private List<DummyProduct> products;
+    private List<DummyProduct> products;
     private String date;
     private Double finalPrice;
 

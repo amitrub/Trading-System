@@ -1,12 +1,7 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-
-@Entity(name = "Subscriber")
 public class DummySubscriber {
 
-    @Id
     public int userID;
     public String userName;
 

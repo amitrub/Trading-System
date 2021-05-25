@@ -1,8 +1,8 @@
 
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
-import TradingSystem.Server.DataLayer.Services.GuestService;
-import TradingSystem.Server.DataLayer.Services.StoreService;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -18,6 +18,8 @@ import java.util.Map;
 public class GuestServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
+    @Autowired
+    public Data_Controller data_controller;
 
 
     @GetMapping("clear_system")
@@ -32,6 +34,7 @@ public class GuestServiceHttp {
      * @return Response{
      *  "isErr: boolean
      *  "message": String
+     *
      *  "connID": String
      * }
      */
@@ -82,6 +85,7 @@ public class GuestServiceHttp {
         try {
             userName = (String) obj.get("userName");
             password = (String) obj.get("password");
+            data_controller.AddSubscriber(new DataSubscriber(userName,password));
         }
         catch (Exception e){
             System.out.println(e);

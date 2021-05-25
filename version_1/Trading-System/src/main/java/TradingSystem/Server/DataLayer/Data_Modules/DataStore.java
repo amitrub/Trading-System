@@ -1,33 +1,40 @@
-package TradingSystem.Server.ServiceLayer.DummyObject;
+package TradingSystem.Server.DataLayer.Data_Modules;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
-
-public class DummyStore {
-
+@Entity(name = "store")
+public class DataStore {
+    @Id
     private final Integer id;
     private String name;
     private Double storeRate;
 
-    public DummyStore(Integer id, String name, Double storeRate) {
+    public DataStore(){
+        id=0;
+    }
+
+
+    public DataStore(Integer id, String name, Double storeRate) {
         this.id = id;
         this.name = name;
         this.storeRate = storeRate;
     }
 
-    public DummyStore(Store store) {
+    public DataStore(Store store) {
         this.id = store.getId();
         this.name = store.getName();
         this.storeRate = store.getRate();
     }
 
-    public DummyStore(Map<String, Object> map) {
+    public DataStore(Map<String, Object> map) {
         this.id = (Integer) map.get("id");
         this.name = (String) map.get("name");
         try {
@@ -50,7 +57,7 @@ public class DummyStore {
         return storeRate;
     }
 
-    public static ArrayList<DummyStore> makeDummyStoreFromJSON(JSONArray jsonArray) {
+    public static ArrayList<TradingSystem.Server.ServiceLayer.DummyObject.DummyStore> makeDummyStoreFromJSON(JSONArray jsonArray) {
         ArrayList dummyStoreArr = new ArrayList();
         try {
             for (int i=0;i<jsonArray.length();i++) {
@@ -58,7 +65,7 @@ public class DummyStore {
                 int id = jsonResponse.getInt("id");
                 String name = jsonResponse.getString("name");
                 double storeRate = jsonResponse.getDouble("storeRate");
-                DummyStore dummyStore = new DummyStore(id, name, storeRate);
+                TradingSystem.Server.ServiceLayer.DummyObject.DummyStore dummyStore = new TradingSystem.Server.ServiceLayer.DummyObject.DummyStore(id, name, storeRate);
                 dummyStoreArr.add(dummyStore);
             }
 

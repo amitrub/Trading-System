@@ -1,9 +1,9 @@
 package TradingSystem.Server.DataLayer.Repositories;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
+import TradingSystem.Server.DataLayer.Data_Modules.DataGuest;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface GuestRepository extends JpaRepository<DummyUser,Integer> {
+public interface GuestRepository extends JpaRepository<DataGuest, Integer> {
 }

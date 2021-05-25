@@ -1,21 +1,22 @@
 package TradingSystem.Server.DataLayer.Repositories;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
 @Repository
-public interface ProductRepository extends JpaRepository<DummyProduct,Integer> {
+public interface ProductRepository extends JpaRepository<DataProduct,Integer> {
 
-    List<DummyProduct> findDummyProductByStoreID(int storeid);
+    List<DataProduct> findDummyProductByStoreID(int storeid);
 
-    List<DummyProduct> findDummyProductByProductName(String productName);
+    List<DataProduct> findDummyProductByProductName(String productName);
 
-    List<DummyProduct> findDummyProductByCategory(String category);
+    List<DataProduct> findDummyProductByCategory(String category);
 
-    List<DummyProduct> findDummyProductByCategoryAndPriceBetween(String category, double minprice, double maxprice);
+    List<DataProduct> findDummyProductByCategoryAndPriceBetween(String category, double minprice, double maxprice);
 
-    List<DummyProduct> findDummyProductByProductNameAndPriceBetween(String name, double minprice, double maxprice);
+    List<DataProduct> findDummyProductByProductNameAndPriceBetween(String name, double minprice, double maxprice);
 }
+

@@ -1,6 +1,7 @@
 package TradingSystem.Server.DataLayer.Services;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -12,18 +13,24 @@ public class Data_Controller {
 
     @Autowired
     private StoreService storeService;
-    //    Singleton
-//    private static Data_Controller data_controller = null;
-//
-//    public static Data_Controller getInstance() {
-//        if (data_controller == null) {
-//            System.out.println("hello im data controller");
-//            data_controller = new Data_Controller();
-//        }
-//        return data_controller;
-//    }
+    @Autowired
+    private SubcriberService subscriberService;
+    @Autowired
+    private GuestService guestService;
 
-    public void AddStore(DummyStore store){
+    public Data_Controller(){
+
+    }
+
+    public void AddStore(DataStore store){
         storeService.Addstore(store);
+    }
+
+    public int AddGuest(){
+        return guestService.Addguest();
+    }
+
+    public int AddSubscriber(DataSubscriber dataSubscriber){
+        return subscriberService.AddSubscriber(dataSubscriber);
     }
 }

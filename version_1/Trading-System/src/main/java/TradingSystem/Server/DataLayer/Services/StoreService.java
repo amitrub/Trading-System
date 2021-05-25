@@ -1,7 +1,7 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -15,11 +15,11 @@ public class StoreService {
     @Autowired
     StoreRepository storeRepository;
 
-    public DummyStore Addstore(DummyStore store){
+    public DataStore Addstore(DataStore store){
         return storeRepository.saveAndFlush(store);
     }
 
-    public List<DummyStore> getAllStores(){
+    public List<DataStore> getAllStores(){
         return storeRepository.findAll();
     }
 }

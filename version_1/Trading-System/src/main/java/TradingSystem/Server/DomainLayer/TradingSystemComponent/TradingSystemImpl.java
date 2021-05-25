@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataGuest;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
@@ -30,11 +31,7 @@ import java.util.concurrent.locks.Lock;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
-
 public class TradingSystemImpl implements TradingSystem {
-
-    @Autowired
-    public Data_Controller data_controller;
 
     public Validation validation;
 
@@ -66,7 +63,7 @@ public class TradingSystemImpl implements TradingSystem {
             tradingSystem = new TradingSystemImpl();
             tradingSystem.validation = new Validation();
             tradingSystem.ClearSystem();
-            tradingSystem.Initialization();
+          //  tradingSystem.Initialization();
         }
         return tradingSystem;
     }
@@ -192,6 +189,7 @@ public class TradingSystemImpl implements TradingSystem {
     public Response ConnectSystem() {
 
         User newGuest = new User();
+//        data_controller.AddGuest(new DataGuest());
         String connID = connectGuestToSystemConnID(newGuest);
         Response res = new Response(false, "Connect system was successful");
         res.AddConnID(connID);

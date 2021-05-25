@@ -1,8 +1,7 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataGuest;
 import TradingSystem.Server.DataLayer.Repositories.GuestRepository;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySubscriber;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,15 +19,17 @@ public class GuestService {
 
     }
 
-    public List<DummyUser> getAllGuests(){
+    public List<DataGuest> getAllGuests(){
         return guestRepository.findAll();
     }
 
-    public void Addguest (DummyUser user){
-        guestRepository.saveAndFlush(user);
+    public int Addguest (){
+        DataGuest user =new DataGuest();
+        DataGuest dataGuest= guestRepository.saveAndFlush(user);
+        return dataGuest.getUserID();
     }
 
-    public void removeguest(DummyUser user){
+    public void removeguest(DataGuest user){
         guestRepository.delete(user);
     }
 }
