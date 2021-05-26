@@ -1,13 +1,10 @@
 
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
-import TradingSystem.Server.DataLayer.Services.GuestService;
-import TradingSystem.Server.DataLayer.Services.StoreService;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -32,6 +29,7 @@ public class GuestServiceHttp {
      * @return Response{
      *  "isErr: boolean
      *  "message": String
+     *
      *  "connID": String
      * }
      */

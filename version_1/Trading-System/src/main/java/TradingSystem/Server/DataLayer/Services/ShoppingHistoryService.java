@@ -1,9 +1,7 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataShoppingHistory;
 import TradingSystem.Server.DataLayer.Repositories.ShoppingHistoryRepository;
-import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -21,11 +19,19 @@ public class ShoppingHistoryService {
 
     }
 
-    public DummyShoppingHistory ShoppingHistory(DummyShoppingHistory shoppingHistory){
+    public DataShoppingHistory findByuserId(int userId){
+        return shoppingHistoryRepository.findByUserID(userId);
+    }
+
+    public DataShoppingHistory ShoppingHistory(DataShoppingHistory shoppingHistory){
         return shoppingHistoryRepository.saveAndFlush(shoppingHistory);
     }
 
-    public List<DummyShoppingHistory> getAllShoppingHistory(){
+    public List<DataShoppingHistory> getShoppingHistoryByStoreId(int storeId){
+        return shoppingHistoryRepository.findAllByStoreID(storeId);
+    }
+
+    public List<DataShoppingHistory> getAllShoppingHistory(){
         return shoppingHistoryRepository.findAll();
     }
 }

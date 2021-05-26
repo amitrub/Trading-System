@@ -1,19 +1,19 @@
-package TradingSystem.Server.ServiceLayer.DummyObject;
+package TradingSystem.Server.DataLayer.Data_Modules;
 
 import org.hibernate.annotations.Parameter;
 
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.IdClass;
+import javax.persistence.*;
 import java.util.HashMap;
 
 @Entity(name = "ShoppingBag")
 @IdClass(DummyKeyShopping.class)
-public class DummyShoppingBag {
+public class DataShoppingBag {
 
     @Id
+    @JoinColumn(table = "Subscriber", referencedColumnName = "userid")
     private Integer userID;
     @Id
+    @JoinColumn(table = "store_data", referencedColumnName = "storeid")
     private Integer storeID;
     @org.hibernate.annotations.Type(
             type = "org.hibernate.type.SerializableToBlobType",
@@ -23,14 +23,14 @@ public class DummyShoppingBag {
 
     private Double finalPrice;
 
-    public DummyShoppingBag(){
+    public DataShoppingBag(){
 
     }
 
-    public DummyShoppingBag(int userID, int storeID, HashMap<Integer,Integer> products, double finalPrice){
+    public DataShoppingBag(int userID, int storeID, HashMap<Integer,Integer> products, double finalPrice){
         this.userID=userID;
         this.storeID=storeID;
-    //    this.products= products;
+        this.products= products;
         this.finalPrice= finalPrice;
     }
 }

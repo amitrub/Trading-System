@@ -3,7 +3,6 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DataLayer.Services.StoreService;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,14 +48,14 @@ public class SubscriberServiceHttp {
         WriteToLogger(res);
         return res;
     }
-    @GetMapping("test")
-    public Response Test(){
-        DummyStore store=new DummyStore(5,"reut",5.0);
-        DummyStore store1=storeService.Addstore(store);
-        Response response=new Response();
-        response.AddPair("store",store1);
-        return response;
-    }
+//    @GetMapping("test")
+//    public Response Test(){
+//        DummyStore store=new DummyStore(5,"reut",5.0);
+//        DummyStore store1=storeService.Addstore(store);
+//        Response response=new Response();
+//        response.AddPair("store",store1);
+//        return response;
+//    }
 
     /**
      * @requirement 3.2

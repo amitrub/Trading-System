@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -23,7 +22,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -34,8 +32,8 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class TradingSystemImpl implements TradingSystem {
 
-    @Autowired
-    public Data_Controller data_controller;
+//    @Autowired
+//    public Data_Controller data_controller;
 
     public Validation validation;
 
@@ -67,7 +65,7 @@ public class TradingSystemImpl implements TradingSystem {
             tradingSystem = new TradingSystemImpl();
             tradingSystem.validation = new Validation();
             tradingSystem.ClearSystem();
-            tradingSystem.Initialization();
+          //  tradingSystem.Initialization();
         }
         return tradingSystem;
     }
@@ -715,7 +713,6 @@ public class TradingSystemImpl implements TradingSystem {
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
-         //       data_controller.AddStore(new DummyStore(newStore.getId(), storeName, newStore.getRate()));
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                 return res; 

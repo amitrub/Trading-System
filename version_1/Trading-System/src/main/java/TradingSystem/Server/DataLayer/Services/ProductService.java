@@ -1,32 +1,53 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Repositories.ProductRepository;
-import TradingSystem.Server.DataLayer.Repositories.ShoppingHistoryRepository;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+
+//import com.journaldev.hibernate.util.HibernateUtil;
 
 @Service
 public class ProductService {
 
     @Autowired
     ProductRepository productRepository;
+  //  SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+
 
     public ProductService() {
 
     }
 
-    public DummyProduct AddProduct(DummyProduct product) {
+    public DataProduct AddProduct(DataProduct product) {
         return productRepository.saveAndFlush(product);
     }
 
-    public List<DummyProduct> findDummyProductByStoreID(int storeId){
+    //TODO make it transaction
+    public void editProduct(DataProduct product){
+//        Session session = null;
+//        Transaction tx = null;
+//
+//        try {
+//            session = sessionFactory.openSession();
+//            tx = session.beginTransaction();
+            productRepository.deleteById(product.getProductID());
+            productRepository.saveAndFlush(product);
+//            tx.commit();
+//
+//        }catch (Exception ex) {
+//            ex.printStackTrace();
+//            tx.rollback();
+//        }
+//        finally {session.close();}
+    }
+
+    public List<DataProduct> findDummyProductByStoreID(int storeId){
         return productRepository.findDummyProductByStoreID(storeId);
     }
-    public List<DummyProduct> findDummyProductByName(String storeName, double minprice, double maxprice){
+    public List<DataProduct> findDummyProductByName(String storeName, double minprice, double maxprice){
         if(maxprice!=-1 && minprice!=-1){
             return productRepository.findDummyProductByCategoryAndPriceBetween(storeName,minprice,minprice);
         }
@@ -35,7 +56,7 @@ public class ProductService {
         }
     }
 
-    public List<DummyProduct> findDummyProductByCategory(String category, int minprice, int maxprice){
+    public List<DataProduct> findDummyProductByCategory(String category, int minprice, int maxprice){
         if(maxprice!=-1 && minprice!=-1){
             return productRepository.findDummyProductByCategoryAndPriceBetween(category,minprice,minprice);
         }

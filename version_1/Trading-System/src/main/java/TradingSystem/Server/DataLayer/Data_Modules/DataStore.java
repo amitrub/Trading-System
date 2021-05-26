@@ -1,33 +1,56 @@
-package TradingSystem.Server.ServiceLayer.DummyObject;
+package TradingSystem.Server.DataLayer.Data_Modules;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
-
-public class DummyStore {
-
-    private final Integer id;
+@Entity(name = "store_data")
+@SequenceGenerator(name="STORE_SEQUENCE_GENERATOR", sequenceName="STORE", initialValue=1, allocationSize=1)
+public class DataStore {
+    @Id
+    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="STORE_SEQUENCE_GENERATOR")
+    private Integer id;
     private String name;
     private Double storeRate;
+    @JoinColumn(table = "dummy_user", referencedColumnName = "userid")
+    private Integer founderID;
+    @ElementCollection
+    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
+    private List<Integer> ownersIDs;
+    @ElementCollection
+    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
+    private List<Integer> managersIDs;
 
-    public DummyStore(Integer id, String name, Double storeRate) {
-        this.id = id;
+    public DataStore(){
+    }
+
+
+    public DataStore(String name, Double storeRate, Integer founderID) {
         this.name = name;
         this.storeRate = storeRate;
+        this.founderID=founderID;
+//        ownersIDs= new ArrayList<>();
+//        managersIDs= new ArrayList<>();
     }
 
-    public DummyStore(Store store) {
+    public DataStore(String name) {
+        this.name = name;
+        this.storeRate = -1.0;
+    }
+
+    public DataStore(Store store) {
         this.id = store.getId();
         this.name = store.getName();
-        this.storeRate = store.getRate();
+       // this.storeRate = store.getRate();
     }
 
-    public DummyStore(Map<String, Object> map) {
+    public DataStore(Map<String, Object> map) {
         this.id = (Integer) map.get("id");
         this.name = (String) map.get("name");
         try {
@@ -50,7 +73,7 @@ public class DummyStore {
         return storeRate;
     }
 
-    public static ArrayList<DummyStore> makeDummyStoreFromJSON(JSONArray jsonArray) {
+    public static ArrayList<TradingSystem.Server.ServiceLayer.DummyObject.DummyStore> makeDummyStoreFromJSON(JSONArray jsonArray) {
         ArrayList dummyStoreArr = new ArrayList();
         try {
             for (int i=0;i<jsonArray.length();i++) {
@@ -58,7 +81,7 @@ public class DummyStore {
                 int id = jsonResponse.getInt("id");
                 String name = jsonResponse.getString("name");
                 double storeRate = jsonResponse.getDouble("storeRate");
-                DummyStore dummyStore = new DummyStore(id, name, storeRate);
+                TradingSystem.Server.ServiceLayer.DummyObject.DummyStore dummyStore = new TradingSystem.Server.ServiceLayer.DummyObject.DummyStore(id, name, storeRate);
                 dummyStoreArr.add(dummyStore);
             }
 
@@ -86,4 +109,16 @@ public class DummyStore {
         }
         return JO.toString();
     }
+
+    public Integer getFounderID() {
+        return founderID;
+    }
+
+//    public List<Integer> getOwnersIDs() {
+//        return ownersIDs;
+//    }
+//
+//    public List<Integer> getManagersIDs() {
+//        return managersIDs;
+//    }
 }

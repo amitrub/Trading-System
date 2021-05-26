@@ -5,6 +5,7 @@ import fashion from "../img/sadna-fashion.jpeg";
 import electronics from "../img/sadna-elctorincs.jpeg";
 import pets from "../img/sadna-dogs.jpeg";
 import kitchen from "../img/sadna-kitchen.jpeg";
+import React, { Component }  from 'react';
 
 function mainPage(props) {
   return (
