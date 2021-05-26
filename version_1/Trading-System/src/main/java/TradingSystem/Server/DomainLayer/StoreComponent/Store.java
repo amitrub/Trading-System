@@ -44,7 +44,7 @@ public class Store extends Observable {
     private ConcurrentLinkedDeque<Bid> Bids = new ConcurrentLinkedDeque<Bid>();;
 
 
-  //  private Double rate;
+    private Double rate;
     //userID_rating
    // private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
 
@@ -574,5 +574,9 @@ public class Store extends Observable {
 
     public ConcurrentLinkedDeque<Bid> getBids() {
         return Bids;
+    }
+
+    public Double getRate() {
+        return rate;
     }
 }

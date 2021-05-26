@@ -47,7 +47,7 @@ public class DataStore {
     public DataStore(Store store) {
         this.id = store.getId();
         this.name = store.getName();
-        this.storeRate = store.getRate();
+       // this.storeRate = store.getRate();
     }
 
     public DataStore(Map<String, Object> map) {
