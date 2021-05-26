@@ -107,4 +107,10 @@ public interface TradingSystem {
     Response getDailyIncomeForStore(int userID, int storeID, String connID);
 
     Response getDailyIncomeForSystem(int userID, String connID);
+
+    Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity);
+
+    Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userBiddingPrice,int quantity);
+
+    Response ShowBids(int userID, String connID, int storeID);
 }

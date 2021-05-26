@@ -20,6 +20,7 @@ public  class User implements Observer {
 
     private List<Object> messages = new ArrayList<>();
 
+
     public enum Permission {
         AddProduct,
         ReduceProduct,
@@ -35,7 +36,10 @@ public  class User implements Observer {
         GetHistoryPurchasing,
         GetStoreHistory,
         GetDailyIncomeForStore,
-        GetDailyIncomeForSystem
+        GetDailyIncomeForSystem,
+        RequestBidding,
+        EditDiscountPolicy,
+        EditBuyingPolicy
     }
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
@@ -72,9 +76,33 @@ public  class User implements Observer {
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
+    public User(int id) {
+        this.id = id;
+        this.userName = "guest";
+        this.password = "";
+        this.shoppingCart = new ShoppingCart(this.id);
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
+        this.ownerPermission=new ConcurrentHashMap<>();
+        this.managerPermission=new ConcurrentHashMap<>();
+    }
+
+    //FOR the db
+    public User(int id, String userName, String password) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.shoppingCart = new ShoppingCart(this.id);
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
+        this.ownerPermission=new ConcurrentHashMap<>();
+        this.managerPermission=new ConcurrentHashMap<>();
+    }
 
     public User(String userName, String password) {
-        this.id = getNextUserID();
+        this.id = nextUserID;
         this.userName = userName;
         this.password = password;
         this.shoppingCart = new ShoppingCart(this.id);
@@ -417,6 +445,17 @@ public  class User implements Observer {
 
         return strMessages;
     }
+
+    //TODO Implement
+   // public void AddProductForPurchaseOffer(int productID, int storeID, int productPrice) { }
+
+    public void AddSpacialProductForCart(int productID, int storeID, double productPrice) {
+
+
+    }
+
+
+
 }
 
 

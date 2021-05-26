@@ -5,6 +5,10 @@ public class DummySubscriber {
     public int userID;
     public String userName;
 
+    public DummySubscriber(){
+
+    }
+
     public DummySubscriber(int userID, String userName) {
         this.userID = userID;
         this.userName = userName;

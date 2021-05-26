@@ -1,9 +1,11 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
+import TradingSystem.Server.DataLayer.Services.StoreService;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,6 +15,8 @@ import java.util.Map;
 @RequestMapping(path = "api/subscriber")
 @CrossOrigin("*")
 public class SubscriberServiceHttp {
+    @Autowired
+    StoreService storeService;
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
 
@@ -44,6 +48,14 @@ public class SubscriberServiceHttp {
         WriteToLogger(res);
         return res;
     }
+//    @GetMapping("test")
+//    public Response Test(){
+//        DummyStore store=new DummyStore(5,"reut",5.0);
+//        DummyStore store1=storeService.Addstore(store);
+//        Response response=new Response();
+//        response.AddPair("store",store1);
+//        return response;
+//    }
 
     /**
      * @requirement 3.2
@@ -75,6 +87,16 @@ public class SubscriberServiceHttp {
         WriteToLogger(res);
         return res;
     }
+
+//    @PostMapping("add_store")
+//    public Response AddStore(){
+//        DummyStore store;
+//        store=new DummyStore(5,"reut",5.0);
+//        store= storeService.Addstore(store);
+//        Response res = new Response(true, "Error in parse body : AddStore");
+//        return res;
+//    }
+
 
     /**
      * @requirement 3.3
@@ -185,6 +207,47 @@ public class SubscriberServiceHttp {
             return res;
         }
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 8.3.1
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @param obj:{
+     *  "storeID": Integer
+     *  "productID": Integer
+     *  "productPrice": Integer
+     *   "quantity" : Integer
+     * }
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     *
+     */
+    @PostMapping("{userID}/submission_bidding")
+    public Response submissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int storeID,productID, quantity;
+        Double productPrice;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            quantity = (int) obj.get("quantity");
+            productPrice = (Double) obj.get("productPrice");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : submissionBidding");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.subscriberBidding(userID,connID,storeID,productID,productPrice, quantity);
+        res.AddConnID(connID);
         WriteToLogger(res);
         return res;
     }
