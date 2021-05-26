@@ -591,6 +591,9 @@ public class StoreOwnerServiceHttp {
         return res;
     }
 
+
+
+    
     /**
      * @requirement 8.3.2
      *
@@ -600,6 +603,7 @@ public class StoreOwnerServiceHttp {
      *  "userWhoOffer" : Integer
      *  "storeID": Integer
      *  "productID": Integer
+     *   "quantity" : Integer
      *  "productPrice": Integer
      * }
      * @return Response{
@@ -611,12 +615,13 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/response_for_submission_bidding")
     public Response ResponseForSubmissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID,productID,userWhoOffer;
+        int storeID,productID,userWhoOffer,quantity;
         Double productPrice;
         try {
             userWhoOffer = (int) obj.get("userWhoOffer");
             storeID = (int) obj.get("storeID");
             productID = (int) obj.get("productID");
+            quantity = (int) obj.get("quantity");
             productPrice = (Double) obj.get("productPrice");
         }
         catch (Exception e){
@@ -626,7 +631,7 @@ public class StoreOwnerServiceHttp {
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.ResponseForSubmissionBidding(userID,connID,storeID,productID,productPrice,userWhoOffer);
+        Response res = tradingSystem.ResponseForSubmissionBidding(userID,connID,storeID,productID,productPrice,userWhoOffer,quantity);
         res.AddConnID(connID);
         WriteToLogger(res);
         return res;
@@ -645,6 +650,7 @@ public class StoreOwnerServiceHttp {
      *  }]
      * }
      */
+
     @GetMapping("{userID}/store/{storeID}/show_bids")
     public Response ShowBids(@PathVariable int userID,@PathVariable int storeID, @RequestHeader("connID") String connID) {
         Response res = this.tradingSystem.ShowBids(userID, connID,storeID);
@@ -652,6 +658,14 @@ public class StoreOwnerServiceHttp {
         WriteToLogger(res);
         return res;
     }
+
+
+
+
+
+
+
+
 
 
     /**
