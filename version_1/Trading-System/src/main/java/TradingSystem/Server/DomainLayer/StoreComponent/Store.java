@@ -16,6 +16,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
 
 public class Store extends Observable {
@@ -39,9 +40,16 @@ public class Store extends Observable {
     private DiscountPolicy discountPolicy;
     private BuyingPolicy buyingPolicy;
 
-    private Double rate;
+    //userID_Bid
+    private ConcurrentLinkedDeque<Bid> Bids = new ConcurrentLinkedDeque<Bid>();;
+
+
+  //  private Double rate;
     //userID_rating
-    private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
+   // private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
+
+    //userID_Bidding
+    private ConcurrentHashMap<Integer, Double> usersBidding = new ConcurrentHashMap<>();;
 
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
 
@@ -56,7 +64,7 @@ public class Store extends Observable {
         this.ownersIDs.add(founderID);
         this.discountPolicy = discountPolicy;
         this.buyingPolicy = buyingPolicy;
-        this.rate =5.0; //todo- add rating!
+       // this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
     }
 
@@ -65,7 +73,7 @@ public class Store extends Observable {
         this.name = name;
         this.founderID = founderID;
         this.ownersIDs.add(founderID);
-        this.rate =5.0; //todo- add rating!
+      //  this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
@@ -159,7 +167,7 @@ public class Store extends Observable {
     {
         return inventory.getProductID(this.id,computer);
     }
-
+/*
     public void addRatingToStore(Integer userID, Double Rating)
     {
         this.Ratings.put(userID,Rating);
@@ -198,7 +206,7 @@ public class Store extends Observable {
     {
         return inventory.CalculateRateForProduct(productID);
     }
-
+*/
     public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
         List<Integer> FinalID=inventory.SearchProduct(name, category,minprice, maxprice);
         return inventory.getDummySearchForList(FinalID);
@@ -246,11 +254,11 @@ public class Store extends Observable {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-*/
+
     public Double getRate() {
         return rate;
     }
-
+*/
     public boolean checkProductsExistInTheStore(Integer productID, Integer quantity){
         return this.inventory.checkProductsExistInTheStore(productID,quantity);
     }
@@ -482,8 +490,31 @@ public class Store extends Observable {
     public void sendAlertToOwners(Response message){
         for(Integer ID : ownersIDs) {
             User user = tradingSystem.subscribers.get(ID);
-            System.out.println(user);
-            this.addObserver(user);
+            if(user!=null) {
+                System.out.println(user);
+                this.addObserver(user);
+            }
+        }
+        this.setChanged();
+        this.notifyObservers(message);
+        this.deleteObservers();
+    }
+
+    //TODO Check!
+    //Observable pattern
+    //send alert to all owners of the store
+    public void sendAlertOfBiddingToManager(Response message){
+        for(Integer ID : managersIDs) {
+            ManagerPermission MP=this.managersPermission.get(ID);
+            if(MP!=null) {
+                if(MP.hasPermission(User.Permission.RequestBidding)) {
+                    User user = tradingSystem.subscribers.get(ID);
+                    if (user != null) {
+                        System.out.println(user);
+                        this.addObserver(user);
+                    }
+                }
+            }
         }
         this.setChanged();
         this.notifyObservers(message);
@@ -514,4 +545,34 @@ public class Store extends Observable {
             }
             return DailyIncome;
         }
+
+    public void AddBidForProduct(int productID, int userID, Double productPrice) {
+        if(this.Bids==null){
+            this.Bids=new ConcurrentLinkedDeque<>();
+        }
+        this.Bids.add(new Bid(userID,productID,productPrice));
+    }
+
+    public boolean CheckBidForProductExist(Integer userID, Integer productID){
+        for (Bid bid:this.Bids
+             ) {
+            if(bid.getUserID()==userID&&bid.getProductID()==productID){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void RemoveProductForPurchaseOffer(int productID, int userWhoOffer) {
+        for (Bid bid:this.Bids
+        ) {
+            if(bid.getUserID()==userWhoOffer&&bid.getProductID()==productID){
+                this.Bids.remove(bid);
+            }
+        }
+    }
+
+    public ConcurrentLinkedDeque<Bid> getBids() {
+        return Bids;
+    }
 }

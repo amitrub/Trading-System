@@ -16,17 +16,17 @@ public class PaymentSystemProxy implements ExternalServices {
     }
 
     @Override
-    public Response purchase(String topic, PaymentInfo paymentInfo, AddressInfo addressInfo) {
+    public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {
         try {
             int month = Integer.parseInt(paymentInfo.getMonth());
             int year = Integer.parseInt(paymentInfo.getYear());
             if(month <= 0 || month >= 13 || year <= 2020 || year >= 2028){
-                return new Response(true, "Invalid month/year");
+                return new Response(true, "The service is not available");
             }
         }
         catch(Exception e){
             System.out.println("check credit details wrong credit");
-            return new Response(true, "Illegal payment details");
+            return new Response(true, "The service is not available");
         }
 
         return new Response(false, "Payment confirmed");

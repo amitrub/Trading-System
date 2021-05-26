@@ -27,7 +27,7 @@ class SupplySystemTest {
     void SupplyTestHappy() {
         PaymentInfo paymentInfo = new PaymentInfo();
         AddressInfo addressInfo = new AddressInfo("Elinor", "Israel", "Kiryat Gat", "Flower", "8458527");
-        Response response = supplySystem.purchase(connID, paymentInfo, addressInfo);
+        Response response = supplySystem.purchase(paymentInfo, addressInfo);
         assertFalse(response.getIsErr());
     }
 }
