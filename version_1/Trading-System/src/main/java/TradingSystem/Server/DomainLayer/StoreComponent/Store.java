@@ -537,11 +537,11 @@ public class Store extends Observable {
             return DailyIncome;
         }
 
-    public void AddBidForProduct(int productID, int userID, Double productPrice) {
+    public void AddBidForProduct(int productID, int userID, Double productPrice,Integer quantity) {
         if(this.Bids==null){
             this.Bids=new ConcurrentLinkedDeque<>();
         }
-        this.Bids.add(new Bid(userID,productID,productPrice));
+        this.Bids.add(new Bid(userID,productID,productPrice,quantity));
     }
 
     public boolean CheckBidForProductExist(Integer userID, Integer productID){

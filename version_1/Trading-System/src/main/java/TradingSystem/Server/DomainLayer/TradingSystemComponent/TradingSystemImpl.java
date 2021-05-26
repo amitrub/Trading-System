@@ -2258,7 +2258,7 @@ public class TradingSystemImpl implements TradingSystem {
 
 
     @Override
-    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice) {
+    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "subscriberBidding: The user " + userID + " is not connected");
         }
@@ -2280,7 +2280,7 @@ public class TradingSystemImpl implements TradingSystem {
         if(store.CheckBidForProductExist(userID,productID)){
             return new Response(true, "subscriberBidding: The user "+userID+" try to to submit a bid for product " +productID +" but this product already has a bid");
         }
-        store.AddBidForProduct(productID,userID,productPrice); //?
+        store.AddBidForProduct(productID,userID,productPrice,quantity); //?
         Response resAlert = new Response(false, "The subscriber " + userID +
                     " has been submit a bid of "+productPrice+" for product: " + productID + " in your store: " + store.getName());
         store.sendAlertToOwners(resAlert);
@@ -2289,7 +2289,7 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer) {
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer,int quantity) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
         }

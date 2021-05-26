@@ -4,12 +4,14 @@ public class Bid {
 
     private Integer userID;
     private Integer productID;
+    private Integer quantity;
     private Double price;
 
-    public Bid(Integer userID, Integer productID, Double price) {
+    public Bid(Integer userID, Integer productID, Double price,Integer quantity) {
         this.productID = productID;
         this.price = price;
         this.userID=userID;
+        this.quantity=quantity;
     }
 
     public Integer getUserID() {
@@ -34,4 +36,11 @@ public class Bid {
         this.price = price;
     }
 
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
+    }
 }
