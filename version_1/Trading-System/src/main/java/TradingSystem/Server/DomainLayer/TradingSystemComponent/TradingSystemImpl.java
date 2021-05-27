@@ -6,7 +6,10 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Bid;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Conditioning;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -29,6 +32,8 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class TradingSystemImpl implements TradingSystem {
 
+//    @Autowired
+//    public Data_Controller data_controller;
 
     public Validation validation;
 
@@ -52,6 +57,7 @@ public class TradingSystemImpl implements TradingSystem {
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.systemManagerPermissions=new ConcurrentHashMap<>();
+       // data_controller=Data_Controller.getInstance();
     }
 
     public static TradingSystemImpl getInstance() {
@@ -59,7 +65,7 @@ public class TradingSystemImpl implements TradingSystem {
             tradingSystem = new TradingSystemImpl();
             tradingSystem.validation = new Validation();
             tradingSystem.ClearSystem();
-            tradingSystem.Initialization();
+          //  tradingSystem.Initialization();
         }
         return tradingSystem;
     }
@@ -265,6 +271,8 @@ public class TradingSystemImpl implements TradingSystem {
 //            }
             User newUser = new User(userName, password);
             subscribers.put(newUser.getId(), newUser);
+            //Adds to the db
+            //subscriberService.Addsubscriber(new DummySubscriber(newUser.getId(),newUser.getUserName()));
             Response res = new Response(false,"Register: Registration of " + userName + " was successful");
             res.AddConnID(connID);
             res.AddUserID(newUser.getId());
@@ -419,6 +427,13 @@ public class TradingSystemImpl implements TradingSystem {
      */
     public Response SearchProduct(String name, String category, int minprice, int maxprice){
         List<DummyProduct> dummyProducts = new ArrayList<>();
+         //TODO check if valid
+//        if(name==null){
+//            dummyProducts=productService.findDummyProductByCategory(category, minprice,maxprice);
+//        }
+//        else if(category==null){
+//            dummyProducts=productService.findDummyProductByName(name, minprice,maxprice);
+//        }
         for(Store store: stores.values()){
             // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
             dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
@@ -634,6 +649,14 @@ public class TradingSystemImpl implements TradingSystem {
             }
         }
         return "";
+    }
+
+    public Integer getUserID(String name){
+        for(User user : subscribers.values()){
+            if(user.getUserName().equals(name))
+                return user.getId();
+        }
+        return -1;
     }
 
 
@@ -1433,6 +1456,7 @@ public class TradingSystemImpl implements TradingSystem {
                 list.add(e);
             }
         }
+       // List<DummyShoppingHistory> list1= shoppingHistoryService.getAllShoppingHistory();
         Response res = new Response(false,"AllStoresHistory: Num of history buying in the store is " + list.size());
         res.AddPair("history", list);
         User user=subscribers.get(AdminID);

@@ -78,7 +78,16 @@ public class Store extends Observable {
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
     }
-
+    public Store(int id, String name, Integer founderID) {
+        this.id = id;
+        this.name = name;
+        this.founderID = founderID;
+        this.ownersIDs.add(founderID);
+        this.rate =5.0; //todo- add rating!
+        this.inventory=new Inventory(this.id,name);
+        this.discountPolicy=new DiscountPolicy(this.id,null);
+        this.buyingPolicy=new BuyingPolicy(this.id,null);
+    }
     public Integer getId() {
         return id;
     }
@@ -565,5 +574,9 @@ public class Store extends Observable {
 
     public ConcurrentLinkedDeque<Bid> getBids() {
         return Bids;
+    }
+
+    public Double getRate() {
+        return rate;
     }
 }

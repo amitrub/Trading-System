@@ -583,7 +583,7 @@ public class StoreOwnerServiceHttp {
      *  }
      * }
      */
-    @GetMapping("{userID}/store/{storeID}/store_history_owner")
+    @GetMapping("{userID}/store/{storeID}/owner_daily_income_for_store")
     public Response OwnerDailyIncomeForStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.getDailyIncomeForStore(userID,storeID,connID);
         res.AddConnID(connID);

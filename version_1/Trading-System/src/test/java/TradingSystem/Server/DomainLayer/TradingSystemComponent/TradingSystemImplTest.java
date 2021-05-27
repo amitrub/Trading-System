@@ -178,42 +178,6 @@ class TradingSystemImplTest {
 
     // requirement 2.3
     @Test
-    void registerParallelHappy(){
-        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
-
-        List<RegisterTaskUnitTests> taskList = new ArrayList<>();
-        for (int i = 0; i < 5; i++) {
-            RegisterTaskUnitTests task = new RegisterTaskUnitTests("Client-" + i);
-            taskList.add(task);
-        }
-
-        //Execute all tasks and get reference to Future objects
-        List<Future<ResultUnitTests>> resultList = null;
-
-        try {
-            resultList = executor.invokeAll(taskList);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        executor.shutdown();
-
-        System.out.println("\n========Printing the results======");
-
-        assert resultList != null;
-        for (int i = 0; i < resultList.size(); i++) {
-            Future<ResultUnitTests> future = resultList.get(i);
-            try {
-                ResultUnitTests result = future.get();
-                System.out.println(result.getName() + ": " + result.getTimestamp());
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    // requirement 2.3
-    @Test
     void registerParallelSadSameName(){
         ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
 
@@ -1255,6 +1219,115 @@ class TradingSystemImplTest {
 
     }
     //endregion
+
+
+    //region Load tests
+
+    // requirement 2.3
+    @Test
+    void register_20_Clients(){
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<RegisterTaskUnitTests> taskList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            RegisterTaskUnitTests task = new RegisterTaskUnitTests("Client-" + i);
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<ResultUnitTests>> resultList = null;
+
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+
+        assert resultList != null;
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<ResultUnitTests> future = resultList.get(i);
+            try {
+                ResultUnitTests result = future.get();
+                System.out.println(result.getName() + ": " + result.getTimestamp());
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    @Test
+    void purchase_20_Clients() {
+        //Prepare
+        tradingSystemImpl.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,50);
+        Integer newProduct = tradingSystemImpl.stores.get(ElinorStore).getProductID("computer");
+        //Create two clients with task to buy this product
+        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+        List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
+        for (int i = 0; i < 20; i++) {
+            PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
+                    1,"123456789", "4", "2022" ,"123" ,"123456789" ,"Rager 101","Beer Sheva","Israel","8458527");
+            taskList.add(task);
+        }
+
+        //Execute all tasks and get reference to Future objects
+        List<Future<ResultUnitTests>> resultList = null;
+        try {
+            resultList = executor.invokeAll(taskList);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        executor.shutdown();
+
+        System.out.println("\n========Printing the results======");
+        boolean[] isErrs = new boolean[20];
+        for (int i = 0; i < resultList.size(); i++) {
+            Future<ResultUnitTests> future = resultList.get(i);
+            try {
+                ResultUnitTests result = future.get();
+                Response response = result.getResponse();
+                System.out.println("Assert correctness for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                isErrs[i] = response.getIsErr();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
+        }
+        //Check that all of the clients succeed.
+        for(int i = 0; i < 20; i++){
+            assertFalse(isErrs[i]);
+        }
+        Integer newQuantity = tradingSystemImpl.stores.get(ElinorStore).getQuantity(newProduct);
+        assertTrue(newQuantity == 30);
+    }
+
+    @Test
+    void Subscribers_AND_Stores() {
+        for(int i=0; i<100; i++){
+            String newConnID = tradingSystemImpl.ConnectSystem().returnConnID();
+            Response res1 = tradingSystemImpl.Register(newConnID, "Client-"+i,"123");
+            assertFalse(res1.getIsErr());
+            newConnID = res1.returnConnID();
+            Response res2 = tradingSystemImpl.Login(newConnID, "Client-"+i, "123");
+            assertFalse(res2.getIsErr());
+        }
+
+        for(int i=0; i<100; i++){
+            Integer newUserID = tradingSystemImpl.getUserID("Client-"+i);
+            String newConnID = tradingSystemImpl.getUserConnID(newUserID);
+            Response res = tradingSystemImpl.AddStore(newUserID, newConnID, "It's A Test Num-"+i);
+            assertFalse(res.getIsErr());
+        }
+
+    }
+
+    //endregion
+    
+
 
    //region requirement 4.12, 6.6
    @Test

@@ -16,6 +16,7 @@ public class GuestServiceHttp {
     private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
 
+
     @GetMapping("clear_system")
     public Response ClearSystem(){
         this.tradingSystem.ClearSystem();
@@ -28,6 +29,7 @@ public class GuestServiceHttp {
      * @return Response{
      *  "isErr: boolean
      *  "message": String
+     *
      *  "connID": String
      * }
      */
@@ -291,6 +293,7 @@ public class GuestServiceHttp {
      *  }]
      * }
      */
+    //TODO figureout how to implement
     @GetMapping("shopping_cart")
     public Response ShowShoppingCart(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.ShowShoppingCart(connID);

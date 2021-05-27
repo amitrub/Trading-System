@@ -1,5 +1,7 @@
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
+import React, { Component }  from 'react';
+
 
 function Recommendations() {
   return (

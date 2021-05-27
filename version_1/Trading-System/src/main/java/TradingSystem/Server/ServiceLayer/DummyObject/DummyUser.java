@@ -4,15 +4,24 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 import org.json.JSONObject;
 
 public class DummyUser {
+
+    private final int userid;
     String userName;
     String password;
 
+    public DummyUser(){
+        this.userid=-1;
+    }
+
+
     public DummyUser(String userName, String password) {
+        this.userid=-1;
         this.userName = userName;
         this.password = password;
     }
 
     public DummyUser(User user) {
+        this.userid=-1;
         this.userName = user.getUserName();
         this.password = "XXXXXXX";
     }
