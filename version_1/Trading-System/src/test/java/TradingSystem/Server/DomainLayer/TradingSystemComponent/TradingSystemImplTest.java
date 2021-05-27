@@ -44,6 +44,7 @@ class TradingSystemImplTest {
     private static int NofetStore;
     private static int ElinorStore;
     private static Store Nstore;
+    private static Store Estore;
 
     @BeforeAll
     public static void setup() {
@@ -95,6 +96,7 @@ class TradingSystemImplTest {
         }
         Response response2= tradingSystemImpl.AddNewOwner(userID,connID,storeid,ElinorID);
 
+        Estore = tradingSystemImpl.stores.get(ElinorStore);
         Nstore = tradingSystemImpl.stores.get(NofetStore);
         Product p1=new Product(NofetStore,"NofetStore",1,"1","1",2.0);
         Product p2=new Product(NofetStore,"NofetStore",2,"2","2",4.0);
@@ -574,7 +576,10 @@ class TradingSystemImplTest {
     // requirement 4.3
     @Test
     void NewOwnerSuccess() {
-        Response r1 = tradingSystemImpl.AddNewOwner(NofetID, NconnID, NofetStore, ElinorID);
+        String gust2 = tradingSystemImpl.ConnectSystem().returnConnID();
+        tradingSystemImpl.Register(gust2, "roee", "123");
+        Response res2= tradingSystemImpl.Login(gust2, "roee", "123");
+        Response r1 = tradingSystemImpl.AddNewOwner(NofetID, NconnID, NofetStore, res2.returnUserID());
         System.out.println(r1.getMessage());
         assertFalse(r1.getIsErr());
     }
@@ -654,7 +659,7 @@ class TradingSystemImplTest {
         assertTrue(response.getIsErr());
 
         Integer size = tradingSystemImpl.stores.get(NofetStore).OwnersID().size();
-        assertEquals(size, 3);
+        assertEquals(size, 4);
     }
 
     // requirement 4.4
@@ -671,11 +676,11 @@ class TradingSystemImplTest {
     // requirement 4.4
     @Test
     void removeOwnerNotOwner2() {
-        Response response = tradingSystemImpl.RemoveOwnerByOwner(NofetID, NconnID, ElinorID, NofetStore);
+        Response response = tradingSystemImpl.RemoveOwnerByOwner(NofetID, NconnID, userID, NofetStore);
         assertTrue(response.getIsErr());
 
         Integer size = tradingSystemImpl.stores.get(NofetStore).OwnersID().size();
-        assertEquals(size, 1);
+        assertEquals(size, 2);
     }
 
     // requirement 4.5
@@ -1050,16 +1055,17 @@ class TradingSystemImplTest {
 
     @Test
     void SadPurchase_BuyingPolicy() {
-        QuantityLimitForStore exp = new QuantityLimitForStore(2, NofetStore);
-        tradingSystemImpl.addBuyingPolicy(NofetID, NconnID, NofetStore, exp);
-        Integer productID1 = Nstore.getProductID("computer");
-        Integer preQuantity = Nstore.getQuantity(productID1);
-        tradingSystemImpl.AddProductToCart(EconnID, NofetStore, productID1, 5);
-        Response response = tradingSystemImpl.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        QuantityLimitForStore exp = new QuantityLimitForStore(2, ElinorStore);
+        tradingSystemImpl.addBuyingPolicy(ElinorID, EconnID, ElinorStore, exp);
+        tradingSystemImpl.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,20);
+        Integer productID1 = Estore.getProductID("computer");
+        Integer preQuantity = Estore.getQuantity(productID1);
+        tradingSystemImpl.AddProductToCart(NconnID, ElinorStore, productID1, 5);
+        Response response = tradingSystemImpl.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         Assertions.assertTrue(response.getIsErr());
 
         //check Inventory after sad purchase
-        Integer newQuantity = Nstore.getQuantity(productID1);
+        Integer newQuantity = Estore.getQuantity(productID1);
         assertEquals(preQuantity, newQuantity);
     }
 
