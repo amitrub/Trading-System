@@ -299,5 +299,39 @@ public interface Client_Interface {
      */
     public Response AdminAllUsers();
 
+    /**
+     * requirement 6.6
+     * @return Double
+     */
+    public Response AdminDailyIncomeForSystem();
+
+    /**
+     * requirement 4.12
+     * @return Double
+     */
+    public Response  OwnerDailyIncomeForStore(int storeID);
+
+    /**
+     * requirement 8.3.1
+     * @return Response
+     */
+    public Response submissionBidding( int storeID,int productID,int quantity,Double productPrice);
+
+
+    /**
+     * requirement 8.3.2
+     * @return Response
+     */
+    public Response ResponseForSubmissionBidding( int storeID,int productID, int userWhoOffer,int quantity,Double productPrice);
+
+
+    /**
+     * requirement 8.3-None
+     * @return Response
+     */
+    public Response ShowBids( int storeID);
+
+
+
 
 }
