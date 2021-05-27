@@ -712,11 +712,12 @@ public class TradingSystemImplRubin implements TradingSystem {
                 return new Response(true, "AddStore: The store name is taken");
             }
             else {
-                User user = subscribers.get(userID);
+
                 //Adds to the db
-                int storeID = data_controller.AddStore(storeName, user);
+                int storeID = data_controller.AddStore(storeName, userID);
 
                 Store newStore = new Store(storeID, storeName, userID);
+                User user = subscribers.get(userID);
 
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);

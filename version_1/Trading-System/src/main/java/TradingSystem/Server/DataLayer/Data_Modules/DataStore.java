@@ -2,6 +2,9 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity(name = "Stores")
@@ -29,14 +32,14 @@ public class DataStore {
 
     @Column(
             name = "storeName",
-            nullable = false,
+//            nullable = false,
             columnDefinition = "TEXT"
     )
     private String storeName;
 
     @Column(
-            name = "storeRate",
-            nullable = false
+            name = "storeRate"
+//            nullable = false
 //            columnDefinition = "TEXT"
     )
     private Double storeRate;
@@ -44,13 +47,21 @@ public class DataStore {
     @ManyToOne
     @JoinColumn(
             name = "founder",
-            nullable = false,
+//            nullable = false,
             referencedColumnName = "userID",
             foreignKey = @ForeignKey(
                     name = "subscriber_store_fk"
             )
     )
     private DataSubscriber founder;
+
+    @OneToMany(
+            mappedBy = "store",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataProduct> products = new ArrayList<>();
 
 
 //    @ElementCollection
@@ -60,10 +71,14 @@ public class DataStore {
 //    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
 //    private List<Integer> managersIDs;
 
-    public DataStore(String name, DataSubscriber founder){
+
+    public DataStore() {
+        // DO NOT DELETE
+    }
+
+    public DataStore(String name){
         this.storeName = name;
         this.storeRate = 5.0;
-        this.founder =founder;
     }
 
     public Integer getStoreID() {
@@ -96,5 +111,13 @@ public class DataStore {
 
     public void setFounder(DataSubscriber founder) {
         this.founder = founder;
+    }
+
+    public List<DataProduct> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<DataProduct> products) {
+        this.products = products;
     }
 }

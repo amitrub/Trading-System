@@ -42,7 +42,7 @@ public class DataProduct{
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private final String productName;
+    private String productName;
 
     @Column(
             name = "price",
@@ -63,20 +63,22 @@ public class DataProduct{
     )
     private int quantity;
 
-    //    @ManyToOne
+    @ManyToOne
     @JoinColumn(
-            table = "stores",
-            name = "storeID",
-            nullable = false
-//            referencedColumnName = "userID",
-//            foreignKey = @ForeignKey(
-//                    name = "store_founder_fk"
-//            )
+            name = "store",
+//            nullable = false,
+            referencedColumnName = "storeID",
+            foreignKey = @ForeignKey(
+                    name = "store_product_fk"
+            )
     )
-    private int storeID;
+    private DataStore store;
 
-    public DataProduct(int storeID, String productName, String category, double price, int quantity) {
-        this.storeID = storeID;
+    public DataProduct() {
+        // DO NOT DELETE
+    }
+
+    public DataProduct(String productName, String category, double price, int quantity) {
         this.productName = productName;
         this.price = price;
         this.category = category;
@@ -93,6 +95,10 @@ public class DataProduct{
 
     public String getProductName() {
         return productName;
+    }
+
+    public void setProductName(String productName) {
+        this.productName = productName;
     }
 
     public double getPrice() {
@@ -119,11 +125,11 @@ public class DataProduct{
         this.quantity = quantity;
     }
 
-    public int getStoreID() {
-        return storeID;
+    public DataStore getStore() {
+        return store;
     }
 
-    public void setStoreID(int storeID) {
-        this.storeID = storeID;
+    public void setStore(DataStore store) {
+        this.store = store;
     }
 }

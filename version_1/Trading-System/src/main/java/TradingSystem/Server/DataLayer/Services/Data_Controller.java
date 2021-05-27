@@ -34,9 +34,8 @@ public class Data_Controller {
     }
 
     //Req 2.1 add new store
-    public int AddStore(String storeName, User user){
-        DataSubscriber dataSubscriber = new DataSubscriber(user);
-        return storeService.AddStore(storeName, dataSubscriber);
+    public int AddStore(String storeName, int userID){
+        return storeService.AddStore(storeName, userID);
     }
 
     //Req 4.1 storeOwner can add products and edit them

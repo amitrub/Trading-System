@@ -55,9 +55,20 @@ public class DataSubscriber {
     )
     private List<DataStore> stores = new ArrayList<>();
 
+    public DataSubscriber() {
+        // DO NOT DELETE
+    }
+
     public DataSubscriber(String name, String password){
         this.name=name;
         this.password=password;
+    }
+
+    public DataSubscriber(Integer userID, String name, String password, List<DataStore> stores) {
+        this.userID = userID;
+        this.name = name;
+        this.password = password;
+        this.stores = stores;
     }
 
     public DataSubscriber(User user){
@@ -67,5 +78,27 @@ public class DataSubscriber {
 
     public Integer getUserID() {
         return userID;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public List<DataStore> getStores() {
+        return stores;
+    }
+
+    @Override
+    public String toString() {
+        return "DataSubscriber{" +
+                "userID=" + userID +
+                ", name='" + name + '\'' +
+                ", password='" + password + '\'' +
+                ", stores=" + stores +
+                '}';
     }
 }
