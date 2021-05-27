@@ -5,65 +5,90 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import javax.persistence.Embeddable;
-import javax.persistence.Entity;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
+import static javax.persistence.GenerationType.SEQUENCE;
 
-@Entity(name = "Product")
-@Embeddable
-public class DataProduct implements Serializable {
+@Entity(name = "Products")
+@Table(
+        name = "products"
+//        uniqueConstraints = {
+//                @UniqueConstraint(name = "store_name_unique", columnNames = "name")
+//        }
+)
+public class DataProduct{
 
-    private int storeID;
-    private String storeName;
     @Id
-    private final int productID;
+    @SequenceGenerator(
+            name = "PRODUCT_SEQUENCE",
+            sequenceName = "PRODUCT_SEQUENCE",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = SEQUENCE,
+            generator = "PRODUCT_SEQUENCE"
+    )
+    @Column(
+            name = "productID"
+    )
+    private Integer productID;
+
+    @Column(
+            name = "productName",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private final String productName;
-    private final double price;
-    private final String category;
+
+    @Column(
+            name = "price",
+            nullable = false
+//            columnDefinition = "TEXT"
+    )
+    private double price;
+
+    @Column(
+            name = "category",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String category;
+
+    @Column(
+            name = "quantity"
+    )
     private int quantity;
 
-    public DataProduct(){
-        this.storeID = -1;
-        this.storeName = "";
-        this.productID = -1;
-        this.productName = "";
-        this.price = -1;
-        this.category = "";
-    }
+    //    @ManyToOne
+    @JoinColumn(
+            table = "stores",
+            name = "storeID",
+            nullable = false
+//            referencedColumnName = "userID",
+//            foreignKey = @ForeignKey(
+//                    name = "store_founder_fk"
+//            )
+    )
+    private int storeID;
 
-    public DataProduct(int storeID, String storeName, int productID, String productName, double price, String category, int quantity) {
+    public DataProduct(int storeID, String productName, String category, double price, int quantity) {
         this.storeID = storeID;
-        this.storeName = storeName;
-        this.productID = productID;
         this.productName = productName;
         this.price = price;
         this.category = category;
         this.quantity = quantity;
     }
 
-    public int getStoreID() {
-        return storeID;
-    }
-
-    public void setStoreID(int storeID) {
-        this.storeID = storeID;
-    }
-
-    public String getStoreName() {
-        return storeName;
-    }
-
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
-    }
-
-    public int getProductID() {
+    public Integer getProductID() {
         return productID;
+    }
+
+    public void setProductID(Integer productID) {
+        this.productID = productID;
     }
 
     public String getProductName() {
@@ -74,8 +99,16 @@ public class DataProduct implements Serializable {
         return price;
     }
 
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
     public String getCategory() {
         return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
     }
 
     public int getQuantity() {
@@ -84,5 +117,13 @@ public class DataProduct implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public int getStoreID() {
+        return storeID;
+    }
+
+    public void setStoreID(int storeID) {
+        this.storeID = storeID;
     }
 }

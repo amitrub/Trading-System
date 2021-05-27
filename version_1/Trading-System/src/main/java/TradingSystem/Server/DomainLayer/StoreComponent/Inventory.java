@@ -16,7 +16,7 @@ public class Inventory {
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
-        Store.data_controller = data_controller;
+        Inventory.data_controller = data_controller;
     }
     private final Integer storeID;
     private final String storeName;
@@ -57,8 +57,10 @@ public class Inventory {
         System.out.println(data_controller);
         System.out.println("----------------------------------------------------------");
         if (!IsProductNameExist(productName)){
-            Integer productID=getNextProductID();
-            Product p=new Product(storeID, storeName, productID, productName, category, price, quantity);
+            //Adds to the db
+            Integer productID = data_controller.AddProductToStore(storeID, productName, category, price, quantity);
+
+            Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());

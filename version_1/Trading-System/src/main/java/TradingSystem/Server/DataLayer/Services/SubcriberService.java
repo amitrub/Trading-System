@@ -16,7 +16,7 @@ public class SubcriberService {
 
     public int AddSubscriber(String userName, String password){
         DataSubscriber subscriber = new DataSubscriber(userName,password);
-        DataSubscriber ret= subscriberRepository.saveAndFlush(subscriber);
+        DataSubscriber ret = subscriberRepository.saveAndFlush(subscriber);
         return ret.getUserID();
     }
 

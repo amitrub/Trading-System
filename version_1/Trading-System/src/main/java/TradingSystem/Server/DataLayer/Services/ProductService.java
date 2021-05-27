@@ -1,6 +1,7 @@
 package TradingSystem.Server.DataLayer.Services;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Repositories.ProductRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -21,8 +22,11 @@ public class ProductService {
 
     }
 
-    public DataProduct AddProduct(DataProduct product) {
-        return productRepository.saveAndFlush(product);
+    public int AddProductToStore(int storeID, String productName,
+                                         String category, Double price, int quantity) {
+        DataProduct product = new DataProduct(storeID, productName, category, price, quantity);
+        DataProduct dataProduct =  productRepository.saveAndFlush(product);
+        return dataProduct.getProductID();
     }
 
     //TODO make it transaction

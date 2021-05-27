@@ -15,7 +15,7 @@ public class Product {
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
-        Store.data_controller = data_controller;
+        Product.data_controller = data_controller;
     }
 
     private Integer storeID;

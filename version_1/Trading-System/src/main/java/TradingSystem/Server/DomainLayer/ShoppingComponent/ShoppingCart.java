@@ -23,7 +23,7 @@ public class ShoppingCart {
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
-        Store.data_controller = data_controller;
+        ShoppingCart.data_controller = data_controller;
     }
 //    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
 //    private final SupplySystem supplySystem = SupplySystem.getInstance();

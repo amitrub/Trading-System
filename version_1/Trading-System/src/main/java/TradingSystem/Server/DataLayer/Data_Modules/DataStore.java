@@ -4,11 +4,11 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 import javax.persistence.*;
 import static javax.persistence.GenerationType.SEQUENCE;
 
-@Entity(name = "Store")
+@Entity(name = "Stores")
 @Table(
         name = "stores",
         uniqueConstraints = {
-                @UniqueConstraint(name = "store_name_unique", columnNames = "name")
+                @UniqueConstraint(name = "store_name_unique", columnNames = "storeName")
         }
 )
 public class DataStore {
@@ -28,11 +28,11 @@ public class DataStore {
     private Integer storeID;
 
     @Column(
-            name = "name",
+            name = "storeName",
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private String name;
+    private String storeName;
 
     @Column(
             name = "storeRate",
@@ -41,17 +41,16 @@ public class DataStore {
     )
     private Double storeRate;
 
-//    @ManyToOne
+    @ManyToOne
     @JoinColumn(
-            table = "subscribers",
-            name = "founderID",
-            nullable = false
-//            referencedColumnName = "userID",
-//            foreignKey = @ForeignKey(
-//                    name = "store_founder_fk"
-//            )
+            name = "founder",
+            nullable = false,
+            referencedColumnName = "userID",
+            foreignKey = @ForeignKey(
+                    name = "subscriber_store_fk"
+            )
     )
-    private Integer founderID;
+    private DataSubscriber founder;
 
 
 //    @ElementCollection
@@ -61,10 +60,10 @@ public class DataStore {
 //    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
 //    private List<Integer> managersIDs;
 
-    public DataStore(String name, Integer founderID){
-        this.name = name;
+    public DataStore(String name, DataSubscriber founder){
+        this.storeName = name;
         this.storeRate = 5.0;
-        this.founderID=founderID;
+        this.founder =founder;
     }
 
     public Integer getStoreID() {
@@ -75,12 +74,12 @@ public class DataStore {
         this.storeID = storeID;
     }
 
-    public String getName() {
-        return name;
+    public String getStoreName() {
+        return storeName;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public Double getStoreRate() {
@@ -91,11 +90,11 @@ public class DataStore {
         this.storeRate = storeRate;
     }
 
-    public Integer getFounderID() {
-        return founderID;
+    public DataSubscriber getFounder() {
+        return founder;
     }
 
-    public void setFounderID(Integer founderID) {
-        this.founderID = founderID;
+    public void setFounder(DataSubscriber founder) {
+        this.founder = founder;
     }
 }

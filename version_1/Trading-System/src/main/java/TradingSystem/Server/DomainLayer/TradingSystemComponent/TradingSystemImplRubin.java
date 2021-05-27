@@ -7,6 +7,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Bid;
+import TradingSystem.Server.DomainLayer.StoreComponent.Inventory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
@@ -55,7 +56,10 @@ public class TradingSystemImplRubin implements TradingSystem {
 
     public TradingSystemImplRubin(Data_Controller data_controller) {
         this.data_controller = data_controller;
+        User.setData_controller(this.data_controller);
         Store.setData_controller(this.data_controller);
+        Product.setData_controller(this.data_controller);
+        Inventory.setData_controller(this.data_controller);
         this.validation = new Validation(this);
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
@@ -103,38 +107,38 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     public void Initialization() {
-        int userID = 1;
-        User defaultAdmin = this.subscribers.get(userID);
-        //TODO: to delete after
-        String connID = "479f239c-797c-4bdb-8175-980acaabf070";
-        this.connectedSubscribers.put(connID, userID);
-        AddStore(userID, connID, "store1");
-        AddStore(userID, connID, "Mar y juana");
-        AddStore(userID, connID, "Roee Hadas");
-        AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
-        AddProductToStore(userID, connID,1, "Sneakers2", "Shoes",50.0, 25);
-        AddProductToStore(userID, connID, 1,"Sneaker3", "bla" ,80.0, 25);
-        AddProductToStore(userID, connID, 2,"Sneakers24",  "Shoes", 80.0,25);
-        AddProductToStore(userID, connID, 2, "Sneak23", "bloo", 840.0, 25);
-        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes",80.0, 25);
-        AddProductToStore(userID, connID, 3,"Sneakers2", "Shoes", 50.0, 25);
-        AddProductToStore(userID, connID, 3,"Sneaker3", "bla" , 80.0,25);
-        AddProductToStore(userID, connID, 3,"Sneakers24",  "Shoes", 80.0,25);
-        AddProductToStore(userID, connID, 1, "Sneak23",  "bloo",840.0, 25);
-        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes", 80.0,25);
-        AddProductToStore(userID,connID,1,"Sneak","Shos", 52.0, 2 );
-        AddProductToStore(userID,connID,2,"Sneak","Shos", 52.0, 2 );
-
-
-
-        User user1 = new User("hadass", "1234");
-        userID = user1.getId();
-        this.subscribers.put(userID, user1);
-        connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
-        this.connectedSubscribers.put(connID, userID);
-
-        this.connectedSubscribers = new ConcurrentHashMap<>();
-        printUsers();
+//        int userID = 1;
+//        User defaultAdmin = this.subscribers.get(userID);
+//        //TODO: to delete after
+//        String connID = "479f239c-797c-4bdb-8175-980acaabf070";
+//        this.connectedSubscribers.put(connID, userID);
+//        AddStore(userID, connID, "store1");
+//        AddStore(userID, connID, "Mar y juana");
+//        AddStore(userID, connID, "Roee Hadas");
+//        AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
+//        AddProductToStore(userID, connID,1, "Sneakers2", "Shoes",50.0, 25);
+//        AddProductToStore(userID, connID, 1,"Sneaker3", "bla" ,80.0, 25);
+//        AddProductToStore(userID, connID, 2,"Sneakers24",  "Shoes", 80.0,25);
+//        AddProductToStore(userID, connID, 2, "Sneak23", "bloo", 840.0, 25);
+//        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes",80.0, 25);
+//        AddProductToStore(userID, connID, 3,"Sneakers2", "Shoes", 50.0, 25);
+//        AddProductToStore(userID, connID, 3,"Sneaker3", "bla" , 80.0,25);
+//        AddProductToStore(userID, connID, 3,"Sneakers24",  "Shoes", 80.0,25);
+//        AddProductToStore(userID, connID, 1, "Sneak23",  "bloo",840.0, 25);
+//        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes", 80.0,25);
+//        AddProductToStore(userID,connID,1,"Sneak","Shos", 52.0, 2 );
+//        AddProductToStore(userID,connID,2,"Sneak","Shos", 52.0, 2 );
+//
+//
+//
+//        User user1 = new User("hadass", "1234");
+//        userID = user1.getId();
+//        this.subscribers.put(userID, user1);
+//        connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
+//        this.connectedSubscribers.put(connID, userID);
+//
+//        this.connectedSubscribers = new ConcurrentHashMap<>();
+//        printUsers();
     }
 
     public String errMsgGenerator(String side, String className, String line, String msg) {
@@ -220,21 +224,6 @@ public class TradingSystemImplRubin implements TradingSystem {
                 canExit = true;
             }
         }
-        Store store1 = new Store("Mar y juana", 1);
-        store1.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
-        store1.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
-        store1.AddProductToStore("Sneakers24", 80.0, "Shoes", 25);
-        store1.AddProductToStore( "Sneak23", 840.0, "bloo", 25);
-        store1.AddProductToStore("Sneakers", 80.0, "Shoes", 25);
-        Store store2 = new Store("Roee Hadas", 1);
-        store2.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
-        store2.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
-        store2.AddProductToStore("Sneakers24", 80.0, "Shoes", 25);
-        store2.AddProductToStore( "Sneak23", 840.0, "bloo", 25);
-        store2.AddProductToStore("Sneakers", 80.0, "Shoes", 25);
-        this.stores.put(store1.getId(), store1);
-        this.stores.put(store2.getId(), store2);
-
         return uniqueID;
     }
 
@@ -723,11 +712,12 @@ public class TradingSystemImplRubin implements TradingSystem {
                 return new Response(true, "AddStore: The store name is taken");
             }
             else {
+                User user = subscribers.get(userID);
                 //Adds to the db
-                int storeID = data_controller.AddStore(storeName, userID);
+                int storeID = data_controller.AddStore(storeName, user);
 
                 Store newStore = new Store(storeID, storeName, userID);
-                User user = subscribers.get(userID);
+
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");

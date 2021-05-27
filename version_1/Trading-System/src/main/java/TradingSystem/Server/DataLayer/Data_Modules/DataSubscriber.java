@@ -4,10 +4,13 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.GenerationType.SEQUENCE;
 
 
-@Entity(name = "Subscriber")
+@Entity(name = "Subscribers")
 @Table(
         name = "subscribers",
         uniqueConstraints = {
@@ -44,9 +47,22 @@ public class DataSubscriber {
     )
     private String password;
 
+    @OneToMany(
+            mappedBy = "founder",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataStore> stores = new ArrayList<>();
+
     public DataSubscriber(String name, String password){
         this.name=name;
         this.password=password;
+    }
+
+    public DataSubscriber(User user){
+        this.name=user.getUserName();
+        this.password=user.getPassword();
     }
 
     public Integer getUserID() {
