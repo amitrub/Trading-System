@@ -1,5 +1,8 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -22,6 +25,9 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -29,10 +35,12 @@ import java.util.concurrent.locks.Lock;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
-public class TradingSystemImpl implements TradingSystem {
+@Service
+@Scope("singleton")
+public class TradingSystemImplRubin implements TradingSystem {
 
-//    @Autowired
-//    public Data_Controller data_controller;
+    @Autowired
+    public Data_Controller data_controller;
 
     public Validation validation;
 
@@ -45,28 +53,35 @@ public class TradingSystemImpl implements TradingSystem {
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
 
-
-    //    Singleton
-    private static TradingSystemImpl tradingSystem = null;
-
-    private TradingSystemImpl() {
+    public TradingSystemImplRubin(Data_Controller data_controller) {
+        this.data_controller = data_controller;
+        Store.setData_controller(this.data_controller);
+        this.validation = new Validation(this);
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
         this.guests = new ConcurrentHashMap<>();
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.systemManagerPermissions=new ConcurrentHashMap<>();
+        User.ClearSystem();
+        Store.ClearSystem();
+        String userName = "amit";
+        String password = "qweasd";
+        int userID = data_controller.AddSubscriber(userName, password);
+        User defaultAdmin = new User(userID,"amit", "qweasd");
+        this.systemAdmins.put(userID, userID);
+        this.subscribers.put(userID, defaultAdmin);
+        this.systemManagerPermissions.put(userID,new SystemManagerPermission());
+        printUsers();
        // data_controller=Data_Controller.getInstance();
     }
 
-    public static TradingSystemImpl getInstance() {
-        if (tradingSystem == null) {
-            tradingSystem = new TradingSystemImpl();
-//            tradingSystem.validation = new Validation();
-            tradingSystem.ClearSystem();
-          //  tradingSystem.Initialization();
-        }
-        return tradingSystem;
+    public ConcurrentHashMap<Integer, User> getSubscribers() {
+        return subscribers;
+    }
+
+    public ConcurrentHashMap<Integer, Store> getStores() {
+        return stores;
     }
 
     public void ClearSystem() {
@@ -178,14 +193,6 @@ public class TradingSystemImpl implements TradingSystem {
         System.out.println("-----------------------------------------------");
     }
 
-    public ConcurrentHashMap<Integer, User> getSubscribers() {
-        return subscribers;
-    }
-
-    public ConcurrentHashMap<Integer, Store> getStores() {
-        return stores;
-    }
-
     /**
      * @requirement 2.1
      *
@@ -196,7 +203,6 @@ public class TradingSystemImpl implements TradingSystem {
      * }
      */
     public Response ConnectSystem() {
-
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
         Response res = new Response(false, "Connect system was successful");
@@ -273,13 +279,11 @@ public class TradingSystemImpl implements TradingSystem {
             if (validation.IsUserNameExist(userName)) { 
                 return new Response(true, "Register Error: user name is taken");
             }
-//            if(!validation.VerifyPassword(userName, password)){
-//                return new Response(true, "Register Error: password is invalid");
-//            }
-            User newUser = new User(userName, password);
-            subscribers.put(newUser.getId(), newUser);
             //Adds to the db
-            //subscriberService.Addsubscriber(new DummySubscriber(newUser.getId(),newUser.getUserName()));
+            int userID = data_controller.AddSubscriber(userName, password);
+
+            User newUser = new User(userID, userName, password);
+            subscribers.put(newUser.getId(), newUser);
             Response res = new Response(false,"Register: Registration of " + userName + " was successful");
             res.AddConnID(connID);
             res.AddUserID(newUser.getId());
@@ -315,6 +319,7 @@ public class TradingSystemImpl implements TradingSystem {
      * }
      */
     public Response Login(String guestConnID, String userName, String password) {
+        System.out.println("--------------Login--------------");
         Response response = validation.ValidPassword(userName, password);
         if (response.getIsErr())
             return response;
@@ -334,8 +339,8 @@ public class TradingSystemImpl implements TradingSystem {
 
     //Observer
     private void sendAlert(User user, Response res){
-        Publisher publisher = new Publisher(tradingSystem);
-        user.setPublisher(publisher);
+//        Publisher publisher = new Publisher();
+//        user.setPublisher(publisher);
         user.update(res);
     }
 
@@ -355,10 +360,12 @@ public class TradingSystemImpl implements TradingSystem {
     @Override
     public Response LoginPublisher(String guestConnID, String userName, String password, Publisher publisher) {
         Response res = Login(guestConnID,userName, password);
+        System.out.println(!res.getIsErr());
         if(!res.getIsErr()){
             User myUser = subscribers.get(res.returnUserID());
             myUser.setPublisher(publisher);
             List<String> notConnectedMessages = myUser.updateAfterLogin();
+//            List<String> notConnectedMessages = new ArrayList<>();
             res.AddPair("messages", notConnectedMessages);
             System.out.println(res.getReturnObject().get("messages"));
         }
@@ -595,7 +602,7 @@ public class TradingSystemImpl implements TradingSystem {
             if(!res.getIsErr())
             {
                 for (ShoppingBag bag:shoppingBags){
-                    Store store = tradingSystem.stores.get(bag.getStoreID());
+                    Store store = this.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
                     String productsList = makeProductsList(store.getId(), productsID);
                     Response resAlert = new Response(false, "The guest " + name +
@@ -634,7 +641,7 @@ public class TradingSystemImpl implements TradingSystem {
             if(!res.getIsErr())
             {
                 for (ShoppingBag bag:shoppingBags){
-                    Store store = tradingSystem.stores.get(bag.getStoreID());
+                    Store store = this.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
                     String productsList = makeProductsList(store.getId(), productsID);
                     Response resAlert = new Response(false, "The client " + user.getUserName() +
@@ -716,7 +723,10 @@ public class TradingSystemImpl implements TradingSystem {
                 return new Response(true, "AddStore: The store name is taken");
             }
             else {
-                Store newStore = new Store(storeName, userID);
+                //Adds to the db
+                int storeID = data_controller.AddStore(storeName, userID);
+
+                Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);

@@ -1,13 +1,9 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.messaging.handler.annotation.MessageMapping;
-import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,8 +15,14 @@ import java.util.Map;
 public class Publisher {
     @Autowired
     public SimpMessagingTemplate template;
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    @Autowired
+    private final TradingSystem tradingSystem;
     private static final LoggerController loggerController=LoggerController.getInstance();
+
+    public Publisher(TradingSystem tradingSystem) {
+        this.tradingSystem = tradingSystem;
+    }
+
 
     /**
      * @requirement 2.4
@@ -56,6 +58,7 @@ public class Publisher {
         Response res = this.tradingSystem.LoginPublisher(connID, userName, password, this);
         System.out.println("33333\n" + res);
         tradingSystem.printUsers();
+        System.out.println(res);
         WriteToLogger(res);
         return res;
     }

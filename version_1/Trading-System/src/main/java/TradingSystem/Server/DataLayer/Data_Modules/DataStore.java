@@ -1,124 +1,101 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import org.json.JSONArray;
-import org.json.JSONObject;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import static javax.persistence.GenerationType.SEQUENCE;
 
-import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
-@Entity(name = "store_data")
-@SequenceGenerator(name="STORE_SEQUENCE_GENERATOR", sequenceName="STORE", initialValue=1, allocationSize=1)
+@Entity(name = "Store")
+@Table(
+        name = "stores",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "store_name_unique", columnNames = "name")
+        }
+)
 public class DataStore {
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="STORE_SEQUENCE_GENERATOR")
-    private Integer id;
+    @SequenceGenerator(
+            name = "STORE_SEQUENCE",
+            sequenceName = "STORE_SEQUENCE",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = SEQUENCE,
+            generator = "STORE_SEQUENCE"
+    )
+    @Column(
+            name = "storeID"
+    )
+    private Integer storeID;
+
+    @Column(
+            name = "name",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
     private String name;
+
+    @Column(
+            name = "storeRate",
+            nullable = false
+//            columnDefinition = "TEXT"
+    )
     private Double storeRate;
-    @JoinColumn(table = "dummy_user", referencedColumnName = "userid")
+
+//    @ManyToOne
+    @JoinColumn(
+            table = "subscribers",
+            name = "founderID",
+            nullable = false
+//            referencedColumnName = "userID",
+//            foreignKey = @ForeignKey(
+//                    name = "store_founder_fk"
+//            )
+    )
     private Integer founderID;
-    @ElementCollection
-    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
-    private List<Integer> ownersIDs;
-    @ElementCollection
-    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
-    private List<Integer> managersIDs;
-
-    public DataStore(){
-    }
 
 
-    public DataStore(String name, Double storeRate, Integer founderID) {
+//    @ElementCollection
+//    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
+//    private List<Integer> ownersIDs;
+//    @ElementCollection
+//    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
+//    private List<Integer> managersIDs;
+
+    public DataStore(String name, Integer founderID){
         this.name = name;
-        this.storeRate = storeRate;
+        this.storeRate = 5.0;
         this.founderID=founderID;
-//        ownersIDs= new ArrayList<>();
-//        managersIDs= new ArrayList<>();
     }
 
-    public DataStore(String name) {
-        this.name = name;
-        this.storeRate = -1.0;
+    public Integer getStoreID() {
+        return storeID;
     }
 
-    public DataStore(Store store) {
-        this.id = store.getId();
-        this.name = store.getName();
-       // this.storeRate = store.getRate();
-    }
-
-    public DataStore(Map<String, Object> map) {
-        this.id = (Integer) map.get("id");
-        this.name = (String) map.get("name");
-        try {
-            this.storeRate = (Double) map.get("storeRate");
-        }
-        catch (Exception e){
-            this.storeRate = new Double((Integer) map.get("storeRate"));
-        }
-    }
-
-    public Integer getId() {
-        return id;
+    public void setStoreID(Integer storeID) {
+        this.storeID = storeID;
     }
 
     public String getName() {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Double getStoreRate() {
         return storeRate;
     }
 
-    public static ArrayList<TradingSystem.Server.ServiceLayer.DummyObject.DummyStore> makeDummyStoreFromJSON(JSONArray jsonArray) {
-        ArrayList dummyStoreArr = new ArrayList();
-        try {
-            for (int i=0;i<jsonArray.length();i++) {
-                JSONObject jsonResponse = jsonArray.getJSONObject(i);
-                int id = jsonResponse.getInt("id");
-                String name = jsonResponse.getString("name");
-                double storeRate = jsonResponse.getDouble("storeRate");
-                TradingSystem.Server.ServiceLayer.DummyObject.DummyStore dummyStore = new TradingSystem.Server.ServiceLayer.DummyObject.DummyStore(id, name, storeRate);
-                dummyStoreArr.add(dummyStore);
-            }
-
-            return dummyStoreArr;
-        } catch (Exception e) {
-            System.out.println(errMsgGenerator("Service", "DummyStore", "43", "error in making dummyStore from JSON object"));
-        }
-        return dummyStoreArr;
-    }
-
-    @Override
-    public String toString() {
-//        return "Store {" +
-//                "id=" + id +
-//                ", name='" + name + '\'' +
-//                ", storeRate=" + storeRate +
-//                '}';
-        JSONObject JO = new JSONObject();
-        try {
-            JO.put("id", id);
-            JO.put("name", name);
-            JO.put("storeRate", storeRate);
-        } catch (Exception e) {
-            System.out.println("dummyStore toString error");
-        }
-        return JO.toString();
+    public void setStoreRate(Double storeRate) {
+        this.storeRate = storeRate;
     }
 
     public Integer getFounderID() {
         return founderID;
     }
 
-//    public List<Integer> getOwnersIDs() {
-//        return ownersIDs;
-//    }
-//
-//    public List<Integer> getManagersIDs() {
-//        return managersIDs;
-//    }
+    public void setFounderID(Integer founderID) {
+        this.founderID = founderID;
+    }
 }

@@ -1,20 +1,48 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
+import TradingSystem.Server.DomainLayer.UserComponent.User;
+
 import javax.persistence.*;
 
+import static javax.persistence.GenerationType.SEQUENCE;
+
+
 @Entity(name = "Subscriber")
-@SequenceGenerator(name="USER_SEQUENCE_GENERATOR", sequenceName="USER_SEQUENCE_GENERATOR", initialValue=1, allocationSize=1)
+@Table(
+        name = "subscribers",
+        uniqueConstraints = {
+                @UniqueConstraint(name = "subscriber_name_unique", columnNames = "name")
+        }
+)
 public class DataSubscriber {
-
     @Id
-    @GeneratedValue(strategy= GenerationType.SEQUENCE, generator="USER_SEQUENCE_GENERATOR")
+    @SequenceGenerator(
+            name = "USER_SEQUENCE",
+            sequenceName = "USER_SEQUENCE",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = SEQUENCE,
+            generator = "USER_SEQUENCE"
+    )
+    @Column(
+            name = "userID"
+    )
     private Integer userID;
-    String name;
-    String password;
 
-    public DataSubscriber(){
+    @Column(
+            name = "name",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String name;
 
-    }
+    @Column(
+            name = "password",
+            nullable = false,
+            columnDefinition = "TEXT"
+    )
+    private String password;
 
     public DataSubscriber(String name, String password){
         this.name=name;

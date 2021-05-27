@@ -3,23 +3,27 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Collection;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class Validation {
-    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
+//    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
 
-    public Validation() {
+
+    public final TradingSystem tradingSystemImpl;
+    
+    public Validation(TradingSystem tradingSystemImpl) {
+        this.tradingSystemImpl = tradingSystemImpl;
     }
 
     //User functions
     //return true if user name is exist in the system
     public boolean IsUserNameExist(String userName) {
-        Set<Integer> userSet = tradingSystemImpl.subscribers.keySet();
+        Set<Integer> userSet = tradingSystemImpl.getSubscribers().keySet();
         for (Integer id : userSet) {
-            User user = tradingSystemImpl.subscribers.get(id);
+            User user = tradingSystemImpl.getSubscribers().get(id);
             if (userName.equals(user.getUserName()))
                 return true;
         }
@@ -28,9 +32,9 @@ public class Validation {
     //if valid return Response(userId, "", false, "")
     //if not valid return Response(isErr: true, "Error Message")
     public Response ValidPassword(String userName, String password) {
-        Set<Integer> userSet = tradingSystemImpl.subscribers.keySet();
+        Set<Integer> userSet = tradingSystemImpl.getSubscribers().keySet();
         for (Integer id : userSet) {
-            User user = tradingSystemImpl.subscribers.get(id);
+            User user = tradingSystemImpl.getSubscribers().get(id);
             if (userName.equals(user.getUserName())) {
                 if (password.equals(user.getPassword())){
                     Response res = new Response();
@@ -51,9 +55,9 @@ public class Validation {
 
     //Store functions
     public synchronized boolean IsStoreNameExist(String storeName) {
-        Set<Integer> storeSet = tradingSystemImpl.stores.keySet();
+        Set<Integer> storeSet = tradingSystemImpl.getStores().keySet();
         for (Integer id : storeSet) {
-            Store store = tradingSystemImpl.stores.get(id);
+            Store store = tradingSystemImpl.getStores().get(id);
             if (storeName.equals(store.getName()))
                 return true;
         }
@@ -62,12 +66,12 @@ public class Validation {
 
     //Shopping Cart functions
     public boolean checkBuyingPolicy(Integer userId, Integer storeID, ConcurrentHashMap<Integer, Integer> productsInTheBug) {
-        return tradingSystemImpl.stores.get(storeID).checkBuyingPolicy(userId, productsInTheBug);
+        return tradingSystemImpl.getStores().get(storeID).checkBuyingPolicy(userId, productsInTheBug);
     }
 
     public boolean checkProductsExistInTheStore(Integer storeID, Integer productID,  Integer quantity) {
-        if (tradingSystemImpl.stores.containsKey(storeID))
-            return tradingSystemImpl.stores.get(storeID).checkProductsExistInTheStore(productID,quantity);
+        if (tradingSystemImpl.getStores().containsKey(storeID))
+            return tradingSystemImpl.getStores().get(storeID).checkProductsExistInTheStore(productID,quantity);
         else
             return false;
     }

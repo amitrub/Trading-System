@@ -1,6 +1,8 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,6 +10,13 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Product {
+
+    @Autowired
+    public static Data_Controller data_controller;
+
+    public static void setData_controller(Data_Controller data_controller) {
+        Store.data_controller = data_controller;
+    }
 
     private Integer storeID;
     private String storeName;

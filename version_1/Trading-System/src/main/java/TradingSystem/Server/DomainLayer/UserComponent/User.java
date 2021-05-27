@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public  class User implements Observer {
+public class User implements Observer {
 
 
     private List<Object> messages = new ArrayList<>();
@@ -139,6 +139,7 @@ public  class User implements Observer {
         nextUserID++;
         return nextUserID;
     }
+
 
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;

@@ -26,8 +26,8 @@ public class Data_Controller {
     }
 
     //Req 1.2 Register
-    public int AddSubscriber(DataSubscriber dataSubscriber){
-        return subscriberService.AddSubscriber(dataSubscriber);
+    public int AddSubscriber(String userName, String password){
+        return subscriberService.AddSubscriber(userName, password);
     }
 
     //Req 1.2 get information on store
@@ -58,8 +58,8 @@ public class Data_Controller {
     //TODO implement 1.9 purchase by discount
 
     //Req 2.1 add new store
-    public int AddStore(DataStore store){
-        return storeService.Addstore(store);
+    public int AddStore(String storeName, int userID){
+        return storeService.AddStore(storeName, userID);
     }
 
     //TODO implement 2.2 write comment

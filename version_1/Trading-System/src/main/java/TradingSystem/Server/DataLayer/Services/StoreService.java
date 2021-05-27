@@ -16,9 +16,10 @@ public class StoreService {
     @Autowired
     StoreRepository storeRepository;
 
-    public int Addstore(DataStore store){
+    public int AddStore(String storeName, int userID){
+        DataStore store = new DataStore(storeName, userID);
         DataStore dataStore=storeRepository.saveAndFlush(store);
-        return dataStore.getId();
+        return dataStore.getStoreID();
     }
 
     public List<DataStore> getAllStores(){

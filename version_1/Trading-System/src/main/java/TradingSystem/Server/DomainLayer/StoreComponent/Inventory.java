@@ -1,7 +1,9 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -10,6 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Inventory {
 
+    @Autowired
+    public static Data_Controller data_controller;
+
+    public static void setData_controller(Data_Controller data_controller) {
+        Store.data_controller = data_controller;
+    }
     private final Integer storeID;
     private final String storeName;
     private int nextProductID = 0;
@@ -45,6 +53,9 @@ public class Inventory {
     }
 
     public Response addProduct(String productName, String category, Double price, int quantity){
+        System.out.println("-----------------------addProduct-------------------------");
+        System.out.println(data_controller);
+        System.out.println("----------------------------------------------------------");
         if (!IsProductNameExist(productName)){
             Integer productID=getNextProductID();
             Product p=new Product(storeID, storeName, productID, productName, category, price, quantity);
