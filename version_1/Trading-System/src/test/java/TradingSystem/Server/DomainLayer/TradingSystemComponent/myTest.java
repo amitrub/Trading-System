@@ -12,7 +12,6 @@ public class myTest {
     @Autowired
     TradingSystem tradingSystem;
 
-
     @BeforeAll
     public static void init(@Autowired TradingSystem tradingSystem){
         System.out.println("+++++++++++++++++++++++++++++++");

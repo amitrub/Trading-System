@@ -15,6 +15,7 @@ import java.util.Map;
 public class Publisher {
     @Autowired
     public SimpMessagingTemplate template;
+
     @Autowired
     private final TradingSystem tradingSystem;
     private static final LoggerController loggerController=LoggerController.getInstance();
