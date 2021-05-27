@@ -60,6 +60,8 @@ public class TradingSystemImplRubin implements TradingSystem {
         Store.setData_controller(this.data_controller);
         Product.setData_controller(this.data_controller);
         Inventory.setData_controller(this.data_controller);
+        ShoppingBag.setData_controller(this.data_controller);
+        ShoppingCart.setData_controller(this.data_controller);
         this.validation = new Validation(this);
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
