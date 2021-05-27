@@ -54,6 +54,21 @@ public class DataSubscriber {
             fetch = FetchType.LAZY
     )
     private List<DataStore> stores = new ArrayList<>();
+    @OneToMany(
+            mappedBy = "subscriber",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataShoppingBag> shoppingBagsinHistory= new ArrayList<>();
+    @OneToMany(
+            mappedBy = "subscriber",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataShoppingBag> shoppingBagsinCart= new ArrayList<>();
+
 
     public DataSubscriber() {
         // DO NOT DELETE
@@ -69,6 +84,8 @@ public class DataSubscriber {
         this.name = name;
         this.password = password;
         this.stores = stores;
+//        this.shoppingBagsinCart=shoppingBagsinCart;
+//        this.shoppingBagsinHistory=shoppingBagsinHistory;
     }
 
     public DataSubscriber(User user){
@@ -101,4 +118,12 @@ public class DataSubscriber {
                 ", stores=" + stores +
                 '}';
     }
+
+//    public List<DataShoppingBag> getShoppingBagsinCart() {
+//        return shoppingBagsinCart;
+//    }
+//
+//    public List<DataShoppingBag> getShoppingBagsinHistory() {
+//        return shoppingBagsinHistory;
+//    }
 }

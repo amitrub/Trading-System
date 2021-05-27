@@ -1,16 +1,7 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import javax.persistence.*;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Map;
 
-import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity(name = "Products")
@@ -73,6 +64,16 @@ public class DataProduct{
             )
     )
     private DataStore store;
+    @ManyToOne
+    @JoinColumn(
+            name = "shopping_bag",
+//            nullable = false,
+            referencedColumnName = "shoppingbagid",
+            foreignKey = @ForeignKey(
+                    name = "shopping_bag_id_FK"
+            )
+    )
+    private DataShoppingBag shopping_bag;
 
     public DataProduct() {
         // DO NOT DELETE
