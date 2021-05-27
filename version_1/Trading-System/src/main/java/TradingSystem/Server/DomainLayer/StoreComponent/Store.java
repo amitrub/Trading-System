@@ -576,7 +576,4 @@ public class Store extends Observable {
         return Bids;
     }
 
-    public Double getRate() {
-        return rate;
-    }
 }
