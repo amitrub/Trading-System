@@ -44,7 +44,7 @@ public class Store extends Observable {
     private ConcurrentLinkedDeque<Bid> Bids = new ConcurrentLinkedDeque<Bid>();;
 
 
-  //  private Double rate;
+    private Double rate;
     //userID_rating
    // private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
 
@@ -64,7 +64,7 @@ public class Store extends Observable {
         this.ownersIDs.add(founderID);
         this.discountPolicy = discountPolicy;
         this.buyingPolicy = buyingPolicy;
-       // this.rate =5.0; //todo- add rating!
+        this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
     }
 
@@ -73,7 +73,7 @@ public class Store extends Observable {
         this.name = name;
         this.founderID = founderID;
         this.ownersIDs.add(founderID);
-      //  this.rate =5.0; //todo- add rating!
+        this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
@@ -245,11 +245,11 @@ public class Store extends Observable {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-
+*/
     public Double getRate() {
         return rate;
     }
-*/
+
     public boolean checkProductsExistInTheStore(Integer productID, Integer quantity){
         return this.inventory.checkProductsExistInTheStore(productID,quantity);
     }

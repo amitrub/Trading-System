@@ -5,6 +5,10 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -738,6 +742,87 @@ public class Client implements Client_Interface {
         System.out.println(ANSI_YELLOW + "(ShowAllUsersHistory) response: " + response.returnHistoryList() + ANSI_RESET);
         return response;
     }
+    /**
+     * requirement 6.6
+     * @return Double
+     */
+    @Override
+    public Response AdminDailyIncomeForSystem() {
+        String path = String.format("%s/admin_daily_income_for_system", this.userID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(AdminDailyIncomeForSystem) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
+    }
 
-    
+    /**
+     * requirement 4.12
+     * @return Double
+     */
+    @Override
+    public Response OwnerDailyIncomeForStore(int storeID) {
+        String path = String.format("%s/store/%s/store_history_owner", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(OwnerDailyIncomeForStore) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * requirement 8.3.1
+     * @return Response
+     */
+    @Override
+    public Response submissionBidding(int storeID, int productID, int quantity, Double productPrice) {
+        String path = String.format("%s/submission_bidding", this.userID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("storeID", storeID);
+            jsonPost.put("productID", productID);
+            jsonPost.put("quantity", productPrice);
+            jsonPost.put("productPrice", quantity);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: submissionBidding, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(submissionBidding) response: " + response + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * requirement 8.3.2
+     * @return Response
+     */
+    @Override
+    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, Double productPrice) {
+        String path = String.format("%s/response_for_submission_bidding", this.userID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("userWhoOffer", userWhoOffer);
+            jsonPost.put("storeID", storeID);
+            jsonPost.put("productID", productID);
+            jsonPost.put("quantity", quantity);
+            jsonPost.put("productPrice", productPrice);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: ResponseForSubmissionBidding, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(editProduct) ResponseForSubmissionBidding: " + response + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * requirement 8.3- None
+     * @return Response
+     */
+    @Override
+    public Response ShowBids(int storeID) {
+        String path = String.format("%s/store/%s/show_bids", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
 }

@@ -201,6 +201,52 @@ public class SubscriberTests {
     }
     //endregion
 
+    //region requirement 3.8: Subscriber Bidding
+    @Test
+    void subscriberBidding() {
+        Response r1 = client.submissionBidding(-1, 1, 1, 3.0);
+        assertTrue(r1.getIsErr());
+        System.out.println(r1.getMessage());
+
+        Response r2 = client.submissionBidding( -1, 1, 1, 1.1);
+        assertTrue(r2.getIsErr());
+        System.out.println(r2.getMessage());
+
+
+        Response r3 = client.submissionBidding( -1, 1, 1, 1.1);
+        assertTrue(r3.getIsErr());
+        System.out.println(r3.getMessage());
+
+        client.openStore("deme");
+        DummyStore store=client.showAllStores().getStores().get(0);
+        client.addProduct(store.getId(), "1", "1", 10, 20);
+        client.addProduct(store.getId(), "2", "1", 7, 20);
+        client.addProductToCart(store.getId(), 1, 3);
+      /*
+        Response r4 = tradingSystemImpl.subscriberBidding(NofetID, NconnID, NofetStore, 1, 1.1, 1);
+        assertTrue(r4.getIsErr());
+        System.out.println(r4.getMessage());
+
+        Response r5 = tradingSystemImpl.subscriberBidding(NofetID, NconnID, NofetStore, 2, -1, 1);
+        assertTrue(r5.getIsErr());
+        System.out.println(r5.getMessage());
+
+        Response r6 = tradingSystemImpl.subscriberBidding(NofetID, NconnID, NofetStore, 2, 70, 1);
+        assertTrue(r6.getIsErr());
+        System.out.println(r6.getMessage());
+
+        Response r7 = tradingSystemImpl.subscriberBidding(NofetID, NconnID, NofetStore, 2, 3, -1);
+        assertTrue(r7.getIsErr());
+        System.out.println(r7.getMessage());
+
+        Response r8 = tradingSystemImpl.subscriberBidding(NofetID, NconnID, NofetStore, 2, 3, 2);
+        assertFalse(r8.getIsErr());
+        Response r9 = tradingSystemImpl.subscriberBidding(NofetID, NconnID, NofetStore, 2, 3, 2);
+        assertTrue(r9.getIsErr());
+        System.out.println(r8.getMessage());*/
+        
+    }
+    //endregion
 
 
 }

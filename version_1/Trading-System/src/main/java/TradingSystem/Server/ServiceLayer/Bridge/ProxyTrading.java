@@ -565,4 +565,25 @@ public class ProxyTrading implements TradingSystem {
             return real.getDailyIncomeForSystem(userID,connID);
         return null;
     }
+
+    @Override
+    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity) {
+        if(real!=null)
+            return real.subscriberBidding(userID,connID,storeID,productID,productPrice,quantity);
+        return null;
+    }
+
+    @Override
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userBiddingPrice, int quantity) {
+        if(real!=null)
+            return real.ResponseForSubmissionBidding(userID, connID, storeID, productID, productPrice, userBiddingPrice, quantity);
+        return null;
+    }
+
+    @Override
+    public Response ShowBids(int userID, String connID, int storeID) {
+        if(real!=null)
+            return real.ShowBids(userID, connID, storeID);
+        return null;
+    }
 }
