@@ -223,6 +223,7 @@ public class SubscriberServiceHttp {
      *  "storeID": Integer
      *  "productID": Integer
      *  "productPrice": Integer
+     *   "quantity" : Integer
      * }
      * @return Response{
      *  "isErr: boolean
@@ -233,11 +234,12 @@ public class SubscriberServiceHttp {
      */
     @PostMapping("{userID}/submission_bidding")
     public Response submissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID,productID;
+        int storeID,productID, quantity;
         Double productPrice;
         try {
             storeID = (int) obj.get("storeID");
             productID = (int) obj.get("productID");
+            quantity = (int) obj.get("quantity");
             productPrice = (Double) obj.get("productPrice");
         }
         catch (Exception e){
@@ -247,7 +249,7 @@ public class SubscriberServiceHttp {
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.subscriberBidding(userID,connID,storeID,productID,productPrice);
+        Response res = tradingSystem.subscriberBidding(userID,connID,storeID,productID,productPrice, quantity);
         res.AddConnID(connID);
         WriteToLogger(res);
         return res;

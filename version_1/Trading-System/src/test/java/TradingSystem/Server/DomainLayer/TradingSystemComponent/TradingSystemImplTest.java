@@ -1215,15 +1215,15 @@ class TradingSystemImplTest {
     }
     //endregion
 
-    //region Load tests
+    //region Load and Timer tests
 
     // requirement 2.3
     @Test
-    void register_20_Clients(){
+    void register_100_Clients(){
         ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
 
         List<RegisterTaskUnitTests> taskList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 100; i++) {
             RegisterTaskUnitTests task = new RegisterTaskUnitTests("Client-" + i);
             taskList.add(task);
         }
@@ -1254,15 +1254,15 @@ class TradingSystemImplTest {
     }
 
     @Test
-    void purchase_20_Clients() {
+    void purchase_100_Clients() {
         //Prepare
-        tradingSystemImpl.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,50);
+        tradingSystemImpl.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,200);
         Integer newProduct = tradingSystemImpl.stores.get(ElinorStore).getProductID("computer");
-        //Create two clients with task to buy this product
+        //Create 20 clients with task to buy this product
         ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
 
         List<PurchaseTaskUnitTests> taskList = new ArrayList<>();
-        for (int i = 0; i < 20; i++) {
+        for (int i = 0; i < 100; i++) {
             PurchaseTaskUnitTests task = new PurchaseTaskUnitTests("Client-" + i, ElinorStore, newProduct,
                     1,"123456789", "4", "2022" ,"123" ,"123456789" ,"Rager 101","Beer Sheva","Israel","8458527");
             taskList.add(task);
@@ -1279,7 +1279,7 @@ class TradingSystemImplTest {
         executor.shutdown();
 
         System.out.println("\n========Printing the results======");
-        boolean[] isErrs = new boolean[20];
+        boolean[] isErrs = new boolean[100];
         for (int i = 0; i < resultList.size(); i++) {
             Future<ResultUnitTests> future = resultList.get(i);
             try {
@@ -1292,11 +1292,11 @@ class TradingSystemImplTest {
             }
         }
         //Check that all of the clients succeed.
-        for(int i = 0; i < 20; i++){
+        for(int i = 0; i < 100; i++){
             assertFalse(isErrs[i]);
         }
         Integer newQuantity = tradingSystemImpl.stores.get(ElinorStore).getQuantity(newProduct);
-        assertTrue(newQuantity == 30);
+        assertTrue(newQuantity == 100);
     }
 
     @Test
@@ -1317,6 +1317,10 @@ class TradingSystemImplTest {
             assertFalse(res.getIsErr());
         }
 
+    }
+
+    @Test
+    void TimerTest() {
     }
 
     //endregion
