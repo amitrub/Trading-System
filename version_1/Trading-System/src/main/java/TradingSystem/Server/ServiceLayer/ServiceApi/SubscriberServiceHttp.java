@@ -1,8 +1,6 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
-import TradingSystem.Server.DataLayer.Services.StoreService;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,10 +13,15 @@ import java.util.Map;
 @RequestMapping(path = "api/subscriber")
 @CrossOrigin("*")
 public class SubscriberServiceHttp {
-    @Autowired
-    StoreService storeService;
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+
     private static final LoggerController loggerController=LoggerController.getInstance();
+
+    @Autowired
+    private final TradingSystem tradingSystem;
+
+    public SubscriberServiceHttp(TradingSystem tradingSystem) {
+        this.tradingSystem = tradingSystem;
+    }
 
 
     @GetMapping("{userID}/get_all_subscribers")

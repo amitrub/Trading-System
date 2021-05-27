@@ -2,9 +2,9 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,8 +13,14 @@ import java.util.Map;
 @RequestMapping(path = "api")
 @CrossOrigin("*")
 public class GuestServiceHttp {
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
+
+    @Autowired
+    public final TradingSystem tradingSystem;
+
+    public GuestServiceHttp(TradingSystem tradingSystem) {
+        this.tradingSystem = tradingSystem;
+    }
 
 
     @GetMapping("clear_system")

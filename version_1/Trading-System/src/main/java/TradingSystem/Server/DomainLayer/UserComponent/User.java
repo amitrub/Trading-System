@@ -2,6 +2,8 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -9,13 +11,14 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public  class User implements Observer {
+public class User implements Observer {
 
 
     private List<Object> messages = new ArrayList<>();
@@ -40,6 +43,13 @@ public  class User implements Observer {
         RequestBidding,
         EditDiscountPolicy,
         EditBuyingPolicy
+    }
+
+    @Autowired
+    public static Data_Controller data_controller;
+
+    public static void setData_controller(Data_Controller data_controller) {
+        Store.data_controller = data_controller;
     }
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
@@ -139,6 +149,7 @@ public  class User implements Observer {
         nextUserID++;
         return nextUserID;
     }
+
 
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;

@@ -15,6 +15,8 @@ import java.util.concurrent.locks.Lock;
 
 public interface TradingSystem {
 
+    public ConcurrentHashMap<Integer, User> getSubscribers() ;
+    public ConcurrentHashMap<Integer, Store> getStores() ;
 
     public void ClearSystem();
 
@@ -45,6 +47,7 @@ public interface TradingSystem {
     public Response ShowShoppingCart(String connID);
     public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip);
     public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip);
+    public Integer getUserID(String name);
     public String getUserConnID(Integer userID);
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest);
     public Response SearchProduct(String name, String category, int minprice, int maxprice);

@@ -2,9 +2,12 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 import java.util.ArrayList;
@@ -17,6 +20,13 @@ import java.util.concurrent.locks.Lock;
 public class ShoppingBag {
 
     private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
+
+    @Autowired
+    public static Data_Controller data_controller;
+
+    public static void setData_controller(Data_Controller data_controller) {
+        ShoppingBag.data_controller = data_controller;
+    }
 
     private Integer userID;
     private Integer storeID;
