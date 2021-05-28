@@ -43,7 +43,8 @@ public class SupplySystem implements ExternalServices {
                     .header("cache-control", "no-cache")
                     .header("postman-token", "66ab157e-327a-05b6-1df2-a10698d4c6da")
                     .body(String.format( "------WebKitFormBoundary7MA4YWxkTrZu0gW\r\nContent-Disposition: form-data; name=\"action_type\"\r\n\r\n%s\r\n------WebKitFormBoundary7MA4YWxkTrZu0gW--", action_type))
-                    .asString();
+                    .asString()
+            ;
         } catch (UnirestException e) {
             e.printStackTrace();
         }
