@@ -6,7 +6,7 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
-public class Cheaper implements Decission {
+public class Cheaper implements Decision {
 
     TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
 

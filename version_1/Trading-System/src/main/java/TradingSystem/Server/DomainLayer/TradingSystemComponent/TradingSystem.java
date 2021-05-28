@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
@@ -16,6 +15,8 @@ import java.util.concurrent.locks.Lock;
 
 public interface TradingSystem {
 
+    public ConcurrentHashMap<Integer, User> getSubscribers() ;
+    public ConcurrentHashMap<Integer, Store> getStores() ;
 
     public void ClearSystem();
 
@@ -44,8 +45,10 @@ public interface TradingSystem {
     public Response ShowStoreProducts(int storeID);
     public Response AddProductToCart(String connID, int StoreId, int productId, int quantity);
     public Response ShowShoppingCart(String connID);
-    public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address);
-    public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address);
+    public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip);
+    public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip);
+    public Integer getUserID(String name);
+    public String getUserConnID(Integer userID);
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest);
     public Response SearchProduct(String name, String category, int minprice, int maxprice);
     public Response AddNewOwner(int userID, String connID, int storeID, int newOwner);
@@ -89,7 +92,7 @@ public interface TradingSystem {
     public Response AllUsersHistoryAdmin(int AdminID, String connID);
     public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions);
     public User.Permission changeToPermission(String per);
-    public Response GetPossiblePermissionsToManager(int userID, String connID);
+    public Response GetPossiblePermissionsToManager(int userID, String connID, int storeID);
     public Response ShowStoreWorkers(int userID, String connID, int storeID);
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID);
     public Response ShowAllMyStores(String connID, int userID, boolean founder,boolean owner,boolean manager) ;
@@ -101,4 +104,16 @@ public interface TradingSystem {
     public Response GetPoliciesInfo(int userID, int storeID, String connID);
     public Expression CreateExpForBuy(Integer storeID,Map<String, Object> map);
     public Sale createSaleForDiscount(int storeID, Map<String, Object> obj);
+
+    public Response GetAllSubscribers(String connID, int userID);
+
+    Response getDailyIncomeForStore(int userID, int storeID, String connID);
+
+    Response getDailyIncomeForSystem(int userID, String connID);
+
+    Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice);
+
+    Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userBiddingPrice);
+
+    Response ShowBids(int userID, String connID, int storeID);
 }

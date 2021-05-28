@@ -1,9 +1,12 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Conditioning;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForCategory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
@@ -179,26 +182,78 @@ class BuyingPolicyTest {
 
     @Test
     void HappyOrBuying() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        QuantityLimitForProduct exp1 = new QuantityLimitForProduct(5, productID1);
+        QuantityLimitForProduct exp2 = new QuantityLimitForProduct(4, productID2);
+        OrComposite orComposite = new OrComposite();
+        orComposite.add(exp1);
+        orComposite.add(exp2);
+        BuyingPolicy b=new BuyingPolicy(store.getId(),orComposite);
+        store.setBuyingPolicy(b);
+        tradingSystem.AddStoreToList(store);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 3);
+        products.put(productID2, 2);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
+        assertFalse(isLegal);
     }
 
     @Test
     void SadOrBuying() {
-    }
-
-    @Test
-    void HappyXorBuying() {
-    }
-
-    @Test
-    void SadXorBuying() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        QuantityLimitForProduct exp1 = new QuantityLimitForProduct(5, productID1);
+        QuantityLimitForProduct exp2 = new QuantityLimitForProduct(4, productID2);
+        OrComposite orComposite = new OrComposite();
+        orComposite.add(exp1);
+        orComposite.add(exp2);
+        BuyingPolicy b=new BuyingPolicy(store.getId(),orComposite);
+        store.setBuyingPolicy(b);
+        tradingSystem.AddStoreToList(store);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 6);
+        products.put(productID2, 2);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
+        assertFalse(!isLegal);
     }
 
     @Test
     void HappyConditioningBuying() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        QuantityLimitForProduct exp1 = new QuantityLimitForProduct(5, productID1);
+        QuantityLimitForProduct exp2 = new QuantityLimitForProduct(4, productID2);
+        Conditioning conditioning = new Conditioning();
+        conditioning.setCondIf(exp1);
+        conditioning.setCond(exp2);
+        BuyingPolicy b=new BuyingPolicy(store.getId(),conditioning);
+        store.setBuyingPolicy(b);
+        tradingSystem.AddStoreToList(store);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 6);
+        products.put(productID2, 2);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
+        assertTrue(isLegal);
     }
 
     @Test
     void SadConditioningBuying() {
+        Integer productID1 = store.getProductID("computer");
+        Integer productID2 = store.getProductID("Bag");
+        QuantityLimitForProduct exp1 = new QuantityLimitForProduct(5, productID1);
+        QuantityLimitForProduct exp2 = new QuantityLimitForProduct(4, productID2);
+        Conditioning conditioning = new Conditioning();
+        conditioning.setCondIf(exp1);
+        conditioning.setCond(exp2);
+        BuyingPolicy b=new BuyingPolicy(store.getId(),conditioning);
+        store.setBuyingPolicy(b);
+        tradingSystem.AddStoreToList(store);
+        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        products.put(productID1, 6);
+        products.put(productID2, 8);
+        Boolean isLegal = store.checkBuyingPolicy(2, products);
+        assertFalse(isLegal);
     }
     //endregion
 }

@@ -10,12 +10,11 @@ import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
-@Entity(name = "Product")
 public class DummyProduct {
-    @Id
+  
+    private int storeID;
+    private String storeName;
     private final int productID;
-    private final int storeID;
-    private final String storeName;
     private final String productName;
     private final double price;
     private final String category;
@@ -32,12 +31,13 @@ public class DummyProduct {
     }
 
     public DummyProduct(Product product){
-        this.storeID = -1;
-        this.storeName = "";
+        this.storeID = product.getStoreID();
+        this.storeName = product.getStoreName();
         this.productID = product.getProductID();
         this.productName = product.getProductName();
         this.price = product.getPrice();
         this.category = product.getCategory();
+        this.quantity = product.getQuantity();
     }
 
     public DummyProduct(Map<String, Object> map) {
@@ -67,7 +67,13 @@ public class DummyProduct {
         this.quantity = quantity;
     }
 
+    public void setStoreID(int storeId){
+        this.storeID = storeId;
+    }
 
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
+    }
 
     public int getStoreID() {
         return storeID;
@@ -122,13 +128,17 @@ public class DummyProduct {
 
     @Override
     public String toString() {
-        return "DummySearch{" +
-                "storeID=" + storeID +
-                ", storeName='" + storeName + '\'' +
-                ", productID=" + productID +
-                ", productName='" + productName + '\'' +
-                ", price=" + price +
-                ", category='" + category + '\'' +
-                '}';
+        JSONObject JO = new JSONObject();
+        try {
+            JO.put("storeID", storeID);
+            JO.put("storeName", storeName);
+            JO.put("productID", productID);
+            JO.put("productName", productName);
+            JO.put("price", price);
+            JO.put("category", category);
+        } catch (Exception e) {
+            System.out.println("DummyProduct toString error");
+        }
+        return JO.toString();
     }
 }

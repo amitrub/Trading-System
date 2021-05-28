@@ -3,11 +3,10 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
@@ -19,8 +18,16 @@ import java.util.Map;
 @RequestMapping(path = "api/owner")
 @CrossOrigin("*")
 public class StoreOwnerServiceHttp {
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+
     private static final LoggerController loggerController=LoggerController.getInstance();
+
+
+    @Autowired
+    private final TradingSystem tradingSystem;
+
+    public StoreOwnerServiceHttp(TradingSystem tradingSystem) {
+        this.tradingSystem = tradingSystem;
+    }
 
     /**
      * @requirement
@@ -455,6 +462,12 @@ public class StoreOwnerServiceHttp {
                 Permissions.add(User.Permission.ResponseRequests);
             if((boolean) obj.get("GetStoreHistory"))
                 Permissions.add(User.Permission.GetStoreHistory);
+            if((boolean) obj.get("RequestBidding"))
+                Permissions.add(User.Permission.RequestBidding);
+            if((boolean) obj.get("EditDiscountPolicy"))
+                Permissions.add(User.Permission.EditDiscountPolicy);
+            if((boolean) obj.get("EditBuyingPolicy"))
+                Permissions.add(User.Permission.EditBuyingPolicy);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -476,9 +489,9 @@ public class StoreOwnerServiceHttp {
      *  permissions:String]
      * }
     */
-    @GetMapping("{userID}/store/get_possible_permissions_to_manager")
-    public Response GetPossiblePermissionsToManager(@PathVariable int userID, @RequestHeader("connID") String connID)  {
-        Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID);
+    @GetMapping("{userID}/store/{storeID}/get_permissions_to_manager")
+    public Response GetPossiblePermissionsToManager(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID)  {
+        Response res = tradingSystem.GetPossiblePermissionsToManager(userID, connID, storeID);
         res.AddConnID(connID);
         WriteToLogger(res);
         return res;
@@ -562,6 +575,91 @@ public class StoreOwnerServiceHttp {
         WriteToLogger(res);
         return res;
     }
+
+     /**
+     * @requirement 4.12
+     *
+     * @param userID: int (Path)
+     * @param storeID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "DailyIncome": {[Double]}
+     *  }
+     * }
+     */
+    @GetMapping("{userID}/store/{storeID}/owner_daily_income_for_store")
+    public Response OwnerDailyIncomeForStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getDailyIncomeForStore(userID,storeID,connID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 8.3.2
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @param obj:{
+     *  "userWhoOffer" : Integer
+     *  "storeID": Integer
+     *  "productID": Integer
+     *  "productPrice": Integer
+     * }
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     *
+     */
+    @PostMapping("{userID}/response_for_submission_bidding")
+    public Response ResponseForSubmissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int storeID,productID,userWhoOffer;
+        Double productPrice;
+        try {
+            userWhoOffer = (int) obj.get("userWhoOffer");
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            productPrice = (Double) obj.get("productPrice");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : ResponseForSubmissionBidding");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.ResponseForSubmissionBidding(userID,connID,storeID,productID,productPrice,userWhoOffer);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+    /**
+     * @requirement none
+     *
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "Bids": [{
+     *       "userID" :Integer
+     *       "productID" : Integer
+     *       "price " :  Double
+     *  }]
+     * }
+     */
+    @GetMapping("{userID}/store/{storeID}/show_bids")
+    public Response ShowBids(@PathVariable int userID,@PathVariable int storeID, @RequestHeader("connID") String connID) {
+        Response res = this.tradingSystem.ShowBids(userID, connID,storeID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
 
     /**
      * @requirement none

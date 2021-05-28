@@ -1,7 +1,9 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.locks.Lock;
@@ -10,6 +12,12 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Inventory {
 
+    @Autowired
+    public static Data_Controller data_controller;
+
+    public static void setData_controller(Data_Controller data_controller) {
+        Inventory.data_controller = data_controller;
+    }
     private final Integer storeID;
     private final String storeName;
     private int nextProductID = 0;
@@ -45,9 +53,14 @@ public class Inventory {
     }
 
     public Response addProduct(String productName, String category, Double price, int quantity){
+        System.out.println("-----------------------addProduct-------------------------");
+        System.out.println(data_controller);
+        System.out.println("----------------------------------------------------------");
         if (!IsProductNameExist(productName)){
-            Integer productID=getNextProductID();
-            Product p=new Product(productID, productName, category, price, quantity);
+            //Adds to the db
+            Integer productID = data_controller.AddProductToStore(storeID, productName, category, price, quantity);
+
+            Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());
@@ -118,7 +131,7 @@ public class Inventory {
         return new Response(false, "Purchase: Product inventory successfully updated");
     }
 
-    public void cancilReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
+    public void cancelReduceProducts(ConcurrentHashMap<Integer, Integer> products) {
         Set<Integer> PQ = products.keySet();
         for (Integer PID : PQ) {
             int quantityToAdd = products.get(PID);
@@ -201,7 +214,7 @@ public class Inventory {
             Map.Entry pair = (Map.Entry) it.next();
             int id = (int) pair.getKey();
             if (id == productId) {
-                Product p = new Product(productId, productName, category, price, quantity);
+                Product p = new Product(storeID, storeName, productId, productName, category, price, quantity);
                 this.products.remove(productId);
                 this.products.put(id, p);
                 return new Response(false, "EditProduct: The product " + productName + " update successfully");

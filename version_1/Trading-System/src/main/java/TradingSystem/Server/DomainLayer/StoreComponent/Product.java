@@ -1,6 +1,8 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,7 +11,15 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class Product {
 
+    @Autowired
+    public static Data_Controller data_controller;
 
+    public static void setData_controller(Data_Controller data_controller) {
+        Product.data_controller = data_controller;
+    }
+
+    private Integer storeID;
+    private String storeName;
     private Integer productID;
     private String productName;
     private String category;
@@ -23,7 +33,9 @@ public class Product {
     //userID_Rate
     private ConcurrentHashMap<Integer, Double> productRating;
 
-    public Product(Integer productID, String productName, String category, Double price) {
+    public Product(Integer storeID, String storeName, Integer productID, String productName, String category, Double price) {
+        this.storeID = storeID;
+        this.storeName = storeName;
         this.productID = productID;
         this.productName = productName;
         this.category = category;
@@ -33,7 +45,9 @@ public class Product {
         this.quantity = 0;
     }
 
-    public Product(Integer productID, String productName, String category, Double price, int quantity) {
+    public Product(Integer storeID, String storeName, Integer productID, String productName, String category, Double price, int quantity) {
+        this.storeID = storeID;
+        this.storeName = storeName;
         this.productID = productID;
         this.productName = productName;
         this.category = category;
@@ -44,6 +58,8 @@ public class Product {
     }
 
     public Product(Product toCopyProduct) {
+        this.storeID = toCopyProduct.storeID;
+        this.storeName = toCopyProduct.storeName;
         this.productID = toCopyProduct.productID;
         this.productName = toCopyProduct.productName;
         this.category = toCopyProduct.category;
@@ -191,4 +207,11 @@ public class Product {
     }
 
 
+    public int getStoreID() {
+        return this.storeID;
+    }
+
+    public String getStoreName() {
+        return this.storeName;
+    }
 }

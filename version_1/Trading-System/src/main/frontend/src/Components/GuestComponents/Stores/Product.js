@@ -50,9 +50,7 @@ function Product(props) {
     setPopUpProduct(true);
   }
 
-  useEffect(() => {
-    // console.log("ppprrroooddduuuctttt");
-  }, [props.refresh]);
+  useEffect(() => {}, [props.refresh]);
 
   return (
     <div className="plan-box">

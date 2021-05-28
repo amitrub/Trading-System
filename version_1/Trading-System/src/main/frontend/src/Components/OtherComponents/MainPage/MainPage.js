@@ -5,6 +5,7 @@ import fashion from "../img/sadna-fashion.jpeg";
 import electronics from "../img/sadna-elctorincs.jpeg";
 import pets from "../img/sadna-dogs.jpeg";
 import kitchen from "../img/sadna-kitchen.jpeg";
+import React, { Component }  from 'react';
 
 function mainPage(props) {
   return (
@@ -45,7 +46,9 @@ function mainPage(props) {
                 <a href="#">hello {props.username}</a>
               </li>
               <li>
-                <a href="#sign">sign</a>
+                <a href="#sign">
+                  {props.userID === -1 ? "sign in" : "sign out"}
+                </a>
               </li>
               <li>
                 <a href="#stores">stores</a>

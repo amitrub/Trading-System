@@ -2,6 +2,8 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -9,16 +11,18 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public  class User implements Observer {
+public class User implements Observer {
 
 
     private List<Object> messages = new ArrayList<>();
+
 
     public enum Permission {
         AddProduct,
@@ -33,7 +37,19 @@ public  class User implements Observer {
         GetInfoRequests,
         ResponseRequests,
         GetHistoryPurchasing,
-        GetStoreHistory
+        GetStoreHistory,
+        GetDailyIncomeForStore,
+        GetDailyIncomeForSystem,
+        RequestBidding,
+        EditDiscountPolicy,
+        EditBuyingPolicy
+    }
+
+    @Autowired
+    public static Data_Controller data_controller;
+
+    public static void setData_controller(Data_Controller data_controller) {
+        Store.data_controller = data_controller;
     }
 
     private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
@@ -64,8 +80,30 @@ public  class User implements Observer {
         this.userName = "guest";
         this.password = "";
         this.shoppingCart = new ShoppingCart(this.id);
-        this.ownerPermission = null;
-        this.managerPermission = null;
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
+        this.ownerPermission=new ConcurrentHashMap<>();
+        this.managerPermission=new ConcurrentHashMap<>();
+    }
+    public User(int id) {
+        this.id = id;
+        this.userName = "guest";
+        this.password = "";
+        this.shoppingCart = new ShoppingCart(this.id);
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
+        this.ownerPermission=new ConcurrentHashMap<>();
+        this.managerPermission=new ConcurrentHashMap<>();
+    }
+
+    //FOR the db
+    public User(int id, String userName, String password) {
+        this.id = id;
+        this.userName = userName;
+        this.password = password;
+        this.shoppingCart = new ShoppingCart(this.id);
         this.myManagedStoresIDs=new ArrayList<>();
         this.myManagedStoresIDs=new ArrayList<>();
         this.myFoundedStoresIDs=new ArrayList<>();
@@ -74,7 +112,7 @@ public  class User implements Observer {
     }
 
     public User(String userName, String password) {
-        this.id = getNextUserID();
+        this.id = nextUserID;
         this.userName = userName;
         this.password = password;
         this.shoppingCart = new ShoppingCart(this.id);
@@ -112,12 +150,14 @@ public  class User implements Observer {
         return nextUserID;
     }
 
+
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
     }
 
     public void notify(String topic, Response res) {
         if(publisher!=null){
+            System.out.println("-------------------notify-------------------");
             publisher.SendMessage(topic, res);
         }
     }
@@ -198,12 +238,12 @@ public  class User implements Observer {
         return shoppingCart.ShowShoppingCart();
     }
 
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address){
-        return shoppingCart.Purchase(true, name, credit_number, phone_number, address);
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip){
+        return shoppingCart.Purchase(true, name, credit_number, month, year, cvv, ID, address,city,country,zip);
     }
 
-    public Response subscriberPurchase(String credit_number, String phone_number, String address){
-        return shoppingCart.Purchase(false, this.userName, credit_number, phone_number, address);
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip){
+        return shoppingCart.Purchase(false, this.userName, credit_number, month, year, cvv, ID, address,city,country,zip);
 
     }
 
@@ -213,8 +253,8 @@ public  class User implements Observer {
 
     public List<DummyShoppingHistory> ShowUserHistory(){
         List<DummyShoppingHistory> shoppingHistories=new ArrayList<>();
-        for(ShoppingHistory shoppingHistory : shoppingHistory){
-            shoppingHistories.add(new DummyShoppingHistory(shoppingHistory));
+        for(ShoppingHistory s : shoppingHistory){
+            shoppingHistories.add(new DummyShoppingHistory(s));
         }
         return shoppingHistories;
     }
@@ -330,49 +370,103 @@ public  class User implements Observer {
     }
 
     public void editPermissions(int userID,int storeID, List<User.Permission> permissions) {
-    ManagerPermission MP=managerPermission.get(storeID);
-    if(MP==null){
-        MP=new ManagerPermission(this.id,storeID);
-        MP.setAppointmentId(userID);
-        MP.setPermissions(permissions);
-        this.managerPermission.put(storeID,MP);
+        ManagerPermission MP=managerPermission.get(storeID);
+        if(MP==null){
+            MP=new ManagerPermission(this.id,storeID);
+            MP.setAppointmentId(userID);
+            MP.setPermissions(permissions);
+            this.managerPermission.put(storeID,MP);
+        }
+        else{
+            MP.setPermissions(permissions);
+            this.managerPermission.remove(storeID);
+            this.managerPermission.put(storeID,MP);
+        }
     }
-    else{
-        MP.setPermissions(permissions);
-        this.managerPermission.remove(storeID);
-        this.managerPermission.put(storeID,MP);
+
+    public boolean isConnected(){
+        if(tradingSystem.getConnectedSubscribers().containsValue(id))
+            return true;
+        return false;
     }
+
+    public boolean isSubscriber(){
+        if(tradingSystem.subscribers.containsKey(id))
+            return true;
+        return false;
     }
 
 
     //Observable pattern
     public void update(Object arg) {
-        Response res = (Response) arg;
-        this.notify(res.returnConnID(), res);
+        if(isSubscriber()) {
+            if (isConnected()) {
+                Response res = (Response) arg;
+                this.notify(tradingSystem.getUserConnID(this.id), res);
+            } else {
+                addMessage(arg);
+            }
+        }
+        else {
+            Response res = (Response) arg;
+            this.notify(tradingSystem.getUserConnID(this.id), res);
+        }
     }
 
     @Override
     public void update(Observable o, Object arg) {
         update(arg);
+//        System.out.println("\n\n------>>>> update, username: " + userName + "\n\n");
     }
 
     public void addMessage(Object arg){
-        synchronized (messages){
-            this.messages.add(arg);
+        try {
+            synchronized (messages){
+                this.messages.add(arg);
+                messages.notifyAll();
+            }
+        } catch (Exception e) {
+            System.out.println("catch notify all error!!!");
+            System.out.println(e);
         }
-        notifyAll();
     }
 
-    public void updateAfterLogin(){
-        synchronized (messages) {
-            for (Object arg : messages) {
-                Response res = (Response) arg;
-                this.notify(res.returnConnID(), res);
-                messages.remove(arg);
+    public List<String> updateAfterLogin(){
+        List<String> strMessages = new ArrayList<>();
+        System.out.println(messages.size());
+        try {
+            synchronized (messages) {
+                int size = messages.size();
+                for (int i = 0; i < size; i++) {
+                    Response res = (Response) messages.get(i);
+                    System.out.println(i + ": " + res.getMessage());
+                    strMessages.add(res.getMessage());
+//                this.notify(tradingSystem.getUserConnID(this.id), res);
+                }
+                messages = new ArrayList<>();
+//                while(messages.isEmpty()) {
+//                    messages.remove(0);
+//                }
+                messages.notifyAll();
             }
+        } catch (Exception e) {
+            System.out.println("catch notify all error!!!");
+            System.out.println(e);
         }
-        notifyAll();
+
+        return strMessages;
     }
+
+    //TODO Implement
+   // public void AddProductForPurchaseOffer(int productID, int storeID, int productPrice) { }
+
+    public void AddSpacialProductForCart(int productID, int storeID, double productPrice) {
+
+
+    }
+
+
+
 }
 
 

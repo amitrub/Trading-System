@@ -1,17 +1,12 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
@@ -102,6 +97,7 @@ public class Client implements Client_Interface {
      * @param pass pass
      * @return int if ok
      */
+    
     public int Register(String userName, String pass){
         String path = "register" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
@@ -230,8 +226,6 @@ public class Client implements Client_Interface {
         JSONObject jsonArray = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonArray);
         System.out.println(ANSI_YELLOW + "(addProductToCart) response: " + response + ANSI_RESET);
-        //List<DummyProduct> dummyProductResponeArr = response.returnProductList();
-        //return dummyProductResponeArr;
         return response;
     }
     public Response removeFromShoppingCart(int storeID, int productID) {
@@ -268,18 +262,30 @@ public class Client implements Client_Interface {
      * @requirement 2.9
      * @param name
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address) {
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("name", name);
             jsonPost.put("credit_number", credit_number);
-            jsonPost.put("phone_number", phone_number);
+            jsonPost.put("month", month);
+            jsonPost.put("year", year);
+            jsonPost.put("cvv", cvv);
+            jsonPost.put("ID", ID);
             jsonPost.put("address", address);
+            jsonPost.put("city", city);
+            jsonPost.put("country", country);
+            jsonPost.put("zip", zip);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "157", "Error: guestPurchase, making post json"));
         }
@@ -312,7 +318,13 @@ public class Client implements Client_Interface {
      */
     public Response openStore(String storeName){
         String path = String.format("%s/add_store", this.userID);
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber + path, storeName, this.connID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("storeName", storeName);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addProduct, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber + path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(openStore) response: " + response + ANSI_RESET);
         return response;
@@ -326,6 +338,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/user_history", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(showUserHistory) response: " + response + ANSI_RESET);
         return response;
     }
 
@@ -357,17 +370,29 @@ public class Client implements Client_Interface {
     /**
      * @requirement 3.4 subscriber (user) purchase
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response subscriberPurchase(String credit_number, String phone_number, String address) {
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         String path = String.format("%s/shopping_cart/purchase", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("credit_number", credit_number);
-            jsonPost.put("phone_number", phone_number);
+            jsonPost.put("month", month);
+            jsonPost.put("year", year);
+            jsonPost.put("cvv", cvv);
+            jsonPost.put("ID", ID);
             jsonPost.put("address", address);
+            jsonPost.put("city", city);
+            jsonPost.put("country", country);
+            jsonPost.put("zip", zip);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "197", "Error: subscriberPurchase, making post json"));
         }
@@ -599,8 +624,8 @@ public class Client implements Client_Interface {
         System.out.println(ANSI_YELLOW + "(editManagerPermissions) response: " + response + ANSI_RESET);
         return response;
     }
-    public Response GetPossiblePermissionsToManager() {
-        String path = String.format("%s/store/get_possible_permissions_to_manager", this.userID);
+    public Response GetPossiblePermissionsToManager(int storeId) {
+        String path = String.format("%s/store/%s/get_permissions_to_manager", this.userID,storeId);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         //if(response.getIsErr()) {
@@ -658,7 +683,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/store_history_owner/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(ownerStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
         return response;
     }
 

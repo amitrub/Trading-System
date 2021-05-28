@@ -14,8 +14,7 @@ import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 @Entity(name = "Store")
 public class DummyStore {
 
-    @Id
-    private Integer id;
+    private final Integer id;
     private String name;
     private Double storeRate;
 
@@ -79,10 +78,19 @@ public class DummyStore {
 
     @Override
     public String toString() {
-        return "Store {" +
-                "id=" + id +
-                ", name='" + name + '\'' +
-                ", storeRate=" + storeRate +
-                '}';
+//        return "Store {" +
+//                "id=" + id +
+//                ", name='" + name + '\'' +
+//                ", storeRate=" + storeRate +
+//                '}';
+        JSONObject JO = new JSONObject();
+        try {
+            JO.put("id", id);
+            JO.put("name", name);
+            JO.put("storeRate", storeRate);
+        } catch (Exception e) {
+            System.out.println("dummyStore toString error");
+        }
+        return JO.toString();
     }
 }

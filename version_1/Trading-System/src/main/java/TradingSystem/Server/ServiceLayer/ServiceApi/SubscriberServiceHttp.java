@@ -2,12 +2,10 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DataAccessLayer.StoreService;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -18,11 +16,27 @@ import java.util.Map;
 @CrossOrigin("*")
 @Transactional
 public class SubscriberServiceHttp {
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+
     private static final LoggerController loggerController=LoggerController.getInstance();
     @Autowired
     private StoreService storeService;
 
+
+    @Autowired
+    private final TradingSystem tradingSystem;
+
+    public SubscriberServiceHttp(TradingSystem tradingSystem) {
+        this.tradingSystem = tradingSystem;
+    }
+
+
+    @GetMapping("{userID}/get_all_subscribers")
+    public Response GetAllSubscribers(@PathVariable int userID, @RequestHeader("connID") String connID) {
+        Response res = tradingSystem.GetAllSubscribers(connID, userID);
+        tradingSystem.printUsers();
+        WriteToLogger(res);
+        return res;
+    }
 
     /**
      * @requirement 3.1
@@ -35,6 +49,7 @@ public class SubscriberServiceHttp {
      *  "connID": String
      * }
      */
+
     @GetMapping("{userID}/logout")
     public Response Logout(@PathVariable int userID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.Logout(connID);
@@ -42,6 +57,14 @@ public class SubscriberServiceHttp {
         WriteToLogger(res);
         return res;
     }
+//    @GetMapping("test")
+//    public Response Test(){
+//        DummyStore store=new DummyStore(5,"reut",5.0);
+//        DummyStore store1=storeService.Addstore(store);
+//        Response response=new Response();
+//        response.AddPair("store",store1);
+//        return response;
+//    }
 
     @GetMapping("{storeId}/findstore")
     public Response findStore(@PathVariable int storeId){
@@ -111,6 +134,16 @@ public class SubscriberServiceHttp {
         return res;
     }
 
+//    @PostMapping("add_store")
+//    public Response AddStore(){
+//        DummyStore store;
+//        store=new DummyStore(5,"reut",5.0);
+//        store= storeService.Addstore(store);
+//        Response res = new Response(true, "Error in parse body : AddStore");
+//        return res;
+//    }
+
+
     /**
      * @requirement 3.3
      *
@@ -127,7 +160,6 @@ public class SubscriberServiceHttp {
      *  "connID": String
      * }
      */
-    //TODO: not check yet
     @PostMapping("{userID}/write_comment")
     public Response WriteComment(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID,productID;
@@ -161,6 +193,8 @@ public class SubscriberServiceHttp {
      *  "history": List [{
      *      "userID": int
      *      "storeID": int
+     *      "finalPrice": int
+     *      "date": String
      *      "products": List [{
      *          "storeID": int
      *          "storeName": String
@@ -175,7 +209,9 @@ public class SubscriberServiceHttp {
      */
     @GetMapping("{userID}/user_history")
     public Response ShowUserHistory(@PathVariable int userID, @RequestHeader("connID") String connID){
-        return tradingSystem.ShowSubscriberHistory(userID, connID);
+        Response res = tradingSystem.ShowSubscriberHistory(userID, connID);
+        WriteToLogger(res);
+        return res;
     }
 
 
@@ -197,11 +233,17 @@ public class SubscriberServiceHttp {
      */
     @PostMapping("{userID}/shopping_cart/purchase")
     public Response subscriberPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String credit_number, phone_number, address;
+        String credit_number, month, year, cvv, ID, address, city, country, zip;
         try {
             credit_number = (String) obj.get("credit_number");
-            phone_number = (String) obj.get("phone_number");
+            month = (String) obj.get("month");
+            year = (String) obj.get("year");
+            cvv = (String) obj.get("cvv");
+            ID = (String) obj.get("ID");
             address = (String) obj.get("address");
+            city = (String) obj.get("city");
+            country = (String) obj.get("country");
+            zip = (String) obj.get("zip");
         }
         catch (Exception e){
             System.out.println(e);
@@ -210,7 +252,46 @@ public class SubscriberServiceHttp {
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, phone_number, address);
+        Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 8.3.1
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @param obj:{
+     *  "storeID": Integer
+     *  "productID": Integer
+     *  "productPrice": Integer
+     * }
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     *
+     */
+    @PostMapping("{userID}/submission_bidding")
+    public Response submissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int storeID,productID;
+        Double productPrice;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            productPrice = (Double) obj.get("productPrice");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : submissionBidding");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.subscriberBidding(userID,connID,storeID,productID,productPrice);
+        res.AddConnID(connID);
         WriteToLogger(res);
         return res;
     }

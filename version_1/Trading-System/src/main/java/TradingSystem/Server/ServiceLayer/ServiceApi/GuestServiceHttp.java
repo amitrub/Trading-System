@@ -2,9 +2,9 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.Map;
@@ -13,8 +13,15 @@ import java.util.Map;
 @RequestMapping(path = "api")
 @CrossOrigin("*")
 public class GuestServiceHttp {
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
+
+    @Autowired
+    public final TradingSystem tradingSystem;
+
+    public GuestServiceHttp(TradingSystem tradingSystem) {
+        this.tradingSystem = tradingSystem;
+    }
+
 
     @GetMapping("clear_system")
     public Response ClearSystem(){
@@ -28,6 +35,7 @@ public class GuestServiceHttp {
      * @return Response{
      *  "isErr: boolean
      *  "message": String
+     *
      *  "connID": String
      * }
      */
@@ -173,11 +181,9 @@ public class GuestServiceHttp {
     @GetMapping("store/{storeID}/products")
     public Response ShowStoreProducts(@PathVariable int storeID) {
         Response res = this.tradingSystem.ShowStoreProducts(storeID);
-        System.out.println(res);
         WriteToLogger(res);
         return res;
     }
-
 
     /**
      * @requirement 2.6
@@ -237,7 +243,6 @@ public class GuestServiceHttp {
 
     }
 
-
     /**
      * @requirement 2.7
      *
@@ -270,7 +275,6 @@ public class GuestServiceHttp {
         }
         Response res = tradingSystem.AddProductToCart(connID, storeID, productID, quantity);
         res.AddConnID(connID);
-        System.out.println(res);
         tradingSystem.printUsers();
         WriteToLogger(res);
         return res;
@@ -295,6 +299,7 @@ public class GuestServiceHttp {
      *  }]
      * }
      */
+    //TODO figureout how to implement
     @GetMapping("shopping_cart")
     public Response ShowShoppingCart(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.ShowShoppingCart(connID);
@@ -356,7 +361,6 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/edit_product")
     public Response EditProductQuantityFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        System.out.println("EditProductQuantityFromCart");
         int storeID, productID, quantity;
         try {
             storeID = (int) obj.get("storeID");
@@ -371,7 +375,6 @@ public class GuestServiceHttp {
             return res;
         }
         Response res = tradingSystem.editProductQuantityFromCart(connID, storeID, productID, quantity);
-        System.out.println(res);
         res.AddConnID(connID);
         WriteToLogger(res);
         return res;
@@ -395,12 +398,18 @@ public class GuestServiceHttp {
      */
     @PostMapping("shopping_cart/purchase")
     public Response guestPurchase(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String name, credit_number, phone_number, address;
+        String name, credit_number, month, year, cvv, ID, address, city, country, zip;
         try {
             name = (String) obj.get("name");
             credit_number = (String) obj.get("credit_number");
-            phone_number = (String) obj.get("phone_number");
+            month = (String) obj.get("month");
+            year = (String) obj.get("year");
+            cvv = (String) obj.get("cvv");
+            ID = (String) obj.get("ID");
             address = (String) obj.get("address");
+            city = (String) obj.get("city");
+            country = (String) obj.get("country");
+            zip = (String) obj.get("zip");
         }
         catch (Exception e){
             System.out.println(e);
@@ -410,7 +419,7 @@ public class GuestServiceHttp {
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.guestPurchase(connID, name, credit_number, phone_number, address);
+        Response res = tradingSystem.guestPurchase(connID, name, credit_number, month, year, cvv, ID, address,city,country,zip);
         WriteToLogger(res);
         return res;
     }

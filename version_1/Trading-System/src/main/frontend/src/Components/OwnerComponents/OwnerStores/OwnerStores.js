@@ -2,8 +2,9 @@ import React, { useEffect, useState } from "react";
 import createApiClientHttp from "../../../ApiClientHttp";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
-import Store from "../../GuestComponents/Stores/Store";
 import OwnerStoreService from "./OwnerStoreService";
+import ManagerStoreService from "./ManagerStoreService";
+import AdminServices from "./AdminServices/AdminServices";
 
 const apiHttp = createApiClientHttp();
 
@@ -11,7 +12,12 @@ function StoresOwner(props) {
   const [founderStores, setFounderStores] = useState([]);
   const [ownerStores, setOwnerStores] = useState([]);
   const [managerStores, setManagerStores] = useState([]);
-  const [showStores, setShowStores] = useState(false);
+
+  //Buttons
+  const [showOwnerStores, setShowOwnerStores] = useState(false);
+  const [showManagedStores, setShowManagedStores] = useState(false);
+  const [showFoundedStores, setShowFoundedStores] = useState(false);
+  const [showAdminStores, setShowAdminStores] = useState(false);
 
   async function fetchFoundedStores() {
     const foundedStoresResponse = await apiHttp.ShowAllFoundedStores(
@@ -55,17 +61,6 @@ function StoresOwner(props) {
     }
   }
 
-  function submitShowStores() {
-    // console.log("get Stores");
-    setShowStores(true);
-    props.onRefresh();
-  }
-
-  function submitCloseStores() {
-    // console.log("close Stores");
-    setShowStores(false);
-  }
-
   useEffect(() => {
     fetchFoundedStores();
     fetchOwnerStores();
@@ -77,7 +72,7 @@ function StoresOwner(props) {
     <section className="section-form" id="owners">
       <div className="row">
         <h2>
-          <strong>Owners mode</strong>
+          <strong>Owners and so...</strong>
         </h2>
       </div>
 
@@ -87,81 +82,139 @@ function StoresOwner(props) {
         </div>
       ) : (
         <div>
-          <h2>
-            <strong>My Stores</strong>
-          </h2>
-          <button
-            className="buttonus"
-            value="load our stores..."
-            onClick={showStores ? submitCloseStores : submitShowStores}
-          >
-            {showStores ? "Hide Your Stores" : "Show All Your Stores"}
-          </button>
+          <div className="row">
+            {/* Admins Btn */}
+            <button
+              className="buttonus"
+              value="load our stores..."
+              onClick={
+                showAdminStores
+                  ? () => setShowAdminStores(false)
+                  : () => setShowAdminStores(true)
+              }
+            >
+              {showAdminStores ? "Hide" : "Admins"}
+            </button>
+            {/* Founders Btn */}
+            <button
+              className="buttonus"
+              value="load our stores..."
+              onClick={
+                showFoundedStores
+                  ? () => setShowFoundedStores(false)
+                  : () => setShowFoundedStores(true)
+              }
+            >
+              {showFoundedStores ? "Hide" : "Founders"}
+            </button>
+            {/* Owners Btn */}
+            <button
+              className="buttonus"
+              value="load our stores..."
+              onClick={
+                showOwnerStores
+                  ? () => setShowOwnerStores(false)
+                  : () => setShowOwnerStores(true)
+              }
+            >
+              {showOwnerStores ? "Hide" : "Owners"}
+            </button>
+            {/* Managers Btn */}
+            <button
+              className="buttonus"
+              value="load our stores..."
+              onClick={
+                showManagedStores
+                  ? () => setShowManagedStores(false)
+                  : () => setShowManagedStores(true)
+              }
+            >
+              {showManagedStores ? "Hide" : "Managers"}
+            </button>
+          </div>
 
-          {showStores ? (
+          {/* Admins */}
+          {showAdminStores && props.admin ? (
             <div>
-              {
-                <div>
-                  <h2>Founded stores</h2>
-                  {founderStores && founderStores.length !== 0 ? (
-                    founderStores.map((currStore, index) => (
-                      <li key={index} className="curr store">
-                        <OwnerStoreService
-                          refresh={props.refresh}
-                          onRefresh={props.onRefresh}
-                          connID={props.connID}
-                          userID={props.userID}
-                          currStore={currStore}
-                        />
-                      </li>
-                    ))
-                  ) : (
-                    <p>you are not a founder</p>
-                  )}
-                </div>
-              }
+              <p>------</p>
+              <AdminServices
+                refresh={props.refresh}
+                onRefresh={props.onRefresh}
+                connID={props.connID}
+                userID={props.userID}
+              />
+            </div>
+          ) : (
+            ""
+          )}
 
-              {
-                <div>
-                  <h2>Owner stores</h2>
-                  {ownerStores && ownerStores.length !== 0 ? (
-                    ownerStores.map((currStore, index) => (
-                      <li key={index} className="curr store">
-                        <OwnerStoreService
-                          refresh={props.refresh}
-                          onRefresh={props.onRefresh}
-                          connID={props.connID}
-                          userID={props.userID}
-                          currStore={currStore}
-                        />
-                      </li>
-                    ))
-                  ) : (
-                    <p>you are not a owner</p>
-                  )}
-                </div>
-              }
+          {/* Founders */}
+          {showFoundedStores ? (
+            <div>
+              <h2>Founded stores</h2>
+              {founderStores && founderStores.length !== 0 ? (
+                founderStores.map((currStore, index) => (
+                  <li key={index} className="curr store">
+                    <OwnerStoreService
+                      refresh={props.refresh}
+                      onRefresh={props.onRefresh}
+                      connID={props.connID}
+                      userID={props.userID}
+                      currStore={currStore}
+                    />
+                  </li>
+                ))
+              ) : (
+                <p>you are not a founder</p>
+              )}
+            </div>
+          ) : (
+            ""
+          )}
 
-              {
-                <div>
-                  <h2>Managed stores</h2>
-                  {managerStores && managerStores.length !== 0 ? (
-                    managerStores.map((currStore, index) => (
-                      <li key={index} className="curr store">
-                        <OwnerStoreService
-                          refresh={props.refresh}
-                          onRefresh={props.onRefresh}
-                          connID={props.connID}
-                          userID={props.userID}
-                          currStore={currStore}
-                        />
-                      </li>
-                    ))
-                  ) : (
-                    <p>you are not a manager</p>
-                  )}
-                </div>
-              }
+          {/* Owners */}
+          {showOwnerStores ? (
+            <div>
+              <h2>Owner stores</h2>
+              {ownerStores && ownerStores.length !== 0 ? (
+                ownerStores.map((currStore, index) => (
+                  <li key={index} className="curr store">
+                    <OwnerStoreService
+                      refresh={props.refresh}
+                      onRefresh={props.onRefresh}
+                      connID={props.connID}
+                      userID={props.userID}
+                      currStore={currStore}
+                    />
+                  </li>
+                ))
+              ) : (
+                <p>you are not a owner</p>
+              )}
+            </div>
+          ) : (
+            ""
+          )}
+
+          {/* Managers */}
+          {showManagedStores ? (
+            <div>
+              <h2>Managed stores</h2>
+              {managerStores && managerStores.length !== 0 ? (
+                managerStores.map((currStore, index) => (
+                  <li key={index} className="curr store">
+                    <ManagerStoreService
+                      refresh={props.refresh}
+                      onRefresh={props.onRefresh}
+                      connID={props.connID}
+                      userID={props.userID}
+                      currStore={currStore}
+                    />
+                  </li>
+                ))
+              ) : (
+                <p>you are not a manager</p>
+              )}
             </div>
           ) : (
             ""
