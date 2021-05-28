@@ -13,13 +13,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-
+@EnableJpaRepositories("ProductRepository.DataAccessLayer")
 @RestController
 @RequestMapping(path = "api/owner")
 @CrossOrigin("*")
 public class StoreOwnerServiceHttp {
 
     private static final LoggerController loggerController=LoggerController.getInstance();
+
 
     @Autowired
     private final TradingSystem tradingSystem;
