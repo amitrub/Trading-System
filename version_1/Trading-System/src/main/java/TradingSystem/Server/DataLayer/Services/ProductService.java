@@ -34,6 +34,10 @@ public class ProductService {
         return dataProduct.getProductID();
     }
 
+    public void RemoveProduct(int productId) {
+        productRepository.removeDataProductByProductID(productId);
+    }
+
 //    //TODO make it transaction
 //    public void editProduct(DataProduct product){
 ////        Session session = null;
@@ -73,4 +77,8 @@ public class ProductService {
 //            return productRepository.findDummyProductByCategory(category);
 //        }
 //    }
+
+    public List<DataProduct> findAllByCategoryAndProductNameAndPriceBetween(String name,String category, int min, int max){
+        return productRepository.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);
+    }
 }

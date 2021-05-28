@@ -1,8 +1,6 @@
 package TradingSystem.Server.DataLayer.Services;
 
-import TradingSystem.Server.DataLayer.Data_Modules.*;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -51,6 +49,14 @@ public class Data_Controller {
 
     public void setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
         shoppingCartService.setBagFinalPrice(userID, storeID, finalPrice);
+    }
+
+    public List<DataProduct> findAllByCategoryAndProductNameAndPriceBetween(String name, String category, int min,int max){
+        return productService.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);
+    }
+
+    public void RemoveProduct(int productId) {
+        productService.RemoveProduct(productId);
     }
 
 

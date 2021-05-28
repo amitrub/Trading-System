@@ -10,14 +10,17 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<DataProduct,Integer> {
 
 
-//    List<DataProduct> findDummyProductByStoreID(int storeid);
-//
-//    List<DataProduct> findDummyProductByProductName(String productName);
-//
-//    List<DataProduct> findDummyProductByCategory(String category);
-//
-//    List<DataProduct> findDummyProductByCategoryAndPriceBetween(String category, double minprice, double maxprice);
-//
-//    List<DataProduct> findDummyProductByProductNameAndPriceBetween(String name, double minprice, double maxprice);
+    List<DataProduct> findDummyProductByStoreID(int storeid);
+
+    List<DataProduct> findDummyProductByProductName(String productName);
+
+    List<DataProduct> findDummyProductByCategory(String category);
+
+    List<DataProduct> findDummyProductByCategoryAndPriceBetween(String category, double minprice, double maxprice);
+
+    List<DataProduct> findAllByCategoryAndProductNameAndPriceBetween(String name, String category, double minprice, double maxprice);
+
+    void removeDataProductByProductID(int id);
+
 }
 

@@ -36,4 +36,11 @@ public class StoreService {
        Optional<DataStore> res= storeRepository.findById(storeid);
         return res.orElse(null);
     }
+
+//    public void AddNewOwner(int storeId, Integer userId, Integer newOwnerId){
+//        DataSubscriber owner= subscriberRepository.getOne(userId);
+//        DataSubscriber newowner= subscriberRepository.getOne(newOwnerId);
+//        DataStore store=storeRepository.getOne(storeId);
+//
+//    }
 }
