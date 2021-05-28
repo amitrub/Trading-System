@@ -129,43 +129,79 @@ public class AdminTests {
         assertEquals(history.size(), 0);
     }
     //endregion
-/*
-    // region requirement 6.6 : get daily income for system
 
+    // region requirement 6.6 : get daily income for system
     @Test
-    void SadDailyIncomeForStore_StoreNotExistInTheSystem(){
-        Response res= tradingSystemImpl.getDailyIncomeForStore(ElinorID,100,EconnID);
-        Assertions.assertEquals(res.getMessage(),"getDailyIncomeForStore: The store " + 100 + " doesn't exist in the system");
+    void HappyDailyIncomeForSystem(){
+       //AddPurchace?
+        client.clearSystem();
+        client.connectSystem();
+        client.Login("amit", "qweasd");
+        Response r2=client.AdminDailyIncomeForSystem();
+        Double DailyIncome=(Double) r2.getReturnObject().get("DailyIncome");
+        Assertions.assertEquals(DailyIncome, 0);
     }
 
     @Test
-    void HappyDailyIncomeForSystem(){
-        String tmpConn= tradingSystemImpl.ConnectSystem().returnConnID();
-        Response r1=tradingSystemImpl.Login(tmpConn,"amit","qweasd");
+    void SadNotAdmin(){
+        Response r2=client.AdminDailyIncomeForSystem();
+        Assertions.assertTrue(r2.getIsErr());
+    }
 
-        Store tmp=tradingSystemImpl.stores.get(storeid);
-        Product p1=new Product(NofetStore,"NofetStore",1,"1","1",2.0);
-        Product p2=new Product(NofetStore,"NofetStore",2,"2","2",4.0);
-        Product p3=new Product(NofetStore,"NofetStore",3,"3","3",13.0);
-        Product p4=new Product(NofetStore,"NofetStore",4,"4","4",21.0);
+    //endregion
+
+
+
+}
+/*
+client.openStore("Tmp1");
+        DummyStore store1=null;
+        for (DummyStore s:client.showAllStores().getStores()
+        ) {
+            if (s.getName().equals("Tmp1")){
+                store1=s;
+            }
+        }
+        if(store1==null){
+            store1=client.showAllStores().getStores().get(0);
+        }
+        Product p1=new Product(store1.getId(),"Tmp1",1,"1","1",2.0);
+        Product p2=new Product(store1.getId(),"Tmp1",2,"2","2",4.0);
+        Product p3=new Product(store1.getId(),"Tmp1",3,"3","3",13.0);
 
         LinkedList<Product> PSH1=new LinkedList<>();
         PSH1.add(p1);
         PSH1.add(p2);
         PSH1.add(p3);
+        ShoppingBag SB1=new ShoppingBag(1,store1.getId());
+        SB1.setFinalPrice(17.0);
 
-        ShoppingBag SB1=new ShoppingBag(1,NofetStore);
-        SB1.setFinalPrice(20.0);
+        client.clearSystem();
+        client.connectSystem();
+        client.Login("amit", "qweasd");
+        client.openStore("Tmp2");
+        DummyStore store2=null;
+        for (DummyStore s:client.showAllStores().getStores()
+        ) {
+            if (s.getName().equals("Tmp2")){
+                store2=s;
+            }
+        }
+        if(store2==null){
+            store2=client.showAllStores().getStores().get(0);
+        }
+        Product ps2=new Product(store2.getId(),"Tmp2",2,"2","2",4.0);
+        Product ps3=new Product(store2.getId(),"Tmp2",3,"3","3",13.0);
+        Product ps4=new Product(store2.getId(),"Tmp2",4,"4","4",21.0);
 
+        LinkedList<Product> PSH2=new LinkedList<>();
+        PSH1.add(ps2);
+        PSH1.add(ps3);
+        PSH1.add(ps4);
+
+        ShoppingBag SB2=new ShoppingBag(2,store2.getId());
+        SB2.setFinalPrice(33.0);
         ShoppingHistory SH1=new ShoppingHistory(SB1,PSH1);
-        tmp.addHistory(SH1);
+        ShoppingHistory SH2=new ShoppingHistory(SB2,PSH2);
 
-        Response r2=tradingSystemImpl.getDailyIncomeForSystem(r1.returnUserID(),r1.returnConnID());
-        Double DailyIncome=(Double) r2.getReturnObject().get("DailyIncome");
-        Assertions.assertEquals(DailyIncome, 70.0);
-    }
-
-    //endregion
-*/
-}
-
+ */

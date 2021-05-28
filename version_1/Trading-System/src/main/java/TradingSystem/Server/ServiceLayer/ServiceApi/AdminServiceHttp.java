@@ -138,7 +138,7 @@ public class AdminServiceHttp {
      *  }
      * }
      */
-    @GetMapping("{userID}/store_history_owner")
+    @GetMapping("{userID}/admin_daily_income_for_system")
     public Response AdminDailyIncomeForSystem(@PathVariable int userID, @RequestHeader("connID") String connID){
         Response res = tradingSystem.getDailyIncomeForSystem(userID,connID);
         res.AddConnID(connID);
