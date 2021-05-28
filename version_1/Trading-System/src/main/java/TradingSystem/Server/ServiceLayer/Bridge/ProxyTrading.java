@@ -579,6 +579,7 @@ public class ProxyTrading implements TradingSystem {
             return real.ResponseForSubmissionBidding(userID, connID, storeID, productID, productPrice, userBiddingPrice, quantity);
         return null;
     }
+
     @Override
     public Response ShowBids(int userID, String connID, int storeID) {
         if(real!=null)
