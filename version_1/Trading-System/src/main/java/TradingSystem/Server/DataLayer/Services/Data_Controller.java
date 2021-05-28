@@ -2,6 +2,7 @@ package TradingSystem.Server.DataLayer.Services;
 
 import TradingSystem.Server.DataLayer.Data_Modules.*;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -13,13 +14,13 @@ import java.util.List;
 public class Data_Controller {
 
     @Autowired
-    private StoreService storeService;
-    @Autowired
     private SubcriberService subscriberService;
     @Autowired
+    private StoreService storeService;
+    @Autowired
     private ProductService productService;
-//    @Autowired
-//    private ShoppingCartService shoppingCartService;
+    @Autowired
+    private ShoppingCartService shoppingCartService;
 //    @Autowired
 //    private ShoppingHistoryService shoppingHistoryService;
 
@@ -42,6 +43,14 @@ public class Data_Controller {
     public int AddProductToStore(int storeID, String productName,
                                   String category, Double price, int quantity){
         return productService.AddProductToStore(storeID, productName, category, price, quantity);
+    }
+
+    public void addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity){
+        shoppingCartService.addProductToBag(userID, storeID, productID, quantity);
+    }
+
+    public void setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
+        shoppingCartService.setBagFinalPrice(userID, storeID, finalPrice);
     }
 
 

@@ -56,24 +56,25 @@ public class DataProduct{
 
     @ManyToOne
     @JoinColumn(
-            name = "store",
-//            nullable = false,
+            name = "store_id",
+            nullable = false,
             referencedColumnName = "storeID",
             foreignKey = @ForeignKey(
                     name = "store_product_fk"
             )
     )
     private DataStore store;
-    @ManyToOne
-    @JoinColumn(
-            name = "shopping_bag",
-//            nullable = false,
-            referencedColumnName = "shoppingbagid",
-            foreignKey = @ForeignKey(
-                    name = "shopping_bag_id_FK"
-            )
-    )
-    private DataShoppingBag shopping_bag;
+
+//    @ManyToOne
+//    @JoinColumn(
+//            name = "shopping_bag",
+////            nullable = false,
+//            referencedColumnName = "shoppingbagid",
+//            foreignKey = @ForeignKey(
+//                    name = "shopping_bag_id_FK"
+//            )
+//    )
+//    private DataShoppingBagCart shopping_bag;
 
     public DataProduct() {
         // DO NOT DELETE
@@ -132,5 +133,17 @@ public class DataProduct{
 
     public void setStore(DataStore store) {
         this.store = store;
+    }
+
+    @Override
+    public String toString() {
+        return "DataProduct{" +
+                "productID=" + productID +
+                ", productName='" + productName + '\'' +
+                ", price=" + price +
+                ", category='" + category + '\'' +
+                ", quantity=" + quantity +
+                ", store=" + store.getStoreID() +
+                '}';
     }
 }

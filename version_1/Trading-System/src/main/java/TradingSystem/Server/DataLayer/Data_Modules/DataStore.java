@@ -1,6 +1,8 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,22 +34,22 @@ public class DataStore {
 
     @Column(
             name = "storeName",
-//            nullable = false,
+            nullable = false,
             columnDefinition = "TEXT"
     )
     private String storeName;
 
     @Column(
-            name = "storeRate"
-//            nullable = false
+            name = "storeRate",
+            nullable = false
 //            columnDefinition = "TEXT"
     )
     private Double storeRate;
 
     @ManyToOne
     @JoinColumn(
-            name = "founder",
-//            nullable = false,
+            name = "founder_id",
+            nullable = false,
             referencedColumnName = "userID",
             foreignKey = @ForeignKey(
                     name = "subscriber_store_fk"
@@ -62,6 +64,14 @@ public class DataStore {
             fetch = FetchType.LAZY
     )
     private List<DataProduct> products = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "store",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
 
 
 //    @ElementCollection
@@ -119,5 +129,17 @@ public class DataStore {
 
     public void setProducts(List<DataProduct> products) {
         this.products = products;
+    }
+
+    @Override
+    public String toString() {
+        return "DataStore{" +
+                "storeID=" + storeID +
+                ", storeName='" + storeName + '\'' +
+                ", storeRate=" + storeRate +
+                ", founder=" + founder.getName() +
+                ", products=" + products +
+                ", shoppingBagsCart=" + shoppingBagsCart +
+                '}';
     }
 }

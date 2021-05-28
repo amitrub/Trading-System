@@ -1,7 +1,5 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
-import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
-import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
@@ -60,8 +58,16 @@ public class TradingSystemImplRubin implements TradingSystem {
         Store.setData_controller(this.data_controller);
         Product.setData_controller(this.data_controller);
         Inventory.setData_controller(this.data_controller);
-        ShoppingBag.setData_controller(this.data_controller);
         ShoppingCart.setData_controller(this.data_controller);
+        ShoppingBag.setData_controller(this.data_controller);
+
+        User.setTradingSystem(this);
+        Store.setTradingSystem(this);
+        Product.setTradingSystem(this);
+        Inventory.setTradingSystem(this);
+        ShoppingCart.setTradingSystem(this);
+        ShoppingBag.setTradingSystem(this);
+
         this.validation = new Validation(this);
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
@@ -74,11 +80,12 @@ public class TradingSystemImplRubin implements TradingSystem {
         String userName = "amit";
         String password = "qweasd";
         int userID = data_controller.AddSubscriber(userName, password);
-        User defaultAdmin = new User(userID,"amit", "qweasd");
+        User defaultAdmin = new User(userID,userName, password);
         this.systemAdmins.put(userID, userID);
         this.subscribers.put(userID, defaultAdmin);
         this.systemManagerPermissions.put(userID,new SystemManagerPermission());
         printUsers();
+        this.Initialization();
        // data_controller=Data_Controller.getInstance();
     }
 
@@ -109,38 +116,43 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     public void Initialization() {
-//        int userID = 1;
-//        User defaultAdmin = this.subscribers.get(userID);
-//        //TODO: to delete after
-//        String connID = "479f239c-797c-4bdb-8175-980acaabf070";
-//        this.connectedSubscribers.put(connID, userID);
-//        AddStore(userID, connID, "store1");
-//        AddStore(userID, connID, "Mar y juana");
-//        AddStore(userID, connID, "Roee Hadas");
-//        AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
-//        AddProductToStore(userID, connID,1, "Sneakers2", "Shoes",50.0, 25);
-//        AddProductToStore(userID, connID, 1,"Sneaker3", "bla" ,80.0, 25);
-//        AddProductToStore(userID, connID, 2,"Sneakers24",  "Shoes", 80.0,25);
-//        AddProductToStore(userID, connID, 2, "Sneak23", "bloo", 840.0, 25);
-//        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes",80.0, 25);
-//        AddProductToStore(userID, connID, 3,"Sneakers2", "Shoes", 50.0, 25);
-//        AddProductToStore(userID, connID, 3,"Sneaker3", "bla" , 80.0,25);
-//        AddProductToStore(userID, connID, 3,"Sneakers24",  "Shoes", 80.0,25);
-//        AddProductToStore(userID, connID, 1, "Sneak23",  "bloo",840.0, 25);
-//        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes", 80.0,25);
-//        AddProductToStore(userID,connID,1,"Sneak","Shos", 52.0, 2 );
-//        AddProductToStore(userID,connID,2,"Sneak","Shos", 52.0, 2 );
-//
-//
-//
-//        User user1 = new User("hadass", "1234");
-//        userID = user1.getId();
-//        this.subscribers.put(userID, user1);
-//        connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
-//        this.connectedSubscribers.put(connID, userID);
-//
-//        this.connectedSubscribers = new ConcurrentHashMap<>();
-//        printUsers();
+        String userName = "amit1";
+        String password = "qweasd";
+        int userID = data_controller.AddSubscriber(userName, password);
+        User user = new User(userID,userName, password);
+        this.subscribers.put(userID, user);
+        userID = 1;
+        User defaultAdmin = this.subscribers.get(userID);
+        //TODO: to delete after
+        String connID = "479f239c-797c-4bdb-8175-980acaabf070";
+        this.connectedSubscribers.put(connID, userID);
+        AddStore(userID, connID, "store1");
+        AddStore(userID, connID, "Mar y juana");
+        AddStore(userID, connID, "Roee Hadas");
+        AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
+        AddProductToStore(userID, connID,1, "Sneakers2", "Shoes",50.0, 25);
+        AddProductToStore(userID, connID, 1,"Sneaker3", "bla" ,80.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers24",  "Shoes", 80.0,25);
+        AddProductToStore(userID, connID, 2, "Sneak23", "bloo", 840.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes",80.0, 25);
+        AddProductToStore(userID, connID, 3,"Sneakers2", "Shoes", 50.0, 25);
+        AddProductToStore(userID, connID, 3,"Sneaker3", "bla" , 80.0,25);
+        AddProductToStore(userID, connID, 3,"Sneakers24",  "Shoes", 80.0,25);
+        AddProductToStore(userID, connID, 1, "Sneak23",  "bloo",840.0, 25);
+        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes", 80.0,25);
+        AddProductToStore(userID,connID,1,"Sneak","Shos", 52.0, 2 );
+        AddProductToStore(userID,connID,2,"Sneak","Shos", 52.0, 2 );
+
+
+
+        User user1 = new User("hadass", "1234");
+        userID = user1.getId();
+        this.subscribers.put(userID, user1);
+        connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
+        this.connectedSubscribers.put(connID, userID);
+
+        this.connectedSubscribers = new ConcurrentHashMap<>();
+        printUsers();
     }
 
     public String errMsgGenerator(String side, String className, String line, String msg) {

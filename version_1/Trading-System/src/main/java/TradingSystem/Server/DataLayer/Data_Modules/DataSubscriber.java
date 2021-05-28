@@ -1,5 +1,6 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 
 import javax.persistence.*;
@@ -53,21 +54,25 @@ public class DataSubscriber {
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
             fetch = FetchType.LAZY
     )
-    private List<DataStore> stores = new ArrayList<>();
+    private List<DataStore> storesFounder = new ArrayList<>();
+
     @OneToMany(
             mappedBy = "subscriber",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
             fetch = FetchType.LAZY
     )
-    private List<DataShoppingBag> shoppingBagsinHistory= new ArrayList<>();
-    @OneToMany(
-            mappedBy = "subscriber",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
-    )
-    private List<DataShoppingBag> shoppingBagsinCart= new ArrayList<>();
+    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
+
+//    @OneToMany(
+//            mappedBy = "user",
+//            orphanRemoval = true,
+//            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+//            fetch = FetchType.LAZY
+//    )
+//    private List<DataShoppingBagCart> shoppingBagsinHistory= new ArrayList<>();
+
+
 
 
     public DataSubscriber() {
@@ -79,14 +84,7 @@ public class DataSubscriber {
         this.password=password;
     }
 
-    public DataSubscriber(Integer userID, String name, String password, List<DataStore> stores) {
-        this.userID = userID;
-        this.name = name;
-        this.password = password;
-        this.stores = stores;
-//        this.shoppingBagsinCart=shoppingBagsinCart;
-//        this.shoppingBagsinHistory=shoppingBagsinHistory;
-    }
+
 
     public DataSubscriber(User user){
         this.name=user.getUserName();
@@ -105,8 +103,17 @@ public class DataSubscriber {
         return password;
     }
 
-    public List<DataStore> getStores() {
-        return stores;
+    public List<DataStore> getStoresFounder() {
+        return storesFounder;
+    }
+
+    public DataShoppingBagCart FindBag(Integer storeID) {
+        for (DataShoppingBagCart bag : this.shoppingBagsCart){
+            if(bag.getStore().getStoreID()== storeID){
+                return bag;
+            }
+        }
+        return null;
     }
 
     @Override
@@ -115,15 +122,8 @@ public class DataSubscriber {
                 "userID=" + userID +
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
-                ", stores=" + stores +
+                ", storesFounder=" + storesFounder +
+                ", shoppingBagsCart=" + shoppingBagsCart +
                 '}';
     }
-
-//    public List<DataShoppingBag> getShoppingBagsinCart() {
-//        return shoppingBagsinCart;
-//    }
-//
-//    public List<DataShoppingBag> getShoppingBagsinHistory() {
-//        return shoppingBagsinHistory;
-//    }
 }

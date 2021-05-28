@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -16,6 +17,12 @@ public class Product {
 
     public static void setData_controller(Data_Controller data_controller) {
         Product.data_controller = data_controller;
+    }
+
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        Product.tradingSystem = tradingSystem;
     }
 
     private Integer storeID;

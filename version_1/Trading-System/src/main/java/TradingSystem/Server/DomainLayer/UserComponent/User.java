@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -20,8 +21,18 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public class User implements Observer {
 
+    @Autowired
+    public static Data_Controller data_controller;
+    public static void setData_controller(Data_Controller data_controller) {
+        Store.data_controller = data_controller;
+    }
 
+    private static TradingSystemImplRubin tradingSystem;
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        User.tradingSystem = tradingSystem;
+    }
     private List<Object> messages = new ArrayList<>();
+
 
 
     public enum Permission {
@@ -43,16 +54,9 @@ public class User implements Observer {
         RequestBidding,
         EditDiscountPolicy,
         EditBuyingPolicy
-    }
 
-    @Autowired
-    public static Data_Controller data_controller;
+        }
 
-    public static void setData_controller(Data_Controller data_controller) {
-        Store.data_controller = data_controller;
-    }
-
-    private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     private static int nextUserID = 0;
 
     private final Integer id;
@@ -231,7 +235,7 @@ public class User implements Observer {
     }
 
     public Response AddProductToCart(int StoreId, int productId, int quantity) {
-        return shoppingCart.addProductToBag(StoreId, productId, quantity);
+        return shoppingCart.addProductToBag(StoreId, productId, quantity, id>=1);
     }
 
     public List<DummyProduct> ShowShoppingCart() {

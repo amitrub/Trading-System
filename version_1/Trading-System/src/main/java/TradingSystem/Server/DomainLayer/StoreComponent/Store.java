@@ -7,6 +7,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -28,6 +29,12 @@ public class Store extends Observable {
 
     public static void setData_controller(Data_Controller data_controller) {
         Store.data_controller = data_controller;
+    }
+
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        Store.tradingSystem = tradingSystem;
     }
 
     private static int nextStoreID=0;
@@ -55,7 +62,7 @@ public class Store extends Observable {
 
     private Double rate;
     //userID_rating
-   // private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
+    // private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
 
     //userID_Bidding
     private ConcurrentHashMap<Integer, Double> usersBidding = new ConcurrentHashMap<>();;
@@ -64,7 +71,6 @@ public class Store extends Observable {
 
     private Inventory inventory;
 
-    private TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
 
     public Store(String name, Integer founderID,  DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy) {
         this.id = getNextStoreID();
