@@ -5,6 +5,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
@@ -1218,7 +1219,6 @@ class TradingSystemImplTest {
 
     //region Load and Timer tests
 
-    // requirement 2.3
     @Test
     void register_100_Clients(){
         ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
@@ -1319,10 +1319,7 @@ class TradingSystemImplTest {
         }
 
     }
-
-    @Test
-    void TimerTest() {
-    }
+    
 
     //endregion
     
@@ -1616,7 +1613,7 @@ class TradingSystemImplTest {
     }
 
     @Test
-    void SadProductAgaintThePolicy() {
+    void SadProductAgainstThePolicy() {
         tradingSystemImpl.AddProductToStore(NofetID,NconnID,NofetStore,"1","1",10,20);
         Store s= tradingSystemImpl.stores.get(NofetStore);
         Integer productID1 =s.getProductID("1");
