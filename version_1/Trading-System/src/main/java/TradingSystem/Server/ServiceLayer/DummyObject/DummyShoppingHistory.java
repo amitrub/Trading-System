@@ -4,7 +4,6 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
