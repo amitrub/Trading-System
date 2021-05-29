@@ -1,6 +1,7 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
 
+
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 
@@ -36,6 +37,7 @@ public class DataStore {
     private Integer storeID;
 
     @Column(
+
             name = "storeName",
             nullable = false,
             columnDefinition = "TEXT"
@@ -48,6 +50,7 @@ public class DataStore {
 //            columnDefinition = "TEXT"
     )
     private Double storeRate;
+
 
     @ManyToOne
     @JoinColumn(
@@ -119,6 +122,7 @@ public class DataStore {
 //    private List<Integer> managersIDs;
 
 
+
     public DataStore() {
         // DO NOT DELETE
     }
@@ -142,10 +146,6 @@ public class DataStore {
 
     public void setStoreName(String storeName) {
         this.storeName = storeName;
-    }
-
-    public Double getStoreRate() {
-        return storeRate;
     }
 
     public void setStoreRate(Double storeRate) {

@@ -16,6 +16,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
+
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -31,6 +32,7 @@ public class Store extends Observable {
     public static void setData_controller(Data_Controller data_controller) {
         Store.data_controller = data_controller;
     }
+
 
     private static TradingSystemImplRubin tradingSystem;
 

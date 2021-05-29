@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
@@ -20,6 +21,7 @@ public class Product {
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
+
         Product.data_controller = data_controller;
     }
 

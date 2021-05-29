@@ -18,6 +18,7 @@ public class SubcriberService {
     @Autowired
     SubscriberRepository subscriberRepository;
 
+
     @Autowired
     StoreRepository storeRepository;
 

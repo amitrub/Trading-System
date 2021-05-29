@@ -56,13 +56,14 @@ public class TradingSystemImpl implements TradingSystem {
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.systemManagerPermissions=new ConcurrentHashMap<>();
+        this.validation = new Validation(this);
        // data_controller=Data_Controller.getInstance();
     }
 
     public static TradingSystemImpl getInstance() {
         if (tradingSystem == null) {
             tradingSystem = new TradingSystemImpl();
-//            tradingSystem.validation = new Validation();
+
             tradingSystem.ClearSystem();
           //  tradingSystem.Initialization();
         }
@@ -270,7 +271,7 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "Register Error: error in connID");
         }
         else{
-            if (validation.IsUserNameExist(userName)) { 
+            if (validation.IsUserNameExist(userName)) {
                 return new Response(true, "Register Error: user name is taken");
             }
 //            if(!validation.VerifyPassword(userName, password)){

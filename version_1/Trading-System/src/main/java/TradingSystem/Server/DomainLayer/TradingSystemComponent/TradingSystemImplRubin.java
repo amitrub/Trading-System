@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
@@ -23,6 +24,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecisio
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
+
 import TradingSystem.Server.JsonInitReader;
 import TradingSystem.Server.JsonStateReader;
 import TradingSystem.Server.JsonUser;
@@ -32,6 +34,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
+
 
 import java.io.File;
 import java.util.*;
@@ -48,6 +51,7 @@ public class TradingSystemImplRubin implements TradingSystem {
     public Data_Controller data_controller;
 
     public Validation validation;
+
     public AddFromDb addFromDb;
 
     private ConcurrentHashMap<Integer, Integer> systemAdmins = new ConcurrentHashMap<>();
@@ -138,7 +142,6 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     public void Initialization() {
-
         data_controller.deleteAll();
 
         try {
@@ -352,6 +355,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response Register(String connID, String userName, String password) {
+
         this.addFromDb.UploadAllUsers();
         if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
             return new Response(true, "Register Error: error in connID");
@@ -815,7 +819,6 @@ public class TradingSystemImplRubin implements TradingSystem {
 
                 Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
-
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
@@ -1112,6 +1115,7 @@ public class TradingSystemImplRubin implements TradingSystem {
             NO.unlockUser();
             return res2;
         }
+
         //Adds to the db
         data_controller.AddNewOwner(storeID, newOwner);
 
@@ -1238,6 +1242,7 @@ public class TradingSystemImplRubin implements TradingSystem {
             NM.unlockUser();
             return res2;
         }
+
         //Adds to the db
         data_controller.AddNewManager(storeID, newManager);
 
@@ -1267,6 +1272,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
+
         addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "EditManagerPermissions: The user" + userID + "is not connected");
@@ -1358,6 +1364,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response ShowStoreWorkers(int userID, String connID, int storeID){
+
         addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ShowStoreWorkers: The user " + userID + " is not connected");
@@ -1641,6 +1648,7 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
+
         data_controller.addHistoryToStoreAndUser(sh);
         this.stores.get(sh.getStoreID()).addHistory(sh);
         if (!isGuest)
@@ -1882,6 +1890,7 @@ public class TradingSystemImplRubin implements TradingSystem {
             return new Response(true, "Error in User details");
         }
         List<DummyStore> list = new ArrayList<>();
+
         addFromDb.UploadAllStores();
         for (Integer storeID: stores.keySet()){
             Store store = stores.get(storeID);
@@ -2309,6 +2318,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "Error in Subscriber details");
         }
+
         addFromDb.UploadAllUsers();
         List<DummySubscriber> dummySubscribers = new ArrayList<>();
         for(Integer id : this.subscribers.keySet()) {
@@ -2423,6 +2433,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(productPrice<=0||productPrice>product.getPrice()){
             return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid with price " +productPrice +" but it is not in the range: 0-"+product.getPrice());
         }
+
         if(quantity<=0){
             return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid with quantity " +quantity +" but it is not bigger then 0");
         }
@@ -2438,7 +2449,7 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer,int quantity) {
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer, int quantity) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
         }

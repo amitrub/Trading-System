@@ -18,6 +18,7 @@ public class Inventory {
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
+
         Inventory.data_controller = data_controller;
     }
 

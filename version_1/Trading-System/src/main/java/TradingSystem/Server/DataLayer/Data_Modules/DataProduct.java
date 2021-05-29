@@ -4,6 +4,7 @@ import javax.persistence.*;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
+
 @Entity(name = "Products")
 @Table(
         name = "products"
@@ -87,6 +88,7 @@ public class DataProduct{
         this.quantity = quantity;
     }
 
+
     public Integer getProductID() {
         return productID;
     }
@@ -94,6 +96,7 @@ public class DataProduct{
     public void setProductID(Integer productID) {
         this.productID = productID;
     }
+
 
     public String getProductName() {
         return productName;
@@ -125,6 +128,7 @@ public class DataProduct{
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+
     }
 
     public DataStore getStore() {

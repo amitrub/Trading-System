@@ -131,7 +131,7 @@ public class User implements Observer {
 
 
     public User(String userName, String password) {
-        this.id = nextUserID;
+        this.id = getNextUserID();
         this.userName = userName;
         this.password = password;
         this.shoppingCart = new ShoppingCart(this.id);

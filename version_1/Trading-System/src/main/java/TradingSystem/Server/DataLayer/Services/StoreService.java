@@ -29,6 +29,7 @@ public class StoreService {
         return dataStore.getStoreID();
     }
 
+
     public void AddNewOwner(int storeID, int newOwnerID) {
         DataStore store = storeRepository.getOne(storeID);
         DataSubscriber newOwner = subscriberRepository.getOne(newOwnerID);
