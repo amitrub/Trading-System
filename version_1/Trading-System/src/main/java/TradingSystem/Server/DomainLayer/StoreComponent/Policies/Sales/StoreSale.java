@@ -15,15 +15,15 @@ public class StoreSale extends SimpleSale {
     TradingSystemImplRubin tradingSystem;
 
     private Integer storeID;
-    private Double  discountPercentage;;
+    private Integer  discountPercentage;
 
-    public StoreSale(Expression exp,Integer storeID, Double discountPercentage) {
+    public StoreSale(Expression exp,Integer storeID, Integer discountPercentage) {
         super(exp);
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
     }
 
-    public StoreSale(Integer storeID, Double discountPercentage) {
+    public StoreSale(Integer storeID, Integer discountPercentage) {
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
     }
