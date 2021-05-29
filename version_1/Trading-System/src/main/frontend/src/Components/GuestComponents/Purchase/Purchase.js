@@ -57,16 +57,28 @@ function Purchase(props) {
         props.connID,
         guestName,
         creditNumber,
-        phone,
-        adrress
+        month,
+        year,
+        cvv,
+        idNum,
+        adrress,
+        city,
+        country,
+        mailNum
       );
     } else {
       purchaseResponse = await apiHttp.subscriberPurchase(
         props.connID,
         props.userID,
         creditNumber,
-        phone,
-        adrress
+        month,
+        year,
+        cvv,
+        idNum,
+        adrress,
+        city,
+        country,
+        mailNum
       );
     }
 

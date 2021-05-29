@@ -2005,7 +2005,7 @@ public class TradingSystemImpl implements TradingSystem {
         Store s=this.stores.get(storeID);
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
-        return new Response("");
+        return new Response("Buying policy was added successfully");
     }
 
     public Response GetPoliciesInfo(int userID, int storeID, String connID){
