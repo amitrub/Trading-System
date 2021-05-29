@@ -2,11 +2,12 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -14,12 +15,14 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-//import javafx.util.Pair;
+
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
+
+//import javafx.util.Pair;
 
 public class Store extends Observable {
 
@@ -28,6 +31,13 @@ public class Store extends Observable {
 
     public static void setData_controller(Data_Controller data_controller) {
         Store.data_controller = data_controller;
+    }
+
+
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        Store.tradingSystem = tradingSystem;
     }
 
     private static int nextStoreID=0;
@@ -55,7 +65,7 @@ public class Store extends Observable {
 
     private Double rate;
     //userID_rating
-   // private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
+    // private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
 
     //userID_Bidding
     private ConcurrentHashMap<Integer, Double> usersBidding = new ConcurrentHashMap<>();;
@@ -64,7 +74,6 @@ public class Store extends Observable {
 
     private Inventory inventory;
 
-    private TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
 
     public Store(String name, Integer founderID,  DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy) {
         this.id = getNextStoreID();
@@ -73,7 +82,7 @@ public class Store extends Observable {
         this.ownersIDs.add(founderID);
         this.discountPolicy = discountPolicy;
         this.buyingPolicy = buyingPolicy;
-       // this.rate =5.0; //todo- add rating!
+        this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
     }
 
@@ -82,7 +91,7 @@ public class Store extends Observable {
         this.name = name;
         this.founderID = founderID;
         this.ownersIDs.add(founderID);
-      //  this.rate =5.0; //todo- add rating!
+        this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
@@ -91,6 +100,17 @@ public class Store extends Observable {
         this.id = id;
         this.name = name;
         this.founderID = founderID;
+        this.ownersIDs.add(founderID);
+        this.rate =5.0; //todo- add rating!
+        this.inventory=new Inventory(this.id,name);
+        this.discountPolicy=new DiscountPolicy(this.id,null);
+        this.buyingPolicy=new BuyingPolicy(this.id,null);
+    }
+
+    public Store(DataStore store){
+        this.id=store.getStoreID();
+        this.name=store.getStoreName();
+        this.founderID=store.getFounder().getUserID();
         this.ownersIDs.add(founderID);
         this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
@@ -109,6 +129,10 @@ public class Store extends Observable {
     private static synchronized int getNextExpressionID() {
         nextExpressionID++;
         return nextExpressionID;
+    }
+
+    public void setInventory(Inventory inventory){
+        this.inventory=inventory;
     }
 
     public static void ClearSystem() {
@@ -158,6 +182,17 @@ public class Store extends Observable {
                 this.managersIDs.add(newManagerId);
                 //this.managersPermission.put(newManagerId,om);
         return "";
+    }
+
+    public void setManagersIDs(List<Integer> managersIDs){
+        this.managersIDs=managersIDs;
+    }
+    public void setOwnersIDs(List<Integer> ownersIDs){
+        this.ownersIDs=ownersIDs;
+    }
+
+    public void setShoppingHistory(List<ShoppingHistory> shoppingHistories){
+        this.shoppingHistory=shoppingHistories;
     }
 
     public String removeManager(Integer managerId) {
@@ -263,11 +298,11 @@ public class Store extends Observable {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-
+*/
     public Double getRate() {
         return rate;
     }
-*/
+
     public boolean checkProductsExistInTheStore(Integer productID, Integer quantity){
         return this.inventory.checkProductsExistInTheStore(productID,quantity);
     }
@@ -585,7 +620,4 @@ public class Store extends Observable {
         return Bids;
     }
 
-    public Double getRate() {
-        return rate;
-    }
 }

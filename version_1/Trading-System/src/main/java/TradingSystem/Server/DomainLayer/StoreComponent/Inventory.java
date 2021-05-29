@@ -1,14 +1,16 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 public class Inventory {
 
@@ -16,8 +18,16 @@ public class Inventory {
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
-        Store.data_controller = data_controller;
+
+        Inventory.data_controller = data_controller;
     }
+
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        Inventory.tradingSystem = tradingSystem;
+    }
+
     private final Integer storeID;
     private final String storeName;
     private int nextProductID = 0;
@@ -57,8 +67,10 @@ public class Inventory {
         System.out.println(data_controller);
         System.out.println("----------------------------------------------------------");
         if (!IsProductNameExist(productName)){
-            Integer productID=getNextProductID();
-            Product p=new Product(storeID, storeName, productID, productName, category, price, quantity);
+            //Adds to the db
+            Integer productID = data_controller.AddProductToStore(storeID, productName, category, price, quantity);
+
+            Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());
@@ -82,6 +94,10 @@ public class Inventory {
         return this.products.containsKey(productID) && this.products.get(productID).getQuantity() >= quantity;
     }
 
+    public void setProducts(ConcurrentHashMap<Integer,Product> products){
+        this.products=products;
+    }
+
 
     public Response addQuantityProduct(Integer productId, Integer quantity) {
         if (this.products.containsKey(productId)) {
@@ -96,6 +112,7 @@ public class Inventory {
     public Response deleteProduct(Integer productID) {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
+            data_controller.RemoveProduct(productID);
             this.products.remove(productID);
 //            this.productLock.remove(productID);
             return new Response(false, "RemoveProduct: Remove product " + productID + " from the Inventory was successful");
@@ -239,13 +256,16 @@ public class Inventory {
                         AddTheProduct = p.getPrice() >= minprice && p.getPrice() <= maxprice;
                     }
                     if (AddTheProduct) {
-                        if (AddTheProduct) {
                             products.add(PID);
-                        }
                     }
                 }
             }
         }
+        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).stream()
+                .map(DataProduct::getProductID)
+                .collect(Collectors.toList());;
+        products.addAll(productsDb);
+
      return products;
     }
 

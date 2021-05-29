@@ -47,7 +47,7 @@ function UserStoreHistory(props) {
 
   async function submitHistoryHandler(event) {
     event.preventDefault();
-    // console.log("before submitRemoveHandler");
+    console.log("before submitHistoryHandler");
 
     const adminResponse = await props.action(props.connID, props.userID, id);
 

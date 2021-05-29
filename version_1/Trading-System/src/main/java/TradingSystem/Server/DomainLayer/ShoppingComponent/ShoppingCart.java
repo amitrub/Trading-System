@@ -3,8 +3,9 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -17,13 +18,18 @@ import java.util.concurrent.locks.Lock;
 
 public class ShoppingCart {
 
-    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        ShoppingCart.tradingSystem = tradingSystem;
+    }
 
     @Autowired
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
-        Store.data_controller = data_controller;
+
+        ShoppingCart.data_controller = data_controller;
     }
 //    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
 //    private final SupplySystem supplySystem = SupplySystem.getInstance();
@@ -99,30 +105,70 @@ public class ShoppingCart {
      *  "connID": String
      * }
      */    
-    public Response addProductToBag(Integer storeID, Integer productID, Integer quantity){
+    public Response addProductToBag(Integer storeID, Integer productID, Integer quantity, boolean isGuset){
         if(!this.shoppingBags.containsKey(storeID)){
-            if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
                 return new Response(true, "AddProductToCart: The product " + productID + " doesn't exist in the store");
             }
             this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
         }
         else {
             int oldQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
-            if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, quantity + oldQuantity)) {
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity + oldQuantity)) {
                   return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
             }
         }
+
+        //Adds to the db
+        data_controller.addProductToBag(getUserID(), storeID, productID, quantity);
+
         this.shoppingBags.get(storeID).addProduct(productID, quantity);
         ConcurrentHashMap<Integer,Integer> products=this.shoppingBags.get(storeID).getProducts();
-        if (!tradingSystemImpl.validation.checkBuyingPolicy(this.userID, storeID,products)) {
+        if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,products)) {
             this.shoppingBags.get(storeID).RemoveProduct(productID);
             return new Response(true, "Adding the product "+productID+" is against the store policy");
         }
-        Double priceForBag = tradingSystemImpl.calculateBugPrice(productID, storeID, products);
-        shoppingBags.get(storeID).setFinalPrice(priceForBag);
+// <<<<<<< DB-Rubin-to-merge
+//         Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, products);
+//         shoppingBags.get(storeID).setFinalPrice(priceForBag);
+// =======
+        Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, products);
+        Double spacialPrice=  this.shoppingBags.get(storeID).calculateSpacialPrices();
+        shoppingBags.get(storeID).setFinalPrice(priceForBag+spacialPrice);
+// >>>>>>> Version-3
         Response res =new Response("The product added successfully");
         return res;
     }
+
+
+    public Response AddSpacialProductForCart(int productID, int storeID, double productPrice, Integer quantity) {
+        if(!this.shoppingBags.containsKey(storeID)){
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
+                return new Response(true, " The product " + productID + " doesn't exist in the store");
+            }
+            this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
+        }
+        else {
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
+                return new Response(true, " The quantity from the product is not in stock");
+            }
+        }
+        ConcurrentHashMap<Integer,Integer> tmpProducts=this.shoppingBags.get(storeID).getProducts();
+        if(tmpProducts.get(productID)!=null){
+            return new Response(true, "The product "+productID+" is exist in the bag already");
+        }
+        tmpProducts.put(productID,quantity);
+        if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,tmpProducts)) {
+            return new Response(true, "Adding the product "+productID+" is against the store policy");
+        }
+        this.shoppingBags.get(storeID).addSPacialProduct(productID, quantity,productPrice);
+        Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, this.shoppingBags.get(storeID).getProducts());
+        Double spacialPrice=  this.shoppingBags.get(storeID).calculateSpacialPrices();
+        shoppingBags.get(storeID).setFinalPrice(priceForBag+spacialPrice);
+        Response res =new Response("The product added successfully");
+        return res;
+    }
+
 
 
     private synchronized Double calculatePrice(){
@@ -152,7 +198,7 @@ public class ShoppingCart {
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ConcurrentHashMap<Integer, Integer> products = this.shoppingBags.get(storeID).getProducts();
-            if (!tradingSystemImpl.validation.checkBuyingPolicy(this.userID, storeID, products)) {
+            if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID, products)) {
                 this.releaseLocks(lockList);
                 return new Response(true, "Purchase in the store "+ storeID+" is against the store policy");
             }
@@ -250,7 +296,11 @@ public class ShoppingCart {
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
-            res = tradingSystemImpl.reduceProducts(SB.getProducts(), storeID);
+// <<<<<<< DB-Rubin-to-merge
+            res = tradingSystem.reduceProducts(SB.getProducts(), storeID);
+// =======
+//             res = tradingSystemImpl.reduceProducts(SB.getAllProducts(), storeID);
+// >>>>>>> Version-3
             if (res.getIsErr()) {
                 this.cancelReduceProducts();
                 this.storesReducedProductsVain=new HashSet<>();
@@ -264,7 +314,11 @@ public class ShoppingCart {
 
     private void cancelReduceProducts() {
         for (Integer storeID : this.storesReducedProductsVain) {
-            tradingSystemImpl.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
+// <<<<<<< DB-Rubin-to-merge
+            tradingSystem.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
+// =======
+//             tradingSystemImpl.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getAllProducts());
+// >>>>>>> Version-3
         }
     }
 
@@ -273,7 +327,7 @@ public class ShoppingCart {
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
             ShoppingHistory shoppingHistory = shoppingBag.createShoppingHistory();
-            tradingSystemImpl.addHistoryToStoreAndUser(shoppingHistory, isGuest);
+            tradingSystem.addHistoryToStoreAndUser(shoppingHistory, isGuest);
         }
     }
 
@@ -281,7 +335,7 @@ public class ShoppingCart {
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
-            tradingSystemImpl.PayToTheSellers(SB.getFinalPrice(), storeID);
+            tradingSystem.PayToTheSellers(SB.getFinalPrice(), storeID);
         }
     }
 
@@ -299,9 +353,18 @@ public class ShoppingCart {
             Set<Integer> productSet = SB.getProducts().keySet();
             for (Integer productID : productSet) {
                 int quantity = SB.getProducts().get(productID);
-                Product p = tradingSystemImpl.getProduct(storeID, productID);
-                DummyProduct d = new DummyProduct(storeID, tradingSystemImpl.getStoreName(storeID), productID, p.getProductName(), p.getPrice(), p.getCategory(), quantity);
+                Product p = tradingSystem.getProduct(storeID, productID);
+                DummyProduct d = new DummyProduct(storeID, tradingSystem.getStoreName(storeID), productID, p.getProductName(), p.getPrice(), p.getCategory(), quantity);
                 outputList.add(d);
+            }
+            for (Integer productID : SB.getQuantityOfSpacialProducts().keySet()) {
+                if (SB.getPriceOfSpacialProducts().containsKey(productID)) {
+                    int quantity = SB.getQuantityOfSpacialProducts().get(productID);
+                    Double price=SB.getPriceOfSpacialProducts().get(productID);
+                    Product p = tradingSystem.getProduct(storeID, productID);
+                    DummyProduct d = new DummyProduct(storeID, tradingSystem.getStoreName(storeID), productID, p.getProductName(), price, p.getCategory(), quantity);
+                    outputList.add(d);
+                }
             }
         }
         return outputList;
@@ -329,18 +392,27 @@ public class ShoppingCart {
         !this.shoppingBags.get(storeID).getProductsList().contains(productID)){
             return new Response(true,"EditCart: The product isn't in the shoppingCart, so it cannot be edited");
         }
-        if(!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID,productID,quantity)){
+        if(!tradingSystem.validation.checkProductsExistInTheStore(storeID,productID,quantity)){
             return new Response(true,"EditCart: The product isn't in the stock, so it cannot be edited");
+        }
+        if(shoppingBags.get(storeID).getQuantityOfSpacialProducts().get(productID)!=null){
+            return new Response(true,"EditCart: The product is a special product, so it cannot be edited");
         }
         Integer preQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
         this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
-        if(!tradingSystemImpl.validation.checkBuyingPolicy(userID,storeID,this.shoppingBags.get(storeID).getProducts())){
+        if(!tradingSystem.validation.checkBuyingPolicy(userID,storeID,this.shoppingBags.get(storeID).getProducts())){
             this.shoppingBags.get(storeID).editProductQuantity(productID, preQuantity);
             return new Response(true,"EditCart: The quantity of the product is against tha store policy, so it cannot be edited");
         }
         else{
             this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
-            tradingSystemImpl.calculateBugPrice(productID,storeID, this.shoppingBags.get(storeID).getProducts());
+// <<<<<<< DB-Rubin-to-merge
+//             tradingSystem.calculateBugPrice(productID,storeID, this.shoppingBags.get(storeID).getProducts());
+// =======
+            Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, this.shoppingBags.get(storeID).getProducts());
+            Double spacialPrices=this.shoppingBags.get(storeID).calculateSpacialPrices();
+            shoppingBags.get(storeID).setFinalPrice(priceForBug+spacialPrices);
+// >>>>>>> Version-3
         }
         return new Response(false,"EditCart: The quantity of the product update successfully");
 }
@@ -364,11 +436,19 @@ public class ShoppingCart {
             ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
             shoppingBag.RemoveProduct(productID);
             ConcurrentHashMap<Integer, Integer> productsInTheBug = shoppingBag.getProducts();
-            Double priceForBug = tradingSystemImpl.calculateBugPrice(userID, storeID, productsInTheBug);
-            shoppingBags.get(storeID).setFinalPrice(priceForBug);
+// <<<<<<< DB-Rubin-to-merge
+//             Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, productsInTheBug);
+//             shoppingBags.get(storeID).setFinalPrice(priceForBug);
+// =======
+            Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, productsInTheBug);
+            Double spacialPrices=this.shoppingBags.get(storeID).calculateSpacialPrices();
+            shoppingBags.get(storeID).setFinalPrice(priceForBug+spacialPrices);
+// >>>>>>> Version-3
         }
         return new Response(false, "RemoveFromCart: product removed successfully");
     }
+
+
 }
 
 

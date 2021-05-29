@@ -259,8 +259,9 @@ public class StoreOwnerServiceHttp {
      *  "connID": String
      * }
      */
-    @PostMapping("{userID}/store/{storeID}/add_buying_policy}")
+    @PostMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+
         Map<String,Object> map=(Map<String,Object>)obj.get("expression");
         Expression exp=tradingSystem.CreateExpForBuy(storeID,map);
         Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
@@ -283,9 +284,12 @@ public class StoreOwnerServiceHttp {
      *  "connID": String
      * }
      */
-    @PostMapping("{userID}/store/{storeID}/add_discount_policy}")
+    @PostMapping("{userID}/store/{storeID}/add_discount_policy")
     public Response AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        System.out.println("\n\n-----------------------------------------------------------------\n\n\n");
        Map<String, Object> map=(Map<String, Object> )obj.get("expression");
+        System.out.println(map);
+
         Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
         Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
         WriteToLogger(res);

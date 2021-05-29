@@ -189,7 +189,19 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
-    guestPurchase: (connID, name, credit_number, phone_number, address) => {
+    guestPurchase: (
+      connID,
+      guestName,
+      creditNumber,
+      month,
+      year,
+      cvv,
+      idNum,
+      adrress,
+      city,
+      country,
+      mailNum
+    ) => {
       let path = guestURL.concat(`shopping_cart/purchase`);
       const headers = {
         "Content-Type": "application/json; utf-8",
@@ -197,10 +209,16 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        name: name,
-        credit_number: credit_number,
-        phone_number: phone_number,
-        address: address,
+        name: guestName,
+        credit_number: creditNumber,
+        month: month,
+        year: year,
+        cvv: cvv,
+        ID: idNum,
+        address: adrress,
+        city: city,
+        country: country,
+        zip: mailNum,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -274,9 +292,15 @@ export const createApiClientHttp = () => {
     subscriberPurchase: (
       connID,
       userID,
-      credit_number,
-      phone_number,
-      address
+      creditNumber,
+      month,
+      year,
+      cvv,
+      idNum,
+      adrress,
+      city,
+      country,
+      mailNum
     ) => {
       let path = subscriberURL.concat(`${userID}/shopping_cart/purchase`);
       const headers = {
@@ -285,9 +309,41 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        credit_number: credit_number,
-        phone_number: phone_number,
-        address: address,
+        credit_number: creditNumber,
+        month: month,
+        year: year,
+        cvv: cvv,
+        ID: idNum,
+        address: adrress,
+        city: city,
+        country: country,
+        zip: mailNum,
+      };
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        // console.log(res);
+        return res.data;
+      });
+    },
+
+    submissionBidding: (
+      connID,
+      userID,
+      storeID,
+      productID,
+      quantity,
+      price
+    ) => {
+      let path = subscriberURL.concat(`${userID}/submission_bidding`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        storeID: storeID,
+        productID: productID,
+        quantity: quantity,
+        productPrice: price,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -296,6 +352,21 @@ export const createApiClientHttp = () => {
     },
 
     //Owner
+    //DONE
+    OwnerDailyIncomeForStore: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/owner_daily_income_for_store`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     //DONE
     ShowAllFoundedStores: (connID, userID) => {
       // console.log("ShowAllFoundedStores");
@@ -435,31 +506,35 @@ export const createApiClientHttp = () => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_buying_policy`
       );
+      console.log(path);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
         connID: connID,
       };
       const body = {
-        // expression: expression,
+        expression: expression,
       };
+      console.log(body);
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
       });
     },
 
-    AddDiscountPolicy: (connID, userID, storeID) => {
+    AddDiscountPolicy: (connID, userID, storeID, expression) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_discount_policy`
       );
+
+      console.log(path);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
         connID: connID,
       };
       const body = {
-        // TODO
+        expression: expression,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);

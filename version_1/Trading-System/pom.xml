@@ -84,6 +84,11 @@
 			<artifactId>unirest-java</artifactId>
 			<version>1.4.9</version>
 		</dependency>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<!-- version defined by spring-data-releasetrain bom-->
+		</dependency>
     </dependencies>
 
 	<build>

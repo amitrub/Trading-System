@@ -1,14 +1,23 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
 
+
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
+
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import static javax.persistence.GenerationType.SEQUENCE;
 
-@Entity(name = "Store")
+@Entity(name = "Stores")
 @Table(
         name = "stores",
         uniqueConstraints = {
-                @UniqueConstraint(name = "store_name_unique", columnNames = "name")
+                @UniqueConstraint(name = "store_name_unique", columnNames = "storeName")
         }
 )
 public class DataStore {
@@ -28,11 +37,12 @@ public class DataStore {
     private Integer storeID;
 
     @Column(
-            name = "name",
+
+            name = "storeName",
             nullable = false,
             columnDefinition = "TEXT"
     )
-    private String name;
+    private String storeName;
 
     @Column(
             name = "storeRate",
@@ -41,17 +51,67 @@ public class DataStore {
     )
     private Double storeRate;
 
-//    @ManyToOne
+
+    @ManyToOne
     @JoinColumn(
-            table = "subscribers",
-            name = "founderID",
-            nullable = false
-//            referencedColumnName = "userID",
-//            foreignKey = @ForeignKey(
-//                    name = "store_founder_fk"
-//            )
+            name = "founder_id",
+            nullable = false,
+            referencedColumnName = "userID",
+            foreignKey = @ForeignKey(
+                    name = "subscriber_store_fk"
+            )
     )
-    private Integer founderID;
+    private DataSubscriber founder;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "store_owners",
+            joinColumns = {@JoinColumn(name = "store_id", referencedColumnName = "storeID",
+                    nullable = false, updatable = false, foreignKey = @ForeignKey(
+                    name = "store_owners_fk"
+            ))},
+            inverseJoinColumns = {@JoinColumn(name = "owner_id", referencedColumnName = "userID",
+                    nullable = false, updatable = false, foreignKey = @ForeignKey(
+                    name = "owners_store_fk"))}
+    )
+    private Set<DataSubscriber> owners = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "store_managers",
+            joinColumns = {@JoinColumn(name = "store_id", referencedColumnName = "storeID",
+                    nullable = false, updatable = false, foreignKey = @ForeignKey(
+                    name = "store_managers_fk"
+            ))},
+            inverseJoinColumns = {@JoinColumn(name = "manager_id", referencedColumnName = "userID",
+                    nullable = false, updatable = false, foreignKey = @ForeignKey(
+                    name = "managers_store_fk"))}
+    )
+    private Set<DataSubscriber> managers = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "store",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataProduct> products = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "store",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "store",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 
 
 //    @ElementCollection
@@ -61,10 +121,15 @@ public class DataStore {
 //    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
 //    private List<Integer> managersIDs;
 
-    public DataStore(String name, Integer founderID){
-        this.name = name;
+
+
+    public DataStore() {
+        // DO NOT DELETE
+    }
+
+    public DataStore(String name){
+        this.storeName = name;
         this.storeRate = 5.0;
-        this.founderID=founderID;
     }
 
     public Integer getStoreID() {
@@ -75,27 +140,62 @@ public class DataStore {
         this.storeID = storeID;
     }
 
-    public String getName() {
-        return name;
+    public String getStoreName() {
+        return storeName;
+    }
+
+    public void setStoreName(String storeName) {
+        this.storeName = storeName;
     }
 
     public void setName(String name) {
         this.name = name;
     }
 
-    public Double getStoreRate() {
-        return storeRate;
-    }
 
     public void setStoreRate(Double storeRate) {
         this.storeRate = storeRate;
     }
 
-    public Integer getFounderID() {
-        return founderID;
+    public DataSubscriber getFounder() {
+        return founder;
     }
 
-    public void setFounderID(Integer founderID) {
-        this.founderID = founderID;
+    public void setFounder(DataSubscriber founder) {
+        this.founder = founder;
+    }
+
+    public List<DataProduct> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<DataProduct> products) {
+        this.products = products;
+    }
+
+    public void AddNewOwner(DataSubscriber newOwner) {
+        if (!this.owners.contains(newOwner)) {
+            this.owners.add(newOwner);
+        }
+        newOwner.AddOwnerStore(this);
+    }
+
+    public void AddNewManager(DataSubscriber newManager) {
+        if (!this.managers.contains(newManager)) {
+            this.managers.add(newManager);
+        }
+        newManager.AddManagerStore(this);
+    }
+
+    @Override
+    public String toString() {
+        return "DataStore{" +
+                "storeID=" + storeID +
+                ", storeName='" + storeName + '\'' +
+                ", storeRate=" + storeRate +
+                ", founder=" + founder.getName() +
+                ", products=" + products +
+                ", shoppingBagsCart=" + shoppingBagsCart +
+                '}';
     }
 }
