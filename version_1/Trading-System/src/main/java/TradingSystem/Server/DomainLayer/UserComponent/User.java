@@ -2,23 +2,40 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
-import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public  class User implements Observer {
+public class User implements Observer {
 
+    @Autowired
+    public static Data_Controller data_controller;
+    public static void setData_controller(Data_Controller data_controller) {
+        Store.data_controller = data_controller;
+    }
 
+    private static TradingSystemImplRubin tradingSystem;
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        User.tradingSystem = tradingSystem;
+    }
     private List<Object> messages = new ArrayList<>();
+
 
 
     public enum Permission {
@@ -40,9 +57,9 @@ public  class User implements Observer {
         RequestBidding,
         EditDiscountPolicy,
         EditBuyingPolicy
-    }
 
-    private final TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
+        }
+
     private static int nextUserID = 0;
 
     private final Integer id;
@@ -100,6 +117,18 @@ public  class User implements Observer {
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
+    public User(DataSubscriber subscriber) {
+        this.id = subscriber.getUserID();
+        this.userName = subscriber.getName();
+        this.password = subscriber.getPassword();
+        this.shoppingCart = new ShoppingCart(this.id);
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
+        this.ownerPermission=new ConcurrentHashMap<>();
+        this.managerPermission=new ConcurrentHashMap<>();
+    }
+
 
     public User(String userName, String password) {
         this.id = nextUserID;
@@ -139,6 +168,7 @@ public  class User implements Observer {
         nextUserID++;
         return nextUserID;
     }
+
 
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
@@ -220,7 +250,7 @@ public  class User implements Observer {
     }
 
     public Response AddProductToCart(int StoreId, int productId, int quantity) {
-        return shoppingCart.addProductToBag(StoreId, productId, quantity);
+        return shoppingCart.addProductToBag(StoreId, productId, quantity, id>=1);
     }
 
     public List<DummyProduct> ShowShoppingCart() {

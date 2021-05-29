@@ -1,6 +1,10 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,6 +12,19 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Product {
+
+    @Autowired
+    public static Data_Controller data_controller;
+
+    public static void setData_controller(Data_Controller data_controller) {
+        Product.data_controller = data_controller;
+    }
+
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        Product.tradingSystem = tradingSystem;
+    }
 
     private Integer storeID;
     private String storeName;
@@ -59,6 +76,19 @@ public class Product {
         this.productComments=new ConcurrentHashMap<Integer, String>();
         this.productRating=new ConcurrentHashMap<Integer, Double>();
         this.quantity = toCopyProduct.quantity;
+    }
+
+    public Product(DataProduct product){
+        this.storeID=product.getStore().getStoreID();
+        this.storeName=product.getStore().getStoreName();
+        this.productID=product.getProductID();
+        this.productName=product.getProductName();
+        this.category=product.getCategory();
+        this.price=product.getPrice();
+        //TODO add rate
+        this.productComments=new ConcurrentHashMap<Integer, String>();
+        this.productRating=new ConcurrentHashMap<Integer, Double>();
+        this.quantity = product.getQuantity();
     }
 
     public Lock getLock() {

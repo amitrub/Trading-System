@@ -62,9 +62,9 @@ class ShoppingCartTest {
         Store Nstore = t.stores.get(storeID1);
         Integer productID1 = Nstore.getProductID("computer");
         Integer productID2 = Nstore.getProductID("Bag");
-        Response res1=SC1.addProductToBag(storeID1,productID1,10);
-        Response res2=SC1.addProductToBag(storeID1,productID2,60);
-        Response res3=SC1.addProductToBag(storeID1,7,10);
+        Response res1=SC1.addProductToBag(storeID1,productID1,10, true);
+        Response res2=SC1.addProductToBag(storeID1,productID2,60, true);
+        Response res3=SC1.addProductToBag(storeID1,7,10, true);
         //QuantityLimitForProduct exp = new QuantityLimitForProduct(10, productID1);
         //t.addBuyingPolicy(NuserId, NconnID, storeID2, exp);
         //Response res4=SC1.addProductToBag(storeID2,productID1,12);
@@ -91,8 +91,8 @@ class ShoppingCartTest {
         Integer productID2 = Nstore.getProductID("Bag");
         Integer productID3 = Nstore.getProductID("Bed");
         Response res0 = SC1.editProductQuantityFromCart(storeID1,productID1,5);
-        SC1.addProductToBag(storeID1,productID1,3);
-        SC1.addProductToBag(storeID1,productID2,2);
+        SC1.addProductToBag(storeID1,productID1,3, true);
+        SC1.addProductToBag(storeID1,productID2,2, true);
         Response res1 = SC1.editProductQuantityFromCart(storeID1,productID1,5);
         Response res2 = SC1.editProductQuantityFromCart(storeID1,productID3,1);
         //QuantityLimitForProduct exp = new QuantityLimitForProduct(10, productID1);
@@ -115,9 +115,9 @@ class ShoppingCartTest {
     //requirement 2.8
     @Test
     void removeProductFromCart() {
-        SC1.addProductToBag(storeID1,1,3);
-        SC1.addProductToBag(storeID2,2,2);
-        SC1.addProductToBag(storeID2,3,1);
+        SC1.addProductToBag(storeID1,1,3, true);
+        SC1.addProductToBag(storeID2,2,2, true);
+        SC1.addProductToBag(storeID2,3,1, true);
 
         Response res1= SC1.RemoveProductFromCart(storeID1,1);
         Response res2= SC1.RemoveProductFromCart(storeID2,1);
@@ -135,9 +135,9 @@ class ShoppingCartTest {
     //requirement 2.8
     @Test
     void showShoppingCart() {
-        SC1.addProductToBag(storeID1,1,3);
-        SC1.addProductToBag(storeID2,2,2);
-        SC1.addProductToBag(storeID2,3,1);
+        SC1.addProductToBag(storeID1,1,3, true);
+        SC1.addProductToBag(storeID2,2,2, true);
+        SC1.addProductToBag(storeID2,3,1, true);
 
         List<DummyProduct> L1= SC1.ShowShoppingCart();
 

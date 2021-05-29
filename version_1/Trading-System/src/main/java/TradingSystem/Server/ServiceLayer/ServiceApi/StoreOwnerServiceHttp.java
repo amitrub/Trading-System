@@ -3,10 +3,10 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
@@ -18,9 +18,15 @@ import java.util.Map;
 @RequestMapping(path = "api/owner")
 @CrossOrigin("*")
 public class StoreOwnerServiceHttp {
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+
     private static final LoggerController loggerController=LoggerController.getInstance();
 
+    @Autowired
+    private final TradingSystem tradingSystem;
+
+    public StoreOwnerServiceHttp(TradingSystem tradingSystem) {
+        this.tradingSystem = tradingSystem;
+    }
 
     /**
      * @requirement

@@ -1,27 +1,30 @@
-package TradingSystem.Server.DataLayer.Data_Modules;
+package TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory;
+
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 
 import javax.persistence.*;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
-@Entity(name = "Products")
+@Entity(name = "HistoryProducts")
 @Table(
-        name = "products"
+        name = "history_product"
 //        uniqueConstraints = {
 //                @UniqueConstraint(name = "store_name_unique", columnNames = "name")
 //        }
 )
-public class DataProduct{
+public class DataHistoryProduct {
 
     @Id
     @SequenceGenerator(
-            name = "PRODUCT_SEQUENCE",
-            sequenceName = "PRODUCT_SEQUENCE",
+            name = "HISTORY_PRODUCT_SEQUENCE",
+            sequenceName = "HISTORY_PRODUCT_SEQUENCE",
             allocationSize = 1
     )
     @GeneratedValue(
             strategy = SEQUENCE,
-            generator = "PRODUCT_SEQUENCE"
+            generator = "HISTORY_PRODUCT_SEQUENCE"
     )
     @Column(
             name = "productID"
@@ -56,35 +59,31 @@ public class DataProduct{
 
     @ManyToOne
     @JoinColumn(
-            name = "store_id",
+            name = "shopping_history_id",
             nullable = false,
-            referencedColumnName = "storeID",
+            referencedColumnName = "shoppingHistoryID",
             foreignKey = @ForeignKey(
-                    name = "store_product_fk"
+                    name = "shopping_history_product_fk"
             )
     )
-    private DataStore store;
+    private DataShoppingHistory shoppingHistory;
 
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "shopping_bag",
-////            nullable = false,
-//            referencedColumnName = "shoppingbagid",
-//            foreignKey = @ForeignKey(
-//                    name = "shopping_bag_id_FK"
-//            )
-//    )
-//    private DataShoppingBagCart shopping_bag;
-
-    public DataProduct() {
+    public DataHistoryProduct() {
         // DO NOT DELETE
     }
 
-    public DataProduct(String productName, String category, double price, int quantity) {
+    public DataHistoryProduct(String productName, String category, double price, int quantity) {
         this.productName = productName;
         this.price = price;
         this.category = category;
         this.quantity = quantity;
+    }
+
+    public DataHistoryProduct(Product product) {
+        this.productName = product.getProductName();
+        this.price = product.getPrice();
+        this.category = product.getCategory();
+        this.quantity = product.getQuantity();
     }
 
     public Integer getProductID() {
@@ -127,12 +126,12 @@ public class DataProduct{
         this.quantity = quantity;
     }
 
-    public DataStore getStore() {
-        return store;
+    public DataShoppingHistory getShoppingHistory() {
+        return shoppingHistory;
     }
 
-    public void setStore(DataStore store) {
-        this.store = store;
+    public void setShoppingHistory(DataShoppingHistory shoppingHistory) {
+        this.shoppingHistory = shoppingHistory;
     }
 
     @Override
@@ -143,7 +142,7 @@ public class DataProduct{
                 ", price=" + price +
                 ", category='" + category + '\'' +
                 ", quantity=" + quantity +
-                ", store=" + store.getStoreID() +
+//                ", store=" + shoppingHistory.() +
                 '}';
     }
 }
