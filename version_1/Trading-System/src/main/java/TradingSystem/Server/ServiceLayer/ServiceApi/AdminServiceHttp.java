@@ -2,8 +2,10 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,7 +13,9 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("*")
 public class AdminServiceHttp {
 
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    @Autowired
+    TradingSystemImplRubin tradingSystem;
+
     private static final LoggerController loggerController=LoggerController.getInstance();
 
 

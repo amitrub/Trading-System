@@ -1,7 +1,11 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
@@ -11,9 +15,11 @@ import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_RESET;
 
 public class PurchaseTaskUnitTests implements Callable<ResultUnitTests> {
 
+    @Autowired
+    private TradingSystemImplRubin tradingSystem;
+
     private String connID;
     private String name;
-    private TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
     private int storeID;
     private int productID;
     private int quantity;

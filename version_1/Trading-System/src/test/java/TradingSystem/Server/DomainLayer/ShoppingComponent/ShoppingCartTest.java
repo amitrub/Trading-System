@@ -2,14 +2,17 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
@@ -18,10 +21,14 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 class ShoppingCartTest {
 
-    TradingSystemImpl t= TradingSystemImpl.getInstance();
-    String guest1=t.ConnectSystem().returnConnID();
+    @Autowired
+    TradingSystemImplRubin tradingSystem;
+
+    String guest1= tradingSystem.ConnectSystem().returnConnID();
     String NconnID;
     int NuserId ,storeID1,storeID2;
     ShoppingCart SC1;
@@ -30,15 +37,15 @@ class ShoppingCartTest {
 
     @BeforeEach
     void setUp() {
-        t.Register(guest1, "nofet", "123");
-        Response res=t.Login(guest1, "nofet", "123");
+        tradingSystem.Register(guest1, "nofet", "123");
+        Response res= tradingSystem.Login(guest1, "nofet", "123");
         NconnID= res.returnConnID();
         NuserId=res.returnUserID();
         SC1=new ShoppingCart(NuserId);
         SC2=new ShoppingCart(NuserId);
-        t.AddStore(NuserId, NconnID, "NofetStore1");
-        t.AddStore(NuserId, NconnID, "NofetStore2");
-        for(Store store: t.stores.values()){
+        tradingSystem.AddStore(NuserId, NconnID, "NofetStore1");
+        tradingSystem.AddStore(NuserId, NconnID, "NofetStore2");
+        for(Store store: tradingSystem.stores.values()){
             if(store.getName().equals("NofetStore1")){
                 storeID1=store.getId();
             }
@@ -46,27 +53,27 @@ class ShoppingCartTest {
                 storeID2=store.getId();
             }
         }
-        t.AddProductToStore(NuserId, NconnID, storeID1, "computer", "Technology", 3000.0,20);
-        t.AddProductToStore(NuserId, NconnID, storeID1, "Bag", "Beauty", 100.0,50);
-        t.AddProductToStore(NuserId, NconnID, storeID1, "Bed", "Fun", 4500.0,30);
+        tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "computer", "Technology", 3000.0,20);
+        tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "Bag", "Beauty", 100.0,50);
+        tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "Bed", "Fun", 4500.0,30);
 
 
-        t.AddProductToStore(NuserId, NconnID, storeID2, "computer", "Technology", 3500.0,20);
-        t.AddProductToStore(NuserId, NconnID, storeID2, "Bag", "Beauty", 50.0,50);
-        t.AddProductToStore(NuserId, NconnID, storeID2, "Bed", "Fun", 4000.0,30);
+        tradingSystem.AddProductToStore(NuserId, NconnID, storeID2, "computer", "Technology", 3500.0,20);
+        tradingSystem.AddProductToStore(NuserId, NconnID, storeID2, "Bag", "Beauty", 50.0,50);
+        tradingSystem.AddProductToStore(NuserId, NconnID, storeID2, "Bed", "Fun", 4000.0,30);
     }
 
     //requirement 2.7
     @Test
     void addProductToBag() {
-        Store Nstore = t.stores.get(storeID1);
+        Store Nstore = tradingSystem.stores.get(storeID1);
         Integer productID1 = Nstore.getProductID("computer");
         Integer productID2 = Nstore.getProductID("Bag");
         Response res1=SC1.addProductToBag(storeID1,productID1,10, true);
         Response res2=SC1.addProductToBag(storeID1,productID2,60, true);
         Response res3=SC1.addProductToBag(storeID1,7,10, true);
         //QuantityLimitForProduct exp = new QuantityLimitForProduct(10, productID1);
-        //t.addBuyingPolicy(NuserId, NconnID, storeID2, exp);
+        //tradingSystem.addBuyingPolicy(NuserId, NconnID, storeID2, exp);
         //Response res4=SC1.addProductToBag(storeID2,productID1,12);
 
         //happy
@@ -86,7 +93,7 @@ class ShoppingCartTest {
     //requirement 2.8
     @Test
     void editProductQuantityFromCart() {
-        Store Nstore = t.stores.get(storeID1);
+        Store Nstore = tradingSystem.stores.get(storeID1);
         Integer productID1 = Nstore.getProductID("computer");
         Integer productID2 = Nstore.getProductID("Bag");
         Integer productID3 = Nstore.getProductID("Bed");
@@ -96,7 +103,7 @@ class ShoppingCartTest {
         Response res1 = SC1.editProductQuantityFromCart(storeID1,productID1,5);
         Response res2 = SC1.editProductQuantityFromCart(storeID1,productID3,1);
         //QuantityLimitForProduct exp = new QuantityLimitForProduct(10, productID1);
-        //t.addBuyingPolicy(NuserId, NconnID, storeID2, exp);
+        //tradingSystem.addBuyingPolicy(NuserId, NconnID, storeID2, exp);
         //Response res5 = SC1.editProductQuantityFromCart(storeID1,productID1,15);
 
         //happy

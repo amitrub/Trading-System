@@ -51,14 +51,9 @@ public class myTest {
     Store Nstore;
     Store Estore;
 
-//    @BeforeAll
-//    public static void setUp(@Autowired TradingSystem tradingSystem){
-//        System.out.println("+++++++++++++++++++++++++++++++");
-//        System.out.println(tradingSystem);
-//    }
-
     @Before
     public void setUp(){
+
         connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID,"reutlevy","8119");
 
@@ -66,7 +61,8 @@ public class myTest {
         connID= tradingSystem.Login(connID,"reutlevy","8119").returnConnID();
 
 
-        tradingSystem.AddStore(userID,connID,"store8");
+        Response responseR = tradingSystem.AddStore(userID,connID,"store8");
+        storeid = (Integer) responseR.getReturnObject().get("storeID");
         for(Store store1: tradingSystem.stores.values()){
             if(store1.getName().equals("store8")){
                 storeid=store1.getId();
@@ -97,6 +93,7 @@ public class myTest {
 
         tradingSystem.AddStore(NofetID,NconnID,"NofetStore");
         tradingSystem.AddStore(ElinorID,EconnID,"ElinorStore");
+
         for(Store store1: tradingSystem.stores.values()){
             if(store1.getName().equals("NofetStore")){
                 NofetStore=store1.getId();
@@ -109,6 +106,7 @@ public class myTest {
 
         Estore = tradingSystem.stores.get(ElinorStore);
         Nstore = tradingSystem.stores.get(NofetStore);
+/*
         Product p1=new Product(NofetStore,"NofetStore",1,"1","1",2.0);
         Product p2=new Product(NofetStore,"NofetStore",2,"2","2",4.0);
         Product p3=new Product(NofetStore,"NofetStore",3,"3","3",13.0);
@@ -134,6 +132,10 @@ public class myTest {
 
         Nstore.addHistory(SH1);
         Nstore.addHistory(SH2);
+
+*/
+
+
     }
 
     public void tearDown(){
@@ -184,6 +186,7 @@ public class myTest {
         Assertions.assertTrue(response.getIsErr());
     }
 
+    /*
     // requirement 2.3
     //TODO
     @Test
@@ -220,6 +223,8 @@ public class myTest {
             }
         }
     }
+
+     */
 
     // requirement 2.4
     @Test
@@ -368,7 +373,6 @@ public class myTest {
         tradingSystem.AddProductToCart(EconnID, NofetStore, productID2, 1);
         tradingSystem.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
-        //DummyUser test = new DummyUser("ala", "123");
         Response res = tradingSystem.ShowSubscriberHistory(ElinorID, EconnID);
         Assertions.assertFalse(res.getIsErr());
         List<DummyShoppingHistory> list = (List<DummyShoppingHistory>) res.getReturnObject().get("history");

@@ -1,7 +1,8 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
@@ -10,13 +11,15 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class AddManagerTaskUnitTests implements Callable<ResultUnitTests> {
 
+    @Autowired
+    TradingSystemImplRubin tradingSystem;
+
     private String name;
     private int userID;
     private String connID;
     private String pass;
     private int storeID;
     private int newManagerID;
-    private TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
 
     public AddManagerTaskUnitTests(String name, String pass, int storeID, int newManagerID, Integer userID, String connID) {
         this.name = name;

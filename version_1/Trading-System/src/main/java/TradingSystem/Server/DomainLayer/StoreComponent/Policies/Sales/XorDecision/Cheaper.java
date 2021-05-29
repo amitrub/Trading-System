@@ -8,8 +8,6 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class Cheaper implements Decision {
 
-    TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
-
     @Override
     public Double chooseSale(List<Sale> sales, ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         if (!sales.isEmpty()) {
