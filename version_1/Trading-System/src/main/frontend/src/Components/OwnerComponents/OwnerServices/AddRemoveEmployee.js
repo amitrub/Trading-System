@@ -92,6 +92,10 @@ function AddRemoveEmployee(props) {
                   about="Show number of results:"
                 >
                   {/* TOOD: change map to workersResponse.workers */}
+                  <option value={employeeID} disabled>
+                    {" "}
+                    choose id{" "}
+                  </option>
                   {workers.map((currWorker) => (
                     <option value={currWorker.userID}>
                       {currWorker.userName}
