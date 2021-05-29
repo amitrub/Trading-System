@@ -4,15 +4,19 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expr
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProductSale extends SimpleSale {
 
+    @Autowired
+    TradingSystemImplRubin tradingSystem;
+
     Integer productID;
     Integer discountPercentage;
-    TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
 
     public ProductSale(Expression exp, Integer productID, Integer discountPercentage) {
         super(exp);

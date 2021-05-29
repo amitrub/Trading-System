@@ -9,6 +9,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class QuantityForGetSale extends SimpleExpression {
 
+
     private Integer productId;
     private Integer quantityForSale;
 

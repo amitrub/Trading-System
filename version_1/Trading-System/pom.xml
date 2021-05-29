@@ -89,6 +89,12 @@
 			<artifactId>spring-data-jpa</artifactId>
 			<!-- version defined by spring-data-releasetrain bom-->
 		</dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>5.3.5</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
 	<build>

@@ -3,7 +3,9 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -12,10 +14,12 @@ public class QuantityLimitForCategory extends SimpleExpression {
     Integer maxQuantity;
     String  category;
 
+    @Autowired
+    TradingSystemImplRubin tradingSystem;
+
     public QuantityLimitForCategory(Integer maxQuantity,String category) {
         this.category=category;
         this.maxQuantity = maxQuantity;
-        tradingSystem= TradingSystemImpl.getInstance();
     }
 
     @Override

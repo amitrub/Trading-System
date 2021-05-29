@@ -4,22 +4,30 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expr
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.LinkedList;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class BuyingPolicy {
 
     private Integer storeID;
     private Expression exp;
 
-    public TradingSystemImpl tradingSystem;
+
+    @Autowired
+    TradingSystemImplRubin tradingSystem;
 
     public BuyingPolicy(Integer storeID,Expression exp){
         this.storeID=storeID;
         this.exp=exp;
-        this.tradingSystem= TradingSystemImpl.getInstance();
     }
 
     public Expression getExp() {

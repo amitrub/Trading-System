@@ -4,7 +4,9 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Simp
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -13,12 +15,13 @@ public class AgeLimitForCategory extends SimpleExpression {
 
     Integer minAge;
     String  category;
-    TradingSystemImpl tradingSystem;
+
+    @Autowired
+    TradingSystemImplRubin tradingSystem;
 
     public AgeLimitForCategory(Integer minAge,String category) {
         this.category=category;
         this.minAge = minAge;
-        tradingSystem= TradingSystemImpl.getInstance();
     }
 
     @Override
