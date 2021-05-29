@@ -99,9 +99,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         this.subscribers=subscribers;
     }
 
-    public ConcurrentHashMap<Integer, Store> getStores() {
-        return stores;
-    }
     private void setData_controller(Data_Controller data_controller){
         User.setData_controller(data_controller);
         Store.setData_controller(data_controller);
