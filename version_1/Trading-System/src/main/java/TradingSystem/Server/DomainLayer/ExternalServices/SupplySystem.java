@@ -5,6 +5,9 @@ import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 
+import java.net.SocketTimeoutException;
+import java.util.concurrent.TimeoutException;
+
 import static TradingSystem.Server.ServiceLayer.Configuration.urlbaseExternalSystems;
 
 public class SupplySystem implements ExternalServices {
@@ -38,6 +41,7 @@ public class SupplySystem implements ExternalServices {
         String action_type = "handshake";
         HttpResponse<String> response = null;
         try {
+            Unirest.setTimeouts(20000,20000);
             response = Unirest.post(urlbaseExternalSystems)
                     .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
                     .header("cache-control", "no-cache")
@@ -56,6 +60,7 @@ public class SupplySystem implements ExternalServices {
         String action_type = "supply";
         HttpResponse<String> response = null;
         try {
+            Unirest.setTimeouts(20000,20000);
             response = Unirest.post("https://cs-bgu-wsep.herokuapp.com/")
                     .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
                     .header("cache-control", "no-cache")
@@ -80,6 +85,7 @@ public class SupplySystem implements ExternalServices {
         String action_type = "cancel_supply";
         HttpResponse<String> response = null;
         try {
+            Unirest.setTimeouts(20000,20000);
             response = Unirest.post(urlbaseExternalSystems)
                     .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
                     .header("cache-control", "no-cache")

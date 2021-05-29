@@ -151,6 +151,36 @@ public class Response {
             return new ArrayList<>();
     }
 
+    public Double returnDailyIncome(){
+//        if(!this.isErr){
+//            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("history");
+//            List<DummyShoppingHistory> output = new ArrayList<>();
+//            for (Map<String, Object> map: storeList){
+//                output.add(new DummyShoppingHistory(map));
+//            }
+//            return output;
+//        }
+//        else
+//            return new ArrayList<>();
+        Double Income= (Double)this.returnObject.get("DailyIncome");
+        return Income;
+    }
+
+    public List<DummyBid> returnBids(){
+//        if(!this.isErr){
+//            List<Map<String, Object>> storeList = (List<Map<String, Object>>) this.returnObject.get("products");
+//            List<DummyProduct> output = new ArrayList<>();
+//            for (Map<String, Object> map: storeList){
+//                output.add(new DummyProduct(map));
+//            }
+//            return output;
+//        }
+//        else
+//            return new ArrayList<>();
+        List<DummyBid> hashMap= (List<DummyBid>)this.returnObject.get("Bids");
+        return hashMap;
+    }
+
 
     public boolean getIsErr() {
         return isErr;

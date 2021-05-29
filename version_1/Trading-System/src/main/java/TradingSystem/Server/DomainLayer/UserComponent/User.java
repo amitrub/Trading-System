@@ -479,9 +479,11 @@ public class User implements Observer {
     //TODO Implement
    // public void AddProductForPurchaseOffer(int productID, int storeID, int productPrice) { }
 
-    public void AddSpacialProductForCart(int productID, int storeID, double productPrice) {
-
-
+    public Response AddSpacialProductForCart(int productID, int storeID, double productPrice,Integer quantity) {
+         if(this.shoppingCart==null){
+             this.shoppingCart=new ShoppingCart(this.id);
+         }
+        return this.shoppingCart.AddSpacialProductForCart(productID,storeID, productPrice,quantity);
     }
 
 

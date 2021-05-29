@@ -35,6 +35,7 @@ public class PaymentSystem implements ExternalServices {
     private Response handshake(){
         HttpResponse<String> response = null;
         try {
+            Unirest.setTimeouts(20000,20000);
             response = Unirest.post(urlbaseExternalSystems)
                     .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
                     .header("cache-control", "no-cache")
@@ -53,6 +54,7 @@ public class PaymentSystem implements ExternalServices {
         String action_type = "pay";
         HttpResponse<String> response = null;
         try {
+            Unirest.setTimeouts(20000,20000);
             response = Unirest.post("https://cs-bgu-wsep.herokuapp.com/")
                     .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
                     .header("cache-control", "no-cache")
@@ -78,6 +80,7 @@ public class PaymentSystem implements ExternalServices {
         String action_type = "cancel_pay";
         HttpResponse<String> response = null;
         try {
+            Unirest.setTimeouts(20000,20000);
             response = Unirest.post(urlbaseExternalSystems)
                     .header("content-type", "multipart/form-data; boundary=----WebKitFormBoundary7MA4YWxkTrZu0gW")
                     .header("cache-control", "no-cache")

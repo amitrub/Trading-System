@@ -80,7 +80,7 @@ public class Store extends Observable {
         this.ownersIDs.add(founderID);
         this.discountPolicy = discountPolicy;
         this.buyingPolicy = buyingPolicy;
-       // this.rate =5.0; //todo- add rating!
+        this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
     }
 
@@ -89,7 +89,7 @@ public class Store extends Observable {
         this.name = name;
         this.founderID = founderID;
         this.ownersIDs.add(founderID);
-      //  this.rate =5.0; //todo- add rating!
+        this.rate =5.0; //todo- add rating!
         this.inventory=new Inventory(this.id,name);
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
@@ -281,11 +281,11 @@ public class Store extends Observable {
         }
         return inventory.getDummySearchForList(FinalID);
     }
-
+*/
     public Double getRate() {
         return rate;
     }
-*/
+
     public boolean checkProductsExistInTheStore(Integer productID, Integer quantity){
         return this.inventory.checkProductsExistInTheStore(productID,quantity);
     }
@@ -573,11 +573,11 @@ public class Store extends Observable {
             return DailyIncome;
         }
 
-    public void AddBidForProduct(int productID, int userID, Double productPrice) {
+    public void AddBidForProduct(int productID, int userID, Double productPrice,Integer quantity) {
         if(this.Bids==null){
             this.Bids=new ConcurrentLinkedDeque<>();
         }
-        this.Bids.add(new Bid(userID,productID,productPrice));
+        this.Bids.add(new Bid(userID,productID,productPrice,quantity));
     }
 
     public boolean CheckBidForProductExist(Integer userID, Integer productID){
@@ -603,7 +603,4 @@ public class Store extends Observable {
         return Bids;
     }
 
-    public Double getRate() {
-        return rate;
-    }
 }

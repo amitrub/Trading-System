@@ -8,23 +8,27 @@ public class DummyBid {
 
     private Integer userID;
     private Integer productID;
+    private Integer quantity;
     private Double price;
 
     public DummyBid(Bid bid) {
         this.userID = bid.getUserID();
         this.productID = bid.getProductID();
         this.price = bid.getPrice();
+        this.quantity=bid.getQuantity();
     }
 
-    public DummyBid(Integer userID, Integer productID, Double price) {
+    public DummyBid(Integer userID, Integer productID, Double price,Integer quantity) {
         this.userID = userID;
         this.productID = productID;
         this.price = price;
+        this.quantity=quantity;
     }
 
     public DummyBid(Map<String, Object> map) {
         this.userID = (Integer) map.get("userID");
         this.productID = (Integer) map.get("productID");
+        this.quantity = (Integer) map.get("quantity");
         Double tmpPrice;
         try {
             tmpPrice = (Double) map.get("price");
@@ -56,5 +60,13 @@ public class DummyBid {
 
     public void setPrice(Double price) {
         this.price = price;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 }

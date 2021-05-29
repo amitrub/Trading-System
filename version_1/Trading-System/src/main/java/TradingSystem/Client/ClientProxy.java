@@ -277,4 +277,31 @@ public class ClientProxy implements Client_Interface {
     public Response AdminAllUsers() {
         return tradingSystem.AllUsersHistoryAdmin(userID,ConnID);
     }
+
+    @Override
+    public Response AdminDailyIncomeForSystem() {
+        return tradingSystem.getDailyIncomeForSystem(this.userID,this.ConnID);
+    }
+
+    @Override
+    public Response OwnerDailyIncomeForStore(int storeID) {
+        return tradingSystem.getDailyIncomeForStore(this.userID,storeID,this.ConnID);
+    }
+
+    @Override
+    public Response submissionBidding(int storeID, int productID, int quantity, Double productPrice) {
+        return tradingSystem.subscriberBidding(this.userID,this.ConnID,storeID,productID,productPrice,quantity);
+    }
+
+    @Override
+    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, Double productPrice) {
+         return tradingSystem.ResponseForSubmissionBidding(this.userID,this.ConnID,storeID,productID,productPrice,userWhoOffer,quantity);
+    }
+
+    @Override
+    public Response ShowBids(int storeID) {
+        return tradingSystem.ShowBids(this.userID,this.ConnID,storeID);
+    }
+
+
 }
