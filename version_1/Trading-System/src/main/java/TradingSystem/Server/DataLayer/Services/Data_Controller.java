@@ -35,6 +35,10 @@ public class Data_Controller {
         return subscriberService.AddSubscriber(userName, password);
     }
 
+    public DataSubscriber GetSubscriber(String userName, String password){
+        return subscriberService.GetSubscriber(userName, password);
+    }
+
     //Req 2.1 add new store
     public int AddStore(String storeName, int userID){
         return storeService.AddStore(storeName, userID);

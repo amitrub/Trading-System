@@ -64,6 +64,15 @@ public class Response {
         else
             return -1;
     }
+
+    public Integer returnStoreID(){
+        if(!this.isErr){
+            Integer storeID = (Integer) this.returnObject.get("storeID");
+            return storeID;
+        }
+        else
+            return -1;
+    }
     public String returnConnID(){
         if(!this.isErr){
             String connID = (String) this.returnObject.get("connID");
