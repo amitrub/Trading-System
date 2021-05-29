@@ -31,6 +31,20 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
+    public ConcurrentHashMap<Integer, User> getSubscribers() {
+        if(real!=null)
+            return real.getSubscribers();
+        return null;
+    }
+
+    @Override
+    public ConcurrentHashMap<Integer, Store> getStores() {
+        if(real!=null)
+            return real.getStores();
+        return null;
+    }
+
+    @Override
     public void ClearSystem() {
         if (real != null)
             real.ClearSystem();
@@ -204,6 +218,13 @@ public class ProxyTrading implements TradingSystem {
     public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         if(real!=null)
             return real.subscriberPurchase(userID,connID,credit_number,month,year,cvv,ID,address,city,country,zip);
+        return null;
+    }
+
+    @Override
+    public Integer getUserID(String name) {
+        if(real!=null)
+            return real.getUserID(name);
         return null;
     }
 
@@ -579,10 +600,21 @@ public class ProxyTrading implements TradingSystem {
             return real.ResponseForSubmissionBidding(userID, connID, storeID, productID, productPrice, userBiddingPrice, quantity);
         return null;
     }
+
     @Override
     public Response ShowBids(int userID, String connID, int storeID) {
         if(real!=null)
             return real.ShowBids(userID, connID, storeID);
         return null;
+    }
+
+    @Override
+    public void setSubscribers(ConcurrentHashMap<Integer, User> subscribers) {
+
+    }
+
+    @Override
+    public void setStores(ConcurrentHashMap<Integer, Store> stores) {
+
     }
 }

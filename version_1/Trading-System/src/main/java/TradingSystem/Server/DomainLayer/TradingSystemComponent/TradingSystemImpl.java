@@ -29,7 +29,6 @@ import java.util.concurrent.locks.Lock;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
-
 public class TradingSystemImpl implements TradingSystem {
 
 //    @Autowired
@@ -57,13 +56,14 @@ public class TradingSystemImpl implements TradingSystem {
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.systemManagerPermissions=new ConcurrentHashMap<>();
+        this.validation = new Validation(this);
        // data_controller=Data_Controller.getInstance();
     }
 
     public static TradingSystemImpl getInstance() {
         if (tradingSystem == null) {
             tradingSystem = new TradingSystemImpl();
-            tradingSystem.validation = new Validation();
+
             tradingSystem.ClearSystem();
           //  tradingSystem.Initialization();
         }
@@ -179,6 +179,14 @@ public class TradingSystemImpl implements TradingSystem {
         System.out.println("-----------------------------------------------");
     }
 
+    public ConcurrentHashMap<Integer, User> getSubscribers() {
+        return subscribers;
+    }
+
+    public ConcurrentHashMap<Integer, Store> getStores() {
+        return stores;
+    }
+
     /**
      * @requirement 2.1
      *
@@ -263,7 +271,7 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "Register Error: error in connID");
         }
         else{
-            if (validation.IsUserNameExist(userName)) { 
+            if (validation.IsUserNameExist(userName)) {
                 return new Response(true, "Register Error: user name is taken");
             }
 //            if(!validation.VerifyPassword(userName, password)){
@@ -327,7 +335,7 @@ public class TradingSystemImpl implements TradingSystem {
 
     //Observer
     private void sendAlert(User user, Response res){
-        Publisher publisher = new Publisher();
+        Publisher publisher = new Publisher(tradingSystem);
         user.setPublisher(publisher);
         user.update(res);
     }
@@ -2005,7 +2013,7 @@ public class TradingSystemImpl implements TradingSystem {
         Store s=this.stores.get(storeID);
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
-        return new Response("");
+        return new Response("Buying policy was added successfully");
     }
 
     public Response GetPoliciesInfo(int userID, int storeID, String connID){
@@ -2385,6 +2393,16 @@ public class TradingSystemImpl implements TradingSystem {
             res.AddPair("Bids", list);
             return res;
         }
+    }
+
+    @Override
+    public void setSubscribers(ConcurrentHashMap<Integer, User> subscribers) {
+
+    }
+
+    @Override
+    public void setStores(ConcurrentHashMap<Integer, Store> stores) {
+
     }
 
 }

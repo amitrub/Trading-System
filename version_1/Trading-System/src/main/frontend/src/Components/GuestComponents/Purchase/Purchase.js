@@ -10,8 +10,15 @@ function Purchase(props) {
   const [showPurchaseForm, setShowPurchaseForm] = useState(false);
   const [guestName, setGuestName] = useState("");
   const [creditNumber, setCreditNumber] = useState("");
+  const [month, setMonth] = useState("");
+  const [year, setYear] = useState("");
+  const [cvv, setCVV] = useState("");
+  const [idNum, setIDNum] = useState("");
   const [phone, setPhone] = useState("");
   const [adrress, setAdrress] = useState("");
+  const [city, setCity] = useState("");
+  const [country, setCountry] = useState("");
+  const [mailNum, setMailNum] = useState("");
   const [popupPurchase, setPopupPurchase] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
 
@@ -50,16 +57,28 @@ function Purchase(props) {
         props.connID,
         guestName,
         creditNumber,
-        phone,
-        adrress
+        month,
+        year,
+        cvv,
+        idNum,
+        adrress,
+        city,
+        country,
+        mailNum
       );
     } else {
       purchaseResponse = await apiHttp.subscriberPurchase(
         props.connID,
         props.userID,
         creditNumber,
-        phone,
-        adrress
+        month,
+        year,
+        cvv,
+        idNum,
+        adrress,
+        city,
+        country,
+        mailNum
       );
     }
 
@@ -96,9 +115,58 @@ function Purchase(props) {
     setAdrress(event.target.value);
   }
 
+  function updateMonth(event) {
+    setMonth(event.target.value);
+  }
+
+  function updateYear(event) {
+    setYear(event.target.value);
+  }
+
+  function updateCVV(event) {
+    setCVV(event.target.value);
+  }
+
+  function updateIDNum(event) {
+    setIDNum(event.target.value);
+  }
+
+  function updateCity(event) {
+    setCity(event.target.value);
+  }
+
+  function updateCountry(event) {
+    setCountry(event.target.value);
+  }
+
+  function updateMailNum(event) {
+    setMailNum(event.target.value);
+  }
+
   function onClosePopupPurchase() {
     setPopupPurchase(false);
     props.onRefresh();
+  }
+
+  function getTextInputComp(label, func, value, holder) {
+    return (
+      <div className="row">
+        <div className="col span-1-of-3">
+          <label htmlFor="name">{label}</label>
+        </div>
+        <div className="col span-2-of-3">
+          <input
+            type="text"
+            name={label}
+            id={label}
+            required
+            onChange={func}
+            value={value}
+            placeholder={holder}
+          />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -138,73 +206,84 @@ function Purchase(props) {
                   onSubmit={submitPurchaseHandler}
                 >
                   {/* input name */}
-                  {props.userID === -1 ? (
-                    <div className="row">
-                      <div className="col span-1-of-3">
-                        <label htmlFor="name">Full Name</label>
-                      </div>
-                      <div className="col span-2-of-3">
-                        <input
-                          type="text"
-                          name="Name"
-                          id="Name"
-                          required
-                          onChange={updateGusetName}
-                          value={guestName}
-                        />
-                      </div>
-                    </div>
-                  ) : (
-                    ""
-                  )}
+                  {props.userID === -1
+                    ? getTextInputComp(
+                        "Full Name",
+                        updateGusetName,
+                        guestName,
+                        "hi nice to meet you guestii"
+                      )
+                    : ""}
                   {/* input credit_number */}
-                  <div className="row">
-                    <div className="col span-1-of-3">
-                      <label htmlFor="name">Credit Number</label>
-                    </div>
-                    <div className="col span-2-of-3">
-                      <input
-                        type="text"
-                        name="credit"
-                        id="credit"
-                        required
-                        onChange={updateCreditNumber}
-                        value={creditNumber}
-                      />
-                    </div>
-                  </div>
-                  {/* input phone_number */}
-                  <div className="row">
-                    <div className="col span-1-of-3">
-                      <label htmlFor="name">Phone</label>
-                    </div>
-                    <div className="col span-2-of-3">
-                      <input
-                        type="text"
-                        name="phone"
-                        id="phone"
-                        required
-                        onChange={updatePhone}
-                        value={phone}
-                      />
-                    </div>
-                  </div>
+                  {getTextInputComp(
+                    "Credit Number",
+                    updateCreditNumber,
+                    creditNumber,
+                    "enter your number without spaces and '-'"
+                  )}
+                  {/* input Month */}
+                  {getTextInputComp(
+                    "Month",
+                    updateMonth,
+                    month,
+                    "enter expiration month, number from 1 to 12"
+                  )}
+                  {/* input Year */}
+                  {getTextInputComp(
+                    "Year",
+                    updateYear,
+                    year,
+                    "enter expiration year"
+                  )}
+                  {/* input CVV */}
+                  {getTextInputComp(
+                    "CVV",
+                    updateCVV,
+                    cvv,
+                    "enter 3 digits below card"
+                  )}
+                  {/* input ID Num */}
+                  {getTextInputComp(
+                    "ID Num",
+                    updateIDNum,
+                    idNum,
+                    "enter your ID"
+                  )}
                   {/* input adrress */}
-                  <div className="row">
-                    <div className="col span-1-of-3">
-                      <label htmlFor="name">Adrress</label>
-                    </div>
-                    <div className="col span-2-of-3">
-                      <input
-                        type="text"
-                        name="adrress"
-                        id="adrress"
-                        required
-                        onChange={updateAdrress}
-                        value={adrress}
-                      />
-                    </div>
-                  </div>
+                  {getTextInputComp(
+                    "Adrress",
+                    updateAdrress,
+                    adrress,
+                    "where you is your home?"
+                  )}
+                  {/* input City */}
+                  {getTextInputComp(
+                    "City",
+                    updateCity,
+                    city,
+                    "where you live???"
+                  )}
+                  {/* input Country */}
+                  {getTextInputComp(
+                    "Country",
+                    updateCountry,
+                    country,
+                    "where you live I ask youuu???"
+                  )}
+                  {/* input Mailbox */}
+                  {getTextInputComp(
+                    "Mailbox",
+                    updateMailNum,
+                    mailNum,
+                    "ta doaar you know"
+                  )}
+                  {/* input phone_number */}
+                  {getTextInputComp(
+                    "Phone",
+                    updatePhone,
+                    phone,
+                    "never mind never mind"
+                  )}
                   <div className="row">
                     <div className="col span-1-of-3">
                       <label>&nbsp;</label>
