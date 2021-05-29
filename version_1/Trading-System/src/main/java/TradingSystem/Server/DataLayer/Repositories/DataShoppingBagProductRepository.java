@@ -7,4 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface DataShoppingBagProductRepository extends JpaRepository<DataShoppingBagProduct, DataShoppingBagProductKey> {
+
 }

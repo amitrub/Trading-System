@@ -72,4 +72,11 @@ public class DataShoppingBagProduct {
                 ", quantity=" + quantity +
                 '}';
     }
+
+    public int getQuantity(){
+        return this.quantity;
+    }
+    public DataProduct getProduct(){
+        return this.product;
+    }
 }

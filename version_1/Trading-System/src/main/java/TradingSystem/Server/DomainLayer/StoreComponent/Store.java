@@ -129,6 +129,10 @@ public class Store extends Observable {
         return nextExpressionID;
     }
 
+    public void setInventory(Inventory inventory){
+        this.inventory=inventory;
+    }
+
     public static void ClearSystem() {
         nextStoreID = 0;
     }
@@ -183,6 +187,10 @@ public class Store extends Observable {
     }
     public void setOwnersIDs(List<Integer> ownersIDs){
         this.ownersIDs=ownersIDs;
+    }
+
+    public void setShoppingHistory(List<ShoppingHistory> shoppingHistories){
+        this.shoppingHistory=shoppingHistories;
     }
 
     public String removeManager(Integer managerId) {

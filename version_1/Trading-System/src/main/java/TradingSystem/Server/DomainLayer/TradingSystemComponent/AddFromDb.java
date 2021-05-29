@@ -3,9 +3,13 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Inventory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -54,9 +58,26 @@ public class AddFromDb {
         for(DataStore store:stores){
             List<Integer> owners= data_controller.findAllByStoresOwnedContains(store.getStoreID()).stream().map(DataSubscriber::getUserID).collect(Collectors.toList());
             List<Integer> managers= data_controller.findAllStoresManagerContains(store.getStoreID()).stream().map(DataSubscriber::getUserID).collect(Collectors.toList());
+            List<DataShoppingHistory> shoppingHistories=data_controller.findAllByStore(store.getStoreID());
+            List<ShoppingHistory> shoppingHistoriestoadd= new ArrayList<>();
+            for(DataShoppingHistory shoppingHistory:shoppingHistories){
+                shoppingHistoriestoadd.add(new ShoppingHistory(shoppingHistory));
+            }
+            List<DataShoppingBagCart> shoppingBagCarts=data_controller.findAllCartsOfStore(store.getStoreID());
+            Inventory inventory=new Inventory(store.getStoreID(),store.getStoreName());
+            ConcurrentHashMap<Integer, Product> products = new ConcurrentHashMap<>();
+            //TODO fix
+            for(DataShoppingBagCart shoppingBagCart:shoppingBagCarts){
+                List<DataShoppingBagProduct> shoppingBagProducts=shoppingBagCart.getProducts();
+                for(DataShoppingBagProduct product: shoppingBagProducts){
+                    products.put(product.getQuantity(),new Product(product.getProduct()));
+                }
+            }
+            inventory.setProducts(products);
             Store toAdd= new Store(store);
             toAdd.setManagersIDs(managers);
             toAdd.setOwnersIDs(owners);
+            toAdd.setShoppingHistory(shoppingHistoriestoadd);
             res.putIfAbsent(store.getStoreID(),toAdd);
         }
         tradingSystemImpl.stores=res;

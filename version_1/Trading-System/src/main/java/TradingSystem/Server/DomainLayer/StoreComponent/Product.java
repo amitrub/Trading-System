@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataHistoryProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;

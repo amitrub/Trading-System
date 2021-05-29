@@ -3,6 +3,7 @@ package TradingSystem.Server.DataLayer.Services;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -132,6 +133,14 @@ public class Data_Controller {
     }
     public List<DataSubscriber> findAllByStoresOwnedContains(int storeid){
         return subscriberService.findAllByStoresOwnedContains(storeid);
+    }
+
+    public List<DataShoppingHistory> findAllByStore(int storeid){
+        return shoppingHistoryService.findAllByStore(storeid);
+    }
+
+    public List<DataShoppingBagCart> findAllCartsOfStore(int storeid){
+        return shoppingCartService.getAllcardsBystore(storeid);
     }
 //
 //    //Req 1.3 search Product By Name
