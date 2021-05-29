@@ -1,5 +1,6 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,6 +32,15 @@ public class DummyProduct {
     public DummyProduct(Product product){
         this.storeID = product.getStoreID();
         this.storeName = product.getStoreName();
+        this.productID = product.getProductID();
+        this.productName = product.getProductName();
+        this.price = product.getPrice();
+        this.category = product.getCategory();
+        this.quantity = product.getQuantity();
+    }
+    public DummyProduct(DataProduct product){
+        this.storeID = product.getStore().getStoreID();
+        this.storeName = product.getStore().getStoreName();
         this.productID = product.getProductID();
         this.productName = product.getProductName();
         this.price = product.getPrice();

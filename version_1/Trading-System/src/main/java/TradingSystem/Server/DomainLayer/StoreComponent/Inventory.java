@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -7,9 +8,9 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 public class Inventory {
 
@@ -106,6 +107,7 @@ public class Inventory {
     public Response deleteProduct(Integer productID) {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
+            data_controller.RemoveProduct(productID);
             this.products.remove(productID);
 //            this.productLock.remove(productID);
             return new Response(false, "RemoveProduct: Remove product " + productID + " from the Inventory was successful");
@@ -249,13 +251,16 @@ public class Inventory {
                         AddTheProduct = p.getPrice() >= minprice && p.getPrice() <= maxprice;
                     }
                     if (AddTheProduct) {
-                        if (AddTheProduct) {
                             products.add(PID);
-                        }
                     }
                 }
             }
         }
+        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).stream()
+                .map(DataProduct::getProductID)
+                .collect(Collectors.toList());;
+        products.addAll(productsDb);
+
      return products;
     }
 

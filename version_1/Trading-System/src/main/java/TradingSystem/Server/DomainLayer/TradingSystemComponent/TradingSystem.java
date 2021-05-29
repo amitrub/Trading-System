@@ -116,4 +116,6 @@ public interface TradingSystem {
     Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userBiddingPrice);
 
     Response ShowBids(int userID, String connID, int storeID);
+    void setSubscribers(ConcurrentHashMap<Integer, User> subscribers);
+    public void setStores(ConcurrentHashMap<Integer, Store> stores);
 }

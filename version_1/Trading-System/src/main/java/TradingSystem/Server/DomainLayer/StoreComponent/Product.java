@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -75,6 +76,19 @@ public class Product {
         this.productComments=new ConcurrentHashMap<Integer, String>();
         this.productRating=new ConcurrentHashMap<Integer, Double>();
         this.quantity = toCopyProduct.quantity;
+    }
+
+    public Product(DataProduct product){
+        this.storeID=product.getStore().getStoreID();
+        this.storeName=product.getStore().getStoreName();
+        this.productID=product.getProductID();
+        this.productName=product.getProductName();
+        this.category=product.getCategory();
+        this.price=product.getPrice();
+        //TODO add rate
+        this.productComments=new ConcurrentHashMap<Integer, String>();
+        this.productRating=new ConcurrentHashMap<Integer, Double>();
+        this.quantity = product.getQuantity();
     }
 
     public Lock getLock() {

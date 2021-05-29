@@ -2377,4 +2377,14 @@ public class TradingSystemImpl implements TradingSystem {
         }
     }
 
+    @Override
+    public void setSubscribers(ConcurrentHashMap<Integer, User> subscribers) {
+
+    }
+
+    @Override
+    public void setStores(ConcurrentHashMap<Integer, Store> stores) {
+
+    }
+
 }
