@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -27,6 +28,7 @@ public class ShoppingCart {
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
+
         ShoppingCart.data_controller = data_controller;
     }
 //    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();

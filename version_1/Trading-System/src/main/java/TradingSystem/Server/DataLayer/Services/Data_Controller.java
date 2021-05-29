@@ -64,7 +64,6 @@ public class Data_Controller {
     public void addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
         shoppingHistoryService.addHistoryToStoreAndUser(shoppingHistory);
     }
-
     public List<DataProduct> findAllByCategoryAndProductNameAndPriceBetween(String name, String category, int min,int max){
         return productService.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);
     }

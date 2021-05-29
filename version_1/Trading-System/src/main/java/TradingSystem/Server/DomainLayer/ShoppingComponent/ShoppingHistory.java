@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 import java.util.ArrayList;
 import java.util.Date;
 
+
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataHistoryProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
@@ -23,6 +24,7 @@ public class ShoppingHistory {
     public static Data_Controller data_controller;
 
     public static void setData_controller(Data_Controller data_controller) {
+
         ShoppingHistory.data_controller = data_controller;
     }
 
