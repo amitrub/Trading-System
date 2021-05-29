@@ -2,6 +2,7 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 
 
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -72,6 +73,14 @@ public class DataStore {
             fetch = FetchType.LAZY
     )
     private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "store",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 
 
 //    @ElementCollection

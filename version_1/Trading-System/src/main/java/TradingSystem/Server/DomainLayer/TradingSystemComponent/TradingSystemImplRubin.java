@@ -1549,6 +1549,7 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
+        data_controller.addHistoryToStoreAndUser(sh);
         this.stores.get(sh.getStoreID()).addHistory(sh);
         if (!isGuest)
             this.subscribers.get(sh.getUserID()).addHistory(sh);

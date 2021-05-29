@@ -4,7 +4,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
-import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagKey;
+import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreProductKey;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -40,7 +40,7 @@ public class ShoppingCartService {
     }
 
     public void setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
-        DataShoppingBagCart bag = shoppingCartRepository.getOne(new DataShoppingBagKey(userID, storeID));
+        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreProductKey(userID, storeID));
         bag.setFinalPrice(finalPrice);
         shoppingCartRepository.saveAndFlush(bag);
     }

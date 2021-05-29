@@ -1,6 +1,7 @@
 package TradingSystem.Server.DataLayer.Services;
 
 import TradingSystem.Server.DataLayer.Data_Modules.*;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +22,8 @@ public class Data_Controller {
     private ProductService productService;
     @Autowired
     private ShoppingCartService shoppingCartService;
-//    @Autowired
-//    private ShoppingHistoryService shoppingHistoryService;
+    @Autowired
+    private ShoppingHistoryService shoppingHistoryService;
 
 
     public Data_Controller(){
@@ -51,6 +52,10 @@ public class Data_Controller {
 
     public void setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
         shoppingCartService.setBagFinalPrice(userID, storeID, finalPrice);
+    }
+
+    public void addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
+        shoppingHistoryService.addHistoryToStoreAndUser(shoppingHistory);
     }
 
 

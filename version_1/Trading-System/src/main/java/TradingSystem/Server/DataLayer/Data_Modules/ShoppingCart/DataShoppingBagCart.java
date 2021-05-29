@@ -2,6 +2,7 @@ package TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreProductKey;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
 public class DataShoppingBagCart {
 
     @EmbeddedId
-    private DataShoppingBagKey key;
+    private UserStoreProductKey key;
 
     @ManyToOne
     @MapsId("subscriberID")
@@ -59,23 +60,23 @@ public class DataShoppingBagCart {
         // DO NOT DELETE
     }
 
+    public DataShoppingBagCart(DataSubscriber subscriber, DataStore store) {
+        this.key = new UserStoreProductKey(subscriber.getUserID(), store.getStoreID());
+        this.subscriber = subscriber;
+        this.store = store;
+    }
+
     public void addProduct(DataShoppingBagProduct product) {
         if (!this.products.contains(product)) {
             this.products.add(product);
         }
     }
 
-    public DataShoppingBagCart(DataSubscriber subscriber, DataStore store) {
-        this.key = new DataShoppingBagKey(subscriber.getUserID(), store.getStoreID());
-        this.subscriber = subscriber;
-        this.store = store;
-    }
-
-    public DataShoppingBagKey getKey() {
+    public UserStoreProductKey getKey() {
         return key;
     }
 
-    public void setKey(DataShoppingBagKey key) {
+    public void setKey(UserStoreProductKey key) {
         this.key = key;
     }
 
