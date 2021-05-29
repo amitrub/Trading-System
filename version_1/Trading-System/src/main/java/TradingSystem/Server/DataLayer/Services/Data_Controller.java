@@ -73,7 +73,7 @@ public class Data_Controller {
     }
 
     public void AddNewManager(int storeID, int newManagerID) {
-        storeService.AddNewOwner(storeID, newManagerID);
+        storeService.AddNewManager(storeID, newManagerID);
     }
 
 

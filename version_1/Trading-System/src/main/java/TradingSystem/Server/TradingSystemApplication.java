@@ -49,9 +49,6 @@ public class TradingSystemApplication {
 			props.put("spring.jpa.properties.hibernate.dialect", readJson.getDialect());
 			props.put("spring.jpa.properties.hibernate.format_sql", readJson.getFormatSql());
 
-			System.out.println(readJson.getAdmin());
-			System.out.println(map);
-
 			return props;
 		}
 		catch (Exception e){

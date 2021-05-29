@@ -231,7 +231,7 @@ public class ShoppingBag {
           //TODO: checkkkkk
         for (Integer productID: this.quantityOfSpacialProducts.keySet()){
             Integer quantity = this.quantityOfSpacialProducts.get(productID);
-            Product p = tradingSystemImpl.getProduct(storeID,productID);
+            Product p = tradingSystem.getProduct(storeID,productID);
             Product newProduct = new Product(p);
             newProduct.setQuantity(quantity);
             productsToHistory.add(newProduct);

@@ -141,13 +141,13 @@ public class ShoppingCart {
 
     public Response AddSpacialProductForCart(int productID, int storeID, double productPrice, Integer quantity) {
         if(!this.shoppingBags.containsKey(storeID)){
-            if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
                 return new Response(true, " The product " + productID + " doesn't exist in the store");
             }
             this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
         }
         else {
-            if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity)) {
                 return new Response(true, " The quantity from the product is not in stock");
             }
         }
@@ -156,11 +156,11 @@ public class ShoppingCart {
             return new Response(true, "The product "+productID+" is exist in the bag already");
         }
         tmpProducts.put(productID,quantity);
-        if (!tradingSystemImpl.validation.checkBuyingPolicy(this.userID, storeID,tmpProducts)) {
+        if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,tmpProducts)) {
             return new Response(true, "Adding the product "+productID+" is against the store policy");
         }
         this.shoppingBags.get(storeID).addSPacialProduct(productID, quantity,productPrice);
-        Double priceForBag = tradingSystemImpl.calculateBugPrice(productID, storeID, this.shoppingBags.get(storeID).getProducts());
+        Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, this.shoppingBags.get(storeID).getProducts());
         Double spacialPrice=  this.shoppingBags.get(storeID).calculateSpacialPrices();
         shoppingBags.get(storeID).setFinalPrice(priceForBag+spacialPrice);
         Response res =new Response("The product added successfully");
@@ -359,8 +359,8 @@ public class ShoppingCart {
                 if (SB.getPriceOfSpacialProducts().containsKey(productID)) {
                     int quantity = SB.getQuantityOfSpacialProducts().get(productID);
                     Double price=SB.getPriceOfSpacialProducts().get(productID);
-                    Product p = tradingSystemImpl.getProduct(storeID, productID);
-                    DummyProduct d = new DummyProduct(storeID, tradingSystemImpl.getStoreName(storeID), productID, p.getProductName(), price, p.getCategory(), quantity);
+                    Product p = tradingSystem.getProduct(storeID, productID);
+                    DummyProduct d = new DummyProduct(storeID, tradingSystem.getStoreName(storeID), productID, p.getProductName(), price, p.getCategory(), quantity);
                     outputList.add(d);
                 }
             }
@@ -407,7 +407,7 @@ public class ShoppingCart {
 // <<<<<<< DB-Rubin-to-merge
 //             tradingSystem.calculateBugPrice(productID,storeID, this.shoppingBags.get(storeID).getProducts());
 // =======
-            Double priceForBug = tradingSystemImpl.calculateBugPrice(userID, storeID, this.shoppingBags.get(storeID).getProducts());
+            Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, this.shoppingBags.get(storeID).getProducts());
             Double spacialPrices=this.shoppingBags.get(storeID).calculateSpacialPrices();
             shoppingBags.get(storeID).setFinalPrice(priceForBug+spacialPrices);
 // >>>>>>> Version-3
@@ -438,7 +438,7 @@ public class ShoppingCart {
 //             Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, productsInTheBug);
 //             shoppingBags.get(storeID).setFinalPrice(priceForBug);
 // =======
-            Double priceForBug = tradingSystemImpl.calculateBugPrice(userID, storeID, productsInTheBug);
+            Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, productsInTheBug);
             Double spacialPrices=this.shoppingBags.get(storeID).calculateSpacialPrices();
             shoppingBags.get(storeID).setFinalPrice(priceForBug+spacialPrices);
 // >>>>>>> Version-3

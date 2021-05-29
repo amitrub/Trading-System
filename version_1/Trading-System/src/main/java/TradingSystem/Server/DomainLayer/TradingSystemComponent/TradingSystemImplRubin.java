@@ -71,6 +71,10 @@ public class TradingSystemImplRubin implements TradingSystem {
             File file = new File(path);
             String absolutePath = file.getAbsolutePath();
             JsonInitReader readJson = objectMapper.readValue(new File(absolutePath), JsonInitReader.class);
+            Boolean externalState = readJson.getExternalState();
+            if (externalState){
+                this.Initialization();
+            }
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
             DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password);
@@ -85,10 +89,7 @@ public class TradingSystemImplRubin implements TradingSystem {
             this.systemAdmins.put(userID, userID);
             this.subscribers.put(userID, defaultAdmin);
             this.systemManagerPermissions.put(userID,new SystemManagerPermission());
-            Boolean externalState = readJson.getExternalState();
-            if (externalState){
-                this.Initialization();
-            }
+
         }
         catch (Exception e){
             System.out.println(e);
@@ -2398,7 +2399,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
 
     @Override
-    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice) {
+    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "subscriberBidding: The user " + userID + " is not connected");
         }
@@ -2412,24 +2413,32 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         Product product=store.getProduct(productID);
         if(product==null){
-            return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid for product that not in the store");
+            return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid for product " +productID +". but the product not in the store");
+        }
+        if(user.getShoppingCart().getShoppingBags().get(storeID)!=null&&
+                user.getShoppingCart().getShoppingBags().get(storeID).getProducts()!=null&&
+                user.getShoppingCart().getShoppingBags().get(storeID).getProducts().containsKey(productID)){
+            return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid for product " +productID +" but the product exist in the bag already");
         }
         if(productPrice<=0||productPrice>product.getPrice()){
             return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid with price " +productPrice +" but it is not in the range: 0-"+product.getPrice());
         }
+        if(quantity<=0){
+            return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid with quantity " +quantity +" but it is not bigger then 0");
+        }
         if(store.CheckBidForProductExist(userID,productID)){
             return new Response(true, "subscriberBidding: The user "+userID+" try to to submit a bid for product " +productID +" but this product already has a bid");
         }
-        store.AddBidForProduct(productID,userID,productPrice); //?
+        store.AddBidForProduct(productID,userID,productPrice,quantity); //?
         Response resAlert = new Response(false, "The subscriber " + userID +
-                    " has been submit a bid of "+productPrice+" for product: " + productID + " in your store: " + store.getName());
+                " has been submit a bid of "+productPrice+" for product: " + productID + " in your store: " + store.getName());
         store.sendAlertToOwners(resAlert);
         store.sendAlertOfBiddingToManager(resAlert);
         return new Response(false,"The bid was submitted successfully");
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer) {
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer,int quantity) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
         }
@@ -2448,18 +2457,27 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(product==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for product ("+productID+ ") that not in the store");
         }
+        if(quantity<=0){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid with quantity " +quantity +" but it is not bigger then 0");
+        }
         if(productPrice<=0||productPrice>product.getPrice()){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response for submission bid with price " +productPrice +" but it is not in the range: 0-"+product.getPrice());
         }
-        if(store.CheckBidForProductExist(userWhoOffer,productID)){
+        if(!store.CheckBidForProductExist(userWhoOffer,productID)){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
         }
         store.RemoveProductForPurchaseOffer(productID,userWhoOffer); //?
-        user.AddSpacialProductForCart(productID,storeID,productPrice); //?
+        Response res =user.AddSpacialProductForCart(productID,storeID,productPrice,quantity); //?
+        if(res.getIsErr()){
+            Response resAlert = new Response(false, "You have received a Response for your bidding, but the product could not be added to the cart.\n"+
+                    "The reason: "+res.getMessage());
+            store.sendAlert(userWhoOffer,resAlert);
+            return res;
+        }
         Response resAlert = new Response(false, "You have received a Response for your bidding.\n" +
-                    "You may purchase " + product.getProductName() + " in store " + store.getName() + "at a price- " + productPrice + " (The original price is- " + product.getPrice() + ").");
+                "You may purchase " + product.getProductName() + " in store " + store.getName() + "at a price- " + productPrice + " (The original price is- " + product.getPrice() + ").");
         store.sendAlert(userWhoOffer,resAlert);
-        return null;
+        return new Response(false,"The bid was Response successfully");
     }
 
     @Override
