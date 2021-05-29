@@ -80,6 +80,10 @@ public class Data_Controller {
     public Optional<DataStore> findStorebyId(int storeid){
         return storeService.findStorebyId(storeid);
     }
+
+    public Optional<DataSubscriber> findSubscriberById(int subscriberId){
+        return subscriberService.findSubscriberById(subscriberId);
+    }
 //
 //    //Req 1.3 search Product By Name
 //    public List<DataProduct> serachByName(String productName, int minprice, int maxprice){

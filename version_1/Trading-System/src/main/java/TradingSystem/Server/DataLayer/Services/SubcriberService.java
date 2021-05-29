@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -27,5 +28,9 @@ public class SubcriberService {
 
     public List<DataSubscriber> getAllSubscribers(){
         return subscriberRepository.findAll();
+    }
+
+    public Optional<DataSubscriber> findSubscriberById(int subscriberid){
+        return subscriberRepository.findById(subscriberid);
     }
 }

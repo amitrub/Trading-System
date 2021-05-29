@@ -424,6 +424,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response ShowStoreProducts(int storeID) {
+        addFromDb.UploadStore(storeID);
         if(stores.containsKey(storeID)){
             List<DummyProduct> list = stores.get(storeID).ShowStoreProducts();
             Response res = new Response(false, "ShowStoreProducts: Num of products in the store is " + list.size());
@@ -1074,6 +1075,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
+        addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(ownerID, connID)) {
             return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " is not connected");
         }
@@ -1136,6 +1138,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *
      */
     public Response AddNewManager(int userID, String connID, int storeID, int newManager) {
+        addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "AddNewManager: The user " + userID + "is not connected");
         }
@@ -1191,6 +1194,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
+        addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "EditManagerPermissions: The user" + userID + "is not connected");
         }
@@ -1281,6 +1285,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response ShowStoreWorkers(int userID, String connID, int storeID){
+        addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ShowStoreWorkers: The user " + userID + " is not connected");
         }
