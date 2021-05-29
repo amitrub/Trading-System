@@ -127,4 +127,8 @@ public class DataSubscriber {
                 ", shoppingBagsCart=" + shoppingBagsCart +
                 '}';
     }
+
+    public List<DataShoppingHistory> getShoppingBagsHistory() {
+        return shoppingBagsHistory;
+    }
 }
