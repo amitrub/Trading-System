@@ -1,4 +1,4 @@
-package TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart;
+package TradingSystem.Server.DataLayer.Data_Modules.Keys;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -8,7 +8,7 @@ import java.util.Objects;
 @Embeddable
 public class DataShoppingBagProductKey implements Serializable {
 
-    private DataShoppingBagKey shoppingBagKey;
+    private UserStoreProductKey shoppingBagKey;
 
     @Column(name = "product_id")
     private int productID;
@@ -16,16 +16,16 @@ public class DataShoppingBagProductKey implements Serializable {
     public DataShoppingBagProductKey() {
     }
 
-    public DataShoppingBagProductKey(DataShoppingBagKey key, int productID) {
+    public DataShoppingBagProductKey(UserStoreProductKey key, int productID) {
         this.shoppingBagKey = key;
         this.productID = productID;
     }
 
-    public DataShoppingBagKey getShoppingBagKey() {
+    public UserStoreProductKey getShoppingBagKey() {
         return shoppingBagKey;
     }
 
-    public void setShoppingBagKey(DataShoppingBagKey shoppingBagKey) {
+    public void setShoppingBagKey(UserStoreProductKey shoppingBagKey) {
         this.shoppingBagKey = shoppingBagKey;
     }
 

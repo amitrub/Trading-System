@@ -1,6 +1,7 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 
 import javax.persistence.*;
@@ -64,13 +65,13 @@ public class DataSubscriber {
     )
     private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
 
-//    @OneToMany(
-//            mappedBy = "user",
-//            orphanRemoval = true,
-//            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-//            fetch = FetchType.LAZY
-//    )
-//    private List<DataShoppingBagCart> shoppingBagsinHistory= new ArrayList<>();
+    @OneToMany(
+            mappedBy = "subscriber",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 
 
 

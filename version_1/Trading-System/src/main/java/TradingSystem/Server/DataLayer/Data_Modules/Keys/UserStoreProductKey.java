@@ -1,4 +1,4 @@
-package TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart;
+package TradingSystem.Server.DataLayer.Data_Modules.Keys;
 
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class DataShoppingBagKey implements Serializable {
+public class UserStoreProductKey implements Serializable {
 
     @Column(name = "subscriber_id")
     private int subscriberID;
@@ -14,11 +14,11 @@ public class DataShoppingBagKey implements Serializable {
     @Column(name = "store_id")
     private int storeID;
 
-    public DataShoppingBagKey() {
+    public UserStoreProductKey() {
         // DO NOT DELETE
     }
 
-    public DataShoppingBagKey(int subscriberID, int storeID) {
+    public UserStoreProductKey(int subscriberID, int storeID) {
         this.subscriberID = subscriberID;
         this.storeID = storeID;
     }
@@ -43,7 +43,7 @@ public class DataShoppingBagKey implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        DataShoppingBagKey that = (DataShoppingBagKey) o;
+        UserStoreProductKey that = (UserStoreProductKey) o;
         return subscriberID == that.subscriberID && storeID == that.storeID;
     }
 

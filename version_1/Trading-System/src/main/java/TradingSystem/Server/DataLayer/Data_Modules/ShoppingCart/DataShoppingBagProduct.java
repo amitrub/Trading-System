@@ -1,7 +1,8 @@
 package TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
-import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Keys.DataShoppingBagProductKey;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 
 import javax.persistence.*;
 
