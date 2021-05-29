@@ -54,6 +54,19 @@ public class ShoppingHistoryService {
         }
         shoppingHistoryRepository.save(dataShoppingHistory);
     }
+    public void deleteAll(){
+        shoppingHistoryRepository.deleteAll();
+    }
+    public List<DataShoppingHistory> findAllBySubscriber(int userid){
+        DataSubscriber subscriber=subscriberRepository.getOne(userid);
+        return shoppingHistoryRepository.findAllBySubscriber(subscriber);
+    }
+
+    public List<DataShoppingHistory> findAllByStore(int storeid){
+        DataStore store=storeRepository.getOne(storeid);
+        return shoppingHistoryRepository.findAllByStore(store);
+    }
+
 
 //    public void addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity) {
 //        DataSubscriber user = subscriberRepository.getOne(userID);

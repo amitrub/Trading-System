@@ -11,6 +11,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
+
 @Service
 @Transactional
 public class ShoppingCartService {
@@ -44,7 +46,13 @@ public class ShoppingCartService {
         bag.setFinalPrice(finalPrice);
         shoppingCartRepository.saveAndFlush(bag);
     }
-
+    public void deleteAll(){
+        shoppingCartRepository.deleteAll();
+    }
+    public List<DataShoppingBagCart> getAllcardsBystore(int storeid){
+        DataStore store=storeRepository.getOne(storeid);
+        return shoppingCartRepository.findAllByStore(store);
+    }
 //    public DataShoppingCart findDummyShoppingCartByUserID(int UserId){
 //        return shoppingCartRepository.findDummyShoppingCartByUserID(UserId);
 //    }

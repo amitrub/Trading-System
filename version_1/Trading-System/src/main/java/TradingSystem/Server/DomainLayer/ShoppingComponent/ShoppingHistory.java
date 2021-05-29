@@ -1,7 +1,10 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
+import java.util.ArrayList;
 import java.util.Date;
 
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataHistoryProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -46,6 +49,18 @@ public class ShoppingHistory {
         this.finalPrice = toCopyShoppingBag.getFinalPrice();
     }
 
+    public ShoppingHistory(DataShoppingHistory dataShoppingHistory){
+        this.userID=dataShoppingHistory.getSubscriber().getUserID();
+        this.storeID=dataShoppingHistory.getStore().getStoreID();
+        this.date=dataShoppingHistory.getDate();
+        this.finalPrice=dataShoppingHistory.getprice();
+        List<DataHistoryProduct> lst=dataShoppingHistory.getproducts();
+        products=new ArrayList<>();
+        for(DataHistoryProduct product:lst){
+            products.add(new Product(product,storeID,dataShoppingHistory.getStore().getStoreName()));
+        }
+
+    }
 
     public Integer getStoreID() {
         return storeID;

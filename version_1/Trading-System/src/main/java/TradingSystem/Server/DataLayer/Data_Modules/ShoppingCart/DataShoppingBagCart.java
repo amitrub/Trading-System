@@ -72,6 +72,10 @@ public class DataShoppingBagCart {
         }
     }
 
+    public List<DataShoppingBagProduct> getProducts(){
+        return this.products;
+    }
+
     public UserStoreProductKey getKey() {
         return key;
     }

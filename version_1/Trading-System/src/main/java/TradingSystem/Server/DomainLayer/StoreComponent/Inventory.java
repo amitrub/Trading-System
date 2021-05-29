@@ -93,6 +93,10 @@ public class Inventory {
         return this.products.containsKey(productID) && this.products.get(productID).getQuantity() >= quantity;
     }
 
+    public void setProducts(ConcurrentHashMap<Integer,Product> products){
+        this.products=products;
+    }
+
 
     public Response addQuantityProduct(Integer productId, Integer quantity) {
         if (this.products.containsKey(productId)) {

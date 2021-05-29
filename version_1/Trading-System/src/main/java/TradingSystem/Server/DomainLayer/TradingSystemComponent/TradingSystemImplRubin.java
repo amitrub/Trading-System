@@ -138,7 +138,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
     public void Initialization() {
 
-//        TODO: clear all DB
+        data_controller.deleteAll();
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();

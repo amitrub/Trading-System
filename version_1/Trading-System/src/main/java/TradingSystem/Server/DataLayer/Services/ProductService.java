@@ -42,6 +42,10 @@ public class ProductService {
         return productRepository.findDummyProductByStore(store);
     }
 
+    public void deleteAll(){
+        productRepository.deleteAll();
+    }
+
 //    //TODO make it transaction
 //    public void editProduct(DataProduct product){
 ////        Session session = null;

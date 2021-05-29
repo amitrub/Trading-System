@@ -1,6 +1,9 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataHistoryProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -86,6 +89,18 @@ public class Product {
         this.category=product.getCategory();
         this.price=product.getPrice();
         //TODO add rate
+        this.productComments=new ConcurrentHashMap<Integer, String>();
+        this.productRating=new ConcurrentHashMap<Integer, Double>();
+        this.quantity = product.getQuantity();
+    }
+
+    public Product(DataHistoryProduct product, int storeID,String storename){
+        this.storeID=storeID;
+        this.storeName=storename;
+        this.productID= product.getProductID();
+        this.productName=product.getProductName();
+        this.category=product.getCategory();
+        this.price=product.getPrice();
         this.productComments=new ConcurrentHashMap<Integer, String>();
         this.productRating=new ConcurrentHashMap<Integer, Double>();
         this.quantity = product.getQuantity();

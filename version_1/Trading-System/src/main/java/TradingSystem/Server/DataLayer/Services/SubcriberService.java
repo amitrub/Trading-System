@@ -1,6 +1,8 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
 import TradingSystem.Server.DataLayer.Repositories.SubscriberRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +17,10 @@ public class SubcriberService {
 
     @Autowired
     SubscriberRepository subscriberRepository;
+
+    @Autowired
+    StoreRepository storeRepository;
+
 
     public int AddSubscriber(String userName, String password){
         DataSubscriber subscriber = new DataSubscriber(userName,password);
@@ -35,5 +41,16 @@ public class SubcriberService {
     public Optional<DataSubscriber> findSubscriberById(int subscriberid){
         return subscriberRepository.findById(subscriberid);
     }
+    public void deleteAll(){
+        subscriberRepository.deleteAll();
+    }
 
+    public List<DataSubscriber> findAllByStoresManagerContains(int storeid){
+        DataStore store=storeRepository.getOne(storeid);
+        return subscriberRepository.findAllByStoresManagerContains(store);
+    }
+    public List<DataSubscriber> findAllByStoresOwnedContains(int storeid){
+        DataStore store=storeRepository.getOne(storeid);
+        return subscriberRepository.findAllByStoresOwnerContains(store);
+    }
 }
