@@ -2010,7 +2010,7 @@ public class TradingSystemImplRubin implements TradingSystem {
                     return xorComposite;
                 case "StoreSale":
                     Map<String, Object> map3=(Map<String, Object>)o.get("StoreSale");
-                    Double discount1=(Double)map3.get("discount");
+                    Integer discount1=(Integer) map3.get("discount");
                     Map<String, Object> exp1= (Map<String, Object>)map3.get("expression");
                     StoreSale storeSale=new StoreSale(storeID,discount1);
                     Expression e1=createSaleExp(storeID,exp1);
@@ -2020,7 +2020,7 @@ public class TradingSystemImplRubin implements TradingSystem {
                 case "ProductSale":
                     Map<String, Object> map4=(Map<String, Object>)o.get("ProductSale");
                     Integer productID=(Integer)map4.get("productID");
-                    Double discoun2=(Double)map4.get("discount");
+                    Integer discoun2=(Integer)map4.get("discount");
                     Map<String, Object> exp2= (Map<String, Object>)map4.get("expression");
                     ProductSale productSale=new ProductSale(productID,discoun2);
                     Expression e2=createSaleExp(storeID,exp2);
@@ -2030,7 +2030,7 @@ public class TradingSystemImplRubin implements TradingSystem {
                 case "CategorySale":
                     Map<String, Object> map5=(Map<String, Object>)o.get("CategorySale");
                     String category=(String) map5.get("category");
-                    Double discoun3=(Double)map5.get("discount");
+                    Integer discoun3=(Integer)map5.get("discount");
                     Map<String, Object> exp3= (Map<String, Object>)map5.get("expression");
                     CategorySale categorySale=new CategorySale(category,discoun3);
                     Expression e3=createSaleExp(storeID,exp3);
@@ -2083,7 +2083,7 @@ public class TradingSystemImplRubin implements TradingSystem {
                     return numOfProductsForSale;
                 case "PriceForGetSale":
                     Map<String, Object> map6 = (Map<String, Object>) exp.get("PriceForGetSale");
-                    Double price = (Double) map6.get("priceForSale");
+                    Integer price = (Integer) map6.get("priceForSale");
                     PriceForGetSale priceForGetSale = new PriceForGetSale(price);
                     return priceForGetSale;
                 case "QuantityForGetSale":

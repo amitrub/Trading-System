@@ -13,17 +13,17 @@ public class CategorySale extends SimpleSale {
 
     //Integer saleID;
     String category;
-    Double  discountPercentage;
+    Integer  discountPercentage;
     //Expression expression;
     TradingSystemImpl tradingSystem= TradingSystemImpl.getInstance();
 
-    public CategorySale(Expression exp,String category, Double discountPercentage) {
+    public CategorySale(Expression exp,String category, Integer discountPercentage) {
         super(exp);
         this.category = category;
         this.discountPercentage = discountPercentage;
     }
 
-    public CategorySale(String category, Double discountPercentage) {
+    public CategorySale(String category, Integer discountPercentage) {
         this.category = category;
         this.discountPercentage = discountPercentage;
     }

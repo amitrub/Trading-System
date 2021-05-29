@@ -8,9 +8,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PriceForGetSale extends SimpleExpression {
 
-    Double priceForSale;
+    Integer priceForSale;
 
-    public PriceForGetSale(Double priceForSale) {
+    public PriceForGetSale(Integer priceForSale) {
         this.priceForSale = priceForSale;
     }
 
