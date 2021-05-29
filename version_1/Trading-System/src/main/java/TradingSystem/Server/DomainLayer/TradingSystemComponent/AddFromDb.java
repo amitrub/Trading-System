@@ -33,6 +33,7 @@ public class AddFromDb {
     public void UploadAllUsers(){
         List<DataSubscriber> subscribers= data_controller.getAllSubscribers();
         ConcurrentHashMap<Integer, User> res= tradingSystemImpl.getSubscribers();
+
         for(DataSubscriber subscriber:subscribers){
             List<Integer> ownedstores=data_controller.getAllOwnedStores(subscriber.getUserID()).stream().map(DataStore::getStoreID).collect(Collectors.toList());
             List<Integer> foundedstores= data_controller.getAllFoundedStores(subscriber.getUserID()).stream().map(DataStore::getStoreID).collect(Collectors.toList());
@@ -50,6 +51,14 @@ public class AddFromDb {
             res.putIfAbsent(subscriber.getUserID(),toAdd);
         }
         tradingSystemImpl.subscribers=res;
+    }
+
+    public void UploadUserFounderStores(Integer userID ){
+
+    }
+
+    public void UploadUserShoppingBag(Integer userID){
+
     }
 
     public void UploadAllStores(){
