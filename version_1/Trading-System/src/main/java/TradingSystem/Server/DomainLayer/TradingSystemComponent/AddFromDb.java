@@ -1,11 +1,14 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
@@ -58,5 +61,15 @@ public class AddFromDb {
                 tradingSystemImpl.setSubscribers(subscribers);
             }
         }
+    }
+
+    public List<DummyProduct> uploadProductsForStore(Store store, List<DummyProduct> products){
+        List<DataProduct> productsdb=data_controller.findDummyProductByStore(new DataStore(store.getName()));
+        List<DummyProduct> convert= new ArrayList<>();
+        for(DataProduct product:productsdb){
+            convert.add(new DummyProduct(product));
+        }
+        convert.addAll(products);
+        return convert;
     }
 }

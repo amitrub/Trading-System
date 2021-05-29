@@ -468,6 +468,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         for(Store store: stores.values()){
             // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
             dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
+            dummyProducts= addFromDb.uploadProductsForStore(store,dummyProducts);
         }
         Response res = new Response(false, "Search: Num of products from search is " + dummyProducts.size());
         res.AddPair("products", dummyProducts);

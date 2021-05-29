@@ -1,12 +1,9 @@
 package TradingSystem.Server.DataLayer.Services;
 
-import TradingSystem.Server.DataLayer.Data_Modules.*;
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -91,6 +88,10 @@ public class Data_Controller {
 
     public Optional<DataSubscriber> findSubscriberById(int subscriberId){
         return subscriberService.findSubscriberById(subscriberId);
+    }
+
+    public List<DataProduct> findDummyProductByStore(DataStore store){
+        return productService.findDummyProductByStore(store);
     }
 //
 //    //Req 1.3 search Product By Name

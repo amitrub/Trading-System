@@ -1,6 +1,7 @@
 package TradingSystem.Server.DataLayer.Repositories;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,7 +11,7 @@ import java.util.List;
 public interface ProductRepository extends JpaRepository<DataProduct,Integer> {
 
 
-//    List<DataProduct> findDummyProductByStoreID(int storeid);
+    List<DataProduct> findDummyProductByStore(DataStore store);
 
 //    List<DataProduct> findDummyProductByProductName(String productName);
 //

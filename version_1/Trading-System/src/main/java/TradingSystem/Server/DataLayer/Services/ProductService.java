@@ -38,6 +38,10 @@ public class ProductService {
         productRepository.removeDataProductByProductID(productId);
     }
 
+    public List<DataProduct> findDummyProductByStore(DataStore store){
+        return productRepository.findDummyProductByStore(store);
+    }
+
 //    //TODO make it transaction
 //    public void editProduct(DataProduct product){
 ////        Session session = null;
