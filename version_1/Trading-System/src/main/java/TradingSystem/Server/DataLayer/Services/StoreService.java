@@ -4,6 +4,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
 import TradingSystem.Server.DataLayer.Repositories.SubscriberRepository;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -26,6 +27,20 @@ public class StoreService {
         store.setFounder(founder);
         DataStore dataStore = storeRepository.saveAndFlush(store);
         return dataStore.getStoreID();
+    }
+
+    public void AddNewOwner(int storeID, int newOwnerID) {
+        DataStore store = storeRepository.getOne(storeID);
+        DataSubscriber newOwner = subscriberRepository.getOne(newOwnerID);
+        store.AddNewOwner(newOwner);
+        storeRepository.saveAndFlush(store);
+    }
+
+    public void AddNewManager(int storeID, int newManagerID) {
+        DataStore store = storeRepository.getOne(storeID);
+        DataSubscriber newManager = subscriberRepository.getOne(newManagerID);
+        store.AddNewManager(newManager);
+        storeRepository.saveAndFlush(store);
     }
 
     public List<DataStore> getAllStores(){

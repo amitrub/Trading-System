@@ -36,6 +36,10 @@ public class Data_Controller {
         return subscriberService.AddSubscriber(userName, password);
     }
 
+    public DataSubscriber GetSubscriber(String userName, String password){
+        return subscriberService.GetSubscriber(userName, password);
+    }
+
     //Req 2.1 add new store
     public int AddStore(String storeName, int userID){
         return storeService.AddStore(storeName, userID);
@@ -62,6 +66,14 @@ public class Data_Controller {
     public List<DataProduct> findAllByCategoryAndProductNameAndPriceBetween(String name, String category, int min,int max){
         return productService.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);
     }
+    public void AddNewOwner(int storeID, int newOwnerID) {
+        storeService.AddNewOwner(storeID, newOwnerID);
+    }
+
+    public void AddNewManager(int storeID, int newManagerID) {
+        storeService.AddNewOwner(storeID, newManagerID);
+    }
+
 
     public void RemoveProduct(int productId) {
         productService.RemoveProduct(productId);

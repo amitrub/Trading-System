@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
@@ -22,12 +23,17 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecisio
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
+import TradingSystem.Server.JsonInitReader;
+import TradingSystem.Server.JsonStateReader;
+import TradingSystem.Server.JsonUser;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
+import java.io.File;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -44,55 +50,49 @@ public class TradingSystemImplRubin implements TradingSystem {
     public Validation validation;
     public AddFromDb addFromDb;
 
-    private ConcurrentHashMap<Integer, Integer> systemAdmins;
-    private ConcurrentHashMap<String, Integer> connectedSubscribers;
+    private ConcurrentHashMap<Integer, Integer> systemAdmins = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<String, Integer> connectedSubscribers = new ConcurrentHashMap<>();
 
-    public ConcurrentHashMap<Integer, User> subscribers;
-    public ConcurrentHashMap<String, User> guests;
-    public ConcurrentHashMap<Integer, Store> stores;
+    public ConcurrentHashMap<Integer, User> subscribers = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<String, User> guests = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Integer, Store> stores= new ConcurrentHashMap<>();
     //storeID_systemManagerPermission
-    private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions;
+    private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions = new ConcurrentHashMap<>();
 
     public TradingSystemImplRubin(Data_Controller data_controller) {
         this.data_controller = data_controller;
-        User.setData_controller(this.data_controller);
-        Store.setData_controller(this.data_controller);
-        Product.setData_controller(this.data_controller);
-        Inventory.setData_controller(this.data_controller);
-        ShoppingCart.setData_controller(this.data_controller);
-        ShoppingBag.setData_controller(this.data_controller);
-
-        User.setTradingSystem(this);
-        Store.setTradingSystem(this);
-        Product.setTradingSystem(this);
-        Inventory.setTradingSystem(this);
-        ShoppingCart.setTradingSystem(this);
-        ShoppingBag.setTradingSystem(this);
-
+        this.setData_controller(this.data_controller);
+        this.setTradingSystem(this);
         this.validation = new Validation(this);
         this.addFromDb= new AddFromDb(this,this.data_controller);
-        this.connectedSubscribers = new ConcurrentHashMap<>();
-        this.subscribers = new ConcurrentHashMap<>();
-        this.guests = new ConcurrentHashMap<>();
-        this.stores = new ConcurrentHashMap<>();
-        this.systemAdmins = new ConcurrentHashMap<>();
-        this.systemManagerPermissions=new ConcurrentHashMap<>();
-        User.ClearSystem();
-        Store.ClearSystem();
-        String userName = "amit";
-        String password = "qweasd";
-        int userID = data_controller.AddSubscriber(userName, password);
-        User defaultAdmin = new User(userID,userName, password);
-        this.systemAdmins.put(userID, userID);
-        this.subscribers.put(userID, defaultAdmin);
-        this.systemManagerPermissions.put(userID,new SystemManagerPermission());
-        printUsers();
-        this.Initialization();
-       // data_controller=Data_Controller.getInstance();
-    }
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String path = "src/main/resources/initialization_System.json";
+            File file = new File(path);
+            String absolutePath = file.getAbsolutePath();
+            JsonInitReader readJson = objectMapper.readValue(new File(absolutePath), JsonInitReader.class);
+            String userName = readJson.getAdmin().getUserName();
+            String password = readJson.getAdmin().getPassword();
+            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password);
+            int userID;
+            if (subscriber==null){
+                userID = data_controller.AddSubscriber(userName, password);
+            } else {
+                userID = subscriber.getUserID();
+            }
 
-    public ConcurrentHashMap<Integer, User> getSubscribers() {
-        return subscribers;
+            User defaultAdmin = new User(userID,userName, password);
+            this.systemAdmins.put(userID, userID);
+            this.subscribers.put(userID, defaultAdmin);
+            this.systemManagerPermissions.put(userID,new SystemManagerPermission());
+            Boolean externalState = readJson.getExternalState();
+            if (externalState){
+                this.Initialization();
+            }
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
     }
 
     public void setSubscribers(ConcurrentHashMap<Integer, User> subscribers){
@@ -102,14 +102,28 @@ public class TradingSystemImplRubin implements TradingSystem {
     public ConcurrentHashMap<Integer, Store> getStores() {
         return stores;
     }
+    private void setData_controller(Data_Controller data_controller){
+        User.setData_controller(data_controller);
+        Store.setData_controller(data_controller);
+        Product.setData_controller(data_controller);
+        Inventory.setData_controller(data_controller);
+        ShoppingCart.setData_controller(data_controller);
+        ShoppingBag.setData_controller(data_controller);
+    }
+    private void setTradingSystem(TradingSystemImplRubin tradingSystem){
+        User.setTradingSystem(tradingSystem);
+        Store.setTradingSystem(tradingSystem);
+        Product.setTradingSystem(tradingSystem);
+        Inventory.setTradingSystem(tradingSystem);
+        ShoppingCart.setTradingSystem(tradingSystem);
+        ShoppingBag.setTradingSystem(tradingSystem);
+    }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
         this.stores=stores;
     }
 
     public void ClearSystem() {
-        User.ClearSystem();
-        Store.ClearSystem();
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
         this.guests = new ConcurrentHashMap<>();
@@ -126,43 +140,98 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     public void Initialization() {
-        String userName = "amit1";
-        String password = "qweasd";
-        int userID = data_controller.AddSubscriber(userName, password);
-        User user = new User(userID,userName, password);
-        this.subscribers.put(userID, user);
-        userID = 1;
-        User defaultAdmin = this.subscribers.get(userID);
-        //TODO: to delete after
-        String connID = "479f239c-797c-4bdb-8175-980acaabf070";
-        this.connectedSubscribers.put(connID, userID);
-        AddStore(userID, connID, "store1");
-        AddStore(userID, connID, "Mar y juana");
-        AddStore(userID, connID, "Roee Hadas");
-        AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
-        AddProductToStore(userID, connID,1, "Sneakers2", "Shoes",50.0, 25);
-        AddProductToStore(userID, connID, 1,"Sneaker3", "bla" ,80.0, 25);
-        AddProductToStore(userID, connID, 2,"Sneakers24",  "Shoes", 80.0,25);
-        AddProductToStore(userID, connID, 2, "Sneak23", "bloo", 840.0, 25);
-        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes",80.0, 25);
-        AddProductToStore(userID, connID, 3,"Sneakers2", "Shoes", 50.0, 25);
-        AddProductToStore(userID, connID, 3,"Sneaker3", "bla" , 80.0,25);
-        AddProductToStore(userID, connID, 3,"Sneakers24",  "Shoes", 80.0,25);
-        AddProductToStore(userID, connID, 1, "Sneak23",  "bloo",840.0, 25);
-        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes", 80.0,25);
-        AddProductToStore(userID,connID,1,"Sneak","Shos", 52.0, 2 );
-        AddProductToStore(userID,connID,2,"Sneak","Shos", 52.0, 2 );
+
+//        TODO: clear all DB
+
+        try {
+            ObjectMapper objectMapper = new ObjectMapper();
+            String path = "src/main/resources/External_State.json";
+            File file = new File(path);
+            String absolutePath = file.getAbsolutePath();
+            JsonStateReader readJson = objectMapper.readValue(new File(absolutePath), JsonStateReader.class);
+            Map<String, Integer> userName_id = new HashMap<>();
+
+            String connID = ConnectSystem().returnConnID();
+            for (JsonUser user: readJson.register){
+                Integer userID = Register(connID, user.getUserName(), user.getPassword()).returnUserID();
+                userName_id.put(user.getUserName(), userID);
+            }
+            for (Map<String, String> loginMap : readJson.login){
+                String userName = loginMap.get("userName");
+                Integer userID = userName_id.get(userName);
+                String password = this.subscribers.get(userID).getPassword();
+
+                connID = Login(connID,userName,password).returnConnID();
+
+                Map<String, Integer> storeName_id = new HashMap<>();
+                for (Map<String, String> openStoreMap : readJson.open_store){
+                    String userNameOpenStore = openStoreMap.get("userName");
+                    if(userName.equals(userNameOpenStore)){
+                        String storeName = openStoreMap.get("storeName");
+                        Integer storeID = AddStore(userID, connID, storeName).returnStoreID();
+                        storeName_id.put(storeName, storeID);
+                    }
+                }
+                for (Map<String, Object> addItemMap : readJson.add_item){
+                    String userNameOpenStore = (String) addItemMap.get("userName");
+                    if(userName.equals(userNameOpenStore)){
+                        String storeName = (String) addItemMap.get("storeName");
+                        Integer storeID = storeName_id.get(storeName);
+                        String productName = (String) addItemMap.get("productName");
+                        String category = (String) addItemMap.get("category");
+                        Double price = (Double) addItemMap.get("price");
+                        Integer quantity = (Integer) addItemMap.get("quantity");
+                        AddProductToStore(userID, connID, storeID, productName,category, price, quantity);
+                    }
+                }
+//                TODO : add manager
+                for (Map<String, Object> addItemMap : readJson.add_manager){
+                }
+                connID = Logout(connID).returnConnID();
+            }
+            Exit(connID);
+        }
+        catch (Exception e){
+            System.out.println(e);
+        }
 
 
-
-        User user1 = new User("hadass", "1234");
-        userID = user1.getId();
-        this.subscribers.put(userID, user1);
-        connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
-        this.connectedSubscribers.put(connID, userID);
-
-        this.connectedSubscribers = new ConcurrentHashMap<>();
+//        int userID = 1;
+//        String connID = "479f239c-797c-4bdb-8175-980acaabf070";
+//        this.connectedSubscribers.put(connID, userID);
+//        AddStore(userID, connID, "store1");
+//        AddStore(userID, connID, "Mar y juana");
+//        AddStore(userID, connID, "Roee Hadas");
+//        AddProductToStore(userID,connID,1,"prod1","sport", 7.0, 7 );
+//        AddProductToStore(userID, connID,1, "Sneakers2", "Shoes",50.0, 25);
+//        AddProductToStore(userID, connID, 1,"Sneaker3", "bla" ,80.0, 25);
+//        AddProductToStore(userID, connID, 2,"Sneakers24",  "Shoes", 80.0,25);
+//        AddProductToStore(userID, connID, 2, "Sneak23", "bloo", 840.0, 25);
+//        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes",80.0, 25);
+//        AddProductToStore(userID, connID, 3,"Sneakers2", "Shoes", 50.0, 25);
+//        AddProductToStore(userID, connID, 3,"Sneaker3", "bla" , 80.0,25);
+//        AddProductToStore(userID, connID, 3,"Sneakers24",  "Shoes", 80.0,25);
+//        AddProductToStore(userID, connID, 1, "Sneak23",  "bloo",840.0, 25);
+//        AddProductToStore(userID, connID, 2,"Sneakers",  "Shoes", 80.0,25);
+//        AddProductToStore(userID,connID,1,"Sneak","Shos", 52.0, 2 );
+//        AddProductToStore(userID,connID,2,"Sneak","Shos", 52.0, 2 );
+//
+//        User user1 = new User("hadass", "1234");
+//        userID = user1.getId();
+//        this.subscribers.put(userID, user1);
+//        connID = "38095a9d-09dd-41ec-bd04-3a6d0da1c386";
+//        this.connectedSubscribers.put(connID, userID);
+//
+//        this.connectedSubscribers = new ConcurrentHashMap<>();
         printUsers();
+    }
+
+    public ConcurrentHashMap<Integer, User> getSubscribers() {
+        return subscribers;
+    }
+
+    public ConcurrentHashMap<Integer, Store> getStores() {
+        return stores;
     }
 
     public String errMsgGenerator(String side, String className, String line, String msg) {
@@ -752,6 +821,7 @@ public class TradingSystemImplRubin implements TradingSystem {
                 user.AddStore(newStore.getId());
                 stores.put(newStore.getId(),newStore);
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
+                res.AddPair("storeID", newStore.getId());
                 res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
                 return res; 
             }
@@ -1044,6 +1114,8 @@ public class TradingSystemImplRubin implements TradingSystem {
             NO.unlockUser();
             return res2;
         }
+        //Adds to the db
+        data_controller.AddNewOwner(storeID, newOwner);
 
         OwnerPermission OP = new OwnerPermission(newOwner, storeID);
         OP.setAppointmentId(userID);
@@ -1168,6 +1240,8 @@ public class TradingSystemImplRubin implements TradingSystem {
             NM.unlockUser();
             return res2;
         }
+        //Adds to the db
+        data_controller.AddNewManager(storeID, newManager);
 
         ManagerPermission MP = new ManagerPermission(newManager, storeID);
         MP.setAppointmentId(userID);

@@ -22,11 +22,12 @@
     "userName": "u2",
     "storeName": "s1",
     "productName": "Bamba",
-    "cost": 30,
+    "category": "food",
+    "price": 30.1,
     "quantity": 20}],
 
-  "add_manager" : {
+  "add_manager" : [{
     "owner": "u2",
     "newManager": "u3",
-    "permission": ["manage_inventory"]}
+    "permission": ["manage_inventory"]}]
 }

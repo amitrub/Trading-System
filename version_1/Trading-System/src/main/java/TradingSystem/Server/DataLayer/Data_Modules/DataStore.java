@@ -6,7 +6,9 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingH
 
 import javax.persistence.*;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -57,6 +59,32 @@ public class DataStore {
             )
     )
     private DataSubscriber founder;
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "store_owners",
+            joinColumns = {@JoinColumn(name = "store_id", referencedColumnName = "storeID",
+                    nullable = false, updatable = false, foreignKey = @ForeignKey(
+                    name = "store_owners_fk"
+            ))},
+            inverseJoinColumns = {@JoinColumn(name = "owner_id", referencedColumnName = "userID",
+                    nullable = false, updatable = false, foreignKey = @ForeignKey(
+                    name = "owners_store_fk"))}
+    )
+    private Set<DataSubscriber> owners = new HashSet<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @JoinTable(
+            name = "store_managers",
+            joinColumns = {@JoinColumn(name = "store_id", referencedColumnName = "storeID",
+                    nullable = false, updatable = false, foreignKey = @ForeignKey(
+                    name = "store_managers_fk"
+            ))},
+            inverseJoinColumns = {@JoinColumn(name = "manager_id", referencedColumnName = "userID",
+                    nullable = false, updatable = false, foreignKey = @ForeignKey(
+                    name = "managers_store_fk"))}
+    )
+    private Set<DataSubscriber> managers = new HashSet<>();
 
     @OneToMany(
             mappedBy = "store",
@@ -138,6 +166,20 @@ public class DataStore {
 
     public void setProducts(List<DataProduct> products) {
         this.products = products;
+    }
+
+    public void AddNewOwner(DataSubscriber newOwner) {
+        if (!this.owners.contains(newOwner)) {
+            this.owners.add(newOwner);
+        }
+        newOwner.AddOwnerStore(this);
+    }
+
+    public void AddNewManager(DataSubscriber newManager) {
+        if (!this.managers.contains(newManager)) {
+            this.managers.add(newManager);
+        }
+        newManager.AddManagerStore(this);
     }
 
     @Override

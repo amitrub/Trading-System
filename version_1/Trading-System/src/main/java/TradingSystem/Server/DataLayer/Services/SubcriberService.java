@@ -22,8 +22,10 @@ public class SubcriberService {
         return ret.getUserID();
     }
 
-    public void removeSubscriberByid(int id){
-        subscriberRepository.deleteByUserID(id);
+    public DataSubscriber GetSubscriber(String userName, String password) {
+//        return null;
+        DataSubscriber subscriber = subscriberRepository.findByName(userName);
+        return subscriber;
     }
 
     public List<DataSubscriber> getAllSubscribers(){
@@ -33,4 +35,5 @@ public class SubcriberService {
     public Optional<DataSubscriber> findSubscriberById(int subscriberid){
         return subscriberRepository.findById(subscriberid);
     }
+
 }
