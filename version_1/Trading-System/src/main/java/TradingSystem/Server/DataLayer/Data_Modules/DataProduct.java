@@ -97,13 +97,6 @@ public class DataProduct{
         this.productID = productID;
     }
 
-    public void setStoreName(String storeName) {
-        this.storeName = storeName;
-    }
-
-    public int getProductID() {
-        return productID;
-    }
 
     public String getProductName() {
         return productName;

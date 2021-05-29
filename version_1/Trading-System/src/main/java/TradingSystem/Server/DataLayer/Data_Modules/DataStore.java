@@ -148,11 +148,6 @@ public class DataStore {
         this.storeName = storeName;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-
     public void setStoreRate(Double storeRate) {
         this.storeRate = storeRate;
     }
