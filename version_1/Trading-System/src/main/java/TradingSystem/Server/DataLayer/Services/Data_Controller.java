@@ -1,11 +1,14 @@
 package TradingSystem.Server.DataLayer.Services;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -59,16 +62,24 @@ public class Data_Controller {
         productService.RemoveProduct(productId);
     }
 
+    public List<DataSubscriber> getAllSubscribers(){
+        return subscriberService.getAllSubscribers();
+    }
 
-//    //Req 1.2 get information on store
-//    public List<DataStore> getAllStores(){
-//        return storeService.getAllStores();
-//    }
+
+    //Req 1.2 get information on store
+    public List<DataStore> getAllStores(){
+        return storeService.getAllStores();
+    }
 //
 //    //Req 1.2 get information on the products of the store
 //    public List<DataProduct> getAllProductsByStoreId(int storeid){
 //        return productService.findDummyProductByStoreID(storeid);
 //    }
+
+    public Optional<DataStore> findStorebyId(int storeid){
+        return storeService.findStorebyId(storeid);
+    }
 //
 //    //Req 1.3 search Product By Name
 //    public List<DataProduct> serachByName(String productName, int minprice, int maxprice){

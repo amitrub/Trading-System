@@ -42,6 +42,7 @@ public class TradingSystemImplRubin implements TradingSystem {
     public Data_Controller data_controller;
 
     public Validation validation;
+    public AddFromDb addFromDb;
 
     private ConcurrentHashMap<Integer, Integer> systemAdmins;
     private ConcurrentHashMap<String, Integer> connectedSubscribers;
@@ -69,6 +70,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         ShoppingBag.setTradingSystem(this);
 
         this.validation = new Validation(this);
+        this.addFromDb= new AddFromDb(this,this.data_controller);
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
         this.guests = new ConcurrentHashMap<>();
@@ -93,8 +95,16 @@ public class TradingSystemImplRubin implements TradingSystem {
         return subscribers;
     }
 
+    public void setSubscribers(ConcurrentHashMap<Integer, User> subscribers){
+        this.subscribers=subscribers;
+    }
+
     public ConcurrentHashMap<Integer, Store> getStores() {
         return stores;
+    }
+
+    public void setStores(ConcurrentHashMap<Integer, Store> stores){
+        this.stores=stores;
     }
 
     public void ClearSystem() {
@@ -275,6 +285,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response Register(String connID, String userName, String password) {
+        this.addFromDb.UploadAllUsers();
         if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
             return new Response(true, "Register Error: error in connID");
         }
@@ -322,6 +333,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response Login(String guestConnID, String userName, String password) {
+        addFromDb.UploadAllUsers();
         System.out.println("--------------Login--------------");
         Response response = validation.ValidPassword(userName, password);
         if (response.getIsErr())
@@ -389,6 +401,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response ShowAllStores() {
+        addFromDb.UploadAllStores();
         List<DummyStore> list = new ArrayList<>();
         for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
             list.add(new DummyStore(currStore.getValue()));
@@ -718,6 +731,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response AddStore(int userID, String connID, String storeName){
+        addFromDb.UploadAllStores();
         if(!ValidConnectedUser(userID,connID)){
             return new Response(true, "AddStore: The user is not connected");
         }

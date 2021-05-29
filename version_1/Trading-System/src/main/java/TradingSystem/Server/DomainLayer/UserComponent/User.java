@@ -2,19 +2,22 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
-import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -114,6 +117,18 @@ public class User implements Observer {
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
+    public User(DataSubscriber subscriber) {
+        this.id = subscriber.getUserID();
+        this.userName = subscriber.getName();
+        this.password = subscriber.getPassword();
+        this.shoppingCart = new ShoppingCart(this.id);
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myManagedStoresIDs=new ArrayList<>();
+        this.myFoundedStoresIDs=new ArrayList<>();
+        this.ownerPermission=new ConcurrentHashMap<>();
+        this.managerPermission=new ConcurrentHashMap<>();
+    }
+
 
     public User(String userName, String password) {
         this.id = nextUserID;

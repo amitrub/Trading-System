@@ -601,4 +601,14 @@ public class ProxyTrading implements TradingSystem {
     public Response ShowBids(int userID, String connID, int storeID) {
         return null;
     }
+
+    @Override
+    public void setSubscribers(ConcurrentHashMap<Integer, User> subscribers) {
+
+    }
+
+    @Override
+    public void setStores(ConcurrentHashMap<Integer, Store> stores) {
+
+    }
 }

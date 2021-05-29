@@ -32,9 +32,9 @@ public class StoreService {
         return storeRepository.findAll();
     }
 
-    public DataStore findStorebyId(int storeid){
+    public Optional<DataStore> findStorebyId(int storeid){
        Optional<DataStore> res= storeRepository.findById(storeid);
-        return res.orElse(null);
+        return res;
     }
 
 //    public void AddNewOwner(int storeId, Integer userId, Integer newOwnerId){

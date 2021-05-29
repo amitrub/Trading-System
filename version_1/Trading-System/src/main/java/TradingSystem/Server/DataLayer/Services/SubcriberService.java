@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 @Transactional
@@ -22,5 +23,9 @@ public class SubcriberService {
 
     public void removeSubscriberByid(int id){
         subscriberRepository.deleteByUserID(id);
+    }
+
+    public List<DataSubscriber> getAllSubscribers(){
+        return subscriberRepository.findAll();
     }
 }
