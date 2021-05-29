@@ -1,5 +1,6 @@
 package TradingSystem.Server.DataLayer.Repositories;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
@@ -11,6 +12,6 @@ public interface ShoppingHistoryRepository extends JpaRepository<DataShoppingHis
 
 //    DataShoppingHistory findByUserID(int userId);
 //
-//    List<DataShoppingHistory> findAllByStoreID(int storeid);
+    List<DataShoppingHistory> findAllBySubscriber(DataSubscriber subscriber);
 }
 

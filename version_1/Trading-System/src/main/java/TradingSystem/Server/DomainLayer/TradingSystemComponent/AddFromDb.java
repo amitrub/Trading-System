@@ -3,7 +3,9 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -12,13 +14,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 public class AddFromDb {
 
-    public final TradingSystem tradingSystemImpl;
+    public final TradingSystemImplRubin tradingSystemImpl;
     public final Data_Controller data_controller;
 
-    public AddFromDb(TradingSystem tradingSystemImpl, Data_Controller data_controller) {
+    public AddFromDb(TradingSystemImplRubin tradingSystemImpl, Data_Controller data_controller) {
         this.tradingSystemImpl = tradingSystemImpl;
         this.data_controller= data_controller;
     }
@@ -27,18 +30,36 @@ public class AddFromDb {
         List<DataSubscriber> subscribers= data_controller.getAllSubscribers();
         ConcurrentHashMap<Integer, User> res= tradingSystemImpl.getSubscribers();
         for(DataSubscriber subscriber:subscribers){
-            res.putIfAbsent(subscriber.getUserID(),new User(subscriber));
+            List<Integer> ownedstores=data_controller.getAllOwnedStores(subscriber.getUserID()).stream().map(DataStore::getStoreID).collect(Collectors.toList());
+            List<Integer> foundedstores= data_controller.getAllFoundedStores(subscriber.getUserID()).stream().map(DataStore::getStoreID).collect(Collectors.toList());
+            List<Integer> ManagedStores = data_controller.getAllManagerStores(subscriber.getUserID()).stream().map(DataStore::getStoreID).collect(Collectors.toList());
+            User toAdd=new User(subscriber);
+            toAdd.setMyFoundedStoresIDs(foundedstores);
+            toAdd.setMyManagedStoresIDs(ManagedStores);
+            toAdd.setMyOwnedStoresIDs(ownedstores);
+            List<DataShoppingHistory> shoppingHistories= data_controller.getAllHistoryOfSubscriber(subscriber.getUserID());
+            List<ShoppingHistory> shoppingHistoriestoadd= new ArrayList<>();
+            for(DataShoppingHistory shoppingHistory:shoppingHistories){
+                shoppingHistoriestoadd.add(new ShoppingHistory(shoppingHistory));
+            }
+            toAdd.setShoppingHistory(shoppingHistoriestoadd);
+            res.putIfAbsent(subscriber.getUserID(),toAdd);
         }
-        tradingSystemImpl.setSubscribers(res);
+        tradingSystemImpl.subscribers=res;
     }
 
     public void UploadAllStores(){
         List<DataStore> stores= data_controller.getAllStores();
         ConcurrentHashMap<Integer, Store> res= tradingSystemImpl.getStores();
         for(DataStore store:stores){
-            res.putIfAbsent(store.getStoreID(),new Store(store));
+            List<Integer> owners= data_controller.findAllByStoresOwnedContains(store.getStoreID()).stream().map(DataSubscriber::getUserID).collect(Collectors.toList());
+            List<Integer> managers= data_controller.findAllStoresManagerContains(store.getStoreID()).stream().map(DataSubscriber::getUserID).collect(Collectors.toList());
+            Store toAdd= new Store(store);
+            toAdd.setManagersIDs(managers);
+            toAdd.setOwnersIDs(owners);
+            res.putIfAbsent(store.getStoreID(),toAdd);
         }
-        tradingSystemImpl.setStores(res);
+        tradingSystemImpl.stores=res;
     }
 
     public void UploadStore(int storeid){
@@ -72,4 +93,6 @@ public class AddFromDb {
         convert.addAll(products);
         return convert;
     }
+
+
 }

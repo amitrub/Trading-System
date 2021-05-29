@@ -3,6 +3,7 @@ package TradingSystem.Server.DataLayer.Services;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -104,6 +105,33 @@ public class Data_Controller {
 
     public List<DataProduct> findDummyProductByStore(DataStore store){
         return productService.findDummyProductByStore(store);
+    }
+
+    public void deleteAll(){
+        productService.deleteAll();
+        subscriberService.deleteAll();
+        shoppingHistoryService.deleteAll();
+        storeService.deleteAll();
+        shoppingCartService.deleteAll();
+    }
+
+    public List<DataStore> getAllFoundedStores(int userid){
+        return storeService.getAllStoresofFounder(userid);
+    }
+    public List<DataStore> getAllOwnedStores(int userid){
+        return storeService.getAllStoresOfOwner(userid);
+    }
+    public List<DataStore> getAllManagerStores(int userid){
+        return storeService.getAllStoresofManager(userid);
+    }
+    public List<DataShoppingHistory> getAllHistoryOfSubscriber(int userid){
+        return shoppingHistoryService.findAllBySubscriber(userid);
+    }
+    public List<DataSubscriber> findAllStoresManagerContains(int storeid){
+        return subscriberService.findAllByStoresManagerContains(storeid);
+    }
+    public List<DataSubscriber> findAllByStoresOwnedContains(int storeid){
+        return subscriberService.findAllByStoresOwnedContains(storeid);
     }
 //
 //    //Req 1.3 search Product By Name

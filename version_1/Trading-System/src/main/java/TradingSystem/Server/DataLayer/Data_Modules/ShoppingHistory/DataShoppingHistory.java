@@ -107,4 +107,24 @@ public class DataShoppingHistory {
                 ", products=" + products +
                 '}';
     }
+
+    public DataStore getStore(){
+        return this.store;
+    }
+    public int getid(){
+        return this.shoppingHistoryID;
+    }
+    public DataSubscriber getSubscriber(){
+        return this.subscriber;
+    }
+    public Date getDate(){
+        return this.date;
+    }
+    public List<DataHistoryProduct> getproducts(){
+        return this.products;
+    }
+
+    public double getprice(){
+        return this.finalPrice;
+    }
 }

@@ -123,8 +123,8 @@ public class User implements Observer {
         this.password = subscriber.getPassword();
         this.shoppingCart = new ShoppingCart(this.id);
         this.myManagedStoresIDs=new ArrayList<>();
-        this.myManagedStoresIDs=new ArrayList<>();
         this.myFoundedStoresIDs=new ArrayList<>();
+        this.myOwnedStoresIDs=new ArrayList<>();
         this.ownerPermission=new ConcurrentHashMap<>();
         this.managerPermission=new ConcurrentHashMap<>();
     }
@@ -238,6 +238,17 @@ public class User implements Observer {
         this.shoppingCart = shoppingCart;
     }
 
+    public void setMyFoundedStoresIDs(List<Integer> foundedStoresIDs){
+        this.myFoundedStoresIDs=foundedStoresIDs;
+    }
+
+    public void setMyManagedStoresIDs(List<Integer> myManagedStoresIDs){
+        this.myManagedStoresIDs=myManagedStoresIDs;
+    }
+    public void setMyOwnedStoresIDs(List<Integer> myOwnedStoresIDs){
+        this.myOwnedStoresIDs=myOwnedStoresIDs;
+    }
+
     @Override
     public String toString() {
         return "User{" +
@@ -295,6 +306,9 @@ public class User implements Observer {
         return this.myManagedStoresIDs;
     }
 
+    public void setShoppingHistory(List<ShoppingHistory> shoppingHistories){
+        this.shoppingHistory=shoppingHistories;
+    }
     public void AddStoreInManager(int storeID, ManagerPermission om) {
         this.myManagedStoresIDs.add(storeID);
         this.managerPermission.put(storeID, om);

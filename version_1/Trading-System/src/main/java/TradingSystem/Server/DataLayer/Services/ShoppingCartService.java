@@ -44,6 +44,9 @@ public class ShoppingCartService {
         bag.setFinalPrice(finalPrice);
         shoppingCartRepository.saveAndFlush(bag);
     }
+    public void deleteAll(){
+        shoppingCartRepository.deleteAll();
+    }
 
 //    public DataShoppingCart findDummyShoppingCartByUserID(int UserId){
 //        return shoppingCartRepository.findDummyShoppingCartByUserID(UserId);

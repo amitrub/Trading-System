@@ -178,6 +178,13 @@ public class Store extends Observable {
         return "";
     }
 
+    public void setManagersIDs(List<Integer> managersIDs){
+        this.managersIDs=managersIDs;
+    }
+    public void setOwnersIDs(List<Integer> ownersIDs){
+        this.ownersIDs=ownersIDs;
+    }
+
     public String removeManager(Integer managerId) {
         this.managersIDs.remove(managerId);
         this.managersPermission.remove(managerId);

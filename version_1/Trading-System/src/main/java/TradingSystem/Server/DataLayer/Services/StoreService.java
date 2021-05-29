@@ -51,7 +51,24 @@ public class StoreService {
        Optional<DataStore> res= storeRepository.findById(storeid);
         return res;
     }
+    public void deleteAll(){
+        storeRepository.deleteAll();
+    }
 
+    public List<DataStore> getAllStoresOfOwner(int userId){
+        DataSubscriber subscriber= subscriberRepository.getOne(userId);
+        return storeRepository.findAllByOwnersContains(subscriber);
+    }
+
+    public List<DataStore> getAllStoresofFounder(int userId){
+        DataSubscriber subscriber= subscriberRepository.getOne(userId);
+        return storeRepository.findAllByFounder(subscriber);
+    }
+
+    public List<DataStore> getAllStoresofManager(int userId){
+        DataSubscriber subscriber= subscriberRepository.getOne(userId);
+        return storeRepository.findAllByManagersContains(subscriber);
+    }
 //    public void AddNewOwner(int storeId, Integer userId, Integer newOwnerId){
 //        DataSubscriber owner= subscriberRepository.getOne(userId);
 //        DataSubscriber newowner= subscriberRepository.getOne(newOwnerId);
