@@ -7,7 +7,9 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 import javax.persistence.*;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -56,6 +58,20 @@ public class DataSubscriber {
             fetch = FetchType.LAZY
     )
     private List<DataStore> storesFounder = new ArrayList<>();
+
+    @ManyToMany(
+            mappedBy = "owners",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private Set<DataStore> storesOwner = new HashSet<>();
+
+    @ManyToMany(
+            mappedBy = "managers",
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.LAZY
+    )
+    private Set<DataStore> storesManager = new HashSet<>();
 
     @OneToMany(
             mappedBy = "subscriber",
@@ -115,6 +131,18 @@ public class DataSubscriber {
             }
         }
         return null;
+    }
+
+    public void AddOwnerStore(DataStore store) {
+        if (!this.storesOwner.contains(store)) {
+            this.storesOwner.add(store);
+        }
+    }
+
+    public void AddManagerStore(DataStore store) {
+        if (!this.storesManager.contains(store)) {
+            this.storesManager.add(store);
+        }
     }
 
     @Override

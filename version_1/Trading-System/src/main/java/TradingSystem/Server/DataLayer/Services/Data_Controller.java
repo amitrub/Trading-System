@@ -58,6 +58,14 @@ public class Data_Controller {
         shoppingHistoryService.addHistoryToStoreAndUser(shoppingHistory);
     }
 
+    public void AddNewOwner(int storeID, int newOwnerID) {
+        storeService.AddNewOwner(storeID, newOwnerID);
+    }
+
+    public void AddNewManager(int storeID, int newManagerID) {
+        storeService.AddNewOwner(storeID, newManagerID);
+    }
+
 
 //    //Req 1.2 get information on store
 //    public List<DataStore> getAllStores(){

@@ -1028,6 +1028,8 @@ public class TradingSystemImplRubin implements TradingSystem {
             NO.unlockUser();
             return res2;
         }
+        //Adds to the db
+        data_controller.AddNewOwner(storeID, newOwner);
 
         OwnerPermission OP = new OwnerPermission(newOwner, storeID);
         OP.setAppointmentId(userID);
@@ -1150,6 +1152,8 @@ public class TradingSystemImplRubin implements TradingSystem {
             NM.unlockUser();
             return res2;
         }
+        //Adds to the db
+        data_controller.AddNewManager(storeID, newManager);
 
         ManagerPermission MP = new ManagerPermission(newManager, storeID);
         MP.setAppointmentId(userID);
