@@ -25,9 +25,14 @@ public class PaymentSystem implements ExternalServices {
             return new Response(true, "The connection to Payment System Failed");
         }
         Response responsePay = Pay(paymentInfo);
-        Integer transactionId = Integer.parseInt(responsePay.getMessage());
-        if (transactionId == -1) {
-            return new Response(true, "The Payment Failed");
+        try {
+            Integer transactionId = Integer.parseInt(responsePay.getMessage());
+            if (transactionId == -1) {
+                return new Response(true, "The Payment Failed");
+            }
+        }
+        catch (Exception e){
+            return new Response(true, "The connection to Payment System Failed");
         }
         return new Response(false, "The connection to Payment System Failed");
         }
@@ -44,6 +49,7 @@ public class PaymentSystem implements ExternalServices {
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
+            return new Response(true, "The connection to Payment System Failed");
         }
 
         String message = response.getBody();
@@ -69,6 +75,7 @@ public class PaymentSystem implements ExternalServices {
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
+            return new Response(true, "The connection to Payment System Failed");
         }
 
         String message = response.getBody();
@@ -90,6 +97,7 @@ public class PaymentSystem implements ExternalServices {
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
+            return new Response(true, "The connection to Payment System Failed");
         }
 
         String message = response.getBody();
