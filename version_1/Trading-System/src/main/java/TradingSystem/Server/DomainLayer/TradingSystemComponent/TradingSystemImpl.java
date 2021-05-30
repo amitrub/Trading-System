@@ -215,6 +215,7 @@ public class TradingSystemImpl implements TradingSystem {
                 canExit = true;
             }
         }
+
         Store store1 = new Store("Mar y juana", 1);
         store1.AddProductToStore("Sneakers2", 50.0, "Shoes", 25);
         store1.AddProductToStore( "Sneaker3", 80.0,"bla" , 25);
