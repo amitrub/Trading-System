@@ -11,7 +11,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class SimpleExpression  implements Expression{
 
     @Autowired
-    protected TradingSystemImplRubin tradingSystem;
+    public static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        SimpleExpression.tradingSystem = tradingSystem;
+    }
 
     public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
 

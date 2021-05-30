@@ -15,9 +15,13 @@ public class QuantityLimitForCategory extends SimpleExpression {
     String  category;
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    public static TradingSystemImplRubin tradingSystem;
 
-    public QuantityLimitForCategory(Integer maxQuantity,String category) {
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        QuantityLimitForCategory.tradingSystem = tradingSystem;
+    }
+
+    public QuantityLimitForCategory(Integer maxQuantity, String category) {
         this.category=category;
         this.maxQuantity = maxQuantity;
     }

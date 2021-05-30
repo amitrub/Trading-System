@@ -17,9 +17,13 @@ public class AgeLimitForCategory extends SimpleExpression {
     String  category;
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    public static TradingSystemImplRubin tradingSystem;
 
-    public AgeLimitForCategory(Integer minAge,String category) {
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        AgeLimitForCategory.tradingSystem = tradingSystem;
+    }
+
+    public AgeLimitForCategory(Integer minAge, String category) {
         this.category=category;
         this.minAge = minAge;
     }
