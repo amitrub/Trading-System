@@ -119,6 +119,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         Inventory.setTradingSystem(tradingSystem);
         ShoppingCart.setTradingSystem(tradingSystem);
         ShoppingBag.setTradingSystem(tradingSystem);
+        //PurchaseTaskUnitTests.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
