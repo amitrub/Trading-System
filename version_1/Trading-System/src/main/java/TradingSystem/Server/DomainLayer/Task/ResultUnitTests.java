@@ -1,6 +1,5 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
+package TradingSystem.Server.DomainLayer.Task;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 public class ResultUnitTests {

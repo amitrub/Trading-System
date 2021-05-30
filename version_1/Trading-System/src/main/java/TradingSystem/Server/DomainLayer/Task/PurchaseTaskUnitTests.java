@@ -1,4 +1,4 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
+package TradingSystem.Server.DomainLayer.Task;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -13,16 +13,13 @@ import java.util.concurrent.Callable;
 import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_GREEN;
 import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_RESET;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
 public class PurchaseTaskUnitTests implements Callable<ResultUnitTests> {
 
-    @Autowired
-    public TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImplRubin tradingSystem;
 
-//    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
-//        AddManagerTaskUnitTests.tradingSystem = tradingSystem;
-//    }
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        PurchaseTaskUnitTests.tradingSystem = tradingSystem;
+    }
 
     private String connID;
     private String name;

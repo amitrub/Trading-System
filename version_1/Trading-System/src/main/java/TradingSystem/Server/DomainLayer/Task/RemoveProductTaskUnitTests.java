@@ -1,6 +1,5 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
+package TradingSystem.Server.DomainLayer.Task;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,11 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class RemoveProductTaskUnitTests  implements Callable<ResultUnitTests> {
 
-    @Autowired
-    TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        RemoveProductTaskUnitTests.tradingSystem = tradingSystem;
+    }
 
     private String name;
     private int storeID;
