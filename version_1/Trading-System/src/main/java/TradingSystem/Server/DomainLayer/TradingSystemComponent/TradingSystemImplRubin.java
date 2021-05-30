@@ -1006,8 +1006,10 @@ public class TradingSystemImplRubin implements TradingSystem {
                     else{
                         Response res = stores.get(storeID).AddProductToStore(productName, price, category, quantity);
                         printProducts();
+                        Integer productID = stores.get(storeID).getProductID(productName);
                         User user = subscribers.get(userID);
                         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+                        res.AddPair("productID", productID);
                         return res;
                     }
                 }

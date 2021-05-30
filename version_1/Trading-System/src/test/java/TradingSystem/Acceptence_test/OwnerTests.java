@@ -766,7 +766,7 @@ public class OwnerTests {
          client.Logout();
         client.connectSystem();
         client.Register("tmp", "123");
-        Integer tmpUserID=client.Login("tmp", "123");
+        Integer tmpUserID=client.Login("tmp", "123").returnUserID();
         Response res= client.OwnerDailyIncomeForStore(tmpStoreID);
         assertEquals(res.getMessage(),"getDailyIncomeForStore: The user " + tmpUserID + " is not the owner of the store");
     }

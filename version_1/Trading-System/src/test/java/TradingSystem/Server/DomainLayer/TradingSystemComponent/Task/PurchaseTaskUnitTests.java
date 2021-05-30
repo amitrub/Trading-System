@@ -13,10 +13,16 @@ import java.util.concurrent.Callable;
 import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_GREEN;
 import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_RESET;
 
+@RunWith(SpringRunner.class)
+@SpringBootTest
 public class PurchaseTaskUnitTests implements Callable<ResultUnitTests> {
 
     @Autowired
-    private TradingSystemImplRubin tradingSystem;
+    public TradingSystemImplRubin tradingSystem;
+
+//    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+//        AddManagerTaskUnitTests.tradingSystem = tradingSystem;
+//    }
 
     private String connID;
     private String name;

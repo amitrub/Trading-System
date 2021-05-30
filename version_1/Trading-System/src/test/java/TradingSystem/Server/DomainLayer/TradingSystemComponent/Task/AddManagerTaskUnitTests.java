@@ -11,8 +11,12 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class AddManagerTaskUnitTests implements Callable<ResultUnitTests> {
 
-    @Autowired
-    TradingSystemImplRubin tradingSystem;
+    //@Autowired
+    public static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        AddManagerTaskUnitTests.tradingSystem = tradingSystem;
+    }
 
     private String name;
     private int userID;

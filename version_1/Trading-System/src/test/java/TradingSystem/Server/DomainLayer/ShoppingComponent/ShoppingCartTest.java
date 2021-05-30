@@ -1,7 +1,5 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
-
-
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
@@ -28,7 +26,7 @@ class ShoppingCartTest {
     @Autowired
     TradingSystemImplRubin tradingSystem;
 
-    String guest1= tradingSystem.ConnectSystem().returnConnID();
+
     String NconnID;
     int NuserId ,storeID1,storeID2;
     ShoppingCart SC1;
@@ -37,6 +35,7 @@ class ShoppingCartTest {
 
     @BeforeEach
     void setUp() {
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(guest1, "nofet", "123");
         Response res= tradingSystem.Login(guest1, "nofet", "123");
         NconnID= res.returnConnID();

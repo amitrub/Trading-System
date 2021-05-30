@@ -1417,6 +1417,17 @@ public class myTest {
         Assertions.assertEquals(r.getMessage(),"getDailyIncomeForSystem: The user "+NofetID+"  try to see the Daily Income for the system but he is not the admin of the system");
     }
     //endregion
+
+    @Test
+    public void HappyResponseToSubscriberBidding() {
+        tradingSystem.AddProductToStore(NofetID,NconnID,NofetStore,"1","1",10,20);
+        tradingSystem.AddProductToStore(NofetID,NconnID,NofetStore,"2","1",7,20);
+        tradingSystem.AddProductToCart(NconnID,NofetStore,1,3);
+
+        Response r=tradingSystem.subscriberBidding(NofetID,NconnID,NofetStore,2,2,2);
+        Response r8=tradingSystem.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,2,NofetID,2);
+        Assertions.assertFalse(r8.getIsErr());
+    }
 /*
     //region template tests
     @Test
