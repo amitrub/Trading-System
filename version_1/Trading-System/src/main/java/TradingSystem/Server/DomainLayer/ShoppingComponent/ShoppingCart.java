@@ -91,6 +91,10 @@ public class ShoppingCart {
         }
     }
 
+    public void AddShoppingBagIfNotExist(ShoppingBag shoppingBag){
+        shoppingBags.putIfAbsent(shoppingBag.getStoreID(), shoppingBag);
+    }
+
     /**
      /**
      * @requirement 2.7
@@ -118,9 +122,10 @@ public class ShoppingCart {
                   return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
             }
         }
-
-        //Adds to the db
-        data_controller.addProductToBag(getUserID(), storeID, productID, quantity);
+        if(!isGuset){
+            //Adds to the db
+            data_controller.addProductToBag(getUserID(), storeID, productID, quantity);
+        }
 
         this.shoppingBags.get(storeID).addProduct(productID, quantity);
         ConcurrentHashMap<Integer,Integer> products=this.shoppingBags.get(storeID).getProducts();
@@ -226,7 +231,7 @@ public class ShoppingCart {
             return paymentResponse;
         }
 
-        Response res = Buy();
+        Response res = Buy(isGuest);
         if(res.getIsErr()) {
             this.releaseLocks(lockList);
             return res;
@@ -291,22 +296,23 @@ public class ShoppingCart {
         return new Response();
     }
 
-    private Response Buy(){
+    private Response Buy(boolean isGuest){
         Response res;
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
-// <<<<<<< DB-Rubin-to-merge
-            res = tradingSystem.reduceProducts(SB.getProducts(), storeID);
-// =======
-//             res = tradingSystemImpl.reduceProducts(SB.getAllProducts(), storeID);
-// >>>>>>> Version-3
+            res = tradingSystem.reduceProducts(SB.getAllProducts(), storeID);
             if (res.getIsErr()) {
                 this.cancelReduceProducts();
                 this.storesReducedProductsVain=new HashSet<>();
                 return res;
             }
             this.storesReducedProductsVain.add(storeID);
+        }
+        if (!isGuest){
+            for (Integer storeID : shoppingBagsSet) {
+                data_controller.deleteSubscriberBag(userID, storeID);
+            }
         }
         res=new Response(false, "Purchase: The reduction was made successfully ");
         return res;
@@ -354,6 +360,9 @@ public class ShoppingCart {
             for (Integer productID : productSet) {
                 int quantity = SB.getProducts().get(productID);
                 Product p = tradingSystem.getProduct(storeID, productID);
+                System.out.println("---------------Product---------------");
+                System.out.println(p);
+                System.out.println("---------------Product---------------");
                 DummyProduct d = new DummyProduct(storeID, tradingSystem.getStoreName(storeID), productID, p.getProductName(), p.getPrice(), p.getCategory(), quantity);
                 outputList.add(d);
             }

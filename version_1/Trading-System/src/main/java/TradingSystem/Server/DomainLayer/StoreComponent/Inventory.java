@@ -52,6 +52,10 @@ public class Inventory {
         return this.nextProductID;
     }
 
+    public void AddStoreProductIfNotExist(Product product){
+        products.putIfAbsent(product.getProductID(), product);
+    }
+
     public List<DummyProduct> ShowStoreProducts() {
         List<DummyProduct> products = new ArrayList<>();
         Set<Integer> productSet = this.products.keySet();

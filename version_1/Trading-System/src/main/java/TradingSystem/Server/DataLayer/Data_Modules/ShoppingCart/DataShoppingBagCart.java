@@ -76,6 +76,10 @@ public class DataShoppingBagCart {
         return this.products;
     }
 
+    public void setProducts(List<DataShoppingBagProduct> products) {
+        this.products = products;
+    }
+
     public UserStoreProductKey getKey() {
         return key;
     }

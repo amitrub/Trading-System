@@ -103,8 +103,8 @@ public class Data_Controller {
         return subscriberService.findSubscriberById(subscriberId);
     }
 
-    public List<DataProduct> findDummyProductByStore(DataStore store){
-        return productService.findDummyProductByStore(store);
+    public List<DataProduct> findDummyProductByStore(Integer storeID){
+        return productService.findDummyProductByStore(storeID);
     }
 
     public void deleteAll(){
@@ -138,8 +138,16 @@ public class Data_Controller {
         return shoppingHistoryService.findAllByStore(storeid);
     }
 
-    public List<DataShoppingBagCart> findAllCartsOfStore(int storeid){
-        return shoppingCartService.getAllcardsBystore(storeid);
+    public List<DataShoppingBagCart> getAllBySubscriber(int userID){
+        return shoppingCartService.getAllBySubscriber(userID);
+    }
+
+    public void setQuantity(Integer productID, int newQuantity){
+        productService.setQuantity(productID, newQuantity);
+    }
+
+    public void deleteSubscriberBag(Integer userID, Integer storeID){
+        shoppingCartService.deleteSubscriberBag(userID, storeID);
     }
 //
 //    //Req 1.3 search Product By Name

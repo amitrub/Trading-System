@@ -2,6 +2,8 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -38,11 +40,11 @@ public class ShoppingBag {
     private Integer storeID;
 
     //productID_quantity
-    private ConcurrentHashMap<Integer,Integer> products;
+    private ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
 
-    private ConcurrentHashMap<Integer,Double> priceOfSpacialProducts;
+    private ConcurrentHashMap<Integer,Double> priceOfSpacialProducts = new ConcurrentHashMap<>();
 
-    private ConcurrentHashMap<Integer,Integer> quantityOfSpacialProducts;
+    private ConcurrentHashMap<Integer,Integer> quantityOfSpacialProducts = new ConcurrentHashMap<>();
 
     private Double finalPrice;
 
@@ -77,7 +79,17 @@ public class ShoppingBag {
             Integer quantity = shoppingBagToCopy.quantityOfSpacialProducts.get(productID);
             this.quantityOfSpacialProducts.put(productID,quantity);
         }
+    }
 
+    public ShoppingBag(DataShoppingBagCart shoppingBagCart){
+        this.userID=shoppingBagCart.getSubscriber().getUserID();
+        this.storeID=shoppingBagCart.getStore().getStoreID();
+        this.products=new ConcurrentHashMap<Integer,Integer>();
+        List<DataShoppingBagProduct> list=shoppingBagCart.getProducts();
+        for(DataShoppingBagProduct product:list){
+            this.products.put(product.getProduct().getProductID(),product.getQuantity());
+        }
+        this.finalPrice= shoppingBagCart.getFinalPrice();
     }
 
     @Override
@@ -163,7 +175,9 @@ public class ShoppingBag {
     }
 
     public void setFinalPrice(Double finalPrice) {
-        data_controller.setBagFinalPrice(userID, storeID, finalPrice);
+        if(userID>1){
+            data_controller.setBagFinalPrice(userID, storeID, finalPrice);
+        }
         this.finalPrice = finalPrice;
     }
 
