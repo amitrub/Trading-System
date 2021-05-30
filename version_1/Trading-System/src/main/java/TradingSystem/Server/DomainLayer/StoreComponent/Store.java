@@ -117,6 +117,25 @@ public class Store extends Observable {
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
     }
+
+    public void AddOwnerIfNotExist(int ownerID){
+        if (!ownersIDs.contains(ownerID)){
+            ownersIDs.add(ownerID);
+        }
+    }
+
+    public void AddManagerIfNotExist(int managerID){
+        if (!ownersIDs.contains(managerID)){
+            ownersIDs.add(managerID);
+        }
+    }
+
+    public void AddStoreProductIfNotExist(Product product){
+        inventory.AddStoreProductIfNotExist(product);
+
+    }
+
+
     public Integer getId() {
         return id;
     }
@@ -177,8 +196,7 @@ public class Store extends Observable {
         return "";
     }
 
-    public String addNewManager(Integer userId, Integer newManagerId)
-    {
+    public String addNewManager(Integer userId, Integer newManagerId){
                 this.managersIDs.add(newManagerId);
                 //this.managersPermission.put(newManagerId,om);
         return "";

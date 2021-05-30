@@ -164,6 +164,7 @@ public class Product {
     }
 
     public void setQuantity(Integer quantity) {
+        data_controller.setQuantity(productID, quantity);
         this.quantity = quantity;
     }
 

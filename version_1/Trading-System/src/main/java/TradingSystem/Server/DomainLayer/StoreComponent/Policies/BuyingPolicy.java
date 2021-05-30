@@ -25,6 +25,7 @@ public class BuyingPolicy {
     @Autowired
     TradingSystemImplRubin tradingSystem;
 
+
     public BuyingPolicy(Integer storeID,Expression exp){
         this.storeID=storeID;
         this.exp=exp;

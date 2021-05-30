@@ -13,7 +13,11 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ProductSale extends SimpleSale {
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    public static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        ProductSale.tradingSystem = tradingSystem;
+    }
 
     Integer productID;
     Integer discountPercentage;

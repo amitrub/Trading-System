@@ -10,10 +10,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Bid;
 import TradingSystem.Server.DomainLayer.StoreComponent.Inventory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Conditioning;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -119,6 +116,12 @@ public class TradingSystemImplRubin implements TradingSystem {
         Inventory.setTradingSystem(tradingSystem);
         ShoppingCart.setTradingSystem(tradingSystem);
         ShoppingBag.setTradingSystem(tradingSystem);
+        SimpleExpression.setTradingSystem(tradingSystem);
+        AgeLimitForCategory.setTradingSystem(tradingSystem);
+        QuantityLimitForCategory.setTradingSystem(tradingSystem);
+        CategorySale.setTradingSystem(tradingSystem);
+        ProductSale.setTradingSystem(tradingSystem);
+        StoreSale.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
@@ -225,6 +228,38 @@ public class TradingSystemImplRubin implements TradingSystem {
 //
 //        this.connectedSubscribers = new ConcurrentHashMap<>();
         printUsers();
+    }
+
+    public void AddSubscriberIfNotExist(User user){
+        subscribers.putIfAbsent(user.getId(),user);
+    }
+
+    public void AddStoreIfNotExist(Store store){
+        stores.putIfAbsent(store.getId(),store);
+    }
+
+    public void AddOwnerIfNotExist(int ownerID, int storeID){
+        Store store = stores.get(storeID);
+        User owner = subscribers.get(ownerID);
+        store.AddOwnerIfNotExist(ownerID);
+        owner.AddOwnerStoresIfNotExist(storeID);
+    }
+
+    public void AddManagerIfNotExist(int managerID, int storeID){
+        Store store = stores.get(storeID);
+        User manager = subscribers.get(managerID);
+        store.AddManagerIfNotExist(managerID);
+        manager.AddManagerStoresIfNotExist(storeID);
+    }
+
+    public void AddStoreProductIfNotExist(Integer storeID, Product product){
+        Store store = stores.get(storeID);
+        store.AddStoreProductIfNotExist(product);
+    }
+
+    public void AddShoppingBagIfNotExist(ShoppingBag shoppingBag){
+        User user = subscribers.get(shoppingBag.getUserID());
+        user.AddShoppingBagIfNotExist(shoppingBag);
     }
 
     public ConcurrentHashMap<Integer, User> getSubscribers() {
@@ -355,7 +390,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response Register(String connID, String userName, String password) {
-
         this.addFromDb.UploadAllUsers();
         if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
             return new Response(true, "Register Error: error in connID");
@@ -528,6 +562,10 @@ public class TradingSystemImplRubin implements TradingSystem {
      *  
      */
     public Response SearchProduct(String name, String category, int minprice, int maxprice){
+        addFromDb.UploadAllStores();
+        for (Integer storeID: stores.keySet()){
+            addFromDb.UploadStore(storeID);
+        }
         List<DummyProduct> dummyProducts = new ArrayList<>();
          //TODO check if valid
 //        if(name==null){
@@ -539,7 +577,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         for(Store store: stores.values()){
             // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
             dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
-            dummyProducts= addFromDb.uploadProductsForStore(store,dummyProducts);
         }
         Response res = new Response(false, "Search: Num of products from search is " + dummyProducts.size());
         res.AddPair("products", dummyProducts);
@@ -555,6 +592,8 @@ public class TradingSystemImplRubin implements TradingSystem {
      * @return
      */
     public Response AddProductToCart(String connID, int StoreId, int productId, int quantity){
+        System.out.println("---------------------AddProductToCart----------------------");
+        System.out.println("---------------------AddProductToCart----------------------");
         if(guests.containsKey(connID)){
             User myGuest= guests.get(connID);
             Response res = myGuest.AddProductToCart(StoreId,productId,quantity);
@@ -564,6 +603,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else if(connectedSubscribers.containsKey(connID)){
             int userID= connectedSubscribers.get(connID);
+            //Upload from DB
+            addFromDb.UploadUserShoppingCart(userID);
+
             User user = subscribers.get(userID);
             Response res = user.AddProductToCart(StoreId,productId,quantity);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -593,6 +635,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else if(connectedSubscribers.containsKey(connID)) {
             int userID = connectedSubscribers.get(connID);
+            //Upload from DB
+            addFromDb.UploadUserShoppingCart(userID);
+
             User user = subscribers.get(userID);
             List<DummyProduct> list = user.ShowShoppingCart();
             Response res = new Response(false, "ShowShoppingCart: Num of products in my Shopping Cart is " + list.size());
@@ -626,6 +671,8 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else if(connectedSubscribers.containsKey(connID)){
             int userID= connectedSubscribers.get(connID);
+            //Upload from DB
+            addFromDb.UploadUserShoppingCart(userID);
             Response res = subscribers.get(userID).editProductQuantityFromCart(storeID, productID, quantity);
             User user=subscribers.get(userID);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -655,6 +702,8 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else if(connectedSubscribers.containsKey(connID)) {
             int userID = connectedSubscribers.get(connID);
+            //Upload from DB
+            addFromDb.UploadUserShoppingCart(userID);
             User user=subscribers.get(userID);
             Response res = user.RemoveProductFromCart(storeID,productID);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -687,6 +736,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         else {
             User myGuest= guests.get(connID);
             Collection<ShoppingBag> shoppingBags = myGuest.getShoppingCart().getShoppingBags().values();
+            for (ShoppingBag bag : shoppingBags){
+                addFromDb.UploadStore(bag.getStoreID());
+            }
             Response res = myGuest.guestPurchase(name, credit_number, month, year, cvv, ID, address,city,country,zip);
             if(!res.getIsErr())
             {
@@ -725,6 +777,8 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else {
             User user = subscribers.get(userID);
+            //Upload from DB
+            addFromDb.UploadUserShoppingCart(userID);
             Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
             Response res = user.subscriberPurchase(credit_number, month, year, cvv, ID, address,city,country,zip);
             if(!res.getIsErr())
@@ -935,6 +989,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      * }
      */
     public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity){
+        addFromDb.UploadStore(storeID);
         if(ValidConnectedUser(userID, connID)){
             if(!this.hasPermission(userID,storeID,User.Permission.AddProduct)){
                 return new Response(true, "AddProductToStore: The User " + userID + " is not allowed to add a product");
@@ -2130,7 +2185,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         Store s=this.stores.get(storeID);
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
-        return new Response("");
+        return new Response("Buying Policy added successes");
     }
 
     public Response GetPoliciesInfo(int userID, int storeID, String connID){

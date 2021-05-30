@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
@@ -260,8 +261,29 @@ public class User implements Observer {
                 '}';
     }
 
+    public void AddFounderStoresIfNotExist(int storeID){
+        if (!myFoundedStoresIDs.contains(storeID)){
+            myFoundedStoresIDs.add(storeID);
+        }
+    }
+    public void AddOwnerStoresIfNotExist(int storeID){
+        if (!myOwnedStoresIDs.contains(storeID)){
+            myOwnedStoresIDs.add(storeID);
+        }
+    }
+
+    public void AddManagerStoresIfNotExist(int storeID){
+        if (!myManagedStoresIDs.contains(storeID)){
+            myManagedStoresIDs.add(storeID);
+        }
+    }
+
+    public void AddShoppingBagIfNotExist(ShoppingBag shoppingBag){
+        shoppingCart.AddShoppingBagIfNotExist(shoppingBag);
+    }
+
     public Response AddProductToCart(int StoreId, int productId, int quantity) {
-        return shoppingCart.addProductToBag(StoreId, productId, quantity, id>=1);
+        return shoppingCart.addProductToBag(StoreId, productId, quantity, id<1);
     }
 
     public List<DummyProduct> ShowShoppingCart() {

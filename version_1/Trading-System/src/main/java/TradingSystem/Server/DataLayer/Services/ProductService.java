@@ -38,9 +38,17 @@ public class ProductService {
         productRepository.removeDataProductByProductID(productId);
     }
 
-    public List<DataProduct> findDummyProductByStore(DataStore store){
+    public List<DataProduct> findDummyProductByStore(Integer storeID){
+        DataStore store = storeRepository.getOne(storeID);
         return productRepository.findDummyProductByStore(store);
     }
+
+    public void setQuantity(Integer productID, int newQuantity){
+        DataProduct product = productRepository.getOne(productID);
+        product.setQuantity(newQuantity);
+        productRepository.saveAndFlush(product);
+    }
+
 
     public void deleteAll(){
         productRepository.deleteAll();
