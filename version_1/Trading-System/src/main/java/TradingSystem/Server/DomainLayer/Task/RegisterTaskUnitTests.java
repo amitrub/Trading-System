@@ -1,6 +1,5 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
+package TradingSystem.Server.DomainLayer.Task;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,8 +11,11 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class RegisterTaskUnitTests implements Callable<ResultUnitTests> {
 
-    @Autowired
-    TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        RegisterTaskUnitTests.tradingSystem = tradingSystem;
+    }
 
     private String name;
     private Integer userID;
@@ -34,7 +36,7 @@ public class RegisterTaskUnitTests implements Callable<ResultUnitTests> {
         System.out.printf(ANSI_GREEN + "%s: Finish Register: id=%d connID=%s\n", this.name, userID, connID);
         System.out.println(ANSI_RESET);
 
-        return new ResultUnitTests(this.name, LocalDateTime.now().toString());
+        return new ResultUnitTests(this.name, LocalDateTime.now().toString(), res);
     }
 
 }

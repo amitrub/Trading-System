@@ -1,8 +1,7 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
+package TradingSystem.Server.DomainLayer.Task;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;

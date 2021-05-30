@@ -20,6 +20,10 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecisio
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Decision;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.Task.AddManagerTaskUnitTests;
+import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
+import TradingSystem.Server.DomainLayer.Task.RegisterTaskUnitTests;
+import TradingSystem.Server.DomainLayer.Task.RemoveProductTaskUnitTests;
 import TradingSystem.Server.DomainLayer.UserComponent.*;
 
 import TradingSystem.Server.JsonInitReader;
@@ -122,6 +126,10 @@ public class TradingSystemImplRubin implements TradingSystem {
         CategorySale.setTradingSystem(tradingSystem);
         ProductSale.setTradingSystem(tradingSystem);
         StoreSale.setTradingSystem(tradingSystem);
+        AddManagerTaskUnitTests.setTradingSystem(tradingSystem);
+        PurchaseTaskUnitTests.setTradingSystem(tradingSystem);
+        RegisterTaskUnitTests.setTradingSystem(tradingSystem);
+        RemoveProductTaskUnitTests.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
