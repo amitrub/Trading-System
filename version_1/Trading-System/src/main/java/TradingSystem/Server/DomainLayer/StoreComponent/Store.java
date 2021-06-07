@@ -3,6 +3,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
@@ -10,6 +11,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -21,6 +23,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 //import javafx.util.Pair;
 
@@ -28,14 +31,11 @@ public class Store extends Observable {
 
     @Autowired
     public static Data_Controller data_controller;
-
     public static void setData_controller(Data_Controller data_controller) {
         Store.data_controller = data_controller;
     }
 
-
     private static TradingSystemImplRubin tradingSystem;
-
     public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
         Store.tradingSystem = tradingSystem;
     }
@@ -46,6 +46,7 @@ public class Store extends Observable {
 
     private Integer id;
     private String name;
+    private Double rate;
 
     private final Integer founderID;
     private List<Integer> ownersIDs = new ArrayList<>();
@@ -56,23 +57,18 @@ public class Store extends Observable {
     //managersID_Permission
     private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
 
+    private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
+    private Inventory inventory;
+
     private DiscountPolicy discountPolicy;
     private BuyingPolicy buyingPolicy;
 
     //userID_Bid
-    private ConcurrentLinkedDeque<Bid> Bids = new ConcurrentLinkedDeque<Bid>();;
-
-
-    private Double rate;
-    //userID_rating
-    // private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
+    private ConcurrentLinkedDeque<Bid> Bids = new ConcurrentLinkedDeque<Bid>();
 
     //userID_Bidding
     private ConcurrentHashMap<Integer, Double> usersBidding = new ConcurrentHashMap<>();;
 
-    private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
-
-    private Inventory inventory;
 
 
     public Store(String name, Integer founderID,  DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy) {
@@ -111,9 +107,13 @@ public class Store extends Observable {
         this.id=store.getStoreID();
         this.name=store.getStoreName();
         this.founderID=store.getFounder().getUserID();
+        this.ownersIDs=store.getOwners().stream().map(DataSubscriber::getUserID).collect(Collectors.toList());
         this.ownersIDs.add(founderID);
-        this.rate =5.0; //todo- add rating!
-        this.inventory=new Inventory(this.id,name);
+        this.managersIDs=store.getManagers().stream().map(DataSubscriber::getUserID).collect(Collectors.toList());
+        this.rate =store.getStoreRate();
+        this.inventory=new Inventory(this.id,name, store.getProducts());
+
+
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
     }
@@ -489,7 +489,7 @@ public class Store extends Observable {
         this.managersPermission.put(mp.getUserId(),mp);
     }
 
-    public void editManagerPermissions(int userID, int managerID, List<User.Permission> permissions) {
+    public void editManagerPermissions(int userID, int managerID, List<PermissionEnum.Permission> permissions) {
         ManagerPermission MP=this.managersPermission.get(managerID);
         if(MP==null){
             MP=new ManagerPermission(managerID,this.id);
@@ -569,7 +569,7 @@ public class Store extends Observable {
         for(Integer ID : managersIDs) {
             ManagerPermission MP=this.managersPermission.get(ID);
             if(MP!=null) {
-                if(MP.hasPermission(User.Permission.RequestBidding)) {
+                if(MP.hasPermission(PermissionEnum.Permission.RequestBidding)) {
                     User user = tradingSystem.subscribers.get(ID);
                     if (user != null) {
                         System.out.println(user);

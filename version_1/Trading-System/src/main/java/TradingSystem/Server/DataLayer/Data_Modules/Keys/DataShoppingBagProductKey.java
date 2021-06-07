@@ -8,7 +8,7 @@ import java.util.Objects;
 @Embeddable
 public class DataShoppingBagProductKey implements Serializable {
 
-    private UserStoreProductKey shoppingBagKey;
+    private UserStoreKey userStoreKey;
 
     @Column(name = "product_id")
     private int productID;
@@ -16,17 +16,17 @@ public class DataShoppingBagProductKey implements Serializable {
     public DataShoppingBagProductKey() {
     }
 
-    public DataShoppingBagProductKey(UserStoreProductKey key, int productID) {
-        this.shoppingBagKey = key;
+    public DataShoppingBagProductKey(UserStoreKey key, int productID) {
+        this.userStoreKey = key;
         this.productID = productID;
     }
 
-    public UserStoreProductKey getShoppingBagKey() {
-        return shoppingBagKey;
+    public UserStoreKey getUserStoreKey() {
+        return userStoreKey;
     }
 
-    public void setShoppingBagKey(UserStoreProductKey shoppingBagKey) {
-        this.shoppingBagKey = shoppingBagKey;
+    public void setUserStoreKey(UserStoreKey userStoreKey) {
+        this.userStoreKey = userStoreKey;
     }
 
     public int getProductID() {
@@ -42,18 +42,18 @@ public class DataShoppingBagProductKey implements Serializable {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         DataShoppingBagProductKey that = (DataShoppingBagProductKey) o;
-        return productID == that.productID && Objects.equals(shoppingBagKey, that.shoppingBagKey);
+        return productID == that.productID && Objects.equals(userStoreKey, that.userStoreKey);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(shoppingBagKey, productID);
+        return Objects.hash(userStoreKey, productID);
     }
 
     @Override
     public String toString() {
         return "DataShoppingBagProductKey{" +
-                "shoppingBagKey=" + shoppingBagKey +
+                "shoppingBagKey=" + userStoreKey +
                 ", productID=" + productID +
                 '}';
     }

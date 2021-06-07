@@ -36,7 +36,8 @@ public class SubcriberService {
     }
 
     public List<DataSubscriber> getAllSubscribers(){
-        return subscriberRepository.findAll();
+        List<DataSubscriber> subscribers = subscriberRepository.findAll();
+        return subscribers;
     }
 
     public Optional<DataSubscriber> findSubscriberById(int subscriberid){

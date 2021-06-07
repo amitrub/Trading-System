@@ -1,5 +1,8 @@
 package TradingSystem.Server.DomainLayer.UserComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissionType;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
@@ -10,29 +13,37 @@ public class OwnerPermission implements Permission {
     private Integer storeId;
     private Integer appointmentId;
 
-    private List<User.Permission> permissions;
+    private List<PermissionEnum.Permission> permissions = new ArrayList<>();
 
     public OwnerPermission(Integer userId, Integer storeId) {
         this.userId = userId;
         this.storeId = storeId;
         this.appointmentId=null;
-        this.permissions = new ArrayList<User.Permission>();
-        this.permissions.add(User.Permission.AddProduct);
-        this.permissions.add(User.Permission.ReduceProduct);
-        this.permissions.add(User.Permission.DeleteProduct);
-        this.permissions.add(User.Permission.EditProduct);
-        this.permissions.add(User.Permission.AppointmentOwner);
-        this.permissions.add(User.Permission.AppointmentManager);
-        this.permissions.add(User.Permission.EditManagerPermission);
-        this.permissions.add(User.Permission.RemoveManager);
-        this.permissions.add(User.Permission.GetInfoOfficials);
-        this.permissions.add(User.Permission.GetInfoRequests);
-        this.permissions.add(User.Permission.ResponseRequests);
-        this.permissions.add(User.Permission.GetStoreHistory);
-        this.permissions.add(User.Permission.GetDailyIncomeForStore);
-        this.permissions.add(User.Permission.RequestBidding);
-        this.permissions.add(User.Permission.EditBuyingPolicy);
-        this.permissions.add(User.Permission.EditDiscountPolicy);
+        this.permissions.add(PermissionEnum.Permission.AddProduct);
+        this.permissions.add(PermissionEnum.Permission.ReduceProduct);
+        this.permissions.add(PermissionEnum.Permission.DeleteProduct);
+        this.permissions.add(PermissionEnum.Permission.EditProduct);
+        this.permissions.add(PermissionEnum.Permission.AppointmentOwner);
+        this.permissions.add(PermissionEnum.Permission.AppointmentManager);
+        this.permissions.add(PermissionEnum.Permission.EditManagerPermission);
+        this.permissions.add(PermissionEnum.Permission.RemoveManager);
+        this.permissions.add(PermissionEnum.Permission.GetInfoOfficials);
+        this.permissions.add(PermissionEnum.Permission.GetInfoRequests);
+        this.permissions.add(PermissionEnum.Permission.ResponseRequests);
+        this.permissions.add(PermissionEnum.Permission.GetStoreHistory);
+        this.permissions.add(PermissionEnum.Permission.GetDailyIncomeForStore);
+        this.permissions.add(PermissionEnum.Permission.RequestBidding);
+        this.permissions.add(PermissionEnum.Permission.EditBuyingPolicy);
+        this.permissions.add(PermissionEnum.Permission.EditDiscountPolicy);
+    }
+
+    public OwnerPermission(DataOwnerPermissions dataOwnerPermission) {
+        this.userId = dataOwnerPermission.getSubscriber().getUserID();
+        this.storeId = dataOwnerPermission.getStore().getStoreID();
+        this.appointmentId = dataOwnerPermission.getAppointment().getUserID();
+        for (DataOwnerPermissionType permissionType: dataOwnerPermission.getPermissions()){
+            this.permissions.add(PermissionEnum.dataToPermission(permissionType.getKey().getPermission()));
+        }
     }
 
     public Integer getUserId() {
@@ -59,19 +70,19 @@ public class OwnerPermission implements Permission {
         this.appointmentId = appointmentId;
     }
 
-    public List<User.Permission> getPermissions() {
+    public List<PermissionEnum.Permission> getPermissions() {
       if(permissions==null){
-          return new LinkedList<User.Permission>();
+          return new LinkedList<PermissionEnum.Permission>();
       }
         return permissions;
     }
 
-    public void setPermissions(List<User.Permission> permissions) {
+    public void setPermissions(List<PermissionEnum.Permission> permissions) {
         this.permissions = permissions;
     }
 
     @Override
-    public boolean hasPermission(User.Permission p) {
+    public boolean hasPermission(PermissionEnum.Permission p) {
        if(this.permissions.contains(p))
         return true;
        else

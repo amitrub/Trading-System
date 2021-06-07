@@ -3,8 +3,9 @@ package TradingSystem.Server.DataLayer.Services;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Keys.DataShoppingBagProductKey;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
-import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreProductKey;
+import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreKey;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,7 +27,7 @@ public class ShoppingCartService {
     @Autowired
     ShoppingCartRepository shoppingCartRepository;
     @Autowired
-    DataShoppingBagProductRepository shoppingBagProductRepository;
+    ShoppingBagProductRepository shoppingBagProductRepository;
 
     public void addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity) {
         DataSubscriber user = subscriberRepository.getOne(userID);
@@ -42,19 +43,33 @@ public class ShoppingCartService {
     }
 
     public void setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
-        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreProductKey(userID, storeID));
+        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
         bag.setFinalPrice(finalPrice);
         shoppingCartRepository.saveAndFlush(bag);
     }
+
+    public void setBagProductQuantity(int userID, Integer storeID, int productID, Integer quantity) {
+        DataShoppingBagProduct product = shoppingBagProductRepository.getOne(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
+        product.setQuantity(quantity);
+        shoppingBagProductRepository.saveAndFlush(product);
+    }
+
+    public void RemoveBagProduct(int userID, Integer storeID, int productID) {
+        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
+        DataShoppingBagProduct product = shoppingBagProductRepository.getOne(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
+        bag.removeProduct(product);
+        shoppingCartRepository.saveAndFlush(bag);
+    }
+
     public void deleteAll(){
         shoppingCartRepository.deleteAll();
     }
 
     public void deleteSubscriberBag(Integer userID, Integer storeID){
-        shoppingCartRepository.deleteById(new UserStoreProductKey(userID, storeID));
+        shoppingCartRepository.deleteById(new UserStoreKey(userID, storeID));
     }
 
-    public List<DataShoppingBagCart> getAllBySubscriber(int userID){
+    public List<DataShoppingBagCart> getSubscriberShoppingCart(int userID){
         DataSubscriber subscriber = subscriberRepository.getOne(userID);
         List<DataShoppingBagCart> list= shoppingCartRepository.findAllBySubscriber(subscriber);
 //        for(DataShoppingBagCart shoppingBagCart:list){

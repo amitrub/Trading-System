@@ -2,9 +2,11 @@ package TradingSystem.Server.DataLayer.Services;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
-import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
-import TradingSystem.Server.DataLayer.Repositories.SubscriberRepository;
-import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.*;
+import TradingSystem.Server.DataLayer.Repositories.*;
+import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,6 +22,14 @@ public class StoreService {
     StoreRepository storeRepository;
     @Autowired
     SubscriberRepository subscriberRepository;
+    @Autowired
+    OwnerPermissionsRepository ownerPermissionsRepository;
+    @Autowired
+    OwnerPermissionTypeRepository ownerPermissionTypeRepository;
+    @Autowired
+    ManagerPermissionsRepository managerPermissionsRepository;
+    @Autowired
+    ManagerPermissionTypeRepository managerPermissionTypeRepository;
 
     public int AddStore(String storeName, int founderID){
         DataStore store = new DataStore(storeName);
@@ -30,18 +40,34 @@ public class StoreService {
     }
 
 
-    public void AddNewOwner(int storeID, int newOwnerID) {
+    public void AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
         DataStore store = storeRepository.getOne(storeID);
         DataSubscriber newOwner = subscriberRepository.getOne(newOwnerID);
         store.AddNewOwner(newOwner);
         storeRepository.saveAndFlush(store);
+        DataSubscriber appointment = subscriberRepository.getOne(OP.getAppointmentId());
+        DataOwnerPermissions dataOwnerPermissions = new DataOwnerPermissions(newOwner, store, appointment);
+        ownerPermissionsRepository.saveAndFlush(dataOwnerPermissions);
+        for (PermissionEnum.Permission permission: OP.getPermissions()){
+            DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
+            DataOwnerPermissionType permissionType = new DataOwnerPermissionType(dataOwnerPermissions, dataPermission);
+            ownerPermissionTypeRepository.saveAndFlush(permissionType);
+        }
     }
 
-    public void AddNewManager(int storeID, int newManagerID) {
+    public void AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
         DataStore store = storeRepository.getOne(storeID);
         DataSubscriber newManager = subscriberRepository.getOne(newManagerID);
         store.AddNewManager(newManager);
         storeRepository.saveAndFlush(store);
+        DataSubscriber appointment = subscriberRepository.getOne(MP.getAppointmentId());
+        DataManagerPermissions dataManagerPermissions = new DataManagerPermissions(newManager, store, appointment);
+        managerPermissionsRepository.saveAndFlush(dataManagerPermissions);
+        for (PermissionEnum.Permission permission: MP.getPermissions()){
+            DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
+            DataManagerPermissionType permissionType = new DataManagerPermissionType(dataManagerPermissions, dataPermission);
+            managerPermissionTypeRepository.saveAndFlush(permissionType);
+        }
     }
 
     public List<DataStore> getAllStores(){

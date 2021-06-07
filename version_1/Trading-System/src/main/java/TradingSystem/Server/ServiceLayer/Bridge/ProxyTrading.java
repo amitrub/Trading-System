@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -159,14 +160,14 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public boolean hasPermission(int userID, int storeID, User.Permission p) {
+    public boolean hasPermission(int userID, int storeID, PermissionEnum.Permission p) {
         if(real!=null)
             return real.hasPermission(userID,storeID,p);
         return false;
     }
 
     @Override
-    public boolean hasPermission(int userID, User.Permission p) {
+    public boolean hasPermission(int userID, PermissionEnum.Permission p) {
         if(real!=null)
             return real.hasPermission(userID,p);
         return false;
@@ -271,7 +272,7 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission) {
+    public Response systemRoleChecks(int userID, int storeID, int newRole, PermissionEnum.Permission permission) {
         if(real!=null)
             return real.systemRoleChecks(userID,storeID,newRole,permission);
         return null;
@@ -470,14 +471,14 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
+    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         if(real!=null)
             return real.EditManagerPermissions(userID,connID,storeID,managerID,permissions);
         return null;
     }
 
     @Override
-    public User.Permission changeToPermission(String per) {
+    public PermissionEnum.Permission changeToPermission(String per) {
         if(real!=null)
             return real.changeToPermission(per);
         return null;

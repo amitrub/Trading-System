@@ -9,6 +9,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface DataShoppingBagProductRepository extends JpaRepository<DataShoppingBagProduct, DataShoppingBagProductKey> {
+public interface ShoppingBagProductRepository extends JpaRepository<DataShoppingBagProduct, DataShoppingBagProductKey> {
     List<DataShoppingBagProduct> findAllByShoppingBag(DataShoppingBagCart shoppingBagCart);
+
+    @Override
+    void deleteById(DataShoppingBagProductKey dataShoppingBagProductKey);
 }
