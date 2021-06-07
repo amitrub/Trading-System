@@ -18,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class ManagerTest {
+public class ManagerOperationTest {
 
     @Autowired
     TradingSystemImplRubin tradingSystem;

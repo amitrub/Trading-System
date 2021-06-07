@@ -2,17 +2,30 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 public class ClientProxy implements Client_Interface {
 
-    TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+    //TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+
+    //TODO - proxy trading?
+
+    @Autowired
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        ClientProxy.tradingSystem = tradingSystem;
+    }
 
     String ConnID;
     int userID;
@@ -23,6 +36,7 @@ public class ClientProxy implements Client_Interface {
 
     public ClientProxy(){
         real=null;
+        System.out.println(tradingSystem);
     }
 
     public void setRealBridge(Client implementation) {

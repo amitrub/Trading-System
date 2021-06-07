@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
@@ -114,6 +115,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         ShoppingCart.setData_controller(data_controller);
         ShoppingBag.setData_controller(data_controller);
     }
+
     private void setTradingSystem(TradingSystemImplRubin tradingSystem){
         User.setTradingSystem(tradingSystem);
         Store.setTradingSystem(tradingSystem);
@@ -131,6 +133,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         RegisterTaskUnitTests.setTradingSystem(tradingSystem);
         RemoveProductTaskUnitTests.setTradingSystem(tradingSystem);
         Trading_Driver.setTradingSystem(tradingSystem);
+        ClientProxy.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
