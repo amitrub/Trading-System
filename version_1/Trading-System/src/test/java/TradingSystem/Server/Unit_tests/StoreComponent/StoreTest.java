@@ -1,6 +1,15 @@
 package TradingSystem.Server.Unit_tests.StoreComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
+import TradingSystem.Server.DomainLayer.Task.RemoveProductTaskUnitTests;
+import TradingSystem.Server.DomainLayer.Task.ResultUnitTests;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -14,7 +23,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.*;
+
 import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
@@ -39,9 +52,10 @@ class StoreTest {
         Response res= tradingSystem.Login(guest1, "Elinor", "123");
         EconnID= res.returnConnID();
         EuserId=res.returnUserID();
+
         tradingSystem.AddStore(EuserId, EconnID, "store1");
         storeID = tradingSystem.getStoreIDByName("store1");
-        //store = new Store("store1",1);
+
         store = tradingSystem.stores.get(storeID);
         store.AddProductToStore( "computer", 3000.0, "Technology",5);
         store.AddProductToStore("Bag" ,100.0, "Beauty",5);
@@ -62,13 +76,9 @@ class StoreTest {
         store = null;
     }
 
-    void setUpBeforePurchase(){
-        tradingSystem.AddProductToStore(EuserId, EconnID, storeID, "computer", "Technology", 3000.0,20);
-        tradingSystem.AddProductToStore(EuserId, EconnID, storeID, "Bag", "Beauty", 100.0,50);
-        tradingSystem.AddProductToStore(EuserId, EconnID, storeID, "Bed", "Fun", 4500.0,30);
-    }
 
-    //region search tests
+
+    //region requirement 2.6: search tests
 
     //requirement 2.6
     @Test
@@ -106,12 +116,11 @@ class StoreTest {
     }
     //endregion
 
-    //region Write Comment tests
+    //region requirement 3.3: Write Comment tests
 
     // requirement 3.3
     @Test
     public void WriteCommentSuccess() {
-        setUpBeforePurchase();
         Integer productID1 = store.getProductID("computer");
         tradingSystem.AddProductToCart(NconnID, storeID, productID1, 1);
         tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
@@ -125,7 +134,6 @@ class StoreTest {
     // requirement 3.3
     @Test
     public void WriteCommentWrongStoreID() {
-        setUpBeforePurchase();
         Integer productID1 = store.getProductID("computer");
         tradingSystem.AddProductToCart(NconnID, storeID, productID1, 1);
         tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
@@ -139,7 +147,6 @@ class StoreTest {
     // requirement 3.3
     @Test
     public void WriteCommentNotInHistory() {
-        setUpBeforePurchase();
         Integer productID1 = store.getProductID("computer");
 
         Response response = tradingSystem.WriteComment(NofetID,NconnID, storeID, productID1, "Amazing");
@@ -152,7 +159,6 @@ class StoreTest {
     // requirement 3.3
     @Test
     public void WriteCommentExistComment() {
-        setUpBeforePurchase();
         Integer productID1 = store.getProductID("computer");
         tradingSystem.AddProductToCart(NconnID, storeID, productID1, 1);
         tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
@@ -166,8 +172,217 @@ class StoreTest {
 
     //endregion
 
+    //region requirement 4.12: Daily Income tests
 
+    //requirement 4.12
+    @Test
+    public void HappyDailyIncomeForStore(){
+        Integer productID1 = store.getProductID("computer");
+        tradingSystem.AddProductToCart(NconnID, storeID, productID1, 3);
+        tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
+        Double dailyIncome = store.getDailyIncome();
+        assertEquals(dailyIncome, 9000.0);
+    }
+
+    //requirement 4.12
+    @Test
+    public void SadDailyIncomeForStore_NotExistPurchase(){
+        Double dailyIncome= store.getDailyIncome();
+        assertEquals(dailyIncome, 0.0);
+    }
+
+    //endregion
+
+    /*
+    //region requirement 4.1: Add/Edit/Remove product
+    // requirement 4.1
+    @Test
+    public void AddProductSuccess(){
+        Response response= store.AddProductToStore("prod8",11.0,"food",9);
+        assertFalse(response.getIsErr());
+    }
+
+    @Test
+    public void AddProductSad_NameTaken(){
+        store.AddProductToStore("prod8",11.0,"food",9);
+        Response response= store.AddProductToStore("prod8",11.0,"food",9);
+        assertTrue(response.getIsErr());
+    }
+
+//    // requirement 4.1
+//    @Test
+//    public void AddProductInvalidAmount(){
+//        Response response= store.AddProductToStore("prod3",11.0,"food",-1);
+//        assertTrue(response.getIsErr());
+//    }
+
+//    // requirement 4.1
+//    @Test
+//    public void AddProductInvalidPermission(){
+//        Response response= tradingSystem.AddProductToStore(NofetID,NconnID,storeID,"prod3","food",11.0,2);
+//        assertTrue(response.getIsErr());
+//    }
+
+//    // requirement 4.1
+//    @Test
+//    public void AddProductInValidDetails(){
+//        Response response= tradingSystem.AddProductToStore(userID,connID,storeid,"prod3","food",-1,11);
+//        assertTrue(response.getIsErr());
+//    }
+
+    // requirement 4.1
+    @Test
+    public void ChangeProductQuantitySuccess(){
+        Response response= store.editProductDetails(EuserId,1,"computer",3000.0,"Technology",50);
+        assertFalse(response.getIsErr());
+        assertEquals(store.getQuantity(1), 50);
+    }
+
+//    // requirement 4.1
+//    @Test
+//    public void EditProductWrongQuantity(){
+//        Response response= store.editProductDetails(EuserId,1,"computer",3000.0,"Technology",-5);
+//        Assertions.assertFalse(response.getIsErr());
+//        assertEquals(store.getQuantity(1), 5);
+//    }
+
+//    // requirement 4.1
+//    @Test
+//    public void ChangeProductQuantityInvalidPermission(){
+//        Response response= tradingSystem.ChangeQuantityProduct(ElinorID,EconnID,storeid,productId,10);
+//        assertTrue(response.getIsErr());
+//    }
+
+//    // requirement 4.1
+//    @org.junit.Test
+//    public void ChangeProductWrongQuantity(){
+//        Response response= tradingSystem.ChangeQuantityProduct(userID,connID,storeid,productId,-10);
+//        assertTrue(response.getIsErr());
+//    }
+
+    // requirement 4.1
+    @Test
+    public void EditProductSuccess(){
+        Response response= store.editProductDetails(EuserId,1,"computer",2500.0,"Technology",5);
+        assertFalse(response.getIsErr());
+        assertEquals(store.getProduct(1).getPrice(), 2500.0);
+    }
+
+    @Test
+    public void EditProductSad_NotExistProduct(){
+        Response response= store.editProductDetails(EuserId,100,"computer",2500.0,"Technology",5);
+        assertTrue(response.getIsErr());
+        assertEquals(store.getProduct(1).getPrice(), 3000.0);
+    }
+
+//    // requirement 4.1
+//    @org.junit.Test
+//    public void EditProductInvalidPermission(){
+//        String connID1= tradingSystem.ConnectSystem().returnConnID();
+//        Response response= tradingSystem.Register(connID1,"reutlevy30","8119");
+//        int userID1= response.returnUserID();
+//        connID1= tradingSystem.Login(connID1,"reutlevy30","8119").returnConnID();
+//        response= tradingSystem.EditProduct(userID1,connID1,storeid,productId,"prod4","food",12.0,9);
+//        assertTrue(response.getIsErr());
+//    }
+
+    // requirement 4.1
+//    @Test
+//    public void EditProductWrongPrice(){
+//        Response response= tradingSystem.EditProduct(userID,connID,storeid,productId,"prod4","food",-12.0,9);
+//        assertTrue(response.getIsErr());
+//    }
+
+    // requirement 4.1
+    @Test
+    public void RemoveProductSuccess(){
+        Response response= store.deleteProduct(2);
+        assertFalse(response.getIsErr());
+        assertEquals(store.getProduct(2), null);
+    }
+
+//    // requirement 4.1
+//    @Test
+//    public void RemoveProductInvalidPermission(){
+//        String connID1= tradingSystem.ConnectSystem().returnConnID();
+//        Response response= tradingSystem.Register(connID1,"reutlevy30","8119");
+//        int userID1= response.returnUserID();
+//        connID1= tradingSystem.Login(connID1,"reutlevy30","8119").returnConnID();
+//        response= tradingSystem.RemoveProduct(userID1,storeid,productId,connID1);
+//        assertTrue(response.getIsErr());
+//    }
+
+    // requirement 4.1
+    @Test
+    public void RemoveProductNotExist(){
+        Response response= store.deleteProduct(100);
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 4.1
+    @Test
+    public void removeProductFromStoreWhileOtherClientBuyingItTest_Parallel() {
+        List<boolean[]> isErrsTotal = new ArrayList<>();
+        for (int test_i = 0; test_i < 10; test_i++) {
+            //Prepare
+            Integer newProduct = store.getProductID("computer");
+            //Create two clients with task to buy this product
+            ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
+
+            //Prepare tasks for clients
+            List<Callable<ResultUnitTests>> taskList = new ArrayList<>();
+            Callable<ResultUnitTests> purchaseTask = new PurchaseTaskUnitTests("guestBuyer", storeID, newProduct, 25, "123456789", "4", "2022" ,"123" ,"123456789" ,"Rager 101","Beer Sheva","Israel","8458527");
+            taskList.add(purchaseTask);
+            Callable<ResultUnitTests> removeTask = new RemoveProductTaskUnitTests("Client-StoreOwner",storeID, newProduct);
+            taskList.add(removeTask);
+
+            //Execute all tasks and get reference to Future objects
+            List<Future<ResultUnitTests>> resultList = null;
+
+            try {
+                resultList = executor.invokeAll(taskList);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+
+            executor.shutdown();
+
+            System.out.println("\n========Printing the results======");
+            boolean[] isErrs = new boolean[2];
+            for (int i = 0; i < resultList.size(); i++) {
+                Future<ResultUnitTests> future = resultList.get(i);
+                try {
+                    ResultUnitTests result = future.get();
+                    Response response = result.getResponse();
+                    System.out.println("Assert correctnes for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
+                    isErrs[i] = response.getIsErr();
+                } catch (InterruptedException | ExecutionException e) {
+                    e.printStackTrace();
+                }
+            }
+            //Check that one of the client failed and the other succeed.
+            //assertTrue((isErrs[0] && !isErrs[1]) || (isErrs[1] && !isErrs[0]));
+            isErrsTotal.add(isErrs);
+            tearDown();
+        }
+        boolean ans = false;
+        for(boolean[] errArr : isErrsTotal) {
+            if ((errArr[0] && !errArr[1]) || (errArr[1] && !errArr[0])) {
+                ans = true;
+                break;
+            }
+        }
+        assertTrue(ans);
+        System.out.println("========Printing the results - TOTAL PARALLEL ======");
+        for(int i=0; i<isErrsTotal.size(); i++) {
+            System.out.printf("%d: purchase: %s remove: %s\n", i, isErrsTotal.get(i)[0], isErrsTotal.get(i)[1]);
+        }
+    }
+
+    //endregion
+
+     */
 
 /*
     //region Conditional discount tests

@@ -20,7 +20,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
@@ -30,9 +30,11 @@ public class ConnectionTest {
     TradingSystemImplRubin tradingSystem;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp(){
         tradingSystem.ClearSystem();
     }
+
+    //region requirement 2
 
     // requirement 2.1
     @Test
@@ -46,7 +48,7 @@ public class ConnectionTest {
     public void exitGood() {
         String connId= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Exit(connId);
-        Assertions.assertFalse(response.getIsErr());
+        assertFalse(response.getIsErr());
     }
 
     // requirement 2.2
@@ -63,7 +65,7 @@ public class ConnectionTest {
     public void registerGood() {
         String connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID,"Elinor","123");
-        Assertions.assertFalse(response.getIsErr());
+        assertFalse(response.getIsErr());
     }
 
     // requirement 2.3
@@ -134,7 +136,7 @@ public class ConnectionTest {
         String connID= tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(connID,"Elinor","123");
         Response response= tradingSystem.Login(connID,"Elinor","123");
-        Assertions.assertFalse(response.getIsErr() && response.returnUserID()<0);
+        assertFalse(response.getIsErr() && response.returnUserID()<0);
     }
 
     // requirement 2.4
@@ -154,6 +156,16 @@ public class ConnectionTest {
         assertTrue(response.getIsErr());
     }
 
+    // requirement 2.5
+    @Test
+    public void showAllStoresGood() {
+        Response res = tradingSystem.ShowAllStores();
+        assertEquals(res.getIsErr(),false);
+    }
+
+    //endregion
+
+    //region requirement 3
 
     // requirement 3.1
     @Test
@@ -163,7 +175,7 @@ public class ConnectionTest {
         Response res = tradingSystem.Login(connID,"Rubin","123");
         connID = res.returnConnID();
         Response response = tradingSystem.Logout(connID);
-        Assertions.assertFalse(response.getIsErr());
+        assertFalse(response.getIsErr());
     }
 
     // requirement 3.1
@@ -175,4 +187,40 @@ public class ConnectionTest {
         Response response = tradingSystem.Logout(connID);
         assertTrue(response.getIsErr());
     }
+
+    // requirement 3.2
+    @Test
+    public void AddStoreWrongUserID() {
+        String connID = tradingSystem.ConnectSystem().returnConnID();
+        Response response= tradingSystem.AddStore(11,connID,"Store");
+        assertTrue(response.getIsErr());
+    }
+
+    // requirement 3.2
+    @Test
+    public void AddStoreSuccess() {
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest1, "Elinor", "123");
+        Response res= tradingSystem.Login(guest1, "Elinor", "123");
+        String EconnID= res.returnConnID();
+        Integer EuserId=res.returnUserID();
+        Response response= tradingSystem.AddStore(EuserId,EconnID,"HappyStore");
+        assertFalse(response.getIsErr());
+    }
+
+    // requirement 3.2
+    @Test
+    public void AddStoreSameName() {
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest1, "Elinor", "123");
+        Response res= tradingSystem.Login(guest1, "Elinor", "123");
+        String EconnID= res.returnConnID();
+        Integer EuserId=res.returnUserID();
+        tradingSystem.AddStore(EuserId,EconnID,"Store1");
+        Response response= tradingSystem.AddStore(EuserId,EconnID,"Store1");
+        assertTrue(response.getIsErr());
+    }
+
+    //endregion
+
 }

@@ -1,10 +1,12 @@
-package TradingSystem.Server.Unit_tests.TradingSystemComponent;
+package TradingSystem.Server.Unit_tests.UserComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.ResultUnitTests;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.Before;
 import org.junit.Test;
@@ -21,22 +23,25 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest
-public class PurchaseTest {
+public class UserTest {
 
     @Autowired
     TradingSystemImplRubin tradingSystem;
 
-    String EconnID;
     String NconnID;
-    int ElinorID;
     int NofetID;
     int NofetStore;
-    int ElinorStore;
     Store Nstore;
+
+    User Elinor;
+    String EconnID;
+    int ElinorID;
+    int ElinorStore;
     Store Estore;
 
     @Before
@@ -46,40 +51,92 @@ public class PurchaseTest {
         NofetID= r1.returnUserID();
         NconnID= tradingSystem.Login(NconnID, "nofet", "123").returnConnID();
 
+        tradingSystem.AddStore(NofetID,NconnID,"NofetStore");
+        NofetStore = tradingSystem.getStoreIDByName("NofetStore");
+        Nstore = tradingSystem.stores.get(NofetStore);
+        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "computer", "Technology", 3000.0,20);
+        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "Bag", "Beauty", 100.0,50);
+        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "Bed", "Fun", 4500.0,30);
+
         EconnID = tradingSystem.ConnectSystem().returnConnID();
         Response r2= tradingSystem.Register(EconnID, "elinor", "123");
         ElinorID= r2.returnUserID();
         EconnID= tradingSystem.Login(EconnID, "elinor", "123").returnConnID();
-
-        tradingSystem.AddStore(NofetID,NconnID,"NofetStore");
+        Elinor = tradingSystem.subscribers.get(ElinorID);
         tradingSystem.AddStore(ElinorID,EconnID,"ElinorStore");
-        NofetStore = tradingSystem.getStoreIDByName("NofetStore");
         ElinorStore = tradingSystem.getStoreIDByName("ElinorStore");
         Estore = tradingSystem.stores.get(ElinorStore);
-        Nstore = tradingSystem.stores.get(NofetStore);
     }
 
     public void tearDown(){
         tradingSystem.ClearSystem();
     }
 
-    //requirement 2.9
+    //region user history tests
+    // requirement 3.7
+    @Test
+    public void UserHistorySuccess() {
+        //prepare
+        Integer productID1 = Nstore.getProductID("computer");
+        Integer productID2 = Nstore.getProductID("Bag");
+        tradingSystem.AddProductToCart(EconnID, NofetStore, productID1, 1);
+        tradingSystem.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        tradingSystem.AddProductToCart(EconnID, NofetStore, productID2, 1);
+        tradingSystem.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
-    void setUpBeforePurchase(){
-        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "computer", "Technology", 3000.0,20);
-        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "Bag", "Beauty", 100.0,50);
-        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "Bed", "Fun", 4500.0,30);
+        //action
+        List<DummyShoppingHistory> list = Elinor.ShowUserHistory();
+        assertEquals(list.size(), 2);
+
+    }
+
+    // requirement 3.7
+    @Test
+    public void UserHistoryFailed() {
+        List<DummyShoppingHistory> list = Elinor.ShowUserHistory();
+        assertEquals(list.size(), 0);
+    }
+
+    //endregion
+
+    //region add to cart tests
+    @Test
+    public void AddToCartHappy() {
+        QuantityLimitForStore exp = new QuantityLimitForStore(10, ElinorStore);
+        tradingSystem.addBuyingPolicy(ElinorID, EconnID, ElinorStore, exp);
+        tradingSystem.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,20);
+        Integer productID1 = Estore.getProductID("computer");
+        Integer preQuantity = Estore.getQuantity(productID1);
+        Response response = Elinor.AddProductToCart(NofetStore,productID1, 5);
+        assertTrue(response.getIsErr());
+
+        //check Inventory after happy add
+        Integer newQuantity = Estore.getQuantity(productID1);
+        Assertions.assertEquals(preQuantity, newQuantity);
     }
 
     @Test
+    public void AddToCartSad_BuyingPolicy() {
+        QuantityLimitForStore exp = new QuantityLimitForStore(2, ElinorStore);
+        tradingSystem.addBuyingPolicy(ElinorID, EconnID, ElinorStore, exp);
+        tradingSystem.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,20);
+        Integer productID1 = Estore.getProductID("computer");
+        Integer preQuantity = Estore.getQuantity(productID1);
+        Response response = Elinor.AddProductToCart( NofetStore,productID1, 5);
+        assertTrue(response.getIsErr());
+    }
+
+    //endregion
+
+    //region purchase tests
+    @Test
     public void SadPurchase_EmptyCart() {
-        Response response = tradingSystem.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        Response response = Elinor.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertTrue(response.getIsErr());
     }
 
     @Test
     public void HappyPurchase() {
-        setUpBeforePurchase();
         QuantityLimitForStore exp = new QuantityLimitForStore(3, NofetStore);
         tradingSystem.addBuyingPolicy(NofetID, NconnID, NofetStore, exp);
         Integer productID1 = Nstore.getProductID("computer");
@@ -88,7 +145,7 @@ public class PurchaseTest {
         tradingSystem.Logout(NconnID);
         tradingSystem.AddProductToCart(EconnID, NofetStore, productID1, 1);
         tradingSystem.AddProductToCart(EconnID, NofetStore, productID2, 1);
-        Response response = tradingSystem.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        Response response = Elinor.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         Assertions.assertFalse(response.getIsErr());
 
         //check Inventory after happy purchase
@@ -97,29 +154,11 @@ public class PurchaseTest {
     }
 
     @Test
-    public void SadPurchase_BuyingPolicy() {
-        QuantityLimitForStore exp = new QuantityLimitForStore(2, ElinorStore);
-        tradingSystem.addBuyingPolicy(ElinorID, EconnID, ElinorStore, exp);
-        tradingSystem.AddProductToStore(ElinorID, EconnID, ElinorStore, "computer", "Technology", 3000.0,20);
-        Integer productID1 = Estore.getProductID("computer");
-        Integer preQuantity = Estore.getQuantity(productID1);
-        Response response = tradingSystem.AddProductToCart(NconnID, ElinorStore, productID1, 5);
-        //Response response = tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
-        assertTrue(response.getIsErr());
-
-        //check Inventory after sad purchase
-        Integer newQuantity = Estore.getQuantity(productID1);
-        Assertions.assertEquals(preQuantity, newQuantity);
-    }
-
-    @Test
     public void SadPurchase_WrongPaymentDetails() {
-        setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
         Integer preQuantity = Nstore.getQuantity(productID1);
-        tradingSystem.Logout(NconnID);
         tradingSystem.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        Response response = tradingSystem.subscriberPurchase(ElinorID, EconnID, "123456789", "15","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        Response response = Elinor.subscriberPurchase("123456789", "15","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertTrue(response.getIsErr());
 
         //check Inventory after sad purchase
@@ -129,12 +168,10 @@ public class PurchaseTest {
 
     @Test
     public void SadPurchase_WrongSupplyDetails() {
-        setUpBeforePurchase();
         Integer productID1 = Nstore.getProductID("computer");
         Integer preQuantity = Nstore.getQuantity(productID1);
-        tradingSystem.Logout(NconnID);
         tradingSystem.AddProductToCart(EconnID, NofetStore, productID1, 1);
-        Response response = tradingSystem.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Eilat","Israel","8458527");
+        Response response = Elinor.subscriberPurchase("123456789", "4","2022" , "123", "123456789", "Rager 101","Eilat","Israel","8458527");
         assertTrue(response.getIsErr());
 
         //check Inventory after sad purchase
@@ -151,11 +188,12 @@ public class PurchaseTest {
 
         //another user is buying this product
         tradingSystem.AddProductToCart(NconnID, NofetStore, productID1, 15);
-        tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        User Nofet = tradingSystem.subscribers.get(NofetID);
+        Nofet.subscriberPurchase("123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         //the previous user make the purchase
         Integer preQuantity = Nstore.getQuantity(productID1);
-        Response response = tradingSystem.subscriberPurchase(ElinorID, EconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+        Response response = Elinor.subscriberPurchase("123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertTrue(response.getIsErr());
 
         //check Inventory after sad purchase
@@ -211,6 +249,7 @@ public class PurchaseTest {
     }
 
     @Test
+    //TODO - Not Work!
     public void PurchaseParallel_HappyFailed_TwoBuyersLastProduct_10times() {
         for(int test_try = 1; test_try <= 10; test_try++) {
             //Prepare
@@ -258,4 +297,6 @@ public class PurchaseTest {
         }
 
     }
+
+
 }

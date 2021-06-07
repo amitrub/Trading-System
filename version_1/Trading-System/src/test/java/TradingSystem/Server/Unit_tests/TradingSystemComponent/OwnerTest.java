@@ -458,7 +458,7 @@ public class OwnerTest {
         //for(int test_i = 0; test_i < 100; test_i++) {
         //Prepare
 
-        //appoint Nofet to owner
+        //appoint Elinor to owner
         tradingSystem.AddNewOwner(ElinorID, EconnID, ElinorStore, NofetID);
         Integer size = tradingSystem.stores.get(ElinorStore).OwnersID().size();
         assertTrue(size == 2);
@@ -470,7 +470,7 @@ public class OwnerTest {
         List<Callable<ResultUnitTests>> taskList = new ArrayList<>();
         Callable<ResultUnitTests> addManagerTask_1 = new AddManagerTaskUnitTests("Elinor", "123", ElinorStore, userID, ElinorID, EconnID);
         taskList.add(addManagerTask_1);
-        Callable<ResultUnitTests> addManagerTask_2 = new AddManagerTaskUnitTests("Nofet", "123", ElinorStore, userID, NofetID, NconnID);
+        Callable<ResultUnitTests> addManagerTask_2 = new AddManagerTaskUnitTests("Elinor", "123", ElinorStore, userID, NofetID, NconnID);
         taskList.add(addManagerTask_2);
 
         //Execute all tasks and get reference to Future objects

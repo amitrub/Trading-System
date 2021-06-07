@@ -597,11 +597,11 @@ public class Store extends Observable {
             for (ShoppingHistory SH:this.shoppingHistory
             ) {
                 Date today=new Date(System.currentTimeMillis());
-                Calendar calForTodey = Calendar.getInstance();
-                calForTodey.setTime(today);
+                Calendar calForToday = Calendar.getInstance();
+                calForToday.setTime(today);
                 Calendar calForHistory = Calendar.getInstance();
                 calForHistory.setTime(SH.getDate());
-                if(calForHistory.get(Calendar.DAY_OF_WEEK)==calForTodey.get(Calendar.DAY_OF_WEEK)){
+                if(calForHistory.get(Calendar.DAY_OF_WEEK)==calForToday.get(Calendar.DAY_OF_WEEK)){
                     DailyIncome=DailyIncome+SH.getFinalPrice();
                 }
             }
