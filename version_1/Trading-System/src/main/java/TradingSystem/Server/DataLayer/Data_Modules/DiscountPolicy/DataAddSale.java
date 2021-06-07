@@ -8,4 +8,8 @@ import java.util.List;
 
 @Entity
 public class DataAddSale extends DataSimpleSale {
+
+    public DataAddSale(){
+        super();
+    }
 }

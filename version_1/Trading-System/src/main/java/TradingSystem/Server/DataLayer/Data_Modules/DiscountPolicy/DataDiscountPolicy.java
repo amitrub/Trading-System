@@ -1,5 +1,6 @@
 package TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy;
 
+import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataLimitExpression.BuyingPolicyKey;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
@@ -9,20 +10,16 @@ import javax.persistence.*;
 @Entity
 public class DataDiscountPolicy {
 
-    @EmbeddedId
-    @Column(name = "discount_id")
-    private DataSalePolicyKey key;
-
-    @ManyToOne
+    @Id
     @JoinColumn(
-            name = "store",
+            name = "store_id",
             nullable = false,
             referencedColumnName = "storeID",
             foreignKey = @ForeignKey(
                     name = "store_id_fk"
             )
     )
-    DataStore store;
+    int store_id;
     @ManyToOne
     @JoinColumn(
             name = "sale",
@@ -33,4 +30,13 @@ public class DataDiscountPolicy {
             )
     )
     DataSale sale;
+
+    public DataDiscountPolicy(){
+
+    }
+
+    public DataDiscountPolicy(int store_id, DataSale sale){
+        this.store_id = store_id;
+        this.sale=sale;
+    }
 }

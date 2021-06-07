@@ -7,4 +7,8 @@ import javax.persistence.InheritanceType;
 @Entity
 @Inheritance(strategy = InheritanceType.SINGLE_TABLE)
 public class DataSimpleExpression extends DataExpression {
+
+    public DataSimpleExpression(){
+        super();
+    }
 }

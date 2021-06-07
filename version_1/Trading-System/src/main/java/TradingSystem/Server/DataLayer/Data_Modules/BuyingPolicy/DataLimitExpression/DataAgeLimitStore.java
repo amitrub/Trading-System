@@ -2,6 +2,7 @@ package TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataLimitExpres
 
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataSimpleExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.AgeLimitForStore;
 
 import javax.persistence.*;
 
@@ -11,7 +12,6 @@ public class DataAgeLimitStore extends DataSimpleExpression {
             name = "minAge"
     )
     Integer minAge;
-    @ManyToOne
     @JoinColumn(
             name = "store_id",
             nullable = false,
@@ -20,5 +20,19 @@ public class DataAgeLimitStore extends DataSimpleExpression {
                     name = "store_id_fk"
             )
     )
-    DataStore storeId;
+    int storeId;
+
+    public DataAgeLimitStore(){
+
+    }
+
+    public DataAgeLimitStore(int minAge,int store){
+        this.minAge=minAge;
+        this.storeId=store;
+    }
+
+    public DataAgeLimitStore(AgeLimitForStore ageLimitForStore){
+        this.minAge=ageLimitForStore.getMinAge();
+        this.storeId=ageLimitForStore.getStoreID();
+    }
 }

@@ -10,7 +10,7 @@
   "userNameRemote" : "quhpcujnwqvqdm",
   "passwordRemote" : "3449692b73c15abc8af3746d92eb5f75d0601cb147cfdc658894e0ff77aeffbb",
 
-  "ddlAuto" : "update",
+  "ddlAuto" : "create-drop",
   "showSql" : "true",
   "dialect" : "org.hibernate.dialect.PostgreSQLDialect",
   "formatSql" : "true",

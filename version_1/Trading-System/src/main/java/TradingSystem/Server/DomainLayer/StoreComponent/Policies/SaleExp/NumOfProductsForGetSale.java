@@ -25,4 +25,8 @@ public class NumOfProductsForGetSale extends SimpleExpression {
         }
         return new Response("correct");
     }
+
+    public Integer getNumOfProductsForSale(){
+        return numOfProductsForSale;
+    }
 }

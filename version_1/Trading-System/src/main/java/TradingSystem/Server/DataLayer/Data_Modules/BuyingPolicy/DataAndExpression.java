@@ -4,4 +4,8 @@ import javax.persistence.Entity;
 
 @Entity
 public class DataAndExpression extends DataCompositeExpression {
+
+    public DataAndExpression(){
+
+    }
 }

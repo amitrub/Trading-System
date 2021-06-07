@@ -2,26 +2,27 @@ package TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy;
 
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataLimitExpression.BuyingPolicyKey;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 
 import javax.persistence.*;
 
 @Entity
 public class DataBuyingPolicy {
 
-    @EmbeddedId
-    @Column(name = "buying_id")
-    private BuyingPolicyKey key;
+//    @EmbeddedId
+//    @Column(name = "buying_id")
+//    private BuyingPolicyKey key;
 
-    @ManyToOne
+    @Id
     @JoinColumn(
-            name = "store",
+            name = "store_id",
             nullable = false,
             referencedColumnName = "storeID",
             foreignKey = @ForeignKey(
                     name = "store_id_fk"
             )
     )
-    DataStore store;
+    int store_id;
     @ManyToOne
     @JoinColumn(
             name = "expression",
@@ -32,14 +33,14 @@ public class DataBuyingPolicy {
             )
     )
     DataExpression expression;
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "expression_id",
-//            nullable = false,
-//            referencedColumnName = "ExpressionID",
-//            foreignKey = @ForeignKey(
-//                    name = "expression_id_fk"
-//            )
-//    )
-//    DataSimpleExpression simple_expression;
+
+    public DataBuyingPolicy(){
+
+    }
+
+    public DataBuyingPolicy(int store_id, DataExpression expression){
+        this.store_id = store_id;
+        this.expression=expression;
+    }
+
 }

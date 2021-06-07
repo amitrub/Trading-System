@@ -13,8 +13,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AgeLimitForCategory extends SimpleExpression {
 
-    Integer minAge;
-    String  category;
+    public Integer minAge;
+    public String  category;
 
     @Autowired
     public static TradingSystemImplRubin tradingSystem;

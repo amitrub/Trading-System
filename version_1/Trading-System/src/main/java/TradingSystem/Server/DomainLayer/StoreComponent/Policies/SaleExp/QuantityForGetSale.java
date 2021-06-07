@@ -35,4 +35,8 @@ public class QuantityForGetSale extends SimpleExpression {
         }
         return new Response("correct");
     }
+
+    public Integer getQuantityForSale(){
+        return quantityForSale;
+    }
 }

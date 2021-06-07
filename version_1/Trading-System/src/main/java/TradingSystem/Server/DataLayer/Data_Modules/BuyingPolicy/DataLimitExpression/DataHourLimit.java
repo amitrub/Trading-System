@@ -9,4 +9,13 @@ import java.util.Date;
 public class DataHourLimit extends DataSimpleExpression {
 
     Date date;
+
+    public DataHourLimit(){
+
+    }
+
+    public DataHourLimit(Date date){
+        super();
+        this.date=date;
+    }
 }

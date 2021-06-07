@@ -9,4 +9,12 @@ import java.util.Date;
 public class DataTimeLimit extends DataSimpleExpression {
 
     Date date;
+
+    public DataTimeLimit(){
+
+    }
+
+    public DataTimeLimit(Date date){
+        this.date=date;
+    }
 }

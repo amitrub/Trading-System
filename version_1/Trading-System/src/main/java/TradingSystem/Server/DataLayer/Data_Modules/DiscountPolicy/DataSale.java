@@ -1,6 +1,7 @@
 package TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy;
 
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataCompositeExpression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 
 import javax.persistence.*;
 
@@ -27,4 +28,12 @@ public class DataSale {
             )
     )
     DataCompositeSale composite_data_sale;
+
+    public DataSale(){
+
+    }
+
+    public DataSale(Sale sale){
+
+    }
 }

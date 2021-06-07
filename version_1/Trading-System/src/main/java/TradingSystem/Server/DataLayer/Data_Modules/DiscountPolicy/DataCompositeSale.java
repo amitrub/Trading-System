@@ -2,8 +2,13 @@ package TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy;
 
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataCompositeExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataExpression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.CompositeExpression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.CompositeSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorComposite;
 
 import javax.persistence.*;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,4 +22,14 @@ public class DataCompositeSale extends DataSale {
     )
     List<DataSale> expressionDataList;
 
+    public DataCompositeSale(){
+
+    }
+
+    public DataCompositeSale(CompositeSale expression){
+        this.expressionDataList=new ArrayList<>();
+        for(Sale sale:expression.children){
+                this.expressionDataList.add(new DataSale(sale));
+        }
+    }
 }

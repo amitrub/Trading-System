@@ -10,6 +10,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagC
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -24,7 +25,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
                 @UniqueConstraint(name = "store_name_unique", columnNames = "storeName")
         }
 )
-public class DataStore {
+public class DataStore implements Serializable {
     @Id
     @SequenceGenerator(
             name = "STORE_SEQUENCE",
@@ -117,6 +118,25 @@ public class DataStore {
     )
     private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 
+    @ManyToOne
+    @JoinColumn(
+            name = "discount",
+            referencedColumnName = "store_id",
+            foreignKey = @ForeignKey(
+                    name = "data_id_fk"
+            )
+    )
+    private DataDiscountPolicy dataDiscountPolicy;
+
+    @ManyToOne
+    @JoinColumn(
+            name = "buying",
+            referencedColumnName = "store_id",
+            foreignKey = @ForeignKey(
+                    name = "buying_id_fk"
+            )
+    )
+    private DataBuyingPolicy dataBuyingPolicy;
 
 //    @ElementCollection
 //    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
@@ -195,12 +215,21 @@ public class DataStore {
         newOwner.AddOwnerStore(this);
     }
 
+    public void RemoveOwner(DataSubscriber owner){
+        owners.remove(owner);
+    }
+
+    public void RemoveManager(DataSubscriber manager){
+        managers.remove(manager);
+    }
+
     public void AddNewManager(DataSubscriber newManager) {
         if (!this.managers.contains(newManager)) {
             this.managers.add(newManager);
         }
         newManager.AddManagerStore(this);
     }
+
 
     @Override
     public String toString() {

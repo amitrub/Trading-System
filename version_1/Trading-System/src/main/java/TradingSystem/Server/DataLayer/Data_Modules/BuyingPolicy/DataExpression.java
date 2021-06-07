@@ -1,5 +1,8 @@
 package TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.CompositeExpression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+
 import javax.persistence.*;
 import java.util.List;
 
@@ -26,4 +29,10 @@ public class DataExpression {
             )
     )
     DataCompositeExpression composite_data_expression;
+    public DataExpression(){
+
+    }
+    public DataExpression(Expression expression){
+
+    }
 }

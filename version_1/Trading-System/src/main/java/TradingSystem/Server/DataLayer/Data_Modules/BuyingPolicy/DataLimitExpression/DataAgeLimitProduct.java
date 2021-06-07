@@ -2,6 +2,8 @@ package TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataLimitExpres
 
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataSimpleExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.AgeLimitForCategory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.AgeLimitForProduct;
 
 import javax.persistence.*;
 
@@ -11,7 +13,6 @@ public class DataAgeLimitProduct extends DataSimpleExpression {
             name = "minAge"
     )
     Integer minAge;
-    @ManyToOne
     @JoinColumn(
             name = "product_id",
             nullable = false,
@@ -20,5 +21,19 @@ public class DataAgeLimitProduct extends DataSimpleExpression {
                     name = "prodcut_id_fk"
             )
     )
-    DataProduct product;
+    int productid;
+
+    public DataAgeLimitProduct(){
+
+    }
+
+    public DataAgeLimitProduct(int minAge,int product){
+        this.minAge=minAge;
+        this.productid=product;
+    }
+
+    public DataAgeLimitProduct(AgeLimitForProduct ageLimitForProduct){
+        this.minAge=ageLimitForProduct.getMinAge();
+        this.minAge=ageLimitForProduct.getProductID();
+    }
 }

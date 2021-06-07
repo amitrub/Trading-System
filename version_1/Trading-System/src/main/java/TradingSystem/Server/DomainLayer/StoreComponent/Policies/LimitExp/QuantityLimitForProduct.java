@@ -42,4 +42,12 @@ public class QuantityLimitForProduct extends SimpleExpression {
         }
         return new Response("correct");
     }
+
+    public Integer getMaxQuantity(){
+        return maxQuantity;
+    }
+
+    public Integer getProductID(){
+        return productID;
+    }
 }

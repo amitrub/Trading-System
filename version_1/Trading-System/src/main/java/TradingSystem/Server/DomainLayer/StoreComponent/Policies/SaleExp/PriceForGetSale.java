@@ -25,4 +25,8 @@ public class PriceForGetSale extends SimpleExpression {
         }
         return new Response("correct");
     }
+
+    public Integer getPriceForSale(){
+        return priceForSale;
+    }
 }

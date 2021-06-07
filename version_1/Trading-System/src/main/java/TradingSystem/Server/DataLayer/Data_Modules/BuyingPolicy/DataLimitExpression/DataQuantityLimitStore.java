@@ -2,6 +2,7 @@ package TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataLimitExpres
 
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataSimpleExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 
 import javax.persistence.*;
 
@@ -11,7 +12,6 @@ public class DataQuantityLimitStore extends DataSimpleExpression {
             name = "maxQuantity"
     )
     Integer maxquantity;
-    @ManyToOne
     @JoinColumn(
             name = "store_id",
             nullable = false,
@@ -20,5 +20,14 @@ public class DataQuantityLimitStore extends DataSimpleExpression {
                     name = "store_id_fk"
             )
     )
-    DataStore storeId;
+    Integer storeId;
+
+    public DataQuantityLimitStore(){
+
+    }
+
+    public DataQuantityLimitStore(QuantityLimitForStore quantityLimitForStore){
+        this.maxquantity=quantityLimitForStore.getMaxQuantity();
+        this.storeId=quantityLimitForStore.getStoreID();
+    }
 }

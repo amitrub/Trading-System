@@ -11,8 +11,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class QuantityLimitForCategory extends SimpleExpression {
 
-    Integer maxQuantity;
-    String  category;
+    public Integer maxQuantity;
+    public String  category;
 
     @Autowired
     public static TradingSystemImplRubin tradingSystem;
@@ -45,4 +45,12 @@ public class QuantityLimitForCategory extends SimpleExpression {
         }
         return new Response("correct");
     }
+
+    public Integer getMaxQuantity(){
+        return maxQuantity;
     }
+
+    public String getCategory(){
+        return category;
+    }
+}
