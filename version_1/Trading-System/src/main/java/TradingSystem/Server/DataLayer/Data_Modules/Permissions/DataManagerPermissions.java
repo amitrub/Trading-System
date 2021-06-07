@@ -58,7 +58,7 @@ public class DataManagerPermissions {
             mappedBy = "managerPermissions",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     List<DataManagerPermissionType> permissions = new ArrayList<>();
 

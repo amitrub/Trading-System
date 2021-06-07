@@ -45,7 +45,7 @@ public class DataShoppingBagCart {
             mappedBy = "shoppingBag",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     List<DataShoppingBagProduct> products = new ArrayList<>();
 
