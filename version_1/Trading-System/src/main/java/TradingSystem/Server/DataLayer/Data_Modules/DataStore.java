@@ -5,6 +5,7 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy.DataSalePolicyKey;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 
@@ -116,28 +117,6 @@ public class DataStore {
     )
     private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "buyingPolicy_id",
-//            nullable = false,
-//            referencedColumnName = "data_buying_policy_pkey",
-//            foreignKey = @ForeignKey(
-//                    name = "buying_id_fk"
-//            )
-//    )
-//    private DataBuyingPolicy buyingPolicy;
-//
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "dataDiscountPolicy_id",
-//            nullable = false,
-//            referencedColumnName = "data_discount_policy_pkey",
-//            foreignKey = @ForeignKey(
-//                    name = "discount_id_fk"
-//            )
-//    )
-//    private DataDiscountPolicy dataDiscountPolicy;
-
 
 //    @ElementCollection
 //    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
@@ -177,6 +156,22 @@ public class DataStore {
         this.storeRate = storeRate;
     }
 
+    public Set<DataSubscriber> getOwners() {
+        return owners;
+    }
+
+    public Set<DataSubscriber> getManagers() {
+        return managers;
+    }
+
+    public Double getStoreRate() {
+        return storeRate;
+    }
+
+    public List<DataShoppingHistory> getShoppingBagsHistory() {
+        return shoppingBagsHistory;
+    }
+
     public DataSubscriber getFounder() {
         return founder;
     }
@@ -213,9 +208,8 @@ public class DataStore {
                 "storeID=" + storeID +
                 ", storeName='" + storeName + '\'' +
                 ", storeRate=" + storeRate +
-                ", founder=" + founder.getName() +
+                ", founder=" + founder.getUserID() +
                 ", products=" + products +
-                ", shoppingBagsCart=" + shoppingBagsCart +
                 '}';
     }
 }

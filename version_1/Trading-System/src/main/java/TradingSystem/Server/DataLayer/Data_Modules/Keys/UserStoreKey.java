@@ -6,7 +6,7 @@ import java.io.Serializable;
 import java.util.Objects;
 
 @Embeddable
-public class UserStoreProductKey implements Serializable {
+public class UserStoreKey implements Serializable {
 
     @Column(name = "subscriber_id")
     private int subscriberID;
@@ -14,11 +14,11 @@ public class UserStoreProductKey implements Serializable {
     @Column(name = "store_id")
     private int storeID;
 
-    public UserStoreProductKey() {
+    public UserStoreKey() {
         // DO NOT DELETE
     }
 
-    public UserStoreProductKey(int subscriberID, int storeID) {
+    public UserStoreKey(int subscriberID, int storeID) {
         this.subscriberID = subscriberID;
         this.storeID = storeID;
     }
@@ -43,7 +43,7 @@ public class UserStoreProductKey implements Serializable {
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        UserStoreProductKey that = (UserStoreProductKey) o;
+        UserStoreKey that = (UserStoreKey) o;
         return subscriberID == that.subscriberID && storeID == that.storeID;
     }
 
@@ -54,7 +54,7 @@ public class UserStoreProductKey implements Serializable {
 
     @Override
     public String toString() {
-        return "DataShoppingBagKey{" +
+        return "UserStoreKey{" +
                 "subscriberID=" + subscriberID +
                 ", storeID=" + storeID +
                 '}';

@@ -10,8 +10,9 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.Task.*;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
+ import TradingSystem.Server.DomainLayer.Task.*;
+// import TradingSystem.Server.DomainLayer.UserComponent.User;
 
 import java.util.*;
 import java.util.concurrent.*;
@@ -833,11 +834,11 @@ class TradingSystemImplTest {
         tradingSystemImpl.Register(gust, "m", "123");
         Response res = tradingSystemImpl.Login(gust, "m", "123");
         tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         tradingSystemImpl.EditManagerPermissions(ElinorID,EconnID,ElinorStore,res.returnUserID(),p);
-        boolean r1 = tradingSystemImpl.hasPermission(res.returnUserID(),ElinorStore, User.Permission.AddProduct);
-        boolean r2 = tradingSystemImpl.hasPermission(res.returnUserID(),ElinorStore, User.Permission.GetInfoOfficials);
+        boolean r1 = tradingSystemImpl.hasPermission(res.returnUserID(),ElinorStore, PermissionEnum.Permission.AddProduct);
+        boolean r2 = tradingSystemImpl.hasPermission(res.returnUserID(),ElinorStore, PermissionEnum.Permission.GetInfoOfficials);
         Assertions.assertTrue(r1);
         Assertions.assertFalse(r2);
     }
@@ -867,8 +868,8 @@ class TradingSystemImplTest {
         String gust2 = tradingSystemImpl.ConnectSystem().returnConnID();
         tradingSystemImpl.Register(gust2, "l", "123");
         Response res2 = tradingSystemImpl.Login(gust2, "l", "123");
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         Response res3 = tradingSystemImpl.EditManagerPermissions(res2.returnUserID(), res2.returnConnID(), NofetStore, ElinorID,p);
         System.out.println(res3.getMessage());
         Assertions.assertTrue(res3.getIsErr());
@@ -880,8 +881,8 @@ class TradingSystemImplTest {
         String gust = tradingSystemImpl.ConnectSystem().returnConnID();
         tradingSystemImpl.Register(gust, "D", "123");
         Response res = tradingSystemImpl.Login(gust, "D", "123");
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
         Response res3 = tradingSystemImpl.EditManagerPermissions(NofetID, NconnID, ElinorStore, res.returnUserID(),p);
         System.out.println(res3.getMessage());
@@ -1006,8 +1007,8 @@ class TradingSystemImplTest {
     @Test
     void ManagerOperationsSuccess() {
         tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, NofetID);
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         tradingSystemImpl.EditManagerPermissions(ElinorID,EconnID,ElinorStore,NofetID,p);
         Response response = tradingSystemImpl.AddProductToStore(NofetID, NconnID, ElinorStore, "Watermelon", "Fruits", 20.0, 10);
         Assertions.assertFalse(response.getIsErr());
@@ -1019,8 +1020,8 @@ class TradingSystemImplTest {
     @Test
     void ManagerOperationsFailed() {
         tradingSystemImpl.AddNewManager(ElinorID, EconnID, ElinorStore, NofetID);
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         tradingSystemImpl.EditManagerPermissions(ElinorID,EconnID,ElinorStore,NofetID,p);
         Response response = tradingSystemImpl.AddNewOwner(NofetID, NconnID, ElinorStore, userID);
         Assertions.assertTrue(response.getIsErr());

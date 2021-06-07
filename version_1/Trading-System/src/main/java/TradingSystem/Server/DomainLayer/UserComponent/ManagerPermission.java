@@ -1,6 +1,11 @@
 package TradingSystem.Server.DomainLayer.UserComponent;
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataManagerPermissionType;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataManagerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissionType;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,15 +14,23 @@ public class ManagerPermission implements Permission {
     private Integer userId;
     private Integer storeId;
     private Integer appointmentId;
-    private List<User.Permission> permissions;
+    private List<PermissionEnum.Permission> permissions = new ArrayList<>();;
 
     public ManagerPermission(Integer userId,Integer storeId) {
         this.userId=userId;
         this.storeId=storeId;
-        this.permissions = new ArrayList<User.Permission>();
-        this.permissions.add(User.Permission.GetInfoOfficials);
-        this.permissions.add(User.Permission.GetInfoRequests);
-        this.permissions.add(User.Permission.ResponseRequests);
+        this.permissions.add(PermissionEnum.Permission.GetInfoOfficials);
+        this.permissions.add(PermissionEnum.Permission.GetInfoRequests);
+        this.permissions.add(PermissionEnum.Permission.ResponseRequests);
+    }
+
+    public ManagerPermission(DataManagerPermissions dataManagerPermission) {
+        this.userId = dataManagerPermission.getSubscriber().getUserID();
+        this.storeId = dataManagerPermission.getStore().getStoreID();
+        this.appointmentId = dataManagerPermission.getAppointment().getUserID();
+        for (DataManagerPermissionType permissionType: dataManagerPermission.getPermissions()){
+            this.permissions.add(PermissionEnum.dataToPermission(permissionType.getKey().getPermission()));
+        }
     }
 
     public Integer getUserId() {
@@ -44,16 +57,16 @@ public class ManagerPermission implements Permission {
         this.appointmentId = appointmentId;
     }
 
-    public List<User.Permission> getPermissions() {
+    public List<PermissionEnum.Permission> getPermissions() {
         return permissions;
     }
 
-    public void setPermissions(List<User.Permission> permissions) {
+    public void setPermissions(List<PermissionEnum.Permission> permissions) {
         this.permissions = permissions;
     }
 
     @Override
-    public boolean hasPermission(User.Permission p) {
+    public boolean hasPermission(PermissionEnum.Permission p) {
         return this.permissions.contains(p);
     }
 

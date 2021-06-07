@@ -2,7 +2,7 @@ package TradingSystem.Acceptence_test;
 
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -10,7 +10,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -61,8 +60,8 @@ public class ManagerTests {
     @Test
     void PermissionsHappy() {
         //prepare
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         client.editManagerPermissions(storeID, newUserID, p);
         client.Logout();
 
@@ -78,8 +77,8 @@ public class ManagerTests {
 
     @Test
     void PermissionsSad() {
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AppointmentOwner);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AppointmentOwner);
         client.editManagerPermissions(storeID, newUserID, p);
         client.Logout();
 
