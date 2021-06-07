@@ -1,8 +1,11 @@
-package TradingSystem.Server.DomainLayer.ShoppingComponent;
+package TradingSystem.Server.Unit_tests.ShoppingComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,6 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,38 +32,29 @@ class ShoppingCartTest {
 
 
     String NconnID;
-    int NuserId ,storeID1,storeID2;
+    int NuserId ,storeID1;
     ShoppingCart SC1;
-    ShoppingCart SC2;
 
 
     @BeforeEach
     void setUp() {
+        tradingSystem.ClearSystem();
         String guest1= tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(guest1, "nofet", "123");
         Response res= tradingSystem.Login(guest1, "nofet", "123");
         NconnID= res.returnConnID();
         NuserId=res.returnUserID();
-        SC1=new ShoppingCart(NuserId);
-        SC2=new ShoppingCart(NuserId);
+        User Nofet = tradingSystem.subscribers.get(NuserId);
+        SC1 = Nofet.getShoppingCart();
         tradingSystem.AddStore(NuserId, NconnID, "NofetStore1");
-        tradingSystem.AddStore(NuserId, NconnID, "NofetStore2");
         for(Store store: tradingSystem.stores.values()){
             if(store.getName().equals("NofetStore1")){
                 storeID1=store.getId();
-            }
-            if(store.getName().equals("NofetStore2")){
-                storeID2=store.getId();
             }
         }
         tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "computer", "Technology", 3000.0,20);
         tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "Bag", "Beauty", 100.0,50);
         tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "Bed", "Fun", 4500.0,30);
-
-
-        tradingSystem.AddProductToStore(NuserId, NconnID, storeID2, "computer", "Technology", 3500.0,20);
-        tradingSystem.AddProductToStore(NuserId, NconnID, storeID2, "Bag", "Beauty", 50.0,50);
-        tradingSystem.AddProductToStore(NuserId, NconnID, storeID2, "Bed", "Fun", 4000.0,30);
     }
 
     //requirement 2.7
@@ -68,12 +63,13 @@ class ShoppingCartTest {
         Store Nstore = tradingSystem.stores.get(storeID1);
         Integer productID1 = Nstore.getProductID("computer");
         Integer productID2 = Nstore.getProductID("Bag");
-        Response res1=SC1.addProductToBag(storeID1,productID1,10, true);
-        Response res2=SC1.addProductToBag(storeID1,productID2,60, true);
-        Response res3=SC1.addProductToBag(storeID1,7,10, true);
-        //QuantityLimitForProduct exp = new QuantityLimitForProduct(10, productID1);
-        //tradingSystem.addBuyingPolicy(NuserId, NconnID, storeID2, exp);
-        //Response res4=SC1.addProductToBag(storeID2,productID1,12);
+        Integer productID3 = Nstore.getProductID("Bed");
+        Response res1=SC1.addProductToBag(storeID1,productID1,10, false);
+        Response res2=SC1.addProductToBag(storeID1,productID2,60, false);
+        Response res3=SC1.addProductToBag(storeID1,7,10, false);
+        QuantityLimitForProduct exp = new QuantityLimitForProduct(10, productID3);
+        tradingSystem.addBuyingPolicy(NuserId, NconnID, storeID1, exp);
+        Response res4=SC1.addProductToBag(storeID1,productID3,12,false);
 
         //happy
         assertFalse(res1.getIsErr());
@@ -85,8 +81,7 @@ class ShoppingCartTest {
         assertTrue(res3.getIsErr());
 
         //sad_againstTheStorePolicy
-        //assertTrue(res4.getIsErr());
-
+        assertTrue(res4.getIsErr());
     }
 
     //requirement 2.8
@@ -97,13 +92,13 @@ class ShoppingCartTest {
         Integer productID2 = Nstore.getProductID("Bag");
         Integer productID3 = Nstore.getProductID("Bed");
         Response res0 = SC1.editProductQuantityFromCart(storeID1,productID1,5);
-        SC1.addProductToBag(storeID1,productID1,3, true);
-        SC1.addProductToBag(storeID1,productID2,2, true);
+        SC1.addProductToBag(storeID1,productID1,3, false);
+        SC1.addProductToBag(storeID1,productID2,2, false);
         Response res1 = SC1.editProductQuantityFromCart(storeID1,productID1,5);
         Response res2 = SC1.editProductQuantityFromCart(storeID1,productID3,1);
-        //QuantityLimitForProduct exp = new QuantityLimitForProduct(10, productID1);
-        //tradingSystem.addBuyingPolicy(NuserId, NconnID, storeID2, exp);
-        //Response res5 = SC1.editProductQuantityFromCart(storeID1,productID1,15);
+        QuantityLimitForProduct exp = new QuantityLimitForProduct(10, productID1);
+        tradingSystem.addBuyingPolicy(NuserId, NconnID, storeID1, exp);
+        Response res5 = SC1.editProductQuantityFromCart(storeID1,productID1,15);
 
         //happy
         assertFalse(res1.getIsErr());
@@ -115,57 +110,58 @@ class ShoppingCartTest {
         assertTrue(res2.getIsErr());
 
         //sad_productAgainstThePolicy
-        //assertTrue(res5.getIsErr());
+        assertTrue(res5.getIsErr());
     }
 
     //requirement 2.8
     @Test
     void removeProductFromCart() {
-        SC1.addProductToBag(storeID1,1,3, true);
-        SC1.addProductToBag(storeID2,2,2, true);
-        SC1.addProductToBag(storeID2,3,1, true);
+        SC1.addProductToBag(storeID1,1,3, false);
+        SC1.addProductToBag(storeID1,2,2, false);
+        SC1.addProductToBag(storeID1,3,1, false);
 
         Response res1= SC1.RemoveProductFromCart(storeID1,1);
-        Response res2= SC1.RemoveProductFromCart(storeID2,1);
-        Response res3= SC1.RemoveProductFromCart(storeID2,4);
+        Response res2= SC1.RemoveProductFromCart(storeID1,1);
+        Response res3= SC1.RemoveProductFromCart(storeID1,4);
 
         //happy
-    //    assertTrue(res1.getMessage().equals("product remove successfully"));
+        assertFalse(res1.getIsErr());
         //sad_productNotInTheCart
-//        assertTrue(res2.getMessage().equals("product that does not exist in the cart cannot be removed"));
+        assertTrue(res2.getIsErr());
         //sad_productNotInTheStore
-    //    assertTrue(res3.getMessage().equals("product that does not exist in the cart cannot be removed"));
+        assertTrue(res3.getIsErr());
 
     }
 
     //requirement 2.8
     @Test
     void showShoppingCart() {
-        SC1.addProductToBag(storeID1,1,3, true);
-        SC1.addProductToBag(storeID2,2,2, true);
-        SC1.addProductToBag(storeID2,3,1, true);
+        SC1.addProductToBag(storeID1,1,3, false);
+        SC1.addProductToBag(storeID1,2,2, false);
+        SC1.addProductToBag(storeID1,3,1, false);
 
         List<DummyProduct> L1= SC1.ShowShoppingCart();
+        ShoppingCart SC2 = new ShoppingCart(3);
 
         List<DummyProduct> L2= SC2.ShowShoppingCart();
 
         //happy
         assertTrue(L1.size()==3);
-        for (DummyProduct DP:L1
-             ) {
+        for (DummyProduct DP:L1) {
             if(DP.getProductID()==1){
                 assertTrue(DP.getProductName().equals("computer")&&DP.getCategory().equals("Technology")&&DP.getStoreName().equals("NofetStore1")&&DP.getPrice()==3000.0&&DP.getQuantity()==3);
             }
             if(DP.getProductID()==2){
-                assertTrue(DP.getProductName().equals("Bag")&&DP.getCategory().equals("Beauty")&&DP.getStoreName().equals("NofetStore2")&&DP.getPrice()==50.0&&DP.getQuantity()==2);
+                assertTrue(DP.getProductName().equals("Bag")&&DP.getCategory().equals("Beauty")&&DP.getStoreName().equals("NofetStore1")&&DP.getPrice()==100.0&&DP.getQuantity()==2);
             }
             if(DP.getProductID()==3){
-                assertTrue(DP.getProductName().equals("Bed")&&DP.getCategory().equals("Fun")&&DP.getStoreName().equals("NofetStore2")&&DP.getPrice()==4000.0&&DP.getQuantity()==1);
+                assertTrue(DP.getProductName().equals("Bed")&&DP.getCategory().equals("Fun")&&DP.getStoreName().equals("NofetStore1")&&DP.getPrice()==4500.0&&DP.getQuantity()==1);
             }
         }
         //sad_cartIsEmpty
         assertTrue(L2.isEmpty());
-}
+
+    }
 
     //requirement 2.8
     @Test
@@ -181,7 +177,7 @@ class ShoppingCartTest {
         ShoppingBag shoppingBag3 = new ShoppingBag(2,3);
         ShoppingBag shoppingBag4 = new ShoppingBag(2,4);
         shoppingBagsList1.put(3, shoppingBag3);
-        shoppingBagsList1.put(4, shoppingBag3);
+        shoppingBagsList1.put(4, shoppingBag4);
         ShoppingCart shoppingCart2 = new ShoppingCart(2, shoppingBagsList2);
 
         shoppingCart1.mergeToMyCart(shoppingCart2);

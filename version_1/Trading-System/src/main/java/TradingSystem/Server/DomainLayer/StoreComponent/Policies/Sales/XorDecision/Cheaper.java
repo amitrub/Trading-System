@@ -1,8 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
-
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 

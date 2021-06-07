@@ -1,7 +1,8 @@
-package TradingSystem.Server.DomainLayer.ExternalServices;
+package TradingSystem.Server.Unit_tests.ExternalServices;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.ExternalServices.AddressInfo;
+import TradingSystem.Server.DomainLayer.ExternalServices.PaymentInfo;
+import TradingSystem.Server.DomainLayer.ExternalServices.PaymentSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,5 +39,13 @@ class PaymentSystemTest {
         AddressInfo addressInfo = new AddressInfo();
         Response response = paymentSystem.purchase(paymentInfo, addressInfo);
         assertFalse(response.getIsErr());
+    }
+
+    @Test
+    void PaymentTestSad() {
+        PaymentInfo paymentInfo = new PaymentInfo("123456789","4","2021","Elinor","986","123456789");
+        AddressInfo addressInfo = new AddressInfo();
+        Response response = paymentSystem.purchase(paymentInfo, addressInfo);
+        assertTrue(response.getIsErr());
     }
 }

@@ -1,4 +1,4 @@
-package TradingSystem.Acceptence_test;
+package TradingSystem.Acceptence_tests;
 
 import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
