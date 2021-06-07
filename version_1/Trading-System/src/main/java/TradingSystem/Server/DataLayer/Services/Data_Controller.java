@@ -99,7 +99,8 @@ public class Data_Controller {
     }
 
     public List<DataSubscriber> getAllSubscribers(){
-        return subscriberService.getAllSubscribers();
+        List<DataSubscriber> subscribers = subscriberService.getAllSubscribers();
+        return subscribers;
     }
 
 

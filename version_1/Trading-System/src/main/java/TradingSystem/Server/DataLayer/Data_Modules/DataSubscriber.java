@@ -58,14 +58,14 @@ public class DataSubscriber {
             mappedBy = "founder",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataStore> storesFounder = new ArrayList<>();
 
     @ManyToMany(
             mappedBy = "owners",
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private Set<DataStore> storesOwner = new HashSet<>();
 
@@ -73,14 +73,14 @@ public class DataSubscriber {
             mappedBy = "subscriber",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataOwnerPermissions> ownerPermissions= new ArrayList<>();
 
     @ManyToMany(
             mappedBy = "managers",
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private Set<DataStore> storesManager = new HashSet<>();
 
@@ -88,7 +88,7 @@ public class DataSubscriber {
             mappedBy = "subscriber",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataManagerPermissions> managerPermissions= new ArrayList<>();
 
@@ -96,7 +96,7 @@ public class DataSubscriber {
             mappedBy = "subscriber",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
 
@@ -104,7 +104,7 @@ public class DataSubscriber {
             mappedBy = "subscriber",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 

@@ -58,7 +58,7 @@ public class DataOwnerPermissions {
             mappedBy = "ownerPermissions",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     List<DataOwnerPermissionType> permissions = new ArrayList<>();
 
