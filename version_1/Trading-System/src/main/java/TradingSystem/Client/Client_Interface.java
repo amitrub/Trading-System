@@ -44,7 +44,7 @@ public interface Client_Interface {
      * @param pass pass
      * @return int if ok
      */
-    public int Login(String userName, String pass);
+    public Response Login(String userName, String pass);
 
     /**
      * @requirement 2.5

@@ -30,8 +30,13 @@ public class SupplySystem implements ExternalServices {
             return new Response(true, "The connection to Supply System Failed");
         }
         Response responseSupply = Supply(addressInfo);
-        Integer transactionId = Integer.parseInt(responseSupply.getMessage());
-        if(transactionId == -1){
+        try {
+            Integer transactionId = Integer.parseInt(responseSupply.getMessage());
+            if (transactionId == -1) {
+                return new Response(true, "The connection to Supply System Failed");
+            }
+        }
+        catch (Exception e){
             return new Response(true, "The connection to Supply System Failed");
         }
         return new Response(false, "Supply confirmed");
@@ -51,6 +56,7 @@ public class SupplySystem implements ExternalServices {
             ;
         } catch (UnirestException e) {
             e.printStackTrace();
+            return new Response(true, "The connection to Supply System Failed");
         }
 
         String message = response.getBody();
@@ -75,6 +81,7 @@ public class SupplySystem implements ExternalServices {
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
+            return new Response(true, "The connection to Supply System Failed");
         }
 
         String message = response.getBody();
@@ -96,6 +103,7 @@ public class SupplySystem implements ExternalServices {
                     .asString();
         } catch (UnirestException e) {
             e.printStackTrace();
+            return new Response(true, "The connection to Supply System Failed");
         }
 
         String message = response.getBody();

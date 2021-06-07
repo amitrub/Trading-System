@@ -1,4 +1,4 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
+package TradingSystem.Server.DomainLayer.Task;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -15,8 +15,11 @@ import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_RESET;
 
 public class PurchaseTaskUnitTests implements Callable<ResultUnitTests> {
 
-    @Autowired
-    private TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        PurchaseTaskUnitTests.tradingSystem = tradingSystem;
+    }
 
     private String connID;
     private String name;

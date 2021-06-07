@@ -1,8 +1,7 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent.Task;
+package TradingSystem.Server.DomainLayer.Task;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
@@ -11,8 +10,12 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 public class AddManagerTaskUnitTests implements Callable<ResultUnitTests> {
 
-    @Autowired
-    TradingSystemImplRubin tradingSystem;
+    //@Autowired
+    public static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        AddManagerTaskUnitTests.tradingSystem = tradingSystem;
+    }
 
     private String name;
     private int userID;

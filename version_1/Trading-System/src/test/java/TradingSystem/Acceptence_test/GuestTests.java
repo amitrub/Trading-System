@@ -119,18 +119,18 @@ public class GuestTests {
     void loginHappy(){
         int guestID = client.Register("Yossi", "qwerty");
         String guestConnID = this.client.getConnID();
-        int subscriberID = client.Login("Yossi", "qwerty");
+        int subscriberID = client.Login("Yossi", "qwerty").returnUserID();
         assertTrue(guestID == subscriberID && !guestConnID.equals(this.client.getConnID()));
     }
     @Test
     void loginIncorrectPassword(){
         client.Register("Yossi", "qwerty");
-        int subscriberID = client.Login("Yossi", "qwe");
+        int subscriberID = client.Login("Yossi", "qwe").returnUserID();
         assertTrue(subscriberID == -1 && this.client.getConnID().equals(""));
     }
     @Test
     void loginIncorrectUserName(){
-        int respondID = client.Login("Eli", "qwerty");
+        int respondID = client.Login("Eli", "qwerty").returnUserID();
         assertTrue(respondID == -1 && this.client.getConnID().equals(""));
     }
 

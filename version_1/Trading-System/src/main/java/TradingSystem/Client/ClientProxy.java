@@ -84,11 +84,11 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public int Login(String userName, String pass) {
+    public Response Login(String userName, String pass) {
         Response response = tradingSystem.Login(ConnID,userName,pass);
         this.ConnID= response.returnConnID();
         this.userID= response.returnUserID();
-        return userID;
+        return response;
     }
 
     @Override

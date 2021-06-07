@@ -118,7 +118,7 @@ public class Client implements Client_Interface {
      * @param pass pass
      * @return int if ok
      */
-    public int Login(String userName, String pass){
+    public Response Login(String userName, String pass){
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
@@ -128,7 +128,7 @@ public class Client implements Client_Interface {
         this.connID = response.returnConnID();
         this.userName = userName;
         this.pass = pass;
-        return userID;
+        return response;
     }
 
      /**
