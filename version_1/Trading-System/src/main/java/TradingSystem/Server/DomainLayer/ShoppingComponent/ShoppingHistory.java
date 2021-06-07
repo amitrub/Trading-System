@@ -22,9 +22,7 @@ public class ShoppingHistory {
 
     @Autowired
     public static Data_Controller data_controller;
-
     public static void setData_controller(Data_Controller data_controller) {
-
         ShoppingHistory.data_controller = data_controller;
     }
 
@@ -32,7 +30,7 @@ public class ShoppingHistory {
     private Integer storeID;
 
     //product_quantity
-    private final List<Product> products;
+    private List<Product> products = new ArrayList<>();
 
     private Date date;
 
@@ -56,12 +54,10 @@ public class ShoppingHistory {
         this.storeID=dataShoppingHistory.getStore().getStoreID();
         this.date=dataShoppingHistory.getDate();
         this.finalPrice=dataShoppingHistory.getprice();
-        List<DataHistoryProduct> lst=dataShoppingHistory.getproducts();
-        products=new ArrayList<>();
+        List<DataHistoryProduct> lst = dataShoppingHistory.getproducts();
         for(DataHistoryProduct product:lst){
             products.add(new Product(product,storeID,dataShoppingHistory.getStore().getStoreName()));
         }
-
     }
 
     public Integer getStoreID() {
@@ -86,5 +82,16 @@ public class ShoppingHistory {
                 return true;
         }
         return false;
+    }
+
+    @Override
+    public String toString() {
+        return "ShoppingHistory{" +
+                "userID=" + userID +
+                ", storeID=" + storeID +
+                ", products=" + products +
+                ", date=" + date +
+                ", finalPrice=" + finalPrice +
+                '}';
     }
 }

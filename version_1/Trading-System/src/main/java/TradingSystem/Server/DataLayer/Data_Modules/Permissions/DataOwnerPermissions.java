@@ -1,18 +1,20 @@
-package TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart;
+package TradingSystem.Server.DataLayer.Data_Modules.Permissions;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Keys.PermissionKey;
 import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreKey;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity(name = "ShoppingBags")
+@Entity(name = "OwnerPermissions")
 @Table(
-        name = "shopping_bags"
+        name = "owner_permissions"
 )
-public class DataShoppingBagCart {
+public class DataOwnerPermissions {
 
     @EmbeddedId
     private UserStoreKey key;
@@ -41,48 +43,41 @@ public class DataShoppingBagCart {
     )
     private DataStore store;
 
+    @ManyToOne
+    @JoinColumn(
+            name = "appointment_id",
+            nullable = false,
+            referencedColumnName = "userID",
+            foreignKey = @ForeignKey(
+                    name = "appointment_owner_permissions_fk"
+            )
+    )
+    private DataSubscriber appointment;
+
     @OneToMany(
-            mappedBy = "shoppingBag",
+            mappedBy = "ownerPermissions",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
             fetch = FetchType.LAZY
     )
-    List<DataShoppingBagProduct> products = new ArrayList<>();
+    List<DataOwnerPermissionType> permissions = new ArrayList<>();
 
-    @Column(
-            name = "finalPrice"
-//            nullable = false,
-//            columnDefinition = "TEXT"
-    )
-    private Double finalPrice;
 
-    public DataShoppingBagCart(){
+    public DataOwnerPermissions(){
         // DO NOT DELETE
     }
 
-    public DataShoppingBagCart(DataSubscriber subscriber, DataStore store) {
+    public DataOwnerPermissions(DataSubscriber subscriber, DataStore store, DataSubscriber appointment) {
         this.key = new UserStoreKey(subscriber.getUserID(), store.getStoreID());
         this.subscriber = subscriber;
         this.store = store;
+        this.appointment = appointment;
     }
 
-    public void addProduct(DataShoppingBagProduct product) {
-        if (!this.products.contains(product)) {
-            this.products.add(product);
+    public void AddNewPermission(DataOwnerPermissionType newPermission) {
+        if (!this.permissions.contains(newPermission)) {
+            this.permissions.add(newPermission);
         }
-    }
-    public void removeProduct(DataShoppingBagProduct product) {
-        if (this.products.contains(product)) {
-            this.products.remove(product);
-        }
-    }
-
-    public List<DataShoppingBagProduct> getProducts(){
-        return this.products;
-    }
-
-    public void setProducts(List<DataShoppingBagProduct> products) {
-        this.products = products;
     }
 
     public UserStoreKey getKey() {
@@ -109,22 +104,28 @@ public class DataShoppingBagCart {
         this.store = store;
     }
 
-    public Double getFinalPrice() {
-        return finalPrice;
+    public DataSubscriber getAppointment() {
+        return appointment;
     }
 
-    public void setFinalPrice(Double finalPrice) {
-        this.finalPrice = finalPrice;
+    public void setAppointment(DataSubscriber appointment) {
+        this.appointment = appointment;
+    }
+
+    public List<DataOwnerPermissionType> getPermissions() {
+        return permissions;
+    }
+
+    public void setPermissions(List<DataOwnerPermissionType> permissions) {
+        this.permissions = permissions;
     }
 
     @Override
     public String toString() {
-        return "DataShoppingBagCart{" +
+        return "DataOwnerPermissions{" +
                 "key=" + key +
-                ", subscriber=" + subscriber.getName() +
-                ", store=" + store.getStoreID() +
-                ", products=" + products +
-                ", finalPrice=" + finalPrice +
+                ", appointment=" + appointment.getUserID() +
+                ", permissions=" + permissions +
                 '}';
     }
 }

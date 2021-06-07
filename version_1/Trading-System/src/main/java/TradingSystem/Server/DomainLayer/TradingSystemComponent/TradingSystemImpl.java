@@ -835,7 +835,7 @@ public class TradingSystemImpl implements TradingSystem {
      */
     public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity){
         if(ValidConnectedUser(userID, connID)){
-            if(!this.hasPermission(userID,storeID,User.Permission.AddProduct)){
+            if(!this.hasPermission(userID,storeID, PermissionEnum.Permission.AddProduct)){
                 return new Response(true, "AddProductToStore: The User " + userID + " is not allowed to add a product");
             }
             else {
@@ -877,7 +877,7 @@ public class TradingSystemImpl implements TradingSystem {
      */
     public Response RemoveProduct(int userID, int storeID, int productID, String connID) {
         if(ValidConnectedUser(userID, connID)){
-            if(!hasPermission(userID,storeID,User.Permission.DeleteProduct)){
+            if(!hasPermission(userID,storeID, PermissionEnum.Permission.DeleteProduct)){
                 return new Response(true, "RemoveProduct: The User " + userID + " is not allowed to remove products from the inventory");
             }
             else {
@@ -908,7 +908,7 @@ public class TradingSystemImpl implements TradingSystem {
      */
     public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity){
         if(ValidConnectedUser(userID, connID)){
-            if(!hasPermission(userID,storeID,User.Permission.AddProduct)){
+            if(!hasPermission(userID,storeID, PermissionEnum.Permission.AddProduct)){
                 return new Response(true, "ChangeQuantityProduct: The user " + userID + " is not allowed to add products to the inventory");
             }
             else {
@@ -947,7 +947,7 @@ public class TradingSystemImpl implements TradingSystem {
      */
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
         if(ValidConnectedUser(userID, connID)){
-            if(!hasPermission(userID,storeID, User.Permission.AddProduct)){
+            if(!hasPermission(userID,storeID, PermissionEnum.Permission.AddProduct)){
                 return new Response(true, "EditProduct: The Edit is not allowed");
             }
             else {
@@ -1004,7 +1004,7 @@ public class TradingSystemImpl implements TradingSystem {
             }
         }
 
-        Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
+        Response res1 = this.systemRoleChecks(userID, storeID, newOwner, PermissionEnum.Permission.AppointmentOwner);
         if (res1.getIsErr()) {
             NO.unlockUser();
             return res1;
@@ -1125,7 +1125,7 @@ public class TradingSystemImpl implements TradingSystem {
             }
         }
 
-        Response res1 = this.systemRoleChecks(userID, storeID, newManager, User.Permission.AppointmentManager);
+        Response res1 = this.systemRoleChecks(userID, storeID, newManager, PermissionEnum.Permission.AppointmentManager);
         if (res1.getIsErr()) {
             NM.unlockUser();
             return res1;
@@ -1162,7 +1162,7 @@ public class TradingSystemImpl implements TradingSystem {
      *      "connID": String
      *      }
      */
-    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
+    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "EditManagerPermissions: The user" + userID + "is not connected");
         }
@@ -1172,7 +1172,7 @@ public class TradingSystemImpl implements TradingSystem {
 
         //TODO add synchronize
         User MTE = this.subscribers.get(managerID);
-        Response res1 = this.systemRoleChecks(userID, storeID, managerID, User.Permission.EditManagerPermission);
+        Response res1 = this.systemRoleChecks(userID, storeID, managerID, PermissionEnum.Permission.EditManagerPermission);
         if (res1.getIsErr()) {
             //MTR.unlockUser();
             return res1;
@@ -1222,7 +1222,7 @@ public class TradingSystemImpl implements TradingSystem {
             }
         }
 
-        Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, User.Permission.RemoveManager);
+        Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, PermissionEnum.Permission.RemoveManager);
         if (res1.getIsErr()) {
             MTR.unlockUser();
             return res1;
@@ -1323,7 +1323,7 @@ public class TradingSystemImpl implements TradingSystem {
             res.AddPair("permissions", MP.getPermissions());
         }
        else {
-            res.AddPair("permissions", new LinkedList<User.Permission>());
+            res.AddPair("permissions", new LinkedList<PermissionEnum.Permission>());
         }
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
@@ -1344,7 +1344,7 @@ public class TradingSystemImpl implements TradingSystem {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "StoreHistoryOwner: The user " + userID + "is not connected");
         }
-        if (!hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
+        if (!hasPermission(userID, storeID, PermissionEnum.Permission.GetStoreHistory)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "StoreHistoryOwner: The user has no permission to watch the history");
             res.AddPair("history", list);
@@ -1380,7 +1380,7 @@ public class TradingSystemImpl implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "StoreHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, storeID, User.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, storeID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "StoreHistory: User has no permission to watch the history");
             res.AddPair("history", list);
@@ -1416,7 +1416,7 @@ public class TradingSystemImpl implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "UserHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, userID, User.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, userID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "UserHistory: User has no permission to watch the history");
             res.AddPair("history", list);
@@ -1451,7 +1451,7 @@ public class TradingSystemImpl implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "AllStoresHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "AllStoresHistory: User has no permission to watch the history");
             res.AddPair("history", list);
@@ -1486,7 +1486,7 @@ public class TradingSystemImpl implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "AllUsersHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "AllUsersHistory: User has no permission to watch the history");
             res.AddPair("history", list);
@@ -1507,7 +1507,7 @@ public class TradingSystemImpl implements TradingSystem {
 
 
     //other functions
-    public boolean hasPermission(int userID, int storeID, User.Permission p) {
+    public boolean hasPermission(int userID, int storeID, PermissionEnum.Permission p) {
         boolean hasPer=false;
         if(this.subscribers.containsKey(userID)){
             User u=this.subscribers.get(userID);
@@ -1524,7 +1524,7 @@ public class TradingSystemImpl implements TradingSystem {
         return hasPer ;
     }
 
-    public boolean hasPermission(int userID, User.Permission p) {
+    public boolean hasPermission(int userID, PermissionEnum.Permission p) {
         //if (this.subscribers.containsKey(userID)) {
           //  User u = this.subscribers.get(userID);
             if (this.systemManagerPermissions.get(userID) != null) {
@@ -1562,7 +1562,7 @@ public class TradingSystemImpl implements TradingSystem {
 
  */
 
-    public Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission) {
+    public Response systemRoleChecks(int userID, int storeID, int newRole, PermissionEnum.Permission permission) {
         if (!this.subscribers.containsKey(userID)) {
             return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
         }
@@ -1724,44 +1724,44 @@ public class TradingSystemImpl implements TradingSystem {
         }
     }
 
-    public User.Permission changeToPermission(String per){
+    public PermissionEnum.Permission changeToPermission(String per){
         switch (per){
             case "AddProduct":
-                return User.Permission.AddProduct;
+                return PermissionEnum.Permission.AddProduct;
             case "ReduceProduct":
-                return User.Permission.ReduceProduct;
+                return PermissionEnum.Permission.ReduceProduct;
             case "DeleteProduct":
-                return User.Permission.DeleteProduct;
+                return PermissionEnum.Permission.DeleteProduct;
             case "EditProduct":
-                return User.Permission.EditProduct;
+                return PermissionEnum.Permission.EditProduct;
             case "AppointmentOwner":
-                return User.Permission.AppointmentOwner;
+                return PermissionEnum.Permission.AppointmentOwner;
             case "AppointmentManager":
-                return User.Permission.AppointmentManager;
+                return PermissionEnum.Permission.AppointmentManager;
             case "EditManagerPermission":
-                return User.Permission.EditManagerPermission;
+                return PermissionEnum.Permission.EditManagerPermission;
             case "RemoveManager":
-                return User.Permission.RemoveManager;
+                return PermissionEnum.Permission.RemoveManager;
             case "GetInfoOfficials":
-                return User.Permission.GetInfoOfficials;
+                return PermissionEnum.Permission.GetInfoOfficials;
             case "GetInfoRequests":
-                return User.Permission.GetInfoRequests;
+                return PermissionEnum.Permission.GetInfoRequests;
             case "ResponseRequests":
-                return User.Permission.ResponseRequests;
+                return PermissionEnum.Permission.ResponseRequests;
             case "GetHistoryPurchasing":
-                return User.Permission.GetHistoryPurchasing;
+                return PermissionEnum.Permission.GetHistoryPurchasing;
             case "GetStoreHistory":
-                return User.Permission.GetStoreHistory;
+                return PermissionEnum.Permission.GetStoreHistory;
             case "GetDailyIncomeForStore":
-                return User.Permission.GetDailyIncomeForStore;
+                return PermissionEnum.Permission.GetDailyIncomeForStore;
             case "GetDailyIncomeForSystem":
-                return User.Permission.GetDailyIncomeForSystem;
+                return PermissionEnum.Permission.GetDailyIncomeForSystem;
             case "RequestBidding":
-                return User.Permission.RequestBidding;
+                return PermissionEnum.Permission.RequestBidding;
             case "EditDiscountPolicy":
-                return User.Permission.EditDiscountPolicy;
+                return PermissionEnum.Permission.EditDiscountPolicy;
             case "EditBuyingPolicy":
-                return User.Permission.EditBuyingPolicy;
+                return PermissionEnum.Permission.EditBuyingPolicy;
         }
         return null;
     }
@@ -1795,7 +1795,7 @@ public class TradingSystemImpl implements TradingSystem {
 
     //Todo finish
     public Response addDiscountPolicy(int userID, String connID, int storeID,Sale sale){
-        Response response = checkPermissionToPolicy(userID, connID, storeID, User.Permission.EditDiscountPolicy);
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditDiscountPolicy);
         Response res = response;
         if(res.getIsErr()){
             return res;
@@ -1980,7 +1980,7 @@ public class TradingSystemImpl implements TradingSystem {
         return null;
     }
 
-    private Response checkPermissionToPolicy(int userID, String connID, int storeID,User.Permission p){
+    private Response checkPermissionToPolicy(int userID, String connID, int storeID, PermissionEnum.Permission p){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "Error in Admin details");
         }
@@ -2001,7 +2001,7 @@ public class TradingSystemImpl implements TradingSystem {
 
     @Override
     public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp){
-        Response response = checkPermissionToPolicy(userID, connID, storeID, User.Permission.EditBuyingPolicy);
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditBuyingPolicy);
         Response res = response;
         if(res.getIsErr()){
             return res;
@@ -2017,7 +2017,7 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public Response GetPoliciesInfo(int userID, int storeID, String connID){
-        Response res = checkPermissionToPolicy(userID, connID, storeID,User.Permission.GetInfoOfficials);
+        Response res = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.GetInfoOfficials);
         if(res.getIsErr()){
             return res;
         }
@@ -2244,7 +2244,7 @@ public class TradingSystemImpl implements TradingSystem {
         if(!store.checkOwner(userID)){
             return new Response(true, "getDailyIncomeForStore: The user " + userID + " is not the owner of the store");
         }
-        if(!this.hasPermission(userID,storeID,User.Permission.GetDailyIncomeForStore)){
+        if(!this.hasPermission(userID,storeID, PermissionEnum.Permission.GetDailyIncomeForStore)){
             return new Response(true, "getDailyIncomeForStore: The user " + userID + " has no permissions to see this information");
         }
         Double DailyIncome=store.getDailyIncome();
@@ -2275,7 +2275,7 @@ public class TradingSystemImpl implements TradingSystem {
         if(!this.systemAdmins.keySet().contains(userID)){
             return new Response(true, "getDailyIncomeForSystem: The user "+userID+"  try to see the Daily Income for the system but he is not the admin of the system");
         }
-        if(!this.hasPermission(userID,User.Permission.GetDailyIncomeForSystem)){
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
             return new Response(true, "getDailyIncomeForSystem: The user " + userID + " has no permissions to see this information");
         }
         Double DailyIncome=0.0;

@@ -1,10 +1,7 @@
 package TradingSystem.Server.DataLayer.Services;
 
-import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
-import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
-import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataHistoryProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DataLayer.Repositories.*;
@@ -32,7 +29,7 @@ public class ShoppingHistoryService {
     @Autowired
     ShoppingCartRepository shoppingCartRepository;
     @Autowired
-    DataShoppingBagProductRepository shoppingBagProductRepository;
+    ShoppingBagProductRepository shoppingBagProductRepository;
 
 
     public void addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){

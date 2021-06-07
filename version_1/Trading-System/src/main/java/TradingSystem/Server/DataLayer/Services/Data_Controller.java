@@ -3,9 +3,12 @@ package TradingSystem.Server.DataLayer.Services;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -27,6 +30,8 @@ public class Data_Controller {
     private ShoppingCartService shoppingCartService;
     @Autowired
     private ShoppingHistoryService shoppingHistoryService;
+    @Autowired
+    private PermissionsService permissionsService;
 
 
     public Data_Controller(){
@@ -61,18 +66,31 @@ public class Data_Controller {
         shoppingCartService.setBagFinalPrice(userID, storeID, finalPrice);
     }
 
+    public void setBagProductQuantity(int userID, Integer storeID, int productID, Integer quantity) {
+        shoppingCartService.setBagProductQuantity(userID, storeID, productID, quantity);
+    }
+
+    public void RemoveBagProduct(int userID, Integer storeID, int productID) {
+        shoppingCartService.RemoveBagProduct(userID, storeID, productID);
+
+    }
+
+    public List<DataOwnerPermissions> getOwnerPermissions(int userID, int storeID){
+        return permissionsService.getOwnerPermissions(userID, storeID);
+    }
+
     public void addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
         shoppingHistoryService.addHistoryToStoreAndUser(shoppingHistory);
     }
     public List<DataProduct> findAllByCategoryAndProductNameAndPriceBetween(String name, String category, int min,int max){
         return productService.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);
     }
-    public void AddNewOwner(int storeID, int newOwnerID) {
-        storeService.AddNewOwner(storeID, newOwnerID);
+    public void AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
+        storeService.AddNewOwner(storeID, newOwnerID, OP);
     }
 
-    public void AddNewManager(int storeID, int newManagerID) {
-        storeService.AddNewManager(storeID, newManagerID);
+    public void AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
+        storeService.AddNewManager(storeID, newManagerID, MP);
     }
 
 
@@ -127,6 +145,16 @@ public class Data_Controller {
     public List<DataShoppingHistory> getAllHistoryOfSubscriber(int userid){
         return shoppingHistoryService.findAllBySubscriber(userid);
     }
+
+    public void RemoveOwner(int storeID, int ownerID){
+        permissionsService.RemoveOwner(storeID, ownerID);
+    }
+
+    public void RemoveManager(int storeID, int managerID){
+        permissionsService.RemoveManager(storeID, managerID);
+    }
+
+
     public List<DataSubscriber> findAllStoresManagerContains(int storeid){
         return subscriberService.findAllByStoresManagerContains(storeid);
     }
@@ -138,12 +166,16 @@ public class Data_Controller {
         return shoppingHistoryService.findAllByStore(storeid);
     }
 
-    public List<DataShoppingBagCart> getAllBySubscriber(int userID){
-        return shoppingCartService.getAllBySubscriber(userID);
+    public List<DataShoppingBagCart> getSubscriberShoppingCart(int userID){
+        return shoppingCartService.getSubscriberShoppingCart(userID);
     }
 
     public void setQuantity(Integer productID, int newQuantity){
         productService.setQuantity(productID, newQuantity);
+    }
+
+    public void editProductDetails(Integer productID, String productName, Double price, String category, Integer quantity) {
+        productService.editProductDetails(productID, productName, price, category, quantity);
     }
 
     public void deleteSubscriberBag(Integer userID, Integer storeID){

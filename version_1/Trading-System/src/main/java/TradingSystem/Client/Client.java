@@ -2,13 +2,9 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -613,11 +609,11 @@ public class Client implements Client_Interface {
      * @param permissions permissions
      * @return Response
      */
-    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions) {
+    public Response editManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         String path = String.format("%s/store/%s/edit_manager_permissions/%s", this.userID, storeID, managerID);
         JSONObject jsonPost = new JSONObject();
         try {
-            for (User.Permission permissionKey : permissions) {
+            for (PermissionEnum.Permission permissionKey : permissions) {
                 jsonPost.put("Permission", permissionKey);
             }
         } catch (Exception e) {

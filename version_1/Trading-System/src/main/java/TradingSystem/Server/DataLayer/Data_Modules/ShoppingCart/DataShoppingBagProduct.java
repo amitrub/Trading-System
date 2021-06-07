@@ -76,6 +76,11 @@ public class DataShoppingBagProduct {
     public int getQuantity(){
         return this.quantity;
     }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
     public DataProduct getProduct(){
         return this.product;
     }

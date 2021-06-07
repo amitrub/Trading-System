@@ -19,14 +19,11 @@ public class Product {
 
     @Autowired
     public static Data_Controller data_controller;
-
     public static void setData_controller(Data_Controller data_controller) {
-
         Product.data_controller = data_controller;
     }
-
+    @Autowired
     private static TradingSystemImplRubin tradingSystem;
-
     public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
         Product.tradingSystem = tradingSystem;
     }
@@ -42,9 +39,9 @@ public class Product {
 
     private final Lock lock = new ReentrantLock();
     //userID_comments
-    private ConcurrentHashMap<Integer,String> productComments;
+    private ConcurrentHashMap<Integer,String> productComments = new ConcurrentHashMap<>();
     //userID_Rate
-    private ConcurrentHashMap<Integer, Double> productRating;
+    private ConcurrentHashMap<Integer, Double> productRating = new ConcurrentHashMap<>();
 
     public Product(Integer storeID, String storeName, Integer productID, String productName, String category, Double price) {
         this.storeID = storeID;
@@ -53,8 +50,6 @@ public class Product {
         this.productName = productName;
         this.category = category;
         this.price = price;
-        this.productComments = new ConcurrentHashMap<Integer, String>();
-        this.productRating = new ConcurrentHashMap<Integer, Double>();
         this.quantity = 0;
     }
 
@@ -65,12 +60,10 @@ public class Product {
         this.productName = productName;
         this.category = category;
         this.price = price;
-        this.productComments = new ConcurrentHashMap<Integer, String>();
-        this.productRating = new ConcurrentHashMap<Integer, Double>();
         this.quantity = quantity;
     }
 
-    public Product(Product toCopyProduct) {
+    public Product(Product toCopyProduct, int quantity) {
         this.storeID = toCopyProduct.storeID;
         this.storeName = toCopyProduct.storeName;
         this.productID = toCopyProduct.productID;
@@ -78,9 +71,7 @@ public class Product {
         this.category = toCopyProduct.category;
         this.price = toCopyProduct.price;
         this.rate = toCopyProduct.rate;
-        this.productComments=new ConcurrentHashMap<Integer, String>();
-        this.productRating=new ConcurrentHashMap<Integer, Double>();
-        this.quantity = toCopyProduct.quantity;
+        this.quantity = quantity;
     }
 
     public Product(DataProduct product){
@@ -91,20 +82,16 @@ public class Product {
         this.category=product.getCategory();
         this.price=product.getPrice();
         //TODO add rate
-        this.productComments=new ConcurrentHashMap<Integer, String>();
-        this.productRating=new ConcurrentHashMap<Integer, Double>();
         this.quantity = product.getQuantity();
     }
 
-    public Product(DataHistoryProduct product, int storeID,String storename){
+    public Product(DataHistoryProduct product, int storeID, String storename){
         this.storeID=storeID;
         this.storeName=storename;
         this.productID= product.getProductID();
         this.productName=product.getProductName();
         this.category=product.getCategory();
         this.price=product.getPrice();
-        this.productComments=new ConcurrentHashMap<Integer, String>();
-        this.productRating=new ConcurrentHashMap<Integer, Double>();
         this.quantity = product.getQuantity();
     }
 

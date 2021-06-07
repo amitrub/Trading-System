@@ -9,14 +9,12 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.Task.*;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -845,11 +843,11 @@ public class myTest {
         tradingSystem.Register(gust, "m", "123");
         Response res = tradingSystem.Login(gust, "m", "123");
         tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         tradingSystem.EditManagerPermissions(ElinorID,EconnID,ElinorStore,res.returnUserID(),p);
-        boolean r1 = tradingSystem.hasPermission(res.returnUserID(),ElinorStore, User.Permission.AddProduct);
-        boolean r2 = tradingSystem.hasPermission(res.returnUserID(),ElinorStore, User.Permission.GetInfoOfficials);
+        boolean r1 = tradingSystem.hasPermission(res.returnUserID(),ElinorStore, PermissionEnum.Permission.AddProduct);
+        boolean r2 = tradingSystem.hasPermission(res.returnUserID(),ElinorStore, PermissionEnum.Permission.GetInfoOfficials);
         Assertions.assertTrue(r1);
         Assertions.assertFalse(r2);
     }
@@ -879,8 +877,8 @@ public class myTest {
         String gust2 = tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(gust2, "l", "123");
         Response res2 = tradingSystem.Login(gust2, "l", "123");
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         Response res3 = tradingSystem.EditManagerPermissions(res2.returnUserID(), res2.returnConnID(), NofetStore, ElinorID,p);
         System.out.println(res3.getMessage());
         Assertions.assertTrue(res3.getIsErr());
@@ -892,8 +890,8 @@ public class myTest {
         String gust = tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(gust, "D", "123");
         Response res = tradingSystem.Login(gust, "D", "123");
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, res.returnUserID());
         Response res3 = tradingSystem.EditManagerPermissions(NofetID, NconnID, ElinorStore, res.returnUserID(),p);
         System.out.println(res3.getMessage());
@@ -1018,8 +1016,8 @@ public class myTest {
     @org.junit.jupiter.api.Test
     void ManagerOperationsSuccess() {
         tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, NofetID);
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         tradingSystem.EditManagerPermissions(ElinorID,EconnID,ElinorStore,NofetID,p);
         Response response = tradingSystem.AddProductToStore(NofetID, NconnID, ElinorStore, "Watermelon", "Fruits", 20.0, 10);
         Assertions.assertFalse(response.getIsErr());
@@ -1031,8 +1029,8 @@ public class myTest {
     @org.junit.jupiter.api.Test
     void ManagerOperationsFailed() {
         tradingSystem.AddNewManager(ElinorID, EconnID, ElinorStore, NofetID);
-        LinkedList<User.Permission> p=new LinkedList<>();
-        p.add(User.Permission.AddProduct);
+        LinkedList<PermissionEnum.Permission> p=new LinkedList<>();
+        p.add(PermissionEnum.Permission.AddProduct);
         tradingSystem.EditManagerPermissions(ElinorID,EconnID,ElinorStore,NofetID,p);
         Response response = tradingSystem.AddNewOwner(NofetID, NconnID, ElinorStore, userID);
         Assertions.assertTrue(response.getIsErr());
