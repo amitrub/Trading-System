@@ -1,6 +1,5 @@
-package TradingSystem.Acceptence_test;
+package TradingSystem.Acceptence_tests;
 
-import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;

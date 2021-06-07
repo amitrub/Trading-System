@@ -1,10 +1,12 @@
-package TradingSystem.Server.DomainLayer.StoreComponent;
+package TradingSystem.Server.Unit_tests.StoreComponent;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -26,6 +28,8 @@ class StoreTest {
     String EconnID;
     Integer EuserId;
     Integer storeID;
+    String NconnID;
+    int NofetID;
 
     @BeforeEach
     void setUp() {
@@ -44,6 +48,13 @@ class StoreTest {
         store.AddProductToStore("IPed",  2500.0, "Technology", 5);
         store.AddProductToStore( "MakeUp",  40.0, "Beauty",5);
         store.AddProductToStore( "Ball",  60.0, "Fun",5);
+
+        NconnID = tradingSystem.ConnectSystem().returnConnID();
+        Response r1= tradingSystem.Register(NconnID, "nofet", "123");
+        NofetID= r1.returnUserID();
+        NconnID= tradingSystem.Login(NconnID, "nofet", "123").returnConnID();
+
+
     }
 
     @AfterEach
@@ -51,7 +62,15 @@ class StoreTest {
         store = null;
     }
 
-    //region search tests - requirement 2.6
+    void setUpBeforePurchase(){
+        tradingSystem.AddProductToStore(EuserId, EconnID, storeID, "computer", "Technology", 3000.0,20);
+        tradingSystem.AddProductToStore(EuserId, EconnID, storeID, "Bag", "Beauty", 100.0,50);
+        tradingSystem.AddProductToStore(EuserId, EconnID, storeID, "Bed", "Fun", 4500.0,30);
+    }
+
+    //region search tests
+
+    //requirement 2.6
     @Test
     void searchProduct() {
         List<DummyProduct> L1= store.SearchProduct("computer",null,-1,-1);
@@ -86,6 +105,70 @@ class StoreTest {
         assertTrue(list.isEmpty());
     }
     //endregion
+
+    //region Write Comment tests
+
+    // requirement 3.3
+    @Test
+    public void WriteCommentSuccess() {
+        setUpBeforePurchase();
+        Integer productID1 = store.getProductID("computer");
+        tradingSystem.AddProductToCart(NconnID, storeID, productID1, 1);
+        tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+
+        Response response = tradingSystem.WriteComment(NofetID,NconnID, storeID, productID1, "Amazing");
+        Assertions.assertFalse(response.getIsErr());
+        Integer size = store.getProduct(productID1).getComments().size();
+        Assertions.assertEquals(size, 1);
+    }
+
+    // requirement 3.3
+    @Test
+    public void WriteCommentWrongStoreID() {
+        setUpBeforePurchase();
+        Integer productID1 = store.getProductID("computer");
+        tradingSystem.AddProductToCart(NconnID, storeID, productID1, 1);
+        tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+
+        Response response = tradingSystem.WriteComment(NofetID,NconnID, 100, productID1, "Amazing");
+        assertTrue(response.getIsErr());
+        Integer size = store.getProduct(productID1).getComments().size();
+        Assertions.assertEquals(size, 0);
+    }
+
+    // requirement 3.3
+    @Test
+    public void WriteCommentNotInHistory() {
+        setUpBeforePurchase();
+        Integer productID1 = store.getProductID("computer");
+
+        Response response = tradingSystem.WriteComment(NofetID,NconnID, storeID, productID1, "Amazing");
+        assertTrue(response.getIsErr());
+        Integer size = store.getProduct(productID1).getComments().size();
+        Assertions.assertEquals(size, 0);
+
+    }
+
+    // requirement 3.3
+    @Test
+    public void WriteCommentExistComment() {
+        setUpBeforePurchase();
+        Integer productID1 = store.getProductID("computer");
+        tradingSystem.AddProductToCart(NconnID, storeID, productID1, 1);
+        tradingSystem.subscriberPurchase(NofetID, NconnID, "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
+
+        tradingSystem.WriteComment(NofetID,NconnID, storeID, productID1, "Amazing");
+        Response response = tradingSystem.WriteComment(NofetID,NconnID, storeID, productID1, "WTF");
+        assertTrue(response.getIsErr());
+        Integer size = store.getProduct(productID1).getComments().size();
+        Assertions.assertEquals(size, 1);
+    }
+
+    //endregion
+
+
+
+
 /*
     //region Conditional discount tests
     @Test

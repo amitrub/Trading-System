@@ -1,5 +1,7 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent;
+package TradingSystem.Server.Unit_tests.TradingSystemComponent;
 
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;

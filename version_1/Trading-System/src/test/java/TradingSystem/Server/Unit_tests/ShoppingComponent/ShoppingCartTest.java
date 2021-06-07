@@ -1,5 +1,7 @@
-package TradingSystem.Server.DomainLayer.ShoppingComponent;
+package TradingSystem.Server.Unit_tests.ShoppingComponent;
 
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;

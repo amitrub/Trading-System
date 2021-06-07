@@ -1,10 +1,7 @@
-package TradingSystem.Acceptence_test;
+package TradingSystem.Acceptence_tests;
 
-import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;

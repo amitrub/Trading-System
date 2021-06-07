@@ -1,5 +1,6 @@
-package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
+package TradingSystem.Server.Unit_tests.StoreComponent.Policies;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Conditioning;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
@@ -8,6 +9,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,10 +31,23 @@ class BuyingPolicyTest {
     TradingSystemImplRubin tradingSystem;
 
     Store store;
+    BuyingPolicy BC;
+    String EconnID;
+    Integer EuserId;
+    Integer storeID;
 
     @BeforeEach
     void setUp() {
-        store = new Store("Store1",1);
+        tradingSystem.ClearSystem();
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest1, "Elinor", "123");
+        Response res= tradingSystem.Login(guest1, "Elinor", "123");
+        EconnID= res.returnConnID();
+        EuserId=res.returnUserID();
+        tradingSystem.AddStore(EuserId, EconnID, "store1");
+        storeID = tradingSystem.getStoreIDByName("store1");
+        store = tradingSystem.stores.get(storeID);
+        BC = store.getBuyingPolicy();
         store.AddProductToStore( "computer", 3000.0, "Technology",5);
         store.AddProductToStore("Bag" ,100.0, "Beauty",5);
         store.AddProductToStore("IPed",  2500.0, "Technology", 5);
@@ -43,6 +58,7 @@ class BuyingPolicyTest {
     @AfterEach
     void tearDown() {
         store = null;
+        BC = null;
         tradingSystem.Initialization();
     }
 
@@ -52,13 +68,14 @@ class BuyingPolicyTest {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
         QuantityLimitForProduct exp = new QuantityLimitForProduct(1, productID1);
-        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(exp);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 1);
         products.put(productID2, 3);
-        Boolean isLegal = store.checkBuyingPolicy(2, products);
+        boolean isLegal = store.checkBuyingPolicy(2, products);
         assertTrue(isLegal);
     }
 
@@ -67,9 +84,10 @@ class BuyingPolicyTest {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
         QuantityLimitForProduct exp = new QuantityLimitForProduct(1, productID1);
-        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(exp);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
         products.put(productID2, 3);
@@ -82,9 +100,10 @@ class BuyingPolicyTest {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
         QuantityLimitForCategory exp = new QuantityLimitForCategory(1, "Technology");
-        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(exp);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 1);
         products.put(productID2, 3);
@@ -97,9 +116,10 @@ class BuyingPolicyTest {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
         QuantityLimitForCategory exp = new QuantityLimitForCategory(1, "Technology");
-        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(exp);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
         products.put(productID2, 3);
@@ -112,9 +132,10 @@ class BuyingPolicyTest {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
         QuantityLimitForStore exp = new QuantityLimitForStore(4, store.getId());
-        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(exp);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 1);
         products.put(productID2, 3);
@@ -127,9 +148,10 @@ class BuyingPolicyTest {
         Integer productID1 = store.getProductID("computer");
         Integer productID2 = store.getProductID("Bag");
         QuantityLimitForStore exp = new QuantityLimitForStore(4, store.getId());
-        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(exp);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 2);
         products.put(productID2, 3);
@@ -156,9 +178,10 @@ class BuyingPolicyTest {
         AndComposite andExpression = new AndComposite();
         andExpression.add(exp1);
         andExpression.add(exp2);
-        BuyingPolicy b=new BuyingPolicy(store.getId(),andExpression);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(andExpression);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),andExpression);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 1);
         products.put(productID2, 3);
@@ -176,9 +199,10 @@ class BuyingPolicyTest {
         AndComposite andExpression = new AndComposite();
         andExpression.add(exp1);
         andExpression.add(exp2);
-        BuyingPolicy b=new BuyingPolicy(store.getId(),andExpression);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(andExpression);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),andExpression);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 6);
         products.put(productID2, 7);
@@ -196,9 +220,10 @@ class BuyingPolicyTest {
         OrComposite orComposite = new OrComposite();
         orComposite.add(exp1);
         orComposite.add(exp2);
-        BuyingPolicy b=new BuyingPolicy(store.getId(),orComposite);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(orComposite);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),orComposite);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 3);
         products.put(productID2, 2);
@@ -215,9 +240,10 @@ class BuyingPolicyTest {
         OrComposite orComposite = new OrComposite();
         orComposite.add(exp1);
         orComposite.add(exp2);
-        BuyingPolicy b=new BuyingPolicy(store.getId(),orComposite);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(orComposite);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),orComposite);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 6);
         products.put(productID2, 2);
@@ -234,9 +260,10 @@ class BuyingPolicyTest {
         Conditioning conditioning = new Conditioning();
         conditioning.setCondIf(exp1);
         conditioning.setCond(exp2);
-        BuyingPolicy b=new BuyingPolicy(store.getId(),conditioning);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(conditioning);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),conditioning);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 6);
         products.put(productID2, 2);
@@ -253,9 +280,10 @@ class BuyingPolicyTest {
         Conditioning conditioning = new Conditioning();
         conditioning.setCondIf(exp1);
         conditioning.setCond(exp2);
-        BuyingPolicy b=new BuyingPolicy(store.getId(),conditioning);
-        store.setBuyingPolicy(b);
-        tradingSystem.AddStoreToList(store);
+        BC.setExp(conditioning);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),conditioning);
+//        store.setBuyingPolicy(b);
+//        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
         products.put(productID1, 6);
         products.put(productID2, 8);

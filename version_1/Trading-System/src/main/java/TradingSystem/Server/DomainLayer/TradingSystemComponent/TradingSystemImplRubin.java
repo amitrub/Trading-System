@@ -946,8 +946,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
             return new Response(true, "WriteComment: The user already wrote comment for this product");
         }
+        stores.get(storeId).WriteComment(userId,productId,comment);
         Product product = stores.get(storeId).getProduct(productId);
-        product.addComment(userId, comment);
+        //product.addComment(userId, comment);
         String storeName = stores.get(storeId).getName();
 
         Response resAlert = new Response(false, "There is a new comment on your product: " + product.getProductName() +

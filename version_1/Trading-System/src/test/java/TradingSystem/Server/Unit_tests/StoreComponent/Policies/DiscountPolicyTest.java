@@ -1,5 +1,6 @@
-package TradingSystem.Server.DomainLayer.StoreComponent.Policies;
+package TradingSystem.Server.Unit_tests.StoreComponent.Policies;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -8,6 +9,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Cheaper;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -39,13 +41,22 @@ class DiscountPolicyTest {
 
     Store store;
     DiscountPolicy DC;
-    BuyingPolicy BP;
+    String EconnID;
+    Integer EuserId;
+    Integer storeID;
 
     @BeforeEach
     void setUp() {
-        store = new Store("Store1",1, DC, BP);
-        DC = new DiscountPolicy(store.getId(),null);
-        BP = new BuyingPolicy(store.getId(),null);
+        tradingSystem.ClearSystem();
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest1, "Elinor", "123");
+        Response res= tradingSystem.Login(guest1, "Elinor", "123");
+        EconnID= res.returnConnID();
+        EuserId=res.returnUserID();
+        tradingSystem.AddStore(EuserId, EconnID, "store1");
+        storeID = tradingSystem.getStoreIDByName("store1");
+        store = tradingSystem.stores.get(storeID);
+        DC = store.getDiscountPolicy();
         store.AddProductToStore( "computer", 3000.0, "Technology",5);
         store.AddProductToStore("Bag" ,100.0, "Beauty",5);
         store.AddProductToStore("IPed",  2500.0, "Technology", 5);
@@ -57,7 +68,7 @@ class DiscountPolicyTest {
     void tearDown() {
         store = null;
         DC = null;
-        BP = null;
+        tradingSystem.Initialization();
     }
 
     //region Conditional discount tests

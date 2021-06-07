@@ -28,6 +28,10 @@ public class BuyingPolicy {
         this.exp=exp;
     }
 
+    public void setExp(Expression exp) {
+        this.exp = exp;
+    }
+
     public Expression getExp() {
         return exp;
     }

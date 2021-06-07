@@ -1,4 +1,4 @@
-package TradingSystem.Server.DomainLayer.TradingSystemComponent;
+package TradingSystem.Server.Unit_tests.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -9,6 +9,8 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
  import TradingSystem.Server.DomainLayer.Task.*;
 // import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -37,12 +39,10 @@ public class myTest {
     TradingSystemImplRubin tradingSystem;
 
     int userID;
-    int userID1;
     int storeid;
     int productId;
     int productId2;
     String connID;
-    String connID1;
 
     String EconnID;
     String NconnID;
@@ -57,28 +57,8 @@ public class myTest {
     public void setUp(){
         connID= tradingSystem.ConnectSystem().returnConnID();
         Response response= tradingSystem.Register(connID,"reutlevy","8119");
-
         userID= response.returnUserID();
         connID= tradingSystem.Login(connID,"reutlevy","8119").returnConnID();
-
-
-        Response responseR = tradingSystem.AddStore(userID,connID,"store8");
-        storeid = (Integer) responseR.getReturnObject().get("storeID");
-        for(Store store1: tradingSystem.stores.values()){
-            if(store1.getName().equals("store8")){
-                storeid=store1.getId();
-            }
-        }
-        tradingSystem.AddProductToStore(userID,connID,storeid,"test","test1",19.0,9);
-        productId= tradingSystem.stores.get(storeid).getProductID("test");
-        tradingSystem.AddProductToStore(userID,connID,storeid,"test2","test",19.0,9);
-        productId2= tradingSystem.stores.get(storeid).getProductID("test2");
-
-        connID1= tradingSystem.ConnectSystem().returnConnID();
-        Response response1= tradingSystem.Register(connID1,"reutlevy8","8119");
-        userID1= response1.returnUserID();
-        connID1= tradingSystem.Login(connID1,"reutlevy8","8119").returnConnID();
-
 
         NconnID = tradingSystem.ConnectSystem().returnConnID();
         Response r1= tradingSystem.Register(NconnID, "nofet", "123");
@@ -91,22 +71,25 @@ public class myTest {
         EconnID= tradingSystem.Login(EconnID, "elinor", "123").returnConnID();
 
 
+        tradingSystem.AddStore(userID,connID,"store8");
+        storeid = tradingSystem.getStoreIDByName("store8");
+        tradingSystem.AddProductToStore(userID,connID,storeid,"test","test1",19.0,9);
+        productId= tradingSystem.stores.get(storeid).getProductID("test");
+        tradingSystem.AddProductToStore(userID,connID,storeid,"test2","test",19.0,9);
+        productId2= tradingSystem.stores.get(storeid).getProductID("test2");
+
+
+
+
 
         tradingSystem.AddStore(NofetID,NconnID,"NofetStore");
         tradingSystem.AddStore(ElinorID,EconnID,"ElinorStore");
-
-        for(Store store1: tradingSystem.stores.values()){
-            if(store1.getName().equals("NofetStore")){
-                NofetStore=store1.getId();
-            }
-            if(store1.getName().equals("ElinorStore")){
-                ElinorStore=store1.getId();
-            }
-        }
-        tradingSystem.AddNewOwner(userID,connID,storeid,ElinorID);
-
+        NofetStore = tradingSystem.getStoreIDByName("NofetStore");
+        ElinorStore = tradingSystem.getStoreIDByName("ElinorStore");
         Estore = tradingSystem.stores.get(ElinorStore);
         Nstore = tradingSystem.stores.get(NofetStore);
+        //tradingSystem.AddNewOwner(userID,connID,storeid,ElinorID);
+
 /*
         Product p1=new Product(NofetStore,"NofetStore",1,"1","1",2.0);
         Product p2=new Product(NofetStore,"NofetStore",2,"2","2",4.0);
@@ -144,130 +127,6 @@ public class myTest {
     }
 
 
-    //region requirement 2
-
-    // requirement 2.1
-    @Test
-    public void connectSystem() {
-        Response response= tradingSystem.ConnectSystem();
-        assertTrue(response.returnConnID()!="" && response.getIsErr()==false);
-    }
-
-    // requirement 2.2
-    @Test
-    public void exitGood() {
-        String connId= tradingSystem.ConnectSystem().returnConnID();
-        Response response= tradingSystem.Exit(connId);
-        Assertions.assertFalse(response.getIsErr());
-    }
-
-    // requirement 2.2
-    @Test
-    public void exitBad() {
-        String connId= tradingSystem.ConnectSystem().returnConnID();
-        tradingSystem.Exit(connId);
-        Response response= tradingSystem.Exit(connId);
-        assertTrue(response.getIsErr());
-    }
-
-    // requirement 2.3
-    @Test
-    public void registerGood() {
-        String connID= tradingSystem.ConnectSystem().returnConnID();
-        Response response= tradingSystem.Register(connID,"reutlevy11","8111996");
-        Assertions.assertFalse(response.getIsErr());
-    }
-
-    // requirement 2.3
-    @Test
-    public void registerExistUser() {
-        String connID= tradingSystem.ConnectSystem().returnConnID();
-        tradingSystem.Register(connID,"reutlevy30","8111996");
-        Response response= tradingSystem.Register(connID,"reutlevy30","reut");
-        assertTrue(response.getIsErr());
-    }
-
-    // requirement 2.3
-    //TODO
-    @Test
-    public void registerParallelSadSameName(){
-        ExecutorService executor = (ExecutorService) Executors.newFixedThreadPool(2);
-
-        List<RegisterTaskUnitTests> taskList = new ArrayList<>();
-        for (int i = 0; i < 2; i++) {
-            RegisterTaskUnitTests task = new RegisterTaskUnitTests("SameName");
-            taskList.add(task);
-        }
-
-        //Execute all tasks and get reference to Future objects
-        List<Future<ResultUnitTests>> resultList = null;
-
-        try {
-            resultList = executor.invokeAll(taskList);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        executor.shutdown();
-
-        System.out.println("\n========Printing the results======");
-
-//        assert resultList != null;
-//        for (int i = 0; i < resultList.size(); i++) {
-//            Future<ResultUnitTests> future = resultList.get(i);
-//            try {
-//                ResultUnitTests result = future.get();
-//                System.out.println(result.getName() + ": " + result.getTimestamp());
-//            } catch (InterruptedException | ExecutionException e) {
-//                e.printStackTrace();
-//            }
-//        }
-
-
-        boolean[] isErrs = new boolean[2];
-        for (int i = 0; i < resultList.size(); i++) {
-            Future<ResultUnitTests> future = resultList.get(i);
-            try {
-                ResultUnitTests result = future.get();
-                Response response = result.getResponse();
-                System.out.println("Assert correctness for " + result.getName() + ": response -> " + response + " ::" + result.getTimestamp());
-                isErrs[i] = response.getIsErr();
-            } catch (InterruptedException | ExecutionException e) {
-                e.printStackTrace();
-            }
-        }
-        //Check that one of the client failed and the other succeed.
-        assertTrue(!isErrs[0] && !isErrs[1] && (isErrs[0] || isErrs[1]));
-    }
-
-
-
-    // requirement 2.4
-    @Test
-    public void loginSuccess() {
-        String connID= tradingSystem.ConnectSystem().returnConnID();
-        tradingSystem.Register(connID,"reutlevy300","811199");
-        Response response= tradingSystem.Login(connID,"reutlevy300","811199");
-        Assertions.assertFalse(response.getIsErr() && response.returnUserID()<0);
-    }
-
-    // requirement 2.4
-    @Test
-    public void loginWrongUserName() {
-        String connID= tradingSystem.ConnectSystem().returnConnID();
-        Response response= tradingSystem.Login(connID,"reutlevy3","811199");
-        assertTrue(response.getIsErr());
-    }
-
-    // requirement 2.4
-    @Test
-    public void loginWrongPassword() {
-        String connID= tradingSystem.ConnectSystem().returnConnID();
-        tradingSystem.Register(connID,"reutlevy30","811199");
-        Response response= tradingSystem.Login(connID,"reutlevy30","8111996");
-        assertTrue(response.getIsErr());
-    }
-
     // requirement 2.5
     @Test
     public void showAllStoresGood() {
@@ -275,10 +134,9 @@ public class myTest {
         Assertions.assertEquals(res.getIsErr(),false);
     }
 
-    //endregion
-
     //region requirement 3
 
+    /*
     // requirement 3.1
     @Test
     public void LogoutHappy() {
@@ -299,6 +157,8 @@ public class myTest {
         Response response = tradingSystem.Logout(connID);
         assertTrue(response.getIsErr());
     }
+
+     */
 
     // requirement 3.2
     @Test
@@ -321,7 +181,7 @@ public class myTest {
         Response response= tradingSystem.AddStore(userID,connID,"Stor143");
         Assertions.assertFalse(response.getIsErr());
     }
-
+/*
     // requirement 3.3
     @Test
     public void WriteCommentSuccess() {
@@ -377,6 +237,7 @@ public class myTest {
         Integer size = tradingSystem.stores.get(NofetStore).getProduct(productID1).getComments().size();
         Assertions.assertEquals(size, 1);
     }
+    */
 
     // requirement 3.7
     @Test
@@ -404,6 +265,7 @@ public class myTest {
 
     //endregion
 
+    /*
     //region requirement 4
 
     // requirement 4.1
@@ -458,7 +320,7 @@ public class myTest {
     // requirement 4.1
     @Test
     public void ChangeProductQuantityInvalidPermission(){
-        Response response= tradingSystem.ChangeQuantityProduct(userID1,connID1,storeid,productId,10);
+        Response response= tradingSystem.ChangeQuantityProduct(ElinorID,EconnID,storeid,productId,10);
         assertTrue(response.getIsErr());
     }
 
@@ -991,7 +853,7 @@ public class myTest {
     @Test
     public void removeManagerNotByOwner() {
         tradingSystem.AddNewOwner(userID, connID, storeid, ElinorID);
-        Response response = tradingSystem.RemoveOwnerByOwner(userID1, connID1, ElinorID, storeid);
+        Response response = tradingSystem.RemoveOwnerByOwner(NofetID, NconnID, ElinorID, storeid);
         boolean exist = tradingSystem.stores.get(storeid).OwnersID().contains(ElinorID);
         assertTrue(exist && response.getIsErr());
     }
@@ -1026,6 +888,8 @@ public class myTest {
 
     //endregion
 
+     */
+
     //region requirement 5
 
     @org.junit.jupiter.api.Test
@@ -1056,13 +920,8 @@ public class myTest {
 
     //endregion
 
+    /*
     //region purchase tests - requirement 2.9
-    void setUpBeforePurchase(){
-        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "computer", "Technology", 3000.0,20);
-        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "Bag", "Beauty", 100.0,50);
-        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "Bed", "Fun", 4500.0,30);
-    }
-
 
     @Test
     public void HappyPurchase() {
@@ -1250,6 +1109,7 @@ public class myTest {
 
     }
     //endregion
+    */
 
     //region Load and Timer tests
 /*
@@ -1361,6 +1221,12 @@ public class myTest {
     }
 */
     //endregion
+
+    void setUpBeforePurchase(){
+        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "computer", "Technology", 3000.0,20);
+        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "Bag", "Beauty", 100.0,50);
+        tradingSystem.AddProductToStore(NofetID, NconnID, NofetStore, "Bed", "Fun", 4500.0,30);
+    }
 
 
 
