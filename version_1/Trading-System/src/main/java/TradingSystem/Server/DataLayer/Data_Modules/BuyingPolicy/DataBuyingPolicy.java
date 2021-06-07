@@ -9,6 +9,7 @@ import javax.persistence.*;
 public class DataBuyingPolicy {
 
     @EmbeddedId
+    @Column(name = "buying_id")
     private BuyingPolicyKey key;
 
     @ManyToOne

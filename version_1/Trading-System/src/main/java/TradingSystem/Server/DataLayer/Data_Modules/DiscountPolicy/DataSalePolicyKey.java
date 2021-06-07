@@ -10,8 +10,8 @@ import java.io.Serializable;
 @Embeddable
 public class DataSalePolicyKey implements Serializable {
 
-    @Column(name = "expression_id")
-    private int expressionid;
+    @Column(name = "sale_id")
+    private int sale;
 
     @Column(name = "store_id")
     private int storeID;

@@ -10,6 +10,7 @@ import javax.persistence.*;
 public class DataDiscountPolicy {
 
     @EmbeddedId
+    @Column(name = "discount_id")
     private DataSalePolicyKey key;
 
     @ManyToOne
