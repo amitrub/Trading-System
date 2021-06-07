@@ -22,11 +22,6 @@ public class Inventory {
         Inventory.data_controller = data_controller;
     }
 
-    private static TradingSystemImplRubin tradingSystem;
-
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
-        Inventory.tradingSystem = tradingSystem;
-    }
 
     private final Integer storeID;
     private final String storeName;

@@ -33,8 +33,8 @@ public class ShoppingCart {
     }
 //    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
 //    private final SupplySystem supplySystem = SupplySystem.getInstance();
-    private ExternalServices paymentSystem = PaymentSystem_Driver.getPaymentSystem();
-    private ExternalServices supplySystem = SupplySystem_Driver.getSupplySystem();
+    private ExternalServices paymentSystem = PaymentSystem.getInstance();
+    private ExternalServices supplySystem = SupplySystem.getInstance();
 
     private final Integer userID;
     
@@ -139,8 +139,9 @@ public class ShoppingCart {
 // =======
         Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, products);
         Double spacialPrice=  this.shoppingBags.get(storeID).calculateSpacialPrices();
+        boolean b = shoppingBags.containsKey(storeID);
         shoppingBags.get(storeID).setFinalPrice(priceForBag+spacialPrice);
-// >>>>>>> Version-3
+
         Response res =new Response("The product added successfully");
         return res;
     }
@@ -415,13 +416,10 @@ public class ShoppingCart {
         }
         else{
             this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
-// <<<<<<< DB-Rubin-to-merge
-//             tradingSystem.calculateBugPrice(productID,storeID, this.shoppingBags.get(storeID).getProducts());
-// =======
+
             Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, this.shoppingBags.get(storeID).getProducts());
             Double spacialPrices=this.shoppingBags.get(storeID).calculateSpacialPrices();
             shoppingBags.get(storeID).setFinalPrice(priceForBug+spacialPrices);
-// >>>>>>> Version-3
         }
         return new Response(false,"EditCart: The quantity of the product update successfully");
 }
@@ -457,7 +455,13 @@ public class ShoppingCart {
         return new Response(false, "RemoveFromCart: product removed successfully");
     }
 
+    public void setPaymentSystem(ExternalServices paymentSystem) {
+        this.paymentSystem = paymentSystem;
+    }
 
+    public void setSupplySystem(ExternalServices supplySystem) {
+        this.supplySystem = supplySystem;
+    }
 }
 
 

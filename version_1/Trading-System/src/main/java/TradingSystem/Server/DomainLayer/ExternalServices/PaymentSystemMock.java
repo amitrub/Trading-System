@@ -2,11 +2,11 @@ package TradingSystem.Server.DomainLayer.ExternalServices;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-public class PaymentSystemProxy implements ExternalServices {
+public class PaymentSystemMock implements ExternalServices {
 
     PaymentSystem real;
 
-    public PaymentSystemProxy() {
+    public PaymentSystemMock() {
         this.real = null;
     }
 

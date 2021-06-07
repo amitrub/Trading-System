@@ -2,11 +2,11 @@ package TradingSystem.Server.DomainLayer.ExternalServices;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-public class SupplySystemProxy implements ExternalServices {
+public class SupplySystemMock implements ExternalServices {
 
     SupplySystem real;
 
-    public SupplySystemProxy() {
+    public SupplySystemMock() {
         this.real = null;
     }
 

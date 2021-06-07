@@ -3,10 +3,7 @@ package TradingSystem.Acceptence_test;
 import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
-import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
-import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -27,16 +24,16 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class OwnerTests {
 
-    Client_Interface client = Client_Driver.getClient();
+    Client_Interface client;
     Integer storeID;
     Integer newUserID;
 
     @BeforeEach
     void setUp() {
+        client = Client_Driver.getClient();
         client.clearSystem();
         client.connectSystem();
         newUserID = client.Register("Nofet", "123");
-        client.Logout();
 
         client.connectSystem();
         client.Register("Elinor", "123");

@@ -29,6 +29,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.JsonInitReader;
 import TradingSystem.Server.JsonStateReader;
 import TradingSystem.Server.JsonUser;
+import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -117,7 +118,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         User.setTradingSystem(tradingSystem);
         Store.setTradingSystem(tradingSystem);
         Product.setTradingSystem(tradingSystem);
-        Inventory.setTradingSystem(tradingSystem);
         ShoppingCart.setTradingSystem(tradingSystem);
         ShoppingBag.setTradingSystem(tradingSystem);
         SimpleExpression.setTradingSystem(tradingSystem);
@@ -130,6 +130,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         PurchaseTaskUnitTests.setTradingSystem(tradingSystem);
         RegisterTaskUnitTests.setTradingSystem(tradingSystem);
         RemoveProductTaskUnitTests.setTradingSystem(tradingSystem);
+        Trading_Driver.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
@@ -2578,6 +2579,15 @@ public class TradingSystemImplRubin implements TradingSystem {
             res.AddPair("Bids", list);
             return res;
         }
+    }
+
+    public Integer getStoreIDByName(String storeName){
+        for(Store s : stores.values())
+        {
+            if(s.getName().equals(storeName))
+                return s.getId();
+        }
+        return -1;
     }
 
 }

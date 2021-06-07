@@ -6,12 +6,14 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.List;
 
 public class ClientProxy implements Client_Interface {
 
     TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+
     String ConnID;
     int userID;
     private String userName;

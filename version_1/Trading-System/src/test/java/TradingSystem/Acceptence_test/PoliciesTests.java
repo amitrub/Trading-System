@@ -10,9 +10,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.Quantity
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.MaxComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.ProductSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.StoreSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
