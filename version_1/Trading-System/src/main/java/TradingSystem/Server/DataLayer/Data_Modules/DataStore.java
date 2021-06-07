@@ -2,6 +2,7 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 
@@ -50,7 +51,6 @@ public class DataStore {
 //            columnDefinition = "TEXT"
     )
     private Double storeRate;
-
 
     @ManyToOne
     @JoinColumn(
@@ -152,6 +152,22 @@ public class DataStore {
         this.storeRate = storeRate;
     }
 
+    public Set<DataSubscriber> getOwners() {
+        return owners;
+    }
+
+    public Set<DataSubscriber> getManagers() {
+        return managers;
+    }
+
+    public Double getStoreRate() {
+        return storeRate;
+    }
+
+    public List<DataShoppingHistory> getShoppingBagsHistory() {
+        return shoppingBagsHistory;
+    }
+
     public DataSubscriber getFounder() {
         return founder;
     }
@@ -175,6 +191,14 @@ public class DataStore {
         newOwner.AddOwnerStore(this);
     }
 
+    public void RemoveOwner(DataSubscriber owner){
+        owners.remove(owner);
+    }
+
+    public void RemoveManager(DataSubscriber manager){
+        managers.remove(manager);
+    }
+
     public void AddNewManager(DataSubscriber newManager) {
         if (!this.managers.contains(newManager)) {
             this.managers.add(newManager);
@@ -188,9 +212,8 @@ public class DataStore {
                 "storeID=" + storeID +
                 ", storeName='" + storeName + '\'' +
                 ", storeRate=" + storeRate +
-                ", founder=" + founder.getName() +
+                ", founder=" + founder.getUserID() +
                 ", products=" + products +
-                ", shoppingBagsCart=" + shoppingBagsCart +
                 '}';
     }
 }

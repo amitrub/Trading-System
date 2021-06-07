@@ -53,8 +53,8 @@ public class TradingSystemImplRubin implements TradingSystem {
     public Data_Controller data_controller;
 
     public Validation validation;
-
     public AddFromDb addFromDb;
+    boolean isUploadAllData = false;
 
     private ConcurrentHashMap<Integer, Integer> systemAdmins = new ConcurrentHashMap<>();
     private ConcurrentHashMap<String, Integer> connectedSubscribers = new ConcurrentHashMap<>();
@@ -239,6 +239,42 @@ public class TradingSystemImplRubin implements TradingSystem {
         printUsers();
     }
 
+    public void AddStoreOwnerPermission(){
+        for (User user: this.subscribers.values()){
+            for (OwnerPermission permission: user.getOwnerPermission().values()){
+                int storeID = permission.getStoreId();
+                if (this.stores.containsKey(storeID)){
+                    Store store = this.stores.get(storeID);
+                    store.addOwnerPermission(permission.getUserId(), permission);
+                }
+            }
+        }
+    }
+
+    public void AddStoreManagerPermission(){
+        for (User user: this.subscribers.values()){
+            for (ManagerPermission permission: user.getManagerPermission().values()){
+                int storeID = permission.getStoreId();
+                if (this.stores.containsKey(storeID)){
+                    Store store = this.stores.get(storeID);
+                    store.addManagerPermission(permission);
+                }
+            }
+        }
+    }
+    public void AddStoreHistory(){
+        for (User user: this.subscribers.values()){
+            for (ShoppingHistory history: user.getShoppingHistory()){
+                int storeID = history.getStoreID();
+                if (this.stores.containsKey(storeID)){
+                    Store store = this.stores.get(storeID);
+                    store.addHistory(history);
+                }
+            }
+        }
+    }
+
+
     public void AddSubscriberIfNotExist(User user){
         subscribers.putIfAbsent(user.getId(),user);
     }
@@ -345,6 +381,13 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response ConnectSystem() {
+        if(!isUploadAllData){
+            addFromDb.UploadAllData();
+            isUploadAllData = true;
+            printUsers();
+            printStores();
+            printProducts();
+        }
         User newGuest = new User();
         String connID = connectGuestToSystemConnID(newGuest);
         Response res = new Response(false, "Connect system was successful");
@@ -399,7 +442,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response Register(String connID, String userName, String password) {
-        this.addFromDb.UploadAllUsers();
         if (!guests.containsKey(connID) && !connectedSubscribers.containsKey(connID)) {
             return new Response(true, "Register Error: error in connID");
         }
@@ -447,7 +489,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response Login(String guestConnID, String userName, String password) {
-        addFromDb.UploadAllUsers();
         System.out.println("--------------Login--------------");
         Response response = validation.ValidPassword(userName, password);
         if (response.getIsErr())
@@ -515,7 +556,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response ShowAllStores() {
-        addFromDb.UploadAllStores();
         List<DummyStore> list = new ArrayList<>();
         for (Map.Entry<Integer, Store> currStore : stores.entrySet()) {
             list.add(new DummyStore(currStore.getValue()));
@@ -538,7 +578,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response ShowStoreProducts(int storeID) {
-        addFromDb.UploadStore(storeID);
         if(stores.containsKey(storeID)){
             List<DummyProduct> list = stores.get(storeID).ShowStoreProducts();
             Response res = new Response(false, "ShowStoreProducts: Num of products in the store is " + list.size());
@@ -571,10 +610,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      *  
      */
     public Response SearchProduct(String name, String category, int minprice, int maxprice){
-        addFromDb.UploadAllStores();
-        for (Integer storeID: stores.keySet()){
-            addFromDb.UploadStore(storeID);
-        }
         List<DummyProduct> dummyProducts = new ArrayList<>();
          //TODO check if valid
 //        if(name==null){
@@ -612,8 +647,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else if(connectedSubscribers.containsKey(connID)){
             int userID= connectedSubscribers.get(connID);
-            //Upload from DB
-            addFromDb.UploadUserShoppingCart(userID);
 
             User user = subscribers.get(userID);
             Response res = user.AddProductToCart(StoreId,productId,quantity);
@@ -644,8 +677,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else if(connectedSubscribers.containsKey(connID)) {
             int userID = connectedSubscribers.get(connID);
-            //Upload from DB
-            addFromDb.UploadUserShoppingCart(userID);
 
             User user = subscribers.get(userID);
             List<DummyProduct> list = user.ShowShoppingCart();
@@ -680,8 +711,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else if(connectedSubscribers.containsKey(connID)){
             int userID= connectedSubscribers.get(connID);
-            //Upload from DB
-            addFromDb.UploadUserShoppingCart(userID);
             Response res = subscribers.get(userID).editProductQuantityFromCart(storeID, productID, quantity);
             User user=subscribers.get(userID);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -711,8 +740,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else if(connectedSubscribers.containsKey(connID)) {
             int userID = connectedSubscribers.get(connID);
-            //Upload from DB
-            addFromDb.UploadUserShoppingCart(userID);
             User user=subscribers.get(userID);
             Response res = user.RemoveProductFromCart(storeID,productID);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
@@ -745,9 +772,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         else {
             User myGuest= guests.get(connID);
             Collection<ShoppingBag> shoppingBags = myGuest.getShoppingCart().getShoppingBags().values();
-            for (ShoppingBag bag : shoppingBags){
-                addFromDb.UploadStore(bag.getStoreID());
-            }
             Response res = myGuest.guestPurchase(name, credit_number, month, year, cvv, ID, address,city,country,zip);
             if(!res.getIsErr())
             {
@@ -786,8 +810,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         else {
             User user = subscribers.get(userID);
-            //Upload from DB
-            addFromDb.UploadUserShoppingCart(userID);
             Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
             Response res = user.subscriberPurchase(credit_number, month, year, cvv, ID, address,city,country,zip);
             if(!res.getIsErr())
@@ -867,7 +889,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      * }
      */
     public Response AddStore(int userID, String connID, String storeName){
-        addFromDb.UploadAllStores();
         if(!ValidConnectedUser(userID,connID)){
             return new Response(true, "AddStore: The user is not connected");
         }
@@ -964,7 +985,8 @@ public class TradingSystemImplRubin implements TradingSystem {
      */
     public Response ShowSubscriberHistory(int userID, String connID){
         if (ValidConnectedUser(userID,connID)){
-            List<DummyShoppingHistory> list = subscribers.get(userID).ShowUserHistory();
+            User user = subscribers.get(userID);
+            List<DummyShoppingHistory> list = user.ShowUserHistory();
             if(list.isEmpty()){
                 Response res = new Response(true,"ShowSubscriberHistory: There are no older shopping in the history of user with id " + userID);
                 res.AddPair("history", list);
@@ -972,7 +994,6 @@ public class TradingSystemImplRubin implements TradingSystem {
             }
             Response res = new Response(false, "ShowSubscriberHistory: Num of history buying of the user is " + list.size());
             res.AddPair("history", list);
-            User user = subscribers.get(userID);
             res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return res;
         }
@@ -998,9 +1019,8 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      * }
      */
     public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity){
-        addFromDb.UploadStore(storeID);
         if(ValidConnectedUser(userID, connID)){
-            if(!this.hasPermission(userID,storeID,User.Permission.AddProduct)){
+            if(!this.hasPermission(userID,storeID, PermissionEnum.Permission.AddProduct)){
                 return new Response(true, "AddProductToStore: The User " + userID + " is not allowed to add a product");
             }
             else {
@@ -1044,7 +1064,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      */
     public Response RemoveProduct(int userID, int storeID, int productID, String connID) {
         if(ValidConnectedUser(userID, connID)){
-            if(!hasPermission(userID,storeID,User.Permission.DeleteProduct)){
+            if(!hasPermission(userID,storeID, PermissionEnum.Permission.DeleteProduct)){
                 return new Response(true, "RemoveProduct: The User " + userID + " is not allowed to remove products from the inventory");
             }
             else {
@@ -1075,7 +1095,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      */
     public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity){
         if(ValidConnectedUser(userID, connID)){
-            if(!hasPermission(userID,storeID,User.Permission.AddProduct)){
+            if(!hasPermission(userID,storeID, PermissionEnum.Permission.AddProduct)){
                 return new Response(true, "ChangeQuantityProduct: The user " + userID + " is not allowed to add products to the inventory");
             }
             else {
@@ -1114,7 +1134,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      */
     public Response EditProduct(int userID, String connID, int storeID, int productID, String productName, String category, double price, int quantity) {
         if(ValidConnectedUser(userID, connID)){
-            if(!hasPermission(userID,storeID, User.Permission.AddProduct)){
+            if(!hasPermission(userID,storeID, PermissionEnum.Permission.AddProduct)){
                 return new Response(true, "EditProduct: The Edit is not allowed");
             }
             else {
@@ -1171,7 +1191,7 @@ public class TradingSystemImplRubin implements TradingSystem {
             }
         }
 
-        Response res1 = this.systemRoleChecks(userID, storeID, newOwner, User.Permission.AppointmentOwner);
+        Response res1 = this.systemRoleChecks(userID, storeID, newOwner, PermissionEnum.Permission.AppointmentOwner);
         if (res1.getIsErr()) {
             NO.unlockUser();
             return res1;
@@ -1181,12 +1201,12 @@ public class TradingSystemImplRubin implements TradingSystem {
             NO.unlockUser();
             return res2;
         }
-
-        //Adds to the db
-        data_controller.AddNewOwner(storeID, newOwner);
-
         OwnerPermission OP = new OwnerPermission(newOwner, storeID);
         OP.setAppointmentId(userID);
+
+        //Adds to the db
+        data_controller.AddNewOwner(storeID, newOwner, OP);
+
         NO.AddStoreInOwner(storeID, OP);
         Store store = stores.get(storeID);
         store.addNewOwner(userID, newOwner);
@@ -1216,7 +1236,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID) {
-        addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(ownerID, connID)) {
             return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " is not connected");
         }
@@ -1233,6 +1252,8 @@ public class TradingSystemImplRubin implements TradingSystem {
             return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " has no permissions to do this operation");
         }
         else{
+            data_controller.RemoveOwner(storeID, removeOwnerID);
+
             User owner=subscribers.get(ownerID);
             Store store = stores.get(storeID);
             store.removeOwner(removeOwnerID);
@@ -1279,7 +1300,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      *
      */
     public Response AddNewManager(int userID, String connID, int storeID, int newManager) {
-        addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "AddNewManager: The user " + userID + "is not connected");
         }
@@ -1297,7 +1317,7 @@ public class TradingSystemImplRubin implements TradingSystem {
             }
         }
 
-        Response res1 = this.systemRoleChecks(userID, storeID, newManager, User.Permission.AppointmentManager);
+        Response res1 = this.systemRoleChecks(userID, storeID, newManager, PermissionEnum.Permission.AppointmentManager);
         if (res1.getIsErr()) {
             NM.unlockUser();
             return res1;
@@ -1309,11 +1329,12 @@ public class TradingSystemImplRubin implements TradingSystem {
             return res2;
         }
 
-        //Adds to the db
-        data_controller.AddNewManager(storeID, newManager);
-
         ManagerPermission MP = new ManagerPermission(newManager, storeID);
         MP.setAppointmentId(userID);
+
+        //Adds to the db
+        data_controller.AddNewManager(storeID, newManager, MP);
+
         NM.AddStoreInManager(storeID, MP);
         stores.get(storeID).addNewManager(userID, newManager);
         stores.get(storeID).addManagerPermission(MP);
@@ -1337,9 +1358,7 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      "connID": String
      *      }
      */
-    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
-
-        addFromDb.UploadStore(storeID);
+    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "EditManagerPermissions: The user" + userID + "is not connected");
         }
@@ -1349,7 +1368,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
         //TODO add synchronize
         User MTE = this.subscribers.get(managerID);
-        Response res1 = this.systemRoleChecks(userID, storeID, managerID, User.Permission.EditManagerPermission);
+        Response res1 = this.systemRoleChecks(userID, storeID, managerID, PermissionEnum.Permission.EditManagerPermission);
         if (res1.getIsErr()) {
             //MTR.unlockUser();
             return res1;
@@ -1399,7 +1418,7 @@ public class TradingSystemImplRubin implements TradingSystem {
             }
         }
 
-        Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, User.Permission.RemoveManager);
+        Response res1 = this.systemRoleChecks(userID, storeID, ManagerToRemove, PermissionEnum.Permission.RemoveManager);
         if (res1.getIsErr()) {
             MTR.unlockUser();
             return res1;
@@ -1409,6 +1428,8 @@ public class TradingSystemImplRubin implements TradingSystem {
             MTR.unlockUser();
             return res2;
         }
+        data_controller.RemoveManager(storeID, ManagerToRemove);
+
         MTR.removeManagedStore(storeID);
         stores.get(storeID).removeManager(ManagerToRemove);
         MTR.unlockUser();
@@ -1430,8 +1451,6 @@ public class TradingSystemImplRubin implements TradingSystem {
      *      }
      */
     public Response ShowStoreWorkers(int userID, String connID, int storeID){
-
-        addFromDb.UploadStore(storeID);
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ShowStoreWorkers: The user " + userID + " is not connected");
         }
@@ -1502,7 +1521,7 @@ public class TradingSystemImplRubin implements TradingSystem {
             res.AddPair("permissions", MP.getPermissions());
         }
        else {
-            res.AddPair("permissions", new LinkedList<User.Permission>());
+            res.AddPair("permissions", new LinkedList<PermissionEnum.Permission>());
         }
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res;
@@ -1523,7 +1542,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "StoreHistoryOwner: The user " + userID + "is not connected");
         }
-        if (!hasPermission(userID, storeID, User.Permission.GetStoreHistory)) {
+        if (!hasPermission(userID, storeID, PermissionEnum.Permission.GetStoreHistory)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "StoreHistoryOwner: The user has no permission to watch the history");
             res.AddPair("history", list);
@@ -1559,7 +1578,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "StoreHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, storeID, User.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, storeID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "StoreHistory: User has no permission to watch the history");
             res.AddPair("history", list);
@@ -1595,7 +1614,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "UserHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, userID, User.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, userID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "UserHistory: User has no permission to watch the history");
             res.AddPair("history", list);
@@ -1630,7 +1649,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "AllStoresHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "AllStoresHistory: User has no permission to watch the history");
             res.AddPair("history", list);
@@ -1665,7 +1684,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "AllUsersHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, User.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "AllUsersHistory: User has no permission to watch the history");
             res.AddPair("history", list);
@@ -1686,7 +1705,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
 
     //other functions
-    public boolean hasPermission(int userID, int storeID, User.Permission p) {
+    public boolean hasPermission(int userID, int storeID, PermissionEnum.Permission p) {
         boolean hasPer=false;
         if(this.subscribers.containsKey(userID)){
             User u=this.subscribers.get(userID);
@@ -1703,7 +1722,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         return hasPer ;
     }
 
-    public boolean hasPermission(int userID, User.Permission p) {
+    public boolean hasPermission(int userID, PermissionEnum.Permission p) {
         //if (this.subscribers.containsKey(userID)) {
           //  User u = this.subscribers.get(userID);
             if (this.systemManagerPermissions.get(userID) != null) {
@@ -1743,7 +1762,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
  */
 
-    public Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission) {
+    public Response systemRoleChecks(int userID, int storeID, int newRole, PermissionEnum.Permission permission) {
         if (!this.subscribers.containsKey(userID)) {
             return new Response(true, "The user "+userID+" is not subscriber, so he can not appoint manager for store");
         }
@@ -1905,44 +1924,44 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
     }
 
-    public User.Permission changeToPermission(String per){
+    public PermissionEnum.Permission changeToPermission(String per){
         switch (per){
             case "AddProduct":
-                return User.Permission.AddProduct;
+                return PermissionEnum.Permission.AddProduct;
             case "ReduceProduct":
-                return User.Permission.ReduceProduct;
+                return PermissionEnum.Permission.ReduceProduct;
             case "DeleteProduct":
-                return User.Permission.DeleteProduct;
+                return PermissionEnum.Permission.DeleteProduct;
             case "EditProduct":
-                return User.Permission.EditProduct;
+                return PermissionEnum.Permission.EditProduct;
             case "AppointmentOwner":
-                return User.Permission.AppointmentOwner;
+                return PermissionEnum.Permission.AppointmentOwner;
             case "AppointmentManager":
-                return User.Permission.AppointmentManager;
+                return PermissionEnum.Permission.AppointmentManager;
             case "EditManagerPermission":
-                return User.Permission.EditManagerPermission;
+                return PermissionEnum.Permission.EditManagerPermission;
             case "RemoveManager":
-                return User.Permission.RemoveManager;
+                return PermissionEnum.Permission.RemoveManager;
             case "GetInfoOfficials":
-                return User.Permission.GetInfoOfficials;
+                return PermissionEnum.Permission.GetInfoOfficials;
             case "GetInfoRequests":
-                return User.Permission.GetInfoRequests;
+                return PermissionEnum.Permission.GetInfoRequests;
             case "ResponseRequests":
-                return User.Permission.ResponseRequests;
+                return PermissionEnum.Permission.ResponseRequests;
             case "GetHistoryPurchasing":
-                return User.Permission.GetHistoryPurchasing;
+                return PermissionEnum.Permission.GetHistoryPurchasing;
             case "GetStoreHistory":
-                return User.Permission.GetStoreHistory;
+                return PermissionEnum.Permission.GetStoreHistory;
             case "GetDailyIncomeForStore":
-                return User.Permission.GetDailyIncomeForStore;
+                return PermissionEnum.Permission.GetDailyIncomeForStore;
             case "GetDailyIncomeForSystem":
-                return User.Permission.GetDailyIncomeForSystem;
+                return PermissionEnum.Permission.GetDailyIncomeForSystem;
             case "RequestBidding":
-                return User.Permission.RequestBidding;
+                return PermissionEnum.Permission.RequestBidding;
             case "EditDiscountPolicy":
-                return User.Permission.EditDiscountPolicy;
+                return PermissionEnum.Permission.EditDiscountPolicy;
             case "EditBuyingPolicy":
-                return User.Permission.EditBuyingPolicy;
+                return PermissionEnum.Permission.EditBuyingPolicy;
         }
         return null;
     }
@@ -1957,7 +1976,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         List<DummyStore> list = new ArrayList<>();
 
-        addFromDb.UploadAllStores();
         for (Integer storeID: stores.keySet()){
             Store store = stores.get(storeID);
             if((founder && store.checkFounder(userID))||(owner && store.checkOwner(userID))||(manager && store.checkManager(userID)))
@@ -1978,7 +1996,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
     //Todo finish
     public Response addDiscountPolicy(int userID, String connID, int storeID,Sale sale){
-        Response response = checkPermissionToPolicy(userID, connID, storeID, User.Permission.EditDiscountPolicy);
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditDiscountPolicy);
         Response res = response;
         if(res.getIsErr()){
             return res;
@@ -2163,7 +2181,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         return null;
     }
 
-    private Response checkPermissionToPolicy(int userID, String connID, int storeID,User.Permission p){
+    private Response checkPermissionToPolicy(int userID, String connID, int storeID, PermissionEnum.Permission p){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "Error in Admin details");
         }
@@ -2184,7 +2202,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
     @Override
     public Response addBuyingPolicy(int userID, String connID, int storeID, Expression exp){
-        Response response = checkPermissionToPolicy(userID, connID, storeID, User.Permission.EditBuyingPolicy);
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditBuyingPolicy);
         Response res = response;
         if(res.getIsErr()){
             return res;
@@ -2200,7 +2218,7 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     public Response GetPoliciesInfo(int userID, int storeID, String connID){
-        Response res = checkPermissionToPolicy(userID, connID, storeID,User.Permission.GetInfoOfficials);
+        Response res = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.GetInfoOfficials);
         if(res.getIsErr()){
             return res;
         }
@@ -2385,7 +2403,6 @@ public class TradingSystemImplRubin implements TradingSystem {
             return new Response(true, "Error in Subscriber details");
         }
 
-        addFromDb.UploadAllUsers();
         List<DummySubscriber> dummySubscribers = new ArrayList<>();
         for(Integer id : this.subscribers.keySet()) {
             User u = this.subscribers.get(id);
@@ -2429,7 +2446,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(!store.checkOwner(userID)){
             return new Response(true, "getDailyIncomeForStore: The user " + userID + " is not the owner of the store");
         }
-        if(!this.hasPermission(userID,storeID,User.Permission.GetDailyIncomeForStore)){
+        if(!this.hasPermission(userID,storeID, PermissionEnum.Permission.GetDailyIncomeForStore)){
             return new Response(true, "getDailyIncomeForStore: The user " + userID + " has no permissions to see this information");
         }
         Double DailyIncome=store.getDailyIncome();
@@ -2460,7 +2477,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(!this.systemAdmins.keySet().contains(userID)){
             return new Response(true, "getDailyIncomeForSystem: The user "+userID+"  try to see the Daily Income for the system but he is not the admin of the system");
         }
-        if(!this.hasPermission(userID,User.Permission.GetDailyIncomeForSystem)){
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
             return new Response(true, "getDailyIncomeForSystem: The user " + userID + " has no permissions to see this information");
         }
         Double DailyIncome=0.0;

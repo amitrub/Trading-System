@@ -47,12 +47,12 @@ public class TradingSystemApplication {
 			props.put("spring.jpa.hibernate.ddl-auto", readJson.getDdlAuto());
 			props.put("spring.jpa.show-sql", readJson.getShowSql());
 			props.put("spring.jpa.properties.hibernate.dialect", readJson.getDialect());
-			props.put("spring.jpa.properties.hibernate.format_sql", readJson.getFormatSql());
+//			props.put("spring.jpa.properties.hibernate.format_sql", readJson.getFormatSql());
 
 			return props;
 		}
 		catch (Exception e){
-			System.out.println(e);
+			System.out.println("error in init file");
 			return null;
 		}
 	}

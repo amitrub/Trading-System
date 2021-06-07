@@ -1,9 +1,7 @@
 package TradingSystem.Server.DomainLayer.UserComponent;
 
-import java.util.List;
-
 public interface Permission {
-   public boolean hasPermission(User.Permission p);
+   public boolean hasPermission(PermissionEnum.Permission p);
 
    public String toString();
 }

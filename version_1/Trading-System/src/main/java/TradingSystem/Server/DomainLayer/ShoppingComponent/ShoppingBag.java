@@ -20,14 +20,12 @@ import java.util.concurrent.locks.Lock;
 public class ShoppingBag {
 
     private static TradingSystemImplRubin tradingSystem;
-
     public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
         ShoppingBag.tradingSystem = tradingSystem;
     }
 
     @Autowired
     public static Data_Controller data_controller;
-
     public static void setData_controller(Data_Controller data_controller) {
         ShoppingBag.data_controller = data_controller;
     }
@@ -50,16 +48,12 @@ public class ShoppingBag {
 
         this.userID = userID;
         this.storeID = storeID;
-        this.products=new ConcurrentHashMap<Integer,Integer>();
-        this.priceOfSpacialProducts=new ConcurrentHashMap<Integer,Double>();
-        this.quantityOfSpacialProducts=new ConcurrentHashMap<Integer,Integer>();
         this.finalPrice=0.0;
     }
 
     public ShoppingBag(ShoppingBag shoppingBagToCopy) {
         this.userID = shoppingBagToCopy.userID;
         this.storeID = shoppingBagToCopy.storeID;
-        this.products=new ConcurrentHashMap<Integer,Integer>();
         this.finalPrice= shoppingBagToCopy.finalPrice;
 
         for (int productID : shoppingBagToCopy.products.keySet()) {
@@ -81,7 +75,6 @@ public class ShoppingBag {
     public ShoppingBag(DataShoppingBagCart shoppingBagCart){
         this.userID=shoppingBagCart.getSubscriber().getUserID();
         this.storeID=shoppingBagCart.getStore().getStoreID();
-        this.products=new ConcurrentHashMap<Integer,Integer>();
         List<DataShoppingBagProduct> list=shoppingBagCart.getProducts();
         for(DataShoppingBagProduct product:list){
             this.products.put(product.getProduct().getProductID(),product.getQuantity());
@@ -229,8 +222,7 @@ public class ShoppingBag {
         for (Integer productID: productIDs){
             Integer quantity = this.getProducts().get(productID);
             Product p = tradingSystem.getProduct(storeID,productID);
-            Product newProduct = new Product(p);
-            newProduct.setQuantity(quantity);
+            Product newProduct = new Product(p, quantity);
             productsToHistory.add(newProduct);
         }
 // =======
@@ -245,20 +237,25 @@ public class ShoppingBag {
         for (Integer productID: this.quantityOfSpacialProducts.keySet()){
             Integer quantity = this.quantityOfSpacialProducts.get(productID);
             Product p = tradingSystem.getProduct(storeID,productID);
-            Product newProduct = new Product(p);
-            newProduct.setQuantity(quantity);
+            Product newProduct = new Product(p, quantity);
             productsToHistory.add(newProduct);
         }
         return new ShoppingHistory(this, productsToHistory);
     }
 
     public void editProductQuantity(int productID, int quantity) {
+        if(userID>=1){
+        data_controller.setBagProductQuantity(userID, storeID, productID, quantity);
+        }
         this.products.remove(productID);
         this.products.put(productID,quantity);
     }
   
     public void RemoveProduct(int productID) {
         if(this.products.containsKey(productID)) {
+            if(userID>=1){
+                data_controller.RemoveBagProduct(userID, storeID, productID);
+            }
             this.products.remove(productID);
         }
         else if(this.quantityOfSpacialProducts.containsKey(productID)&&this.priceOfSpacialProducts.containsKey(productID)){

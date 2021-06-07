@@ -5,6 +5,7 @@ import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
@@ -70,37 +71,37 @@ public class OwnerTests {
         return -1;
     }
 
-    private List<User.Permission> makePermissions (HashMap<String, Boolean> permissionToGive){
-        List<User.Permission> Permissions=new LinkedList<>();
+    private List<PermissionEnum.Permission> makePermissions (HashMap<String, Boolean> permissionToGive){
+        List<PermissionEnum.Permission> Permissions=new LinkedList<>();
         try {
             if((boolean) permissionToGive.get("AddProduct"))
-                Permissions.add(User.Permission.AddProduct);
+                Permissions.add(PermissionEnum.Permission.AddProduct);
             if((boolean) permissionToGive.get("ReduceProduct"))
-                Permissions.add(User.Permission.ReduceProduct);
+                Permissions.add(PermissionEnum.Permission.ReduceProduct);
             if((boolean) permissionToGive.get("DeleteProduct"))
-                Permissions.add(User.Permission.DeleteProduct);
+                Permissions.add(PermissionEnum.Permission.DeleteProduct);
             if((boolean) permissionToGive.get("EditProduct"))
-                Permissions.add(User.Permission.EditProduct);
+                Permissions.add(PermissionEnum.Permission.EditProduct);
             if((boolean) permissionToGive.get("AppointmentOwner"))
-                Permissions.add(User.Permission.AppointmentOwner);
+                Permissions.add(PermissionEnum.Permission.AppointmentOwner);
             if((boolean) permissionToGive.get("AppointmentManager"))
-                Permissions.add(User.Permission.AppointmentManager);
+                Permissions.add(PermissionEnum.Permission.AppointmentManager);
             if((boolean) permissionToGive.get("EditManagerPermission"))
-                Permissions.add(User.Permission.EditManagerPermission);
+                Permissions.add(PermissionEnum.Permission.EditManagerPermission);
             if((boolean) permissionToGive.get("RemoveManager"))
-                Permissions.add(User.Permission.RemoveManager);
+                Permissions.add(PermissionEnum.Permission.RemoveManager);
             if((boolean) permissionToGive.get("GetInfoOfficials"))
-                Permissions.add(User.Permission.GetInfoOfficials);
+                Permissions.add(PermissionEnum.Permission.GetInfoOfficials);
             if((boolean) permissionToGive.get("GetInfoRequests"))
-                Permissions.add(User.Permission.GetInfoRequests);
+                Permissions.add(PermissionEnum.Permission.GetInfoRequests);
             if((boolean) permissionToGive.get("ResponseRequests"))
-                Permissions.add(User.Permission.ResponseRequests);
+                Permissions.add(PermissionEnum.Permission.ResponseRequests);
             if((boolean) permissionToGive.get("GetStoreHistory"))
-                Permissions.add(User.Permission.GetStoreHistory);
+                Permissions.add(PermissionEnum.Permission.GetStoreHistory);
             if((boolean) permissionToGive.get("GetDailyIncomeForStore"))
-                Permissions.add(User.Permission.GetDailyIncomeForStore);
+                Permissions.add(PermissionEnum.Permission.GetDailyIncomeForStore);
             if((boolean) permissionToGive.get("GetDailyIncomeForSystem"))
-                Permissions.add(User.Permission.GetDailyIncomeForSystem);
+                Permissions.add(PermissionEnum.Permission.GetDailyIncomeForSystem);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -419,7 +420,7 @@ public class OwnerTests {
         for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
-        List<User.Permission> Permissions = makePermissions(permissionToGive);
+        List<PermissionEnum.Permission> Permissions = makePermissions(permissionToGive);
         Response responseEditPer = client.editManagerPermissions(storeID, newUserID, Permissions);
         client.Logout();
         assertFalse(responseEditPer.getIsErr());
@@ -435,7 +436,7 @@ public class OwnerTests {
         for (String per : optionalPermissionsForMannager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
-        List<User.Permission> Permissions = makePermissions(permissionToGive);
+        List<PermissionEnum.Permission> Permissions = makePermissions(permissionToGive);
         Response responseEditPer = client.editManagerPermissions(storeID, 6, Permissions);
         client.Logout();
         assertTrue(responseEditPer.getIsErr());
@@ -451,7 +452,7 @@ public class OwnerTests {
         for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
-        List<User.Permission> Permissions = makePermissions(permissionToGive);
+        List<PermissionEnum.Permission> Permissions = makePermissions(permissionToGive);
         Response responseEditPer = client.editManagerPermissions(storeID, newUserID, Permissions);
         client.Logout();
         assertTrue(responseEditPer.getIsErr());
@@ -479,7 +480,7 @@ public class OwnerTests {
         for (String per : optionalPermissionsForManager.returnPermissionList()) {
             permissionToGive.put(per, true);
         }
-        List<User.Permission> Permissions = makePermissions(permissionToGive);
+        List<PermissionEnum.Permission> Permissions = makePermissions(permissionToGive);
         Response responseEditPer = client.editManagerPermissions(storeID, managerId, Permissions);
         client.Logout();
         assertTrue(responseEditPer.getIsErr());

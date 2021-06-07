@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
@@ -19,14 +20,12 @@ import java.util.concurrent.locks.Lock;
 public class ShoppingCart {
 
     private static TradingSystemImplRubin tradingSystem;
-
     public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
         ShoppingCart.tradingSystem = tradingSystem;
     }
 
     @Autowired
     public static Data_Controller data_controller;
-
     public static void setData_controller(Data_Controller data_controller) {
 
         ShoppingCart.data_controller = data_controller;
@@ -37,20 +36,17 @@ public class ShoppingCart {
     private ExternalServices supplySystem = SupplySystem.getInstance();
 
     private final Integer userID;
-    
     //StoreID_ShoppingBag
     private ConcurrentHashMap<Integer, ShoppingBag> shoppingBags = new ConcurrentHashMap<>();
     //StoreID
     private Set<Integer> storesReducedProductsVain=new HashSet<>();
 
     public ShoppingCart(Integer userID){
-
         this.userID = userID;
     }
 
     public ShoppingCart(ShoppingCart shoppingCartToCopy){
         this.userID = shoppingCartToCopy.userID;
-        this.shoppingBags = new ConcurrentHashMap<>();
         Set<Integer> shoppingBagsSet = shoppingCartToCopy.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
@@ -61,6 +57,14 @@ public class ShoppingCart {
     public ShoppingCart(Integer userID, ConcurrentHashMap<Integer, ShoppingBag> shoppingBags) {
         this.userID = userID;
         this.shoppingBags = shoppingBags;
+    }
+
+    public ShoppingCart(Integer userID, List<DataShoppingBagCart> shoppingBagsCart){
+        this.userID = userID;
+        for (DataShoppingBagCart dataShoppingBag: shoppingBagsCart){
+            ShoppingBag bag = new ShoppingBag(dataShoppingBag);
+            this.shoppingBags.put(bag.getStoreID(), bag);
+        }
     }
 
     public Integer getUserID() {
@@ -209,15 +213,6 @@ public class ShoppingCart {
                 return new Response(true, "Purchase in the store "+ storeID+" is against the store policy");
             }
         }
-//        if (!supplySystem.canSupply(address)) {
-//            this.releaseLocks(lockList);
-//            return new Response(true,"Purchase: The Supply is not approve");
-//        }
-
-//        if (!paymentSystem.checkCredit(name, credit_number, phone_number)) {
-//            this.releaseLocks(lockList);
-//            return new Response(true,"Purchase: The payment is not approve");
-//        }
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
         AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
         Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
@@ -395,6 +390,7 @@ public class ShoppingCart {
      *
      */
     public Response editProductQuantityFromCart(int storeID, int productID, int quantity) {
+        boolean isGuest = userID<1;
         if(this.shoppingBags.isEmpty()){
             return new Response(true,"EditCart: The shoppingCart empty, cannot be edited");
         }

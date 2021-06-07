@@ -2,7 +2,7 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.List;
@@ -248,7 +248,7 @@ public interface Client_Interface {
      * @param permissions permissions
      * @return Response
      */
-    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions);
+    public Response editManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions);
     public Response GetPossiblePermissionsToManager(int storeId);
 
     /**

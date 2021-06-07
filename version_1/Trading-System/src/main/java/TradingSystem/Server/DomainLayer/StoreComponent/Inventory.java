@@ -16,30 +16,34 @@ public class Inventory {
 
     @Autowired
     public static Data_Controller data_controller;
-
     public static void setData_controller(Data_Controller data_controller) {
 
         Inventory.data_controller = data_controller;
     }
 
+    private static TradingSystemImplRubin tradingSystem;
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        Inventory.tradingSystem = tradingSystem;
+    }
 
     private final Integer storeID;
     private final String storeName;
     private int nextProductID = 0;
     //productID_product
-    private ConcurrentHashMap<Integer, Product> products;
-    //productID_quantity
-//    private ConcurrentHashMap<Integer, Integer> productQuantity;
-    //productID_Lock
-//    private ConcurrentHashMap<Integer, Lock> productLock;
-
+    private ConcurrentHashMap<Integer, Product> products = new ConcurrentHashMap<>();
 
     public Inventory(Integer storeID, String storeName) {
         this.storeID = storeID;
         this.storeName = storeName;
-        this.products = new ConcurrentHashMap<Integer, Product>();
-//        this.productQuantity=new ConcurrentHashMap<Integer, Integer>();
-//        this.productLock=new ConcurrentHashMap<Integer, Lock>();
+    }
+
+    public Inventory(Integer storeID, String storeName, List<DataProduct> dataProducts) {
+        this.storeID = storeID;
+        this.storeName = storeName;
+        for (DataProduct dataProduct: dataProducts){
+            Product product = new Product(dataProduct);
+            this.products.put(product.getProductID(), product);
+        }
     }
 
     private synchronized int getNextProductID() {
@@ -62,9 +66,6 @@ public class Inventory {
     }
 
     public Response addProduct(String productName, String category, Double price, int quantity){
-        System.out.println("-----------------------addProduct-------------------------");
-        System.out.println(data_controller);
-        System.out.println("----------------------------------------------------------");
         if (!IsProductNameExist(productName)){
             //Adds to the db
             Integer productID = data_controller.AddProductToStore(storeID, productName, category, price, quantity);
@@ -222,14 +223,15 @@ public class Inventory {
         return products;
     }
 
-    public Response editProductDetails(Integer productId, String productName, Double price, String category, Integer quantity) {
+    public Response editProductDetails(Integer productID, String productName, Double price, String category, Integer quantity) {
         Iterator it = this.products.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             int id = (int) pair.getKey();
-            if (id == productId) {
-                Product p = new Product(storeID, storeName, productId, productName, category, price, quantity);
-                this.products.remove(productId);
+            if (id == productID) {
+                Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
+                data_controller.editProductDetails(productID, productName, price, category, quantity);
+                this.products.remove(productID);
                 this.products.put(id, p);
                 return new Response(false, "EditProduct: The product " + productName + " update successfully");
             }
