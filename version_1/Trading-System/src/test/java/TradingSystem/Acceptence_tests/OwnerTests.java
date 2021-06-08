@@ -1,5 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
+import TradingSystem.Client.ClientProxy;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
@@ -15,6 +16,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.HashMap;
@@ -25,11 +28,15 @@ import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 
-//@RunWith(SpringRunner.class)
-//@SpringBootTest
+@RunWith(SpringRunner.class)
+@SpringBootTest
+@ContextConfiguration(classes = ClientProxy.class)
 public class OwnerTests {
 
-    Client_Interface client;
+    @Autowired
+    ClientProxy client;
+
+    //Client_Interface client;
     Integer storeID;
     Integer newUserID;
 
@@ -38,7 +45,7 @@ public class OwnerTests {
 
     @BeforeEach
     void setUp() {
-        client = Client_Driver.getClient();
+        //client = Client_Driver.getClient();
         client.clearSystem();
         client.connectSystem();
         newUserID = client.Register("Nofet", "123");

@@ -10,15 +10,22 @@ import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
+@Service
+@Scope("singleton")
 public class ClientProxy implements Client_Interface {
 
     //TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
 
-    //TODO - proxy trading?
 
     @Autowired
     private static TradingSystemImplRubin tradingSystem;
@@ -26,6 +33,7 @@ public class ClientProxy implements Client_Interface {
     public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
         ClientProxy.tradingSystem = tradingSystem;
     }
+
 
     String ConnID;
     int userID;
@@ -35,8 +43,8 @@ public class ClientProxy implements Client_Interface {
     private Client real;
 
     public ClientProxy(){
-        real=null;
-        System.out.println(tradingSystem);
+//        real=null;
+//        System.out.println(tradingSystem);
     }
 
     public void setRealBridge(Client implementation) {
