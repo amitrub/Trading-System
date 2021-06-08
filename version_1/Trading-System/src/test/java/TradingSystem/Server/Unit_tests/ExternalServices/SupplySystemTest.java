@@ -1,7 +1,8 @@
-package TradingSystem.Server.DomainLayer.ExternalServices;
+package TradingSystem.Server.Unit_tests.ExternalServices;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.ExternalServices.AddressInfo;
+import TradingSystem.Server.DomainLayer.ExternalServices.PaymentInfo;
+import TradingSystem.Server.DomainLayer.ExternalServices.SupplySystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.BeforeEach;
@@ -38,5 +39,9 @@ class SupplySystemTest {
         AddressInfo addressInfo = new AddressInfo("Elinor", "Israel", "Kiryat Gat", "Flower", "8458527");
         Response response = supplySystem.purchase(paymentInfo, addressInfo);
         assertFalse(response.getIsErr());
+    }
+
+    @Test
+    void SupplyTestSad() {
     }
 }

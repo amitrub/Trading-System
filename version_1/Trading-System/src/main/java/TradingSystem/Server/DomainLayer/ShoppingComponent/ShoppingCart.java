@@ -32,8 +32,8 @@ public class ShoppingCart {
     }
 //    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
 //    private final SupplySystem supplySystem = SupplySystem.getInstance();
-    private ExternalServices paymentSystem = PaymentSystem_Driver.getPaymentSystem();
-    private ExternalServices supplySystem = SupplySystem_Driver.getSupplySystem();
+    private ExternalServices paymentSystem = PaymentSystem.getInstance();
+    private ExternalServices supplySystem = SupplySystem.getInstance();
 
     private final Integer userID;
     //StoreID_ShoppingBag
@@ -309,11 +309,7 @@ public class ShoppingCart {
 
     private void cancelReduceProducts() {
         for (Integer storeID : this.storesReducedProductsVain) {
-// <<<<<<< DB-Rubin-to-merge
             tradingSystem.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
-// =======
-//             tradingSystemImpl.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getAllProducts());
-// >>>>>>> Version-3
         }
     }
 
@@ -474,14 +470,20 @@ public class ShoppingCart {
         return new Response(false, "RemoveFromCart: product removed successfully");
     }
 
+    public void setPaymentSystem(ExternalServices paymentSystem) {
+        this.paymentSystem = paymentSystem;
+    }
+    public void setSupplySystem(ExternalServices supplySystem) {
+        this.supplySystem = supplySystem;
+    }
     //todo implement!
     public Response specialProductPurchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
-        if (shoppingBags.size()==0){
+        if (shoppingBags.size() == 0) {
             return new Response(true, "Purchase: There is no products in the shopping cart");
         }
         List<Lock> lockList = this.getLockList();
         Response productInStock = this.checkInventoryAndLockProduct(lockList);
-        if (productInStock.getIsErr()){
+        if (productInStock.getIsErr()) {
             return productInStock;
         }
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
@@ -489,23 +491,22 @@ public class ShoppingCart {
             ConcurrentHashMap<Integer, Integer> products = this.shoppingBags.get(storeID).getProducts();
             if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID, products)) {
                 this.releaseLocks(lockList);
-                return new Response(true, "Purchase in the store "+ storeID+" is against the store policy");
+                return new Response(true, "Purchase in the store " + storeID + " is against the store policy");
             }
         }
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
         AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
         Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
-        if(supplyResponse.getIsErr()){
+        if (supplyResponse.getIsErr()) {
             this.releaseLocks(lockList);
             return supplyResponse;
         }
         Response paymentResponse = paymentSystem.purchase(paymentInfo, addressInfo);
-        if(paymentResponse.getIsErr()){
+        if (paymentResponse.getIsErr()) {
             supplySystem.Cancel(supplyResponse.getMessage());
             this.releaseLocks(lockList);
             return paymentResponse;
         }
-
         Response res = Buy(isGuest);
         if(res.getIsErr()) {
             this.releaseLocks(lockList);

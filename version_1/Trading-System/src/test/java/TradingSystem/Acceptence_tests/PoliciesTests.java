@@ -1,8 +1,7 @@
-package TradingSystem.Acceptence_test;
+package TradingSystem.Acceptence_tests;
 
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -10,9 +9,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.Quantity
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.MaxComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.ProductSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.StoreSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -20,7 +16,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;

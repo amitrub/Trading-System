@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
@@ -32,6 +33,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.JsonInitReader;
 import TradingSystem.Server.JsonStateReader;
 import TradingSystem.Server.JsonUser;
+import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,11 +118,11 @@ public class TradingSystemImplRubin implements TradingSystem {
         ShoppingCart.setData_controller(data_controller);
         ShoppingBag.setData_controller(data_controller);
     }
+
     private void setTradingSystem(TradingSystemImplRubin tradingSystem){
         User.setTradingSystem(tradingSystem);
         Store.setTradingSystem(tradingSystem);
         Product.setTradingSystem(tradingSystem);
-        Inventory.setTradingSystem(tradingSystem);
         ShoppingCart.setTradingSystem(tradingSystem);
         ShoppingBag.setTradingSystem(tradingSystem);
         SimpleExpression.setTradingSystem(tradingSystem);
@@ -133,6 +135,8 @@ public class TradingSystemImplRubin implements TradingSystem {
         PurchaseTaskUnitTests.setTradingSystem(tradingSystem);
         RegisterTaskUnitTests.setTradingSystem(tradingSystem);
         RemoveProductTaskUnitTests.setTradingSystem(tradingSystem);
+        Trading_Driver.setTradingSystem(tradingSystem);
+        ClientProxy.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
@@ -950,8 +954,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
             return new Response(true, "WriteComment: The user already wrote comment for this product");
         }
+        stores.get(storeId).WriteComment(userId,productId,comment);
         Product product = stores.get(storeId).getProduct(productId);
-        product.addComment(userId, comment);
+        //product.addComment(userId, comment);
         String storeName = stores.get(storeId).getName();
 
         Response resAlert = new Response(false, "There is a new comment on your product: " + product.getProductName() +
@@ -2648,6 +2653,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
     }
 
+
     @Override
     public Response removeSpecialProductFromCart(String connID, int storeID, int productID) {
         if(connectedSubscribers.containsKey(connID)) {
@@ -2684,6 +2690,16 @@ public class TradingSystemImplRubin implements TradingSystem {
             return res;
 
         }
+    }
+
+
+    public Integer getStoreIDByName(String storeName){
+        for(Store s : stores.values())
+        {
+            if(s.getName().equals(storeName))
+                return s.getId();
+        }
+        return -1;
     }
 
 
