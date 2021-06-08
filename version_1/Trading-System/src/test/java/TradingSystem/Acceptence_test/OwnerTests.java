@@ -612,8 +612,8 @@ public class OwnerTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        client.submissionBidding( storeID, 1, 1, 3.0);
-        Response r= client.ResponseForSubmissionBidding(storeID,1,client.getUserID(),1,3.0);
+        client.submissionBidding( storeID, 1, 1, 3);
+        Response r= client.ResponseForSubmissionBidding(storeID,1,client.getUserID(),1,3,2);
         assertFalse(r.getIsErr());
         System.out.println(r.getMessage());
 
@@ -622,14 +622,14 @@ public class OwnerTests {
     @Test
     void SadUnsubscribe() {
         client.Logout();
-        Response r = client.ResponseForSubmissionBidding(-1, 1, 1,1, 3.0);
+        Response r = client.ResponseForSubmissionBidding(-1, 1, 1,1, 3,2);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
 
     @Test
     void SadStoreNotExist() {
-        Response r = client.ResponseForSubmissionBidding(-1, 1, 1,1, 3.0);
+        Response r = client.ResponseForSubmissionBidding(-1, 1, 1,1, 3,2);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
@@ -648,7 +648,7 @@ public class OwnerTests {
             store=client.showAllStores().getStores().get(0);
         }
         Integer storeID=store.getId();
-        Response r = client.ResponseForSubmissionBidding(storeID, -1, 1,1, 3.0);
+        Response r = client.ResponseForSubmissionBidding(storeID, -1, 1,1, 3,2);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
@@ -670,9 +670,9 @@ public class OwnerTests {
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
         client.addProductToCart(storeID, 1, 3);
-        client.submissionBidding(storeID, 1, 1, 3.0);
-        client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3.0);
-        Response r = client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3.0);
+        client.submissionBidding(storeID, 1, 1, 3);
+        client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,2);
+        Response r = client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,2);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
@@ -693,10 +693,10 @@ public class OwnerTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        Response r1 = client.ResponseForSubmissionBidding(storeID, 1,client.getUserID(), 1, -3.0);
+        Response r1 = client.ResponseForSubmissionBidding(storeID, 1,client.getUserID(), 1, -3,2);
         assertTrue(r1.getIsErr());
         System.out.println(r1.getMessage());
-        Response r2 = client.ResponseForSubmissionBidding(storeID, 1, 1,client.getUserID(), 17.0);
+        Response r2 = client.ResponseForSubmissionBidding(storeID, 1, 1,client.getUserID(), 17,2);
         assertTrue(r2.getIsErr());
         System.out.println(r2.getMessage());
     }
@@ -717,7 +717,7 @@ public class OwnerTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        Response r1 = client.ResponseForSubmissionBidding(storeID, 1,client.getUserID(), -1, 3.0);
+        Response r1 = client.ResponseForSubmissionBidding(storeID, 1,client.getUserID(), -1, 3,2);
         assertTrue(r1.getIsErr());
         System.out.println(r1.getMessage());
     }
@@ -738,8 +738,8 @@ public class OwnerTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        client.submissionBidding(storeID, 1, 1, 3.0);
-        client.submissionBidding(storeID, 2, 1, 4.0);
+        client.submissionBidding(storeID, 1, 1, 3);
+        client.submissionBidding(storeID, 2, 1, 4);
         Response r= client.ShowBids(storeID);
         assertEquals(r.returnBids().size(),2);
     }

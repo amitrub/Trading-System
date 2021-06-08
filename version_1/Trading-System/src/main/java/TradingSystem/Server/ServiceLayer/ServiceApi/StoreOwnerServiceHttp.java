@@ -625,14 +625,15 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/response_for_submission_bidding")
     public Response ResponseForSubmissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID,productID,userWhoOffer,quantity;
-        Double productPrice;
+        int mode,storeID,productID,userWhoOffer,quantity;
+        Integer productPrice;
         try {
             userWhoOffer = (int) obj.get("userWhoOffer");
             storeID = (int) obj.get("storeID");
             productID = (int) obj.get("productID");
             quantity = (int) obj.get("quantity");
-            productPrice = (Double) obj.get("productPrice");
+            productPrice = (Integer) obj.get("productPrice");
+            mode=(Integer) obj.get("mode");
         }
         catch (Exception e){
             System.out.println(e);
@@ -641,7 +642,7 @@ public class StoreOwnerServiceHttp {
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.ResponseForSubmissionBidding(userID,connID,storeID,productID,productPrice,userWhoOffer,quantity);
+        Response res = tradingSystem.ResponseForSubmissionBidding(userID,connID,storeID,productID,productPrice,userWhoOffer,quantity,mode);
         res.AddConnID(connID);
         WriteToLogger(res);
         return res;

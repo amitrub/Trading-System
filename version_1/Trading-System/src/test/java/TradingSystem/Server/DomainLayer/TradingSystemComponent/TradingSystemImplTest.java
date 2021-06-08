@@ -1398,7 +1398,7 @@ class TradingSystemImplTest {
         Assertions.assertFalse(r8.getIsErr());
         System.out.println(r8.getMessage());
     }
-
+/*
     @Test
     void SadsubscriberBidding_unsubscribe() {
         Response r1=tradingSystemImpl.subscriberBidding(-1,"",1,1,1.1,1);
@@ -1481,31 +1481,31 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToCart(NconnID,NofetStore,1,3);
 
         Response r=tradingSystemImpl.subscriberBidding(NofetID,NconnID,NofetStore,2,2,2);
-        Response r8=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,2,NofetID,2);
+        Response r8=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,2,NofetID,2, mode);
         Assertions.assertFalse(r8.getIsErr());
     }
 
     @Test
     void SadUnsubscribe() {
-        Response r0=tradingSystemImpl.ResponseForSubmissionBidding(-1,"",1,1,1.1,1,1);
+        Response r0=tradingSystemImpl.ResponseForSubmissionBidding(-1,"",1,1,1.1,1,1, mode);
         Assertions.assertTrue(r0.getIsErr());
         System.out.println(r0.getMessage());
 
-        Response r1=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,1,1,1.1,1,1);
+        Response r1=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,1,1,1.1,1,1, mode);
         Assertions.assertTrue(r1.getIsErr());
         System.out.println(r1.getMessage());
     }
 
     @Test
     void SadStoreNotExist() {
-        Response r2=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,-1,-1,1.1,ElinorID,1);
+        Response r2=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,-1,-1,1.1,ElinorID,1, mode);
         Assertions.assertTrue(r2.getIsErr());
         System.out.println(r2.getMessage());
     }
 
     @Test
     void SadProductNotExist() {
-        Response r3=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,-1,1.1,ElinorID,1);
+        Response r3=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,-1,1.1,ElinorID,1, mode);
         Assertions.assertTrue(r3.getIsErr());
         System.out.println(r3.getMessage());
     }
@@ -1517,9 +1517,9 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToCart(NconnID,NofetStore,1,3);
 
         Response r=tradingSystemImpl.subscriberBidding(NofetID,NconnID,NofetStore,2,2,2);
-        Response r8=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,2,NofetID,2);
+        Response r8=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,2,NofetID,2, mode);
         Assertions.assertFalse(r8.getIsErr());
-        Response r9=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3,NofetID,1);
+        Response r9=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3,NofetID,1, mode);
         Assertions.assertTrue(r9.getIsErr());
         System.out.println(r8.getMessage());
 
@@ -1531,11 +1531,11 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToStore(NofetID,NconnID,NofetStore,"2","1",7,20);
         tradingSystemImpl.AddProductToCart(NconnID,NofetStore,1,3);
 
-        Response r5=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,-1,ElinorID,1);
+        Response r5=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,-1,ElinorID,1, mode);
         Assertions.assertTrue(r5.getIsErr());
         System.out.println(r5.getMessage());
 
-        Response r6=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,70,ElinorID,1);
+        Response r6=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,70,ElinorID,1, mode);
         Assertions.assertTrue(r6.getIsErr());
         System.out.println(r6.getMessage());
     }
@@ -1546,7 +1546,7 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToStore(NofetID,NconnID,NofetStore,"2","1",7,20);
         tradingSystemImpl.AddProductToCart(NconnID,NofetStore,1,3);
 
-        Response r7=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3,ElinorID,-1);
+        Response r7=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3,ElinorID,-1, mode);
         Assertions.assertTrue(r7.getIsErr());
         System.out.println(r7.getMessage());
 
@@ -1583,7 +1583,7 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToStore(NofetID,NconnID,NofetStore,"2","1",7,20);
         Response r1=tradingSystemImpl.subscriberBidding(NofetID,NconnID,NofetStore,2,1.1,1);
         tradingSystemImpl.AddProductToCart(NconnID,NofetStore,2,3);
-        Response r2=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3.0,NofetID,3);
+        Response r2=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3.0,NofetID,3, mode);
         System.out.println(r1.getMessage());
         System.out.println(r2.getMessage());
         Assertions.assertFalse(r1.getIsErr());
@@ -1595,7 +1595,7 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToStore(NofetID,NconnID,NofetStore,"1","1",10,20);
         tradingSystemImpl.AddProductToStore(NofetID,NconnID,NofetStore,"2","1",7,20);
         Response r1=tradingSystemImpl.subscriberBidding(NofetID,NconnID,NofetStore,2,3,2);
-        Response r2=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3.0,NofetID,30);
+        Response r2=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3.0,NofetID,30, mode);
         System.out.println(r1.getMessage());
         System.out.println(r2.getMessage());
         Assertions.assertFalse(r1.getIsErr());
@@ -1618,7 +1618,7 @@ class TradingSystemImplTest {
         tradingSystemImpl.AddProductToStore(NofetID,NconnID,NofetStore,"2","1",7,20);
         tradingSystemImpl.subscriberBidding(NofetID,NconnID,NofetStore,2,3,2);
         tradingSystemImpl.RemoveProduct(NofetID,NofetStore,2,NconnID);
-        Response r=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3.0,NofetID,30);
+        Response r=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,2,3.0,NofetID,30, mode);
         System.out.println(r.getMessage());
         Assertions.assertTrue(r.getIsErr());
     }
@@ -1634,14 +1634,14 @@ class TradingSystemImplTest {
         BuyingPolicy b=new BuyingPolicy(s.getId(),or);
         tradingSystemImpl.stores.get(NofetStore).setBuyingPolicy(b);
         Response r1=tradingSystemImpl.subscriberBidding(NofetID,NconnID,NofetStore,productID1,3,2);
-        Response r2=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,productID1,3.0,NofetID,6);
+        Response r2=tradingSystemImpl.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,productID1,3.0,NofetID,6, mode);
         System.out.println(r1.getMessage());
         System.out.println(r2.getMessage());
         Assertions.assertFalse(r1.getIsErr());
         Assertions.assertTrue(r2.getIsErr());
     }
     //endregion
-
+*/
     /*
     //region template tests
     @Test

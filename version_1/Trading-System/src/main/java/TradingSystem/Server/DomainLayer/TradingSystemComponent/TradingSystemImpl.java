@@ -2291,7 +2291,7 @@ public class TradingSystemImpl implements TradingSystem {
 
 
     @Override
-    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity) {
+    public Response subscriberBidding(int userID, String connID, int storeID, int productID, int productPrice, int quantity) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "subscriberBidding: The user " + userID + " is not connected");
         }
@@ -2330,7 +2330,7 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer,int quantity) {
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, int productPrice, int userWhoOffer, int quantity, int mode) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
         }
@@ -2404,6 +2404,21 @@ public class TradingSystemImpl implements TradingSystem {
     @Override
     public void setStores(ConcurrentHashMap<Integer, Store> stores) {
 
+    }
+
+    @Override
+    public Response ShowSpecialProductInShoppingCart(String connID) {
+        return null;
+    }
+
+    @Override
+    public Response removeSpecialProductFromCart(String connID, int storeID, int productID) {
+        return null;
+    }
+
+    @Override
+    public Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
+        return null;
     }
 
 }
