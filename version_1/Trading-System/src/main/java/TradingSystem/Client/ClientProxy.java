@@ -10,6 +10,7 @@ import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
@@ -21,21 +22,18 @@ import java.util.List;
 
 @Service
 @Scope("singleton")
-@ContextConfiguration(classes = TradingSystemImplRubin.class)
 public class ClientProxy implements Client_Interface {
 
     //TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
 
 
-//    @Autowired
-//    private static TradingSystemImplRubin tradingSystem;
-//
-//    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
-//        ClientProxy.tradingSystem = tradingSystem;
-//    }
-
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        ClientProxy.tradingSystem = tradingSystem;
+    }
+
 
     String ConnID;
     int userID;
