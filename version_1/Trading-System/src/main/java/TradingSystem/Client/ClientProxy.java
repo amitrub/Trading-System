@@ -24,16 +24,18 @@ import java.util.List;
 @ContextConfiguration(classes = TradingSystemImplRubin.class)
 public class ClientProxy implements Client_Interface {
 
-
     //TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
 
 
-    @Autowired
-    private static TradingSystemImplRubin tradingSystem;
+//    @Autowired
+//    private static TradingSystemImplRubin tradingSystem;
+//
+//    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+//        ClientProxy.tradingSystem = tradingSystem;
+//    }
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
-        ClientProxy.tradingSystem = tradingSystem;
-    }
+    @Autowired
+    TradingSystemImplRubin tradingSystem;
 
     String ConnID;
     int userID;
