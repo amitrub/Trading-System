@@ -305,13 +305,13 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response submissionBidding(int storeID, int productID, int quantity, Double productPrice) {
+    public Response submissionBidding(int storeID, int productID, int quantity, int productPrice) {
         return tradingSystem.subscriberBidding(this.userID,this.ConnID,storeID,productID,productPrice,quantity);
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, Double productPrice) {
-         return tradingSystem.ResponseForSubmissionBidding(this.userID,this.ConnID,storeID,productID,productPrice,userWhoOffer,quantity);
+    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, int productPrice,int mode) {
+         return tradingSystem.ResponseForSubmissionBidding(this.userID,this.ConnID,storeID,productID,productPrice,userWhoOffer,quantity, mode);
     }
 
     @Override

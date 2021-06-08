@@ -218,7 +218,7 @@ public class SubscriberTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        Response r8 = client.submissionBidding( storeID, 1, 1, 3.0);
+        Response r8 = client.submissionBidding( storeID, 1, 1, 3);
         assertFalse(r8.getIsErr());
         System.out.println(r8.getMessage());
 
@@ -227,13 +227,13 @@ public class SubscriberTests {
     @Test
     void SadsubscriberBidding_unsubscribe() {
         client.Logout();
-        Response r = client.submissionBidding(-1, 1, 1, 3.0);
+        Response r = client.submissionBidding(-1, 1, 1, 3);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
     @Test
     void SadsubscriberBidding_storeNotExist() {
-        Response r = client.submissionBidding(-1, 1, 1, 3.0);
+        Response r = client.submissionBidding(-1, 1, 1, 3);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
@@ -252,7 +252,7 @@ public class SubscriberTests {
             store=client.showAllStores().getStores().get(0);
         }
         Integer storeID=store.getId();
-        Response r = client.submissionBidding(storeID, -1, 1, 3.0);
+        Response r = client.submissionBidding(storeID, -1, 1, 3);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
@@ -273,7 +273,7 @@ public class SubscriberTests {
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
         client.addProductToCart(storeID, 1, 3);
-        Response r = client.submissionBidding(storeID, 1, 1, 3.0);
+        Response r = client.submissionBidding(storeID, 1, 1, 3);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
@@ -294,10 +294,10 @@ public class SubscriberTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        Response r1 = client.submissionBidding(storeID, 1, 1, -3.0);
+        Response r1 = client.submissionBidding(storeID, 1, 1, -3);
         assertTrue(r1.getIsErr());
         System.out.println(r1.getMessage());
-        Response r2 = client.submissionBidding(storeID, 1, 1, 17.0);
+        Response r2 = client.submissionBidding(storeID, 1, 1, 17);
         assertTrue(r2.getIsErr());
         System.out.println(r2.getMessage());
     }
@@ -318,7 +318,7 @@ public class SubscriberTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        Response r1 = client.submissionBidding(storeID, 1, -1, 3.0);
+        Response r1 = client.submissionBidding(storeID, 1, -1, 3);
         assertTrue(r1.getIsErr());
         System.out.println(r1.getMessage());
     }
@@ -339,8 +339,8 @@ public class SubscriberTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        client.submissionBidding(storeID, 1, 1, 3.0);
-        Response r1 = client.submissionBidding(storeID, 1, 1, 3.0);
+        client.submissionBidding(storeID, 1, 1, 3);
+        Response r1 = client.submissionBidding(storeID, 1, 1, 3);
         assertTrue(r1.getIsErr());
         System.out.println(r1.getMessage());
     }
