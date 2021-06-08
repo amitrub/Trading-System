@@ -275,8 +275,8 @@ public class SubscriberServiceHttp {
      *  }]
      * }
      */
-    //TODO figureout how to implement
-    @GetMapping("shopping_cart")
+    //TODO figure out how to implement
+    @GetMapping("shopping_cart_special")
     public Response ShowSpecialProductsInShoppingCart(@RequestHeader("connID") String connID){
         Response res = this.tradingSystem.ShowSpecialProductInShoppingCart(connID);
         res.AddConnID(connID);
@@ -298,7 +298,7 @@ public class SubscriberServiceHttp {
      *  "connID": String
      * }
      */
-    @PostMapping("shopping_cart/remove_product")
+    @PostMapping("shopping_cart/remove_special_product")
     public Response RemoveSpecialProductProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
         int storeID, productID;
         try {
@@ -336,7 +336,7 @@ public class SubscriberServiceHttp {
      *  "connID": String
      * }
      */
-    @PostMapping("{userID}/shopping_cart/purchase")
+    @PostMapping("{userID}/shopping_cart/special_purchase")
     public Response specialProductsPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         String credit_number, month, year, cvv, ID, address, city, country, zip;
         try {
