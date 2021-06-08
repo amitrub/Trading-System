@@ -2,7 +2,11 @@ package TradingSystem.Server.DomainLayer.UserComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataManagerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
@@ -22,6 +26,7 @@ import java.util.Observer;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.Collectors;
 
 public class User implements Observer {
 
@@ -38,44 +43,19 @@ public class User implements Observer {
     private List<Object> messages = new ArrayList<>();
 
 
-
-    public enum Permission {
-        AddProduct,
-        ReduceProduct,
-        DeleteProduct,
-        EditProduct,
-        AppointmentOwner,
-        AppointmentManager,
-        EditManagerPermission,
-        RemoveManager,
-        GetInfoOfficials,
-        GetInfoRequests,
-        ResponseRequests,
-        GetHistoryPurchasing,
-        GetStoreHistory,
-        GetDailyIncomeForStore,
-        GetDailyIncomeForSystem,
-        RequestBidding,
-        EditDiscountPolicy,
-        EditBuyingPolicy
-
-        }
-
     private static int nextUserID = 0;
 
     private final Integer id;
     private String userName;
     private String password;
     private List<Integer> myFoundedStoresIDs = new ArrayList<>();
-    ;
     private List<Integer> myOwnedStoresIDs = new ArrayList<>();
-    ;
     private List<Integer> myManagedStoresIDs = new ArrayList<>();
     ;
     //storeID_OwnerPermission
-    private ConcurrentHashMap<Integer, OwnerPermission> ownerPermission;
+    private ConcurrentHashMap<Integer, OwnerPermission> ownerPermission = new ConcurrentHashMap<>();
     //storeID_ManagerPermission
-    private ConcurrentHashMap<Integer, ManagerPermission> managerPermission;
+    private ConcurrentHashMap<Integer, ManagerPermission> managerPermission = new ConcurrentHashMap<>();
 
     private ShoppingCart shoppingCart;
     private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
@@ -88,22 +68,13 @@ public class User implements Observer {
         this.userName = "guest";
         this.password = "";
         this.shoppingCart = new ShoppingCart(this.id);
-        this.myManagedStoresIDs=new ArrayList<>();
-        this.myManagedStoresIDs=new ArrayList<>();
-        this.myFoundedStoresIDs=new ArrayList<>();
-        this.ownerPermission=new ConcurrentHashMap<>();
-        this.managerPermission=new ConcurrentHashMap<>();
     }
+
     public User(int id) {
         this.id = id;
         this.userName = "guest";
         this.password = "";
         this.shoppingCart = new ShoppingCart(this.id);
-        this.myManagedStoresIDs=new ArrayList<>();
-        this.myManagedStoresIDs=new ArrayList<>();
-        this.myFoundedStoresIDs=new ArrayList<>();
-        this.ownerPermission=new ConcurrentHashMap<>();
-        this.managerPermission=new ConcurrentHashMap<>();
     }
 
     //FOR the db
@@ -112,22 +83,30 @@ public class User implements Observer {
         this.userName = userName;
         this.password = password;
         this.shoppingCart = new ShoppingCart(this.id);
-        this.myManagedStoresIDs=new ArrayList<>();
-        this.myManagedStoresIDs=new ArrayList<>();
-        this.myFoundedStoresIDs=new ArrayList<>();
-        this.ownerPermission=new ConcurrentHashMap<>();
-        this.managerPermission=new ConcurrentHashMap<>();
     }
     public User(DataSubscriber subscriber) {
         this.id = subscriber.getUserID();
         this.userName = subscriber.getName();
         this.password = subscriber.getPassword();
-        this.shoppingCart = new ShoppingCart(this.id);
-        this.myManagedStoresIDs=new ArrayList<>();
-        this.myFoundedStoresIDs=new ArrayList<>();
-        this.myOwnedStoresIDs=new ArrayList<>();
-        this.ownerPermission=new ConcurrentHashMap<>();
-        this.managerPermission=new ConcurrentHashMap<>();
+        this.myFoundedStoresIDs = subscriber.getStoresFounder().stream().map(DataStore::getStoreID).collect(Collectors.toList());
+        this.myOwnedStoresIDs=subscriber.getStoresOwner().stream().map(DataStore::getStoreID).collect(Collectors.toList());
+        this.myManagedStoresIDs=subscriber.getStoresManager().stream().map(DataStore::getStoreID).collect(Collectors.toList());
+        for (DataOwnerPermissions dataOwnerPermission: subscriber.getOwnerPermissions()){
+            int storeID = dataOwnerPermission.getStore().getStoreID();
+            OwnerPermission permission = new OwnerPermission(dataOwnerPermission);
+            this.ownerPermission.put(storeID, permission);
+        }
+        for (DataManagerPermissions dataManagerPermission: subscriber.getManagerPermissions()){
+            int storeID = dataManagerPermission.getStore().getStoreID();
+            ManagerPermission permission = new ManagerPermission(dataManagerPermission);
+            this.managerPermission.put(storeID, permission);
+        }
+        this.shoppingCart = new ShoppingCart(this.id, subscriber.getShoppingBagsCart());
+
+        for (DataShoppingHistory dataShoppingHistory: subscriber.getShoppingBagsHistory()){
+            ShoppingHistory history = new ShoppingHistory(dataShoppingHistory);
+            this.shoppingHistory.add(history);
+        }
     }
 
 
@@ -170,6 +149,17 @@ public class User implements Observer {
         return nextUserID;
     }
 
+    public ConcurrentHashMap<Integer, OwnerPermission> getOwnerPermission() {
+        return ownerPermission;
+    }
+
+    public ConcurrentHashMap<Integer, ManagerPermission> getManagerPermission() {
+        return managerPermission;
+    }
+
+    public List<ShoppingHistory> getShoppingHistory() {
+        return shoppingHistory;
+    }
 
     public void setPublisher(Publisher publisher) {
         this.publisher = publisher;
@@ -257,7 +247,12 @@ public class User implements Observer {
                 ", userName='" + userName + '\'' +
                 ", password='" + password + '\'' +
                 ", myFoundedStoresIDs=" + myFoundedStoresIDs +
+                ", myOwnedStoresIDs=" + myOwnedStoresIDs +
+                ", myManagedStoresIDs=" + myManagedStoresIDs +
+                ", ownerPermission=" + ownerPermission.keySet() +
+                ", managerPermission=" + managerPermission.keySet() +
                 ", shoppingCart=" + shoppingCart +
+                ", shoppingHistory=" + shoppingHistory +
                 '}';
     }
 
@@ -424,7 +419,7 @@ public class User implements Observer {
         return new Response(false, "EditPermissions: It is possible to edit the manager permissions");
     }
 
-    public void editPermissions(int userID,int storeID, List<User.Permission> permissions) {
+    public void editPermissions(int userID,int storeID, List<PermissionEnum.Permission> permissions) {
         ManagerPermission MP=managerPermission.get(storeID);
         if(MP==null){
             MP=new ManagerPermission(this.id,storeID);
@@ -515,7 +510,7 @@ public class User implements Observer {
     //TODO Implement
    // public void AddProductForPurchaseOffer(int productID, int storeID, int productPrice) { }
 
-    public Response AddSpacialProductForCart(int productID, int storeID, double productPrice,Integer quantity) {
+    public Response AddSpacialProductForCart(int productID, int storeID, int productPrice,Integer quantity) {
          if(this.shoppingCart==null){
              this.shoppingCart=new ShoppingCart(this.id);
          }
@@ -523,7 +518,18 @@ public class User implements Observer {
     }
 
 
+    public List<DummyProduct> ShowSpecialProductInShoppingCart() {
+        return shoppingCart.ShowSpecialProductInShoppingCart();
+    }
 
+    public Response removeSpecialProductFromCart(int storeID, int productID) {
+        return this.shoppingCart.removeSpecialProductFromCart(storeID, productID);
+    }
+
+    //todo implements
+    public Response subscriberSpecialProductPurchase(String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
+        return shoppingCart.specialProductPurchase(false, this.userName, credit_number, month, year, cvv, id, address,city,country,zip);
+    }
 }
 
 

@@ -1,5 +1,7 @@
 package TradingSystem.Server.DataLayer.Data_Modules;
 
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataManagerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
@@ -56,21 +58,29 @@ public class DataSubscriber {
             mappedBy = "founder",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataStore> storesFounder = new ArrayList<>();
 
     @ManyToMany(
             mappedBy = "owners",
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private Set<DataStore> storesOwner = new HashSet<>();
+
+    @OneToMany(
+            mappedBy = "subscriber",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.EAGER
+    )
+    private List<DataOwnerPermissions> ownerPermissions= new ArrayList<>();
 
     @ManyToMany(
             mappedBy = "managers",
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private Set<DataStore> storesManager = new HashSet<>();
 
@@ -78,7 +88,15 @@ public class DataSubscriber {
             mappedBy = "subscriber",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
+    )
+    private List<DataManagerPermissions> managerPermissions= new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "subscriber",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.EAGER
     )
     private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
 
@@ -86,12 +104,9 @@ public class DataSubscriber {
             mappedBy = "subscriber",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
-
-
-
 
     public DataSubscriber() {
         // DO NOT DELETE
@@ -101,8 +116,6 @@ public class DataSubscriber {
         this.name=name;
         this.password=password;
     }
-
-
 
     public DataSubscriber(User user){
         this.name=user.getUserName();
@@ -123,6 +136,26 @@ public class DataSubscriber {
 
     public List<DataStore> getStoresFounder() {
         return storesFounder;
+    }
+
+    public Set<DataStore> getStoresOwner() {
+        return storesOwner;
+    }
+
+    public Set<DataStore> getStoresManager() {
+        return storesManager;
+    }
+
+    public List<DataManagerPermissions> getManagerPermissions() {
+        return managerPermissions;
+    }
+
+    public List<DataShoppingBagCart> getShoppingBagsCart() {
+        return shoppingBagsCart;
+    }
+
+    public List<DataOwnerPermissions> getOwnerPermissions() {
+        return ownerPermissions;
     }
 
     public DataShoppingBagCart FindBag(Integer storeID) {
@@ -146,6 +179,18 @@ public class DataSubscriber {
         }
     }
 
+    public void RemoveOwner(DataStore store, DataOwnerPermissions ownerPermission){
+        storesOwner.remove(store);
+        ownerPermissions.remove(ownerPermission);
+        store.RemoveOwner(this);
+    }
+
+    public void RemoveManager(DataStore store, DataManagerPermissions managerPermission){
+        storesManager.remove(store);
+        managerPermissions.remove(managerPermission);
+        store.RemoveManager(this);
+    }
+
     @Override
     public String toString() {
         return "DataSubscriber{" +
@@ -153,7 +198,8 @@ public class DataSubscriber {
                 ", name='" + name + '\'' +
                 ", password='" + password + '\'' +
                 ", storesFounder=" + storesFounder +
-                ", shoppingBagsCart=" + shoppingBagsCart +
+                ", storesOwner=" + storesOwner +
+                ", ownerPermissions=" + ownerPermissions +
                 '}';
     }
 

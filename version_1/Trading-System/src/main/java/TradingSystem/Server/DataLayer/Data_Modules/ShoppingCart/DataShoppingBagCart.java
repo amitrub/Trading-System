@@ -2,7 +2,7 @@ package TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
-import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreProductKey;
+import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreKey;
 
 import javax.persistence.*;
 import java.util.ArrayList;
@@ -15,7 +15,7 @@ import java.util.List;
 public class DataShoppingBagCart {
 
     @EmbeddedId
-    private UserStoreProductKey key;
+    private UserStoreKey key;
 
     @ManyToOne
     @MapsId("subscriberID")
@@ -45,9 +45,9 @@ public class DataShoppingBagCart {
             mappedBy = "shoppingBag",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
-    List<DataShoppingBagProduct> products = new ArrayList<>();;
+    List<DataShoppingBagProduct> products = new ArrayList<>();
 
     @Column(
             name = "finalPrice"
@@ -61,7 +61,7 @@ public class DataShoppingBagCart {
     }
 
     public DataShoppingBagCart(DataSubscriber subscriber, DataStore store) {
-        this.key = new UserStoreProductKey(subscriber.getUserID(), store.getStoreID());
+        this.key = new UserStoreKey(subscriber.getUserID(), store.getStoreID());
         this.subscriber = subscriber;
         this.store = store;
     }
@@ -69,6 +69,11 @@ public class DataShoppingBagCart {
     public void addProduct(DataShoppingBagProduct product) {
         if (!this.products.contains(product)) {
             this.products.add(product);
+        }
+    }
+    public void removeProduct(DataShoppingBagProduct product) {
+        if (this.products.contains(product)) {
+            this.products.remove(product);
         }
     }
 
@@ -80,11 +85,11 @@ public class DataShoppingBagCart {
         this.products = products;
     }
 
-    public UserStoreProductKey getKey() {
+    public UserStoreKey getKey() {
         return key;
     }
 
-    public void setKey(UserStoreProductKey key) {
+    public void setKey(UserStoreKey key) {
         this.key = key;
     }
 

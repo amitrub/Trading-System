@@ -1,9 +1,11 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -25,11 +27,11 @@ public class DummyShoppingHistory {
         this.storeID = toCopyShoppingHistory.getStoreID();
         this.date = toCopyShoppingHistory.getDate().toString();
         this.finalPrice = toCopyShoppingHistory.getFinalPrice();
-//        this.products = new ArrayList<>();
-//        for (Product p : toCopyShoppingHistory.getProducts()){
-//            DummyProduct dp = new DummyProduct(p);
-//            this.products.add(dp);
-//        }
+        this.products = new ArrayList<>();
+        for (Product p : toCopyShoppingHistory.getProducts()){
+            DummyProduct dp = new DummyProduct(p);
+            this.products.add(dp);
+        }
     }
 
     public DummyShoppingHistory(Map<String, Object> map) {
@@ -64,6 +66,9 @@ public class DummyShoppingHistory {
         return date;
     } */
 
+    public List<DummyProduct> getProducts() {
+        return products;
+    }
 
     public Double getFinalPrice() {
         return finalPrice;

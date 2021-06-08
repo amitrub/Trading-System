@@ -38,8 +38,8 @@ public interface TradingSystem {
     public Response AddStore(int userID, String connID, String storeName);
     public Response ShowAllStores();
     public Response AddProductToStore(int userID, String connID, int storeID, String productName, String category, double price, int quantity);
-    public boolean hasPermission(int userID, int storeID, User.Permission p);
-    public boolean hasPermission(int userID, User.Permission p);
+    public boolean hasPermission(int userID, int storeID, PermissionEnum.Permission p);
+    public boolean hasPermission(int userID, PermissionEnum.Permission p);
     public Response ChangeQuantityProduct(int userID, String connID, int storeID, int productId, int quantity);
     public Response RemoveProduct(int userID, int storeID, int productID, String connID);
     public Response ShowStoreProducts(int storeID);
@@ -53,7 +53,7 @@ public interface TradingSystem {
     public Response SearchProduct(String name, String category, int minprice, int maxprice);
     public Response AddNewOwner(int userID, String connID, int storeID, int newOwner);
 
-    public Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission);
+    public Response systemRoleChecks(int userID, int storeID, int newRole, PermissionEnum.Permission permission);
 
     public Response AddNewManager(int userID, String connID, int storeID, int newManager);
 
@@ -90,8 +90,8 @@ public interface TradingSystem {
     public Response UserHistoryAdmin(int AdminID, int userID, String connID);
     public Response AllStoresHistoryAdmin(int AdminID, String connID);
     public Response AllUsersHistoryAdmin(int AdminID, String connID);
-    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions);
-    public User.Permission changeToPermission(String per);
+    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<PermissionEnum.Permission> permissions);
+    public PermissionEnum.Permission changeToPermission(String per);
     public Response GetPossiblePermissionsToManager(int userID, String connID, int storeID);
     public Response ShowStoreWorkers(int userID, String connID, int storeID);
     public Response RemoveOwnerByOwner(int ownerID, String connID, int removeOwnerID, int storeID);
@@ -111,11 +111,17 @@ public interface TradingSystem {
 
     Response getDailyIncomeForSystem(int userID, String connID);
 
-    Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity);
+    Response subscriberBidding(int userID, String connID, int storeID, int productID, int productPrice, int quantity);
 
-    Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userBiddingPrice,int quantity);
+    Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, int productPrice, int userBiddingPrice, int quantity, int mode);
 
     Response ShowBids(int userID, String connID, int storeID);
     void setSubscribers(ConcurrentHashMap<Integer, User> subscribers);
     public void setStores(ConcurrentHashMap<Integer, Store> stores);
+
+    Response ShowSpecialProductInShoppingCart(String connID);
+
+    Response removeSpecialProductFromCart(String connID, int storeID, int productID);
+
+    Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip);
 }

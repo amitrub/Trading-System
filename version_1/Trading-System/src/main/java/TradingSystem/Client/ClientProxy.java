@@ -2,16 +2,31 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.List;
 
 public class ClientProxy implements Client_Interface {
 
-    TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+    //TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+
+    //TODO - proxy trading?
+
+    @Autowired
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        ClientProxy.tradingSystem = tradingSystem;
+    }
+
     String ConnID;
     int userID;
     private String userName;
@@ -21,6 +36,7 @@ public class ClientProxy implements Client_Interface {
 
     public ClientProxy(){
         real=null;
+        System.out.println(tradingSystem);
     }
 
     public void setRealBridge(Client implementation) {
@@ -77,18 +93,18 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public int Register(String userName, String pass) {
-        Response response=tradingSystem.Register(ConnID,userName,pass);
+        Response response = tradingSystem.Register(ConnID,userName,pass);
         this.ConnID= response.returnConnID();
         this.userID= response.returnUserID();
         return userID;
     }
 
     @Override
-    public int Login(String userName, String pass) {
+    public Response Login(String userName, String pass) {
         Response response = tradingSystem.Login(ConnID,userName,pass);
         this.ConnID= response.returnConnID();
         this.userID= response.returnUserID();
-        return userID;
+        return response;
     }
 
     @Override
@@ -143,7 +159,7 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public Response Logout() {
-        Response response=tradingSystem.Logout(this.ConnID);
+        Response response = tradingSystem.Logout(this.ConnID);
         this.ConnID=response.returnConnID();
         this.userID=-1;
         return response;
@@ -223,7 +239,7 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions) {
+    public Response editManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
        return tradingSystem.EditManagerPermissions(userID,ConnID,storeID,managerID,permissions);
         //return null;
     }
@@ -289,13 +305,13 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response submissionBidding(int storeID, int productID, int quantity, Double productPrice) {
+    public Response submissionBidding(int storeID, int productID, int quantity, int productPrice) {
         return tradingSystem.subscriberBidding(this.userID,this.ConnID,storeID,productID,productPrice,quantity);
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, Double productPrice) {
-         return tradingSystem.ResponseForSubmissionBidding(this.userID,this.ConnID,storeID,productID,productPrice,userWhoOffer,quantity);
+    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, int productPrice,int mode) {
+         return tradingSystem.ResponseForSubmissionBidding(this.userID,this.ConnID,storeID,productID,productPrice,userWhoOffer,quantity, mode);
     }
 
     @Override

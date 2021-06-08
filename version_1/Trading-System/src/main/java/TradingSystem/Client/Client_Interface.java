@@ -2,7 +2,7 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.List;
@@ -44,7 +44,7 @@ public interface Client_Interface {
      * @param pass pass
      * @return int if ok
      */
-    public int Login(String userName, String pass);
+    public Response Login(String userName, String pass);
 
     /**
      * @requirement 2.5
@@ -248,7 +248,7 @@ public interface Client_Interface {
      * @param permissions permissions
      * @return Response
      */
-    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions);
+    public Response editManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions);
     public Response GetPossiblePermissionsToManager(int storeId);
 
     /**
@@ -315,14 +315,14 @@ public interface Client_Interface {
      * requirement 8.3.1
      * @return Response
      */
-    public Response submissionBidding( int storeID,int productID,int quantity,Double productPrice);
+    public Response submissionBidding( int storeID,int productID,int quantity,int productPrice);
 
 
     /**
      * requirement 8.3.2
      * @return Response
      */
-    public Response ResponseForSubmissionBidding( int storeID,int productID, int userWhoOffer,int quantity,Double productPrice);
+    public Response ResponseForSubmissionBidding( int storeID,int productID, int userWhoOffer,int quantity,int productPrice,int mode);
 
 
     /**

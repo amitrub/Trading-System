@@ -3,7 +3,7 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -439,38 +439,38 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/store/{storeID}/edit_manager_permissions/{managerID}")
     public Response EditManagerPermissions(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)  {
-        List<User.Permission> Permissions=new LinkedList<>();
+        List<PermissionEnum.Permission> Permissions=new LinkedList<>();
         try {
             if((boolean) obj.get("AddProduct"))
-                Permissions.add(User.Permission.AddProduct);
+                Permissions.add(PermissionEnum.Permission.AddProduct);
             if((boolean) obj.get("ReduceProduct"))
-                Permissions.add(User.Permission.ReduceProduct);
+                Permissions.add(PermissionEnum.Permission.ReduceProduct);
             if((boolean) obj.get("DeleteProduct"))
-                Permissions.add(User.Permission.DeleteProduct);
+                Permissions.add(PermissionEnum.Permission.DeleteProduct);
             if((boolean) obj.get("EditProduct"))
-                Permissions.add(User.Permission.EditProduct);
+                Permissions.add(PermissionEnum.Permission.EditProduct);
             if((boolean) obj.get("AppointmentOwner"))
-                Permissions.add(User.Permission.AppointmentOwner);
+                Permissions.add(PermissionEnum.Permission.AppointmentOwner);
             if((boolean) obj.get("AppointmentManager"))
-                Permissions.add(User.Permission.AppointmentManager);
+                Permissions.add(PermissionEnum.Permission.AppointmentManager);
             if((boolean) obj.get("EditManagerPermission"))
-                Permissions.add(User.Permission.EditManagerPermission);
+                Permissions.add(PermissionEnum.Permission.EditManagerPermission);
             if((boolean) obj.get("RemoveManager"))
-                Permissions.add(User.Permission.RemoveManager);
+                Permissions.add(PermissionEnum.Permission.RemoveManager);
             if((boolean) obj.get("GetInfoOfficials"))
-                Permissions.add(User.Permission.GetInfoOfficials);
+                Permissions.add(PermissionEnum.Permission.GetInfoOfficials);
             if((boolean) obj.get("GetInfoRequests"))
-                Permissions.add(User.Permission.GetInfoRequests);
+                Permissions.add(PermissionEnum.Permission.GetInfoRequests);
             if((boolean) obj.get("ResponseRequests"))
-                Permissions.add(User.Permission.ResponseRequests);
+                Permissions.add(PermissionEnum.Permission.ResponseRequests);
             if((boolean) obj.get("GetStoreHistory"))
-                Permissions.add(User.Permission.GetStoreHistory);
+                Permissions.add(PermissionEnum.Permission.GetStoreHistory);
             if((boolean) obj.get("RequestBidding"))
-                Permissions.add(User.Permission.RequestBidding);
+                Permissions.add(PermissionEnum.Permission.RequestBidding);
             if((boolean) obj.get("EditDiscountPolicy"))
-                Permissions.add(User.Permission.EditDiscountPolicy);
+                Permissions.add(PermissionEnum.Permission.EditDiscountPolicy);
             if((boolean) obj.get("EditBuyingPolicy"))
-                Permissions.add(User.Permission.EditBuyingPolicy);
+                Permissions.add(PermissionEnum.Permission.EditBuyingPolicy);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -625,14 +625,15 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/response_for_submission_bidding")
     public Response ResponseForSubmissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int storeID,productID,userWhoOffer,quantity;
-        Double productPrice;
+        int mode,storeID,productID,userWhoOffer,quantity;
+        Integer productPrice;
         try {
             userWhoOffer = (int) obj.get("userWhoOffer");
             storeID = (int) obj.get("storeID");
             productID = (int) obj.get("productID");
             quantity = (int) obj.get("quantity");
-            productPrice = (Double) obj.get("productPrice");
+            productPrice = (Integer) obj.get("productPrice");
+            mode=(Integer) obj.get("mode");
         }
         catch (Exception e){
             System.out.println(e);
@@ -641,7 +642,7 @@ public class StoreOwnerServiceHttp {
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.ResponseForSubmissionBidding(userID,connID,storeID,productID,productPrice,userWhoOffer,quantity);
+        Response res = tradingSystem.ResponseForSubmissionBidding(userID,connID,storeID,productID,productPrice,userWhoOffer,quantity,mode);
         res.AddConnID(connID);
         WriteToLogger(res);
         return res;

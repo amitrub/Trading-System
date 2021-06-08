@@ -4,6 +4,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Repositories.ProductRepository;
 import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -52,6 +53,15 @@ public class ProductService {
 
     public void deleteAll(){
         productRepository.deleteAll();
+    }
+
+    public void editProductDetails(Integer productID, String productName, Double price, String category, Integer quantity) {
+        DataProduct product = productRepository.getOne(productID);
+        product.setProductName(productName);
+        product.setPrice(price);
+        product.setCategory(category);
+        product.setQuantity(quantity);
+        productRepository.saveAndFlush(product);
     }
 
 //    //TODO make it transaction

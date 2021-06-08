@@ -214,6 +214,7 @@ public class SubscriberServiceHttp {
         return res;
     }
 
+
     /**
      * @requirement 8.3.1
      *
@@ -235,12 +236,12 @@ public class SubscriberServiceHttp {
     @PostMapping("{userID}/submission_bidding")
     public Response submissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         int storeID,productID, quantity;
-        Double productPrice;
+        Integer productPrice;
         try {
             storeID = (int) obj.get("storeID");
             productID = (int) obj.get("productID");
             quantity = (int) obj.get("quantity");
-            productPrice = (Double) obj.get("productPrice");
+            productPrice = (Integer) obj.get("productPrice");
         }
         catch (Exception e){
             System.out.println(e);
@@ -254,6 +255,113 @@ public class SubscriberServiceHttp {
         WriteToLogger(res);
         return res;
     }
+    //________________________________
+    /**
+     * @requirement 2.8
+     *
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "products": List [{
+     *      "storeID": int
+     *      "storeName": String
+     *      "productID": int
+     *      "productName": String
+     *      "price": double
+     *      "category": String
+     *      "quantity": int
+     *  }]
+     * }
+     */
+    //TODO figureout how to implement
+    @GetMapping("shopping_cart")
+    public Response ShowSpecialProductsInShoppingCart(@RequestHeader("connID") String connID){
+        Response res = this.tradingSystem.ShowSpecialProductInShoppingCart(connID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 2.8
+     *
+     * @param connID: String (Header)
+     * @param obj:{
+     *  "storeID": int
+     *  "productID": int
+     * }
+     * @return NewResponse{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
+    @PostMapping("shopping_cart/remove_product")
+    public Response RemoveSpecialProductProductFromCart(@RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj) {
+        int storeID, productID;
+        try {
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : RemoveProductFromCart");
+            res.AddConnID(connID);
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.removeSpecialProductFromCart(connID, storeID, productID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+
+    }
+
+    /**
+     * @requirement 2.9
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @param obj:{
+     *  "credit_number": String
+     *  "phone_number": String
+     *  "address": String
+     * }
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     */
+    @PostMapping("{userID}/shopping_cart/purchase")
+    public Response specialProductsPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        String credit_number, month, year, cvv, ID, address, city, country, zip;
+        try {
+            credit_number = (String) obj.get("credit_number");
+            month = (String) obj.get("month");
+            year = (String) obj.get("year");
+            cvv = (String) obj.get("cvv");
+            ID = (String) obj.get("ID");
+            address = (String) obj.get("address");
+            city = (String) obj.get("city");
+            country = (String) obj.get("country");
+            zip = (String) obj.get("zip");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : subscriberPurchase");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.subscriberSpecialProductPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
+        WriteToLogger(res);
+        return res;
+    }
+    //___________________________________
 
     private void WriteToLogger(Response res){
         if(res.getIsErr()) {
