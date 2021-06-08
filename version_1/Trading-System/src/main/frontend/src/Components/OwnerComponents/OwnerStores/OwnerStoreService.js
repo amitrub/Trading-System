@@ -12,6 +12,7 @@ import EditPermissions from "../OwnerServices/EditPermissions";
 import BuyingPolicies from "../OwnerServices/Policies/BuyingPolicies/BuyingPolicies";
 import SellingPolicies from "../OwnerServices/Policies/SellingPolicies/SellingPolicies";
 import DailyIncome from "../OwnerServices/DailyIncome";
+import ShowBiddings from "../OwnerServices/ShowBiddings";
 
 const apiHttp = createApiClientHttp();
 
@@ -757,6 +758,23 @@ function OwnerStoreService(props) {
         {showDailyIncome ? (
           <div>
             <DailyIncome
+              refresh={props.refresh}
+              onRefresh={props.onRefresh}
+              connID={props.connID}
+              userID={props.userID}
+              storeID={props.currStore.id}
+            />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+
+      {/* Daily Income */}
+      <div className="row">
+        {showBiddings ? (
+          <div>
+            <ShowBiddings
               refresh={props.refresh}
               onRefresh={props.onRefresh}
               connID={props.connID}

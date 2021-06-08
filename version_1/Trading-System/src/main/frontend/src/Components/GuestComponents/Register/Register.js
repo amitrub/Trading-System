@@ -72,7 +72,7 @@ function Register(props) {
             </div>
             <div className="col span-2-of-3">
               <input
-                type="text"
+                type="password"
                 name="pass"
                 id="pass"
                 placeholder="Enter your password"

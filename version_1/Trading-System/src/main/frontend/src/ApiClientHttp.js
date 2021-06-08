@@ -351,6 +351,10 @@ export const createApiClientHttp = () => {
       });
     },
 
+    displayAllBiddings: (connID, userID, storeID) => {
+      console.log("TODO HADAS !!!!!!!!!!!!!!!!!");
+    },
+
     //Owner
     //DONE
     OwnerDailyIncomeForStore: (connID, userID, storeID) => {

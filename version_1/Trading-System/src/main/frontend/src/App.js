@@ -11,13 +11,15 @@ import Login from "./Components/GuestComponents/Login/Login";
 import Stores from "./Components/GuestComponents/Stores/Stores";
 import "./Components/OtherComponents/Navbar/Navbar.css";
 import DownPage from "./Components/OtherComponents/MainPage/DownPage";
-import ShoppingCart from "./Components/GuestComponents/ShoppingCart/ShoppingCart";
 import OwnerStores from "./Components/OwnerComponents/OwnerStores/OwnerStores";
 import Logout from "./Components/SubscriberComponents/Logout/Logout";
 import MyPopup from "./Components/OtherComponents/MyPopup/MyPopup";
 import createApiClientHttp from "./ApiClientHttp";
 import SubscriberServices from "./Components/SubscriberComponents/SubscriberServices/SubscriberServices";
+import ShoppingCart from "./Components/GuestComponents/ShoppingCart/ShoppingCart";
 import Purchase from "./Components/GuestComponents/Purchase/Purchase";
+import BiddingsShoppingCart from "./Components/GuestComponents/BiddingShoppingCart/BiddingShoppingCart";
+import BiddingsPurchase from "./Components/GuestComponents/BiddingPurchase/BiddingPurchase";
 
 const apiHttp = createApiClientHttp();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -315,6 +317,21 @@ class App extends React.Component {
           connID={connID}
           userID={userID}
         ></Purchase>
+
+        <BiddingsShoppingCart
+          refresh={refresh}
+          onRefresh={this.onRefresh}
+          connID={connID}
+          username={username}
+          userID={userID}
+        />
+
+        <BiddingsPurchase
+          refresh={refresh}
+          onRefresh={this.onRefresh}
+          connID={connID}
+          userID={userID}
+        />
       </Fragment>
     );
   };
@@ -363,6 +380,17 @@ class App extends React.Component {
   endOfPage = () => {
     return (
       <Fragment>
+        {/* <table id="tabledata" class="table">
+          <tr>
+            <td>lables</td>
+            <td>date</td>
+          </tr>
+          <tr>
+            <td>lables</td>
+            <td>date</td>
+          </tr>
+        </table> */}
+
         <Recommendations />
         <Programers />
         <DownPage />
