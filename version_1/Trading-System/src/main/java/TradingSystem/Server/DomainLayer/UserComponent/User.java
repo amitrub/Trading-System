@@ -510,7 +510,7 @@ public class User implements Observer {
     //TODO Implement
    // public void AddProductForPurchaseOffer(int productID, int storeID, int productPrice) { }
 
-    public Response AddSpacialProductForCart(int productID, int storeID, double productPrice,Integer quantity) {
+    public Response AddSpacialProductForCart(int productID, int storeID, int productPrice,Integer quantity) {
          if(this.shoppingCart==null){
              this.shoppingCart=new ShoppingCart(this.id);
          }
@@ -518,7 +518,18 @@ public class User implements Observer {
     }
 
 
+    public List<DummyProduct> ShowSpecialProductInShoppingCart() {
+        return shoppingCart.ShowSpecialProductInShoppingCart();
+    }
 
+    public Response removeSpecialProductFromCart(int storeID, int productID) {
+        return this.shoppingCart.removeSpecialProductFromCart(storeID, productID);
+    }
+
+    //todo implements
+    public Response subscriberSpecialProductPurchase(String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
+        return shoppingCart.specialProductPurchase(false, this.userName, credit_number, month, year, cvv, id, address,city,country,zip);
+    }
 }
 
 

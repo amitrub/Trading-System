@@ -769,7 +769,7 @@ public class Client implements Client_Interface {
      * @return Response
      */
     @Override
-    public Response submissionBidding(int storeID, int productID, int quantity, Double productPrice) {
+    public Response submissionBidding(int storeID, int productID, int quantity, int productPrice) {
         String path = String.format("%s/submission_bidding", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
@@ -791,7 +791,7 @@ public class Client implements Client_Interface {
      * @return Response
      */
     @Override
-    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, Double productPrice) {
+    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, int productPrice,int mode) {
         String path = String.format("%s/response_for_submission_bidding", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
@@ -800,6 +800,7 @@ public class Client implements Client_Interface {
             jsonPost.put("productID", productID);
             jsonPost.put("quantity", quantity);
             jsonPost.put("productPrice", productPrice);
+            jsonPost.put("mode", mode);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "216", "Error: ResponseForSubmissionBidding, making post json"));
         }
