@@ -22,7 +22,6 @@ public class DataExpression {
     @ManyToOne
     @JoinColumn(
             name = "Data_Expression_ID",
-            nullable = false,
             referencedColumnName = "ExpressionID",
             foreignKey = @ForeignKey(
                     name = "data_expression_id_fk"

@@ -1,5 +1,6 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
@@ -7,6 +8,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissi
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +21,8 @@ import java.util.Optional;
 @Service
 @Transactional
 public class Data_Controller {
-
+    @Autowired
+    private BuyingService buyingService;
     @Autowired
     private SubcriberService subscriberService;
     @Autowired
@@ -180,6 +183,10 @@ public class Data_Controller {
 
     public void deleteSubscriberBag(Integer userID, Integer storeID){
         shoppingCartService.deleteSubscriberBag(userID, storeID);
+    }
+
+    public void AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
+        buyingService.AddBuyingPolicy(buyingPolicy);
     }
 //
 //    //Req 1.3 search Product By Name

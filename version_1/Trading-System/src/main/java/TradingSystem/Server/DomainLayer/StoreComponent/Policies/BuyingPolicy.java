@@ -42,4 +42,7 @@ public class BuyingPolicy {
        return true;
     }
 
+    public Integer getStoreID(){
+        return this.storeID;
+    }
 }

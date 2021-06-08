@@ -2,6 +2,7 @@ package TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy;
 
 import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataLimitExpression.BuyingPolicyKey;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 
 import javax.persistence.*;
@@ -41,6 +42,15 @@ public class DataBuyingPolicy {
     public DataBuyingPolicy(int store_id, DataExpression expression){
         this.store_id = store_id;
         this.expression=expression;
+    }
+
+    public DataBuyingPolicy(BuyingPolicy buyingPolicy){
+        this.store_id=buyingPolicy.getStoreID();
+        this.expression=new DataExpression(buyingPolicy.getExp());
+    }
+
+    public DataExpression getExpression(){
+        return expression;
     }
 
 }
