@@ -97,13 +97,13 @@ public class DataStore {
     )
     private List<DataProduct> products = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "store",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.EAGER
-    )
-    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
+//    @OneToMany(
+//            mappedBy = "store",
+//            orphanRemoval = true,
+//            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+//            fetch = FetchType.EAGER
+//    )
+//    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
 
     @OneToMany(
             mappedBy = "store",

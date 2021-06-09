@@ -3,12 +3,17 @@ package TradingSystem.Server.DataLayer.Services;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreKey;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataManagerPermissionType;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataManagerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataPermission;
 import TradingSystem.Server.DataLayer.Repositories.*;
+import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -31,6 +36,29 @@ public class PermissionsService {
         DataSubscriber subscriber = subscriberRepository.getOne(userID);
         List<DataOwnerPermissions> ownerPermissions = ownerPermissionsRepository.findAllBySubscriber(subscriber);
         return ownerPermissions;
+    }
+
+    public void EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
+        DataSubscriber manager = subscriberRepository.getOne(managerID);
+        DataStore store = storeRepository.getOne(storeID);
+        DataManagerPermissions managerPermission = managerPermissionsRepository.getOne(new UserStoreKey(managerID, storeID));
+        int appointmentID = managerPermission.getAppointment().getUserID();
+        manager.RemoveManager(store, managerPermission);
+        subscriberRepository.saveAndFlush(manager);
+
+        store = storeRepository.getOne(storeID);
+        DataSubscriber newManager = subscriberRepository.getOne(managerID);
+        store.AddNewManager(newManager);
+        storeRepository.saveAndFlush(store);
+        DataSubscriber appointment = subscriberRepository.getOne(appointmentID);
+        DataManagerPermissions dataManagerPermissions = new DataManagerPermissions(newManager, store, appointment);
+        managerPermissionsRepository.saveAndFlush(dataManagerPermissions);
+        for (PermissionEnum.Permission permission: permissions){
+            DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
+            DataManagerPermissionType permissionType = new DataManagerPermissionType(dataManagerPermissions, dataPermission);
+            managerPermissionTypeRepository.saveAndFlush(permissionType);
+        }
+
     }
 
     public void RemoveOwner(int storeID, int ownerID){

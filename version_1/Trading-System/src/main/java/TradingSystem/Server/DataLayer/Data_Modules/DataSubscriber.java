@@ -3,6 +3,7 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataManagerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 
@@ -189,6 +190,12 @@ public class DataSubscriber {
         storesManager.remove(store);
         managerPermissions.remove(managerPermission);
         store.RemoveManager(this);
+    }
+
+    public void removeShoppingBag(DataShoppingBagCart bag) {
+        if (this.shoppingBagsCart.contains(bag)) {
+            this.shoppingBagsCart.remove(bag);
+        }
     }
 
     @Override

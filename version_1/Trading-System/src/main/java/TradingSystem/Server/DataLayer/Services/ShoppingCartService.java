@@ -43,6 +43,9 @@ public class ShoppingCartService {
     }
 
     public void setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
+        System.out.println("++++++++++++++++++++setBagFinalPrice+++++++++++++++++++++");
+        System.out.println(finalPrice);
+        System.out.println("++++++++++++++++++++setBagFinalPrice+++++++++++++++++++++");
         DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
         bag.setFinalPrice(finalPrice);
         shoppingCartRepository.saveAndFlush(bag);
@@ -66,7 +69,16 @@ public class ShoppingCartService {
     }
 
     public void deleteSubscriberBag(Integer userID, Integer storeID){
-        shoppingCartRepository.deleteById(new UserStoreKey(userID, storeID));
+        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
+
+        List<DataShoppingBagProduct> productList = shoppingBagProductRepository.findAllByShoppingBag(bag);
+        for (DataShoppingBagProduct product: productList){
+            bag.removeProduct(product);
+        }
+        bag = shoppingCartRepository.saveAndFlush(bag);
+        DataSubscriber subscriber = subscriberRepository.getOne(userID);
+        subscriber.removeShoppingBag(bag);
+        subscriberRepository.saveAndFlush(subscriber);
     }
 
     public List<DataShoppingBagCart> getSubscriberShoppingCart(int userID){
