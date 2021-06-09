@@ -26,7 +26,7 @@ public class DataBuyingPolicy {
     @JoinColumn(
             name = "expression",
             nullable = false,
-            referencedColumnName = "parent",
+            referencedColumnName = "ExpressionID",
             foreignKey = @ForeignKey(
                     name = "expression_id_fk"
             )

@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static javax.persistence.GenerationType.SEQUENCE;
+
 @Entity
 @Table(name = "DB_expression")
 public class DBExpression {
@@ -20,12 +22,17 @@ public class DBExpression {
             sequenceName = "Expression_SEQUENCE",
             allocationSize = 1
     )
+    @GeneratedValue(
+            strategy = SEQUENCE,
+            generator = "Expression_SEQUENCE"
+    )
     @Column(
             name = "ExpressionID"
     )
-    int ExpressionId;
+    Integer ExpressionId;
 
-    @Column(name = "ID")
+
+    @Column(name = "storeId")
     @JoinColumn(
             name = "store_id",
             nullable = false,
@@ -35,10 +42,9 @@ public class DBExpression {
             )
     )
     int storeId;
-    @Column(name = "parent")
-    @OneToOne(cascade= CascadeType.MERGE) //add column definitions as needed
+    @OneToOne
     private DBExpression parent;
-    @OneToMany //add column definitions as needed
+    @OneToMany(cascade= CascadeType.PERSIST) //add column definitions as needed
     private List<DBExpression> subdomains;
     @Column(
             name = "minAge"
@@ -74,7 +80,7 @@ public class DBExpression {
 
     public DBExpression(Expression expression, DBExpression parent){
         if(expression instanceof OrComposite){
-            this.parent=parent;
+            this.parent=null;
             subdomains=new ArrayList<>();
             for(Expression exp: ((OrComposite) expression).children){
                 DBExpression toadd= new DBExpression(exp, this);
@@ -82,7 +88,7 @@ public class DBExpression {
             }
         }
         else if(expression instanceof AndComposite){
-            this.parent=this;
+            this.parent=null;
             subdomains=new ArrayList<>();
             for(Expression exp: ((AndComposite) expression).children){
                 DBExpression toadd= new DBExpression(exp,this);
@@ -120,7 +126,7 @@ public class DBExpression {
             this.maxQuantity=((QuantityLimitForCategory) expression).getMaxQuantity();
         }
         else{
-            this.parent=this;
+            this.parent=null;
         }
     }
 
@@ -134,5 +140,9 @@ public class DBExpression {
 
     public List<DBExpression> getSubdomains() {
         return subdomains;
+    }
+
+    public void setStoreId(int id){
+        this.storeId=id;
     }
 }

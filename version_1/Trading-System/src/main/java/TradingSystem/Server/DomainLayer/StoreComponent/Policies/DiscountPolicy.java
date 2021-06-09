@@ -37,6 +37,9 @@ public class DiscountPolicy {
         this.Sales.remove(saleID);
     }
 */
+    public int getStoreId(){
+        return storeID;
+    }
 
     public Sale getSale() {
         return sale;

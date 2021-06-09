@@ -1,6 +1,6 @@
 package TradingSystem.Server.DataLayer.Services;
 
-import TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy.DataDiscountPolicy;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Repositories.DiscountRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

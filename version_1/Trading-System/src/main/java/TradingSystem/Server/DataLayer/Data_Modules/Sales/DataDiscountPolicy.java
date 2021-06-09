@@ -1,6 +1,7 @@
-package TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy;
+package TradingSystem.Server.DataLayer.Data_Modules.Sales;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 
 import javax.persistence.*;
@@ -27,14 +28,13 @@ public class DataDiscountPolicy {
                     name = "sale_id_fk"
             )
     )
-    DataSale sale;
+    DBSale sale;
 
     public DataDiscountPolicy(){
 
     }
 
-    public DataDiscountPolicy(int store_id, DataSale sale){
-        this.store_id = store_id;
-        this.sale=sale;
+    public DataDiscountPolicy(DiscountPolicy policy){
+        this.store_id=policy.getStoreId();
     }
 }
