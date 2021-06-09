@@ -47,6 +47,7 @@ public class TradingSystemApplication {
 			props.put("spring.jpa.hibernate.ddl-auto", readJson.getDdlAuto());
 			props.put("spring.jpa.show-sql", readJson.getShowSql());
 			props.put("spring.jpa.properties.hibernate.dialect", readJson.getDialect());
+	//		props.put("spring.datasource.driver-class-name","org.postgresql.Driver");
 //			props.put("spring.jpa.properties.hibernate.format_sql", readJson.getFormatSql());
 
 			return props;

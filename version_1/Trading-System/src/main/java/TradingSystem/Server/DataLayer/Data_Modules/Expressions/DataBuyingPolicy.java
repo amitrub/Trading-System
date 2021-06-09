@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import javax.persistence.*;
 
 @Entity
+@Table(name = "Buying_Policy")
 public class DataBuyingPolicy {
 
 //    @EmbeddedId

@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
@@ -2018,6 +2019,8 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         DiscountPolicy d=new DiscountPolicy(storeID,sale);
         s.setDiscountPolicy(d);
+        DBSale parent=new DBSale(sale,null);
+        data_controller.AddDiscountPolicy(new DataDiscountPolicy(storeID,parent));
         return new Response("the discountPolicy added successfully");
     }
 
@@ -2224,6 +2227,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         Store s=this.stores.get(storeID);
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
+        //ADD to db
+        DBExpression parent=new DBExpression(exp,null);
+        data_controller.AddBuyingPolicy(new DataBuyingPolicy(storeID,parent));
         return new Response("Buying Policy added successes");
     }
 
@@ -2556,8 +2562,8 @@ public class TradingSystemImplRubin implements TradingSystem {
     @Override
     public Response ResponseForSubmissionBidding(int userID, String connID, int storeId, int productID, int productPrice, int userWhoOffer, int quantity, int mode) {
         Store store = this.stores.get(storeId);
-        Response res = ableToResponseForSubmissionBid(userID, connID, storeId, store, productID, productPrice, userWhoOffer, quantity);
-        if (!res.getIsErr()) {
+        Response res = ableToResponseForSubmissionBid(userID, connID, storeId, productID, productPrice, userWhoOffer, quantity);
+        if (!res.getIsErr()){
             switch (mode) {
                 case 0:
                     return store.refuseSubmissionBid(userID, userWhoOffer,productID);
@@ -2593,7 +2599,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
 
 
-    private Response ableToResponseForSubmissionBid(int userID, String connID, int storeId,Store store, int productID, int productPrice, int userWhoOffer, int quantity){
+    private Response ableToResponseForSubmissionBid(int userID, String connID, int storeId,int productID, int productPrice, int userWhoOffer, int quantity){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
         }
@@ -2603,7 +2609,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(this.subscribers.get(userWhoOffer)==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userWhoOffer+" is not in the subscriber");
         }
-        Store store=this.stores.get(storeID);
+        Store store=this.stores.get(storeId);
         if(store==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for store ("+storeId+ ") that not in the system");
         }

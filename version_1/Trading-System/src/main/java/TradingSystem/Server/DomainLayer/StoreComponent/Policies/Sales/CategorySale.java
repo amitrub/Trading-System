@@ -64,6 +64,14 @@ public class CategorySale extends SimpleSale {
         return this.getExpression().checkValidity(storeID);
     }
 
+    public String getCategory(){
+        return category;
+    }
+
+    public Integer getDiscountPercentage(){
+        return discountPercentage;
+    }
+
 }
 
 /*

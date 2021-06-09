@@ -14,7 +14,7 @@ import java.util.List;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
-@Table(name = "DB_expression")
+@Table(name = "Expression")
 public class DBExpression {
     @Id
     @SequenceGenerator(

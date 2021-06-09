@@ -83,6 +83,8 @@ class DiscountPolicyTest {
         products.put(productID1, 1);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,3100.0);
+       // DiscountPolicy discountPolicy= new DiscountPolicy(storeID,sale);
+        tradingSystem.addDiscountPolicy(EuserId,EconnID,storeID,sale);
         assertEquals(2790.0, newPrice, 0);
     }
 
@@ -180,6 +182,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,6100.0);
+        tradingSystem.addDiscountPolicy(EuserId,EconnID,storeID,sale);
         assertEquals(3050.0, newPrice,0);
     }
 

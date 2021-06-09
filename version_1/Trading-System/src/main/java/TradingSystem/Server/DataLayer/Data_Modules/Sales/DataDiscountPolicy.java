@@ -8,6 +8,7 @@ import javax.persistence.*;
 import javax.xml.crypto.Data;
 
 @Entity
+@Table(name = "Discount_Policy")
 public class DataDiscountPolicy {
 
     @Id

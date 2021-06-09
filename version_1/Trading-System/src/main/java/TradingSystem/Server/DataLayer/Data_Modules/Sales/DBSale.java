@@ -9,10 +9,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.AddComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.MaxComposite;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
 
 import javax.persistence.*;
 
@@ -22,6 +19,7 @@ import java.util.List;
 import static javax.persistence.GenerationType.SEQUENCE;
 
 @Entity
+@Table(name = "SALE")
 public class DBSale {
     @Id
     @SequenceGenerator(
@@ -39,13 +37,14 @@ public class DBSale {
     Integer SaleId;
     @OneToOne
     private DBSale parent;
+
     @OneToMany(cascade= CascadeType.PERSIST) //add column definitions as needed
     private List<DBSale> subdomains;
-    @Column(name = "num_products")
-    private Integer numOfProductsForSale;
-    @Column(name = "price_sale")
-    Integer priceForSale;
-    @ManyToOne
+
+    String category;
+
+    Integer  discountPercentage;
+
     @JoinColumn(
             name = "product_id",
             nullable = false,
@@ -54,9 +53,22 @@ public class DBSale {
                     name = "prodcut_id_fk"
             )
     )
-    private DataProduct productId;
-    @Column(name = "quantity")
-    private Integer quantityForSale;
+    Integer productID;
+    @JoinColumn(
+            name = "store_id",
+            nullable = false,
+            referencedColumnName = "storeID",
+            foreignKey = @ForeignKey(
+                    name = "store_id_fk"
+            )
+    )
+
+    private Integer storeID;
+
+    private Integer quantity;
+
+    @OneToOne
+    public DBSaleExpression expression;
 
     public DBSale(){
 
@@ -88,20 +100,29 @@ public class DBSale {
                 subdomains.add(toadd);
             }
         }
-        else if(sale instanceof NumOfProductsForGetSale){
+        else if(sale instanceof ProductSale){
             this.parent=parent;
-            this.numOfProductsForSale=((NumOfProductsForGetSale) sale).getNumOfProductsForSale();
+            this.productID=((ProductSale) sale).getProductID();
+            this.discountPercentage=((ProductSale) sale).getDiscountPercentage();
+            this.expression=new DBSaleExpression(((ProductSale) sale).getExpression(),this, new DBSaleExpression());
         }
-        else if(sale instanceof PriceForGetSale){
+        else if(sale instanceof StoreSale){
             this.parent=parent;
-            this.priceForSale=((PriceForGetSale) sale).getPriceForSale();
+            this.storeID= ((StoreSale) sale).getStoreID();
+            this.discountPercentage=((StoreSale) sale).getDiscountPercentage();
+            this.expression=new DBSaleExpression(((StoreSale) sale).getExpression(),this,new DBSaleExpression());
         }
         else if(sale instanceof QuantityForGetSale){
             this.parent=parent;
-            this.quantityForSale=((QuantityForGetSale) sale).getQuantityForSale();
+            this.productID=((QuantityForGetSale) sale).getProductId();
+            this.quantity=((QuantityForGetSale) sale).getQuantityForSale();
         }
         else{
             this.parent=null;
         }
+    }
+
+    public DBSaleExpression getExpression(){
+        return expression;
     }
 }
