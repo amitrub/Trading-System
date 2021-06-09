@@ -229,8 +229,8 @@ class ShoppingCartTest {
         Response res = tradingSystem.Login(guest1, "user3", "123");
         List<DummyProduct> list0=tradingSystem.subscribers.get(res.returnUserID()).ShowSpecialProductInShoppingCart();
 
-        tradingSystem.subscriberBidding(res.returnUserID(),res.returnConnID(),storeID1,1,2700,1);
-        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,1,2700,res.returnUserID(),1,1);
+        Response r1=tradingSystem.subscriberBidding(res.returnUserID(),res.returnConnID(),storeID1,1,2700,1);
+        Response r2=tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,1,2700,res.returnUserID(),1,1);
         List<DummyProduct> list1=tradingSystem.subscribers.get(res.returnUserID()).ShowSpecialProductInShoppingCart();
 
         tradingSystem.removeSpecialProductFromCart(res.returnConnID(),storeID1,1);

@@ -323,6 +323,16 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
+    public Response RemoveSpecialProductProductFromCart(String connID, int storeID, int productID) {
+        return  tradingSystem.removeSpecialProductFromCart(connID,storeID,productID);
+    }
+
+    @Override
+    public Response ShowSpecialProductsInShoppingCart(String connID) {
+        return tradingSystem.ShowSpecialProductInShoppingCart(connID);
+    }
+
+    @Override
     public Response ShowBids(int storeID) {
         return tradingSystem.ShowBids(this.userID,this.ConnID,storeID);
     }

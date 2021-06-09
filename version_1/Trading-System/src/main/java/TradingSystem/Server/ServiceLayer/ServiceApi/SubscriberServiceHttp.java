@@ -257,7 +257,7 @@ public class SubscriberServiceHttp {
     }
     //________________________________
     /**
-     * @requirement 2.8
+     * @requirement None
      *
      * @param connID: String (Header)
      * @return Response {
@@ -285,7 +285,7 @@ public class SubscriberServiceHttp {
     }
 
     /**
-     * @requirement 2.8
+     * @requirement 8.3.3
      *
      * @param connID: String (Header)
      * @param obj:{

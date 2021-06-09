@@ -186,6 +186,17 @@ public class ShoppingCart {
         return price;
     }
 
+    private synchronized Integer calculateSpecialPrice(){
+        int price = 0;
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer key : shoppingBagsSet) {
+            ShoppingBag p = this.shoppingBags.get(key);
+            price = price + p.getSpecialPrice();
+
+        }
+        return price;
+    }
+
     public ConcurrentHashMap<Integer, ShoppingBag> GetInfo() {
         return this.shoppingBags;
     }
@@ -457,7 +468,7 @@ public class ShoppingCart {
 
     public Response removeSpecialProductFromCart(int storeID, int productID) {
         if (this.shoppingBags.get(storeID) == null ||
-                !this.shoppingBags.get(storeID).getProductsList().contains(productID)) {
+                !this.shoppingBags.get(storeID).getSpecialProductProductsList().contains(productID)) {
             return new Response(true, "removeSpecialProductFromCart: product that does not exist in the cart cannot be removed");
         }
         else {
