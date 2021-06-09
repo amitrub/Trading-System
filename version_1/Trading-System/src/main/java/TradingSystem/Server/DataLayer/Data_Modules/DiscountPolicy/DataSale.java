@@ -1,6 +1,5 @@
 package TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy;
 
-import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataCompositeExpression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 
 import javax.persistence.*;

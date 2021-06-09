@@ -1,7 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
-import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataBuyingPolicy;
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;

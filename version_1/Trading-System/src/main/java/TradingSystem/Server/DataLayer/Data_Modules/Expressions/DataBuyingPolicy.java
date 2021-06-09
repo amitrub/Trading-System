@@ -1,9 +1,7 @@
-package TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy;
+package TradingSystem.Server.DataLayer.Data_Modules.Expressions;
 
-import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataLimitExpression.BuyingPolicyKey;
-import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 
 import javax.persistence.*;
 
@@ -28,29 +26,32 @@ public class DataBuyingPolicy {
     @JoinColumn(
             name = "expression",
             nullable = false,
-            referencedColumnName = "ExpressionID",
+            referencedColumnName = "parent",
             foreignKey = @ForeignKey(
                     name = "expression_id_fk"
             )
     )
-    DataExpression expression;
+    DBExpression expression;
 
     public DataBuyingPolicy(){
 
     }
 
-    public DataBuyingPolicy(int store_id, DataExpression expression){
+    public DataBuyingPolicy(int store_id, DBExpression expression){
         this.store_id = store_id;
         this.expression=expression;
     }
 
     public DataBuyingPolicy(BuyingPolicy buyingPolicy){
         this.store_id=buyingPolicy.getStoreID();
-        this.expression=new DataExpression(buyingPolicy.getExp());
+        this.expression=new DBExpression(buyingPolicy.getExp(),new DBExpression());
     }
 
-    public DataExpression getExpression(){
+    public DBExpression getExpression(){
         return expression;
+    }
+    public void setExp(DBExpression expression){
+        this.expression=expression;
     }
 
 }

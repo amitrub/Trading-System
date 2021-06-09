@@ -1,7 +1,5 @@
 package TradingSystem.Server.DataLayer.Data_Modules.DiscountPolicy;
 
-import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataCompositeExpression;
-import TradingSystem.Server.DataLayer.Data_Modules.BuyingPolicy.DataExpression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.CompositeExpression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.CompositeSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
