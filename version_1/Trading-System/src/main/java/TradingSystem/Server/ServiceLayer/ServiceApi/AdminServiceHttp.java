@@ -1,7 +1,5 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;

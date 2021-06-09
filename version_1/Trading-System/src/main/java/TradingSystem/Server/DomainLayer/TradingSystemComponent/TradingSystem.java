@@ -111,11 +111,17 @@ public interface TradingSystem {
 
     Response getDailyIncomeForSystem(int userID, String connID);
 
-    Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity);
+    Response subscriberBidding(int userID, String connID, int storeID, int productID, int productPrice, int quantity);
 
-    Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userBiddingPrice,int quantity);
+    Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, int productPrice, int userBiddingPrice, int quantity, int mode);
 
     Response ShowBids(int userID, String connID, int storeID);
     void setSubscribers(ConcurrentHashMap<Integer, User> subscribers);
     public void setStores(ConcurrentHashMap<Integer, Store> stores);
+
+    Response ShowSpecialProductInShoppingCart(String connID);
+
+    Response removeSpecialProductFromCart(String connID, int storeID, int productID);
+
+    Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip);
 }

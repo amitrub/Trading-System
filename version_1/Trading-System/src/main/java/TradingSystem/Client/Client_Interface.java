@@ -315,14 +315,14 @@ public interface Client_Interface {
      * requirement 8.3.1
      * @return Response
      */
-    public Response submissionBidding( int storeID,int productID,int quantity,Double productPrice);
+    public Response submissionBidding( int storeID,int productID,int quantity,int productPrice);
 
 
     /**
      * requirement 8.3.2
      * @return Response
      */
-    public Response ResponseForSubmissionBidding( int storeID,int productID, int userWhoOffer,int quantity,Double productPrice);
+    public Response ResponseForSubmissionBidding( int storeID,int productID, int userWhoOffer,int quantity,int productPrice,int mode);
 
 
     /**

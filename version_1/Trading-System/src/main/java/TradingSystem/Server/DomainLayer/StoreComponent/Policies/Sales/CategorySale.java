@@ -2,8 +2,6 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;

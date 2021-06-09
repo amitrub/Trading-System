@@ -11,6 +11,8 @@ public class PaymentSystem implements ExternalServices {
 
     //Singleton
     private static PaymentSystem paymentSystem = null;
+    private PaymentSystem() {
+    }
     public static PaymentSystem getInstance() {
         if (paymentSystem == null) {
             paymentSystem = new PaymentSystem();

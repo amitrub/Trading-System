@@ -2,20 +2,39 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
+import org.springframework.test.context.ContextConfiguration;
 
 import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
-@Transactional
+@Scope("singleton")
 public class ClientProxy implements Client_Interface {
 
-    TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+    //TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+
+
+    @Autowired
+    private static TradingSystemImplRubin tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        ClientProxy.tradingSystem = tradingSystem;
+    }
+
+
     String ConnID;
     int userID;
     private String userName;
@@ -24,7 +43,8 @@ public class ClientProxy implements Client_Interface {
     private Client real;
 
     public ClientProxy(){
-        real=null;
+//        real=null;
+//        System.out.println(tradingSystem);
     }
 
     public void setRealBridge(Client implementation) {
@@ -293,13 +313,13 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response submissionBidding(int storeID, int productID, int quantity, Double productPrice) {
+    public Response submissionBidding(int storeID, int productID, int quantity, int productPrice) {
         return tradingSystem.subscriberBidding(this.userID,this.ConnID,storeID,productID,productPrice,quantity);
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, Double productPrice) {
-         return tradingSystem.ResponseForSubmissionBidding(this.userID,this.ConnID,storeID,productID,productPrice,userWhoOffer,quantity);
+    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, int productPrice,int mode) {
+         return tradingSystem.ResponseForSubmissionBidding(this.userID,this.ConnID,storeID,productID,productPrice,userWhoOffer,quantity, mode);
     }
 
     @Override

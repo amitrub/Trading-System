@@ -8,6 +8,10 @@ import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.approveState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.baseState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.initState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.refusalState;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
@@ -597,22 +601,36 @@ public class Store extends Observable {
             for (ShoppingHistory SH:this.shoppingHistory
             ) {
                 Date today=new Date(System.currentTimeMillis());
-                Calendar calForTodey = Calendar.getInstance();
-                calForTodey.setTime(today);
+                Calendar calForToday = Calendar.getInstance();
+                calForToday.setTime(today);
                 Calendar calForHistory = Calendar.getInstance();
                 calForHistory.setTime(SH.getDate());
-                if(calForHistory.get(Calendar.DAY_OF_WEEK)==calForTodey.get(Calendar.DAY_OF_WEEK)){
+                if(calForHistory.get(Calendar.DAY_OF_WEEK)==calForToday.get(Calendar.DAY_OF_WEEK)){
                     DailyIncome=DailyIncome+SH.getFinalPrice();
                 }
             }
             return DailyIncome;
         }
 
-    public void AddBidForProduct(int productID, int userID, Double productPrice,Integer quantity) {
-        if(this.Bids==null){
-            this.Bids=new ConcurrentLinkedDeque<>();
+    public void AddBidForProduct(int productID, int userID, Integer productPrice,Integer quantity) {
+        if(this.Bids==null) {
+            this.Bids = new ConcurrentLinkedDeque<>();
         }
-        this.Bids.add(new Bid(userID,productID,productPrice,quantity));
+        this.Bids.add(new Bid(userID, productID,this.id,productPrice,quantity,createOwnerList()));
+    }
+
+    public ConcurrentHashMap<Integer, Boolean> createOwnerList() {
+        ConcurrentHashMap<Integer,Boolean> list=new ConcurrentHashMap<>();
+        for (Integer key:this.OwnersID()
+             ) {
+            list.put(key,false);
+        }
+        for (Integer key: this.managersPermission.keySet()) {
+            if(this.managersPermission.get(key).hasPermission(PermissionEnum.Permission.RequestBidding)){
+                list.put(key,false);
+            }
+        }
+        return null;
     }
 
     public boolean CheckBidForProductExist(Integer userID, Integer productID){
@@ -638,4 +656,87 @@ public class Store extends Observable {
         return Bids;
     }
 
+    public Bid getBid(int userWhoOffer, int productID) {
+        for (Bid bid:this.Bids
+        ) {
+            if(bid.getUserID()==userWhoOffer&&bid.getProductID()==productID){
+                return bid;
+            }
+        }
+        return null;
+    }
+
+    public Response changeSubmissionBid(int userID,int userWhoOffer, int productID,int productPrice, int quantity) {
+        Bid bid = this.getBid(userWhoOffer, productID);
+        if (bid == null) {
+            return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " try to to response the submission bid for product " + productID + " and user " + userWhoOffer + " but the bidding has already been answered");
+        }
+        //todo check!
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+                succeededToLock = this.getBid(userWhoOffer, productID).bidIsLock();  //todo check!
+            }
+        }
+        if(bid.isFinalState()){
+            bid.unlockBid();
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        bid.setPrice(productPrice);
+        bid.setQuantity(quantity);
+        bid.UpdateOwnerList(this.createOwnerList());
+        bid.changeState(new initState());
+        return bid.handle(userID);
+    }
+
+    public Response approveSubmissionBid(int userID,int userWhoOffer,int productID) {
+        Bid bid=this.getBid(userWhoOffer, productID);
+        if(bid==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        //todo check!
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+                succeededToLock=bid.bidIsLock();  //todo check!
+            }
+        }
+        if(bid.isFinalState()){
+            bid.unlockBid();
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        bid.UpdateOwnerList(createOwnerList());
+        bid.changeState(new baseState());
+        return bid.handle(userID);
+    }
+
+    public Response refuseSubmissionBid(int userID,int userWhoOffer,int productID) {
+        Bid bid=this.getBid(userWhoOffer, productID);
+        if(bid==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        //todo check!
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+                succeededToLock=this.getBid(userWhoOffer, productID).bidIsLock();  //todo check!
+            }
+        }
+        if(bid.isFinalState()){
+            bid.unlockBid();
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        bid.changeState(new refusalState());
+        return bid.handle(userID);
+    }
+
+    //todo check the remove function
+    public void removeBid(Bid bid) {
+        for (Bid b:this.Bids
+        ) {
+            if(b.getUserID()==bid.getUserID()&&b.getProductID()==bid.getProductID()){
+                this.Bids.remove(b);
+            }
+        }
+    }
 }

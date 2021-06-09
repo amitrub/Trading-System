@@ -6,8 +6,6 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagC
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +13,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -23,6 +20,8 @@ import java.util.concurrent.locks.Lock;
 public class ShoppingBag {
 
     private static TradingSystemImplRubin tradingSystem;
+
+
     public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
         ShoppingBag.tradingSystem = tradingSystem;
     }
@@ -40,24 +39,26 @@ public class ShoppingBag {
     //productID_quantity
     private ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
 
-    private ConcurrentHashMap<Integer,Double> priceOfSpacialProducts = new ConcurrentHashMap<>();
+    private ConcurrentHashMap<Integer,Integer> priceOfSpacialProducts = new ConcurrentHashMap<>();
 
     private ConcurrentHashMap<Integer,Integer> quantityOfSpacialProducts = new ConcurrentHashMap<>();
 
     private Double finalPrice;
-
+    private Integer SpecialPrice;
 
     public ShoppingBag(Integer userID, Integer storeID) {
 
         this.userID = userID;
         this.storeID = storeID;
         this.finalPrice=0.0;
+        this.SpecialPrice=0;
     }
 
     public ShoppingBag(ShoppingBag shoppingBagToCopy) {
         this.userID = shoppingBagToCopy.userID;
         this.storeID = shoppingBagToCopy.storeID;
         this.finalPrice= shoppingBagToCopy.finalPrice;
+        this.SpecialPrice=shoppingBagToCopy.SpecialPrice;
 
         for (int productID : shoppingBagToCopy.products.keySet()) {
             Integer quantity = shoppingBagToCopy.products.get(productID);
@@ -65,7 +66,7 @@ public class ShoppingBag {
         }
 
         for (int productID : shoppingBagToCopy.priceOfSpacialProducts.keySet()) {
-            Double price = shoppingBagToCopy.priceOfSpacialProducts.get(productID);
+            Integer price = shoppingBagToCopy.priceOfSpacialProducts.get(productID);
             this.priceOfSpacialProducts.put(productID,price);
         }
 
@@ -83,6 +84,8 @@ public class ShoppingBag {
             this.products.put(product.getProduct().getProductID(),product.getQuantity());
         }
         this.finalPrice= shoppingBagCart.getFinalPrice();
+        //todo add
+       // this.SpecialPrice=shoppingBagCart.
     }
 
     @Override
@@ -120,10 +123,6 @@ public class ShoppingBag {
             return this.products.get(productID);
         }
         else
-        if (this.quantityOfSpacialProducts.containsKey(productID)){
-            return this.quantityOfSpacialProducts.get(productID);
-        }
-        else
             return 0;
     }
 
@@ -146,7 +145,7 @@ public class ShoppingBag {
     public ConcurrentHashMap<Integer, Integer> getProducts() {
        return this.products;
     }
-
+/*
     public ConcurrentHashMap<Integer, Integer> getAllProducts() {
         ConcurrentHashMap<Integer, Integer> list=new ConcurrentHashMap<>();
         for(int productID : this.products.keySet()){
@@ -158,7 +157,7 @@ public class ShoppingBag {
 
         return list;
     }
-
+*/
     public void setProducts(ConcurrentHashMap<Integer, Integer> products) {
         this.products = products;
     }
@@ -179,16 +178,12 @@ public class ShoppingBag {
         for(int productID : this.products.keySet()){
             products.add(productID);
         }
-        //todo check!
-        for (int productID : quantityOfSpacialProducts.keySet()) {
-            products.add(productID);
-        }
         return products;
     }
 
     public List<Lock> getLockList(){
         List<Lock> output = new ArrayList<>();
-        Set<Integer> productsSet = this.getAllProducts().keySet();
+        Set<Integer> productsSet = this.getProducts().keySet();
         for (Integer productID : productsSet){
             Lock lock = tradingSystem.getProductLock(this.storeID, productID);
             output.add(lock);
@@ -220,7 +215,6 @@ public class ShoppingBag {
 
     public ShoppingHistory createShoppingHistory(){
         List productsToHistory = new ArrayList();
-// <<<<<<< DB-Rubin-to-merge
         Set<Integer> productIDs = this.getProducts().keySet();
         for (Integer productID: productIDs){
             Integer quantity = this.getProducts().get(productID);
@@ -228,14 +222,6 @@ public class ShoppingBag {
             Product newProduct = new Product(p, quantity);
             productsToHistory.add(newProduct);
         }
-// =======
-//         for (Integer productID: products.keySet()){
-//             Integer quantity = products.get(productID);
-//             Product p = tradingSystemImpl.getProduct(storeID,productID);
-//             Product newProduct = new Product(p);
-//             newProduct.setQuantity(quantity);
-//             productsToHistory.add(newProduct);
-//         }
           //TODO: checkkkkk
         for (Integer productID: this.quantityOfSpacialProducts.keySet()){
             Integer quantity = this.quantityOfSpacialProducts.get(productID);
@@ -261,37 +247,61 @@ public class ShoppingBag {
             }
             this.products.remove(productID);
         }
-        else if(this.quantityOfSpacialProducts.containsKey(productID)&&this.priceOfSpacialProducts.containsKey(productID)){
-            this.priceOfSpacialProducts.remove(productID);
-            this.quantityOfSpacialProducts.remove(productID);
-        }
     }
 
     public String getStoreName() {
         return tradingSystem.stores.get(storeID).getName();
     }
 
-    public void addSPacialProduct(int productID, Integer quantity, double productPrice) {
+    public void addSPacialProduct(int productID, Integer quantity, int productPrice) {
         this.quantityOfSpacialProducts.put(productID,quantity);
         this.priceOfSpacialProducts.put(productID,productPrice);
     }
 
-    public Double calculateSpacialPrices() {
-      Double price=0.0;
+    public Integer calculateSpacialPrices() {
+      Integer price=0;
         for (Integer productID: this.quantityOfSpacialProducts.keySet()){
             if(this.priceOfSpacialProducts.containsKey(productID)){
-                Double cal=priceOfSpacialProducts.get(productID)*quantityOfSpacialProducts.get(productID);
+                Integer cal=priceOfSpacialProducts.get(productID)*quantityOfSpacialProducts.get(productID);
                 price=price+cal;
             }
         }
         return price;
     }
 
-    public ConcurrentHashMap<Integer, Double> getPriceOfSpacialProducts() {
+    public ConcurrentHashMap<Integer, Integer> getPriceOfSpacialProducts() {
         return priceOfSpacialProducts;
     }
 
     public ConcurrentHashMap<Integer, Integer> getQuantityOfSpacialProducts() {
         return quantityOfSpacialProducts;
+    }
+
+    public void setFinalSpecialPrice(int spacialPrice) {
+        this.SpecialPrice=spacialPrice;
+    }
+
+    public Integer getSpecialPrice() {
+        return SpecialPrice;
+    }
+
+    public void removeSpecialProductFromCart(int productID) {
+        if(this.quantityOfSpacialProducts.containsKey(productID)){
+            this.quantityOfSpacialProducts.remove(productID);
+        }
+        if(this.priceOfSpacialProducts.containsKey(productID)){
+            this.priceOfSpacialProducts.remove(productID);
+        }
+        //todo add?
+        /*
+         if(userID>=1){
+                data_controller.RemoveBagProduct(userID, storeID, productID);
+            }
+         */
+    }
+
+    // TODO: implements
+    public List<Integer> getSpecialProductProductsList() {
+        return null;
     }
 }

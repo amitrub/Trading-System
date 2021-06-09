@@ -589,16 +589,16 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity) {
+    public Response subscriberBidding(int userID, String connID, int storeID, int productID, int productPrice, int quantity) {
         if (real != null)
             return real.subscriberBidding(userID, connID, storeID, productID, productPrice, quantity);
         return null;
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userBiddingPrice, int quantity) {
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, int productPrice, int userBiddingPrice, int quantity, int mode) {
         if (real != null)
-            return real.ResponseForSubmissionBidding(userID, connID, storeID, productID, productPrice, userBiddingPrice, quantity);
+            return real.ResponseForSubmissionBidding(userID, connID, storeID, productID, productPrice, userBiddingPrice, quantity, mode);
         return null;
     }
 
@@ -617,5 +617,26 @@ public class ProxyTrading implements TradingSystem {
     @Override
     public void setStores(ConcurrentHashMap<Integer, Store> stores) {
 
+    }
+
+    @Override
+    public Response ShowSpecialProductInShoppingCart(String connID) {
+        if(real!=null)
+            return real.ShowSpecialProductInShoppingCart(connID);
+        return null;
+    }
+
+    @Override
+    public Response removeSpecialProductFromCart(String connID, int storeID, int productID) {
+        if(real!=null)
+            return real.removeSpecialProductFromCart( connID, storeID,productID);
+        return null;
+    }
+
+    @Override
+    public Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
+        if(real!=null)
+            return real.subscriberSpecialProductPurchase(userID, connID, credit_number, month,  year,cvv,  id,  address, city,  country,  zip);
+        return null;
     }
 }

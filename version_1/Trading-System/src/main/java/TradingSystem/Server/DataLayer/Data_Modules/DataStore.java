@@ -66,7 +66,7 @@ public class DataStore implements Serializable {
     )
     private DataSubscriber founder;
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "store_owners",
             joinColumns = {@JoinColumn(name = "store_id", referencedColumnName = "storeID",
@@ -79,7 +79,7 @@ public class DataStore implements Serializable {
     )
     private Set<DataSubscriber> owners = new HashSet<>();
 
-    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
+    @ManyToMany(fetch = FetchType.EAGER, cascade = CascadeType.PERSIST)
     @JoinTable(
             name = "store_managers",
             joinColumns = {@JoinColumn(name = "store_id", referencedColumnName = "storeID",
@@ -96,7 +96,7 @@ public class DataStore implements Serializable {
             mappedBy = "store",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataProduct> products = new ArrayList<>();
 
@@ -104,7 +104,7 @@ public class DataStore implements Serializable {
             mappedBy = "store",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
 
@@ -112,7 +112,7 @@ public class DataStore implements Serializable {
             mappedBy = "store",
             orphanRemoval = true,
             cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.LAZY
+            fetch = FetchType.EAGER
     )
     private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 

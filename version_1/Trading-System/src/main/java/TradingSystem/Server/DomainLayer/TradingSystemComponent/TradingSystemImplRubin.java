@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
+import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Sales.DBSale;
 import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
@@ -22,6 +23,9 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Cheaper;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Decision;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.approveState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.baseState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.refusalState;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.Task.AddManagerTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
@@ -32,6 +36,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.*;
 import TradingSystem.Server.JsonInitReader;
 import TradingSystem.Server.JsonStateReader;
 import TradingSystem.Server.JsonUser;
+import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -116,6 +121,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         ShoppingCart.setData_controller(data_controller);
         ShoppingBag.setData_controller(data_controller);
     }
+
     private void setTradingSystem(TradingSystemImplRubin tradingSystem){
         User.setTradingSystem(tradingSystem);
         Store.setTradingSystem(tradingSystem);
@@ -138,6 +144,8 @@ public class TradingSystemImplRubin implements TradingSystem {
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
         this.stores=stores;
     }
+
+
 
     public void ClearSystem() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
@@ -2004,14 +2012,12 @@ public class TradingSystemImplRubin implements TradingSystem {
             return res;
         }
         Store s=this.stores.get(storeID);
-//        Response r=sale.checkValidity(storeID);
-//        if(r.getIsErr()){
-//            return r;
-//        }
+        Response r=sale.checkValidity(storeID);
+        if(r.getIsErr()){
+            return r;
+        }
         DiscountPolicy d=new DiscountPolicy(storeID,sale);
         s.setDiscountPolicy(d);
-        DataDiscountPolicy dataDiscountPolicy=new DataDiscountPolicy(storeID, new DBSale(sale, null));
-        data_controller.AddDiscountPolicy(dataDiscountPolicy);
         return new Response("the discountPolicy added successfully");
     }
 
@@ -2218,7 +2224,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         Store s=this.stores.get(storeID);
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
-        data_controller.AddBuyingPolicy(new DataBuyingPolicy(b));
         return new Response("Buying Policy added successes");
     }
 
@@ -2497,7 +2502,24 @@ public class TradingSystemImplRubin implements TradingSystem {
 
 
     @Override
-    public Response subscriberBidding(int userID, String connID, int storeID, int productID, double productPrice, int quantity) {
+    public Response subscriberBidding(int userID, String connID, int storeID, int productID, int productPrice, int quantity) {
+       Response res=ableToSubscriberBid(userID, connID, storeID, productID, productPrice,quantity);
+       if(!res.getIsErr()) {
+           Store store=this.stores.get(storeID);
+           if(store==null){
+               return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid for store that not in the system");
+           }
+           store.AddBidForProduct(productID, userID, productPrice, quantity);
+           Response resAlert = new Response(false, "The subscriber " + userID +
+                   " has been submit a bid of " + productPrice + " for product: " + productID + " in your store: " + store.getName());
+           store.sendAlertToOwners(resAlert);
+           store.sendAlertOfBiddingToManager(resAlert);
+           return new Response(false, "The bid was submitted successfully");
+       }
+       return res;
+    }
+
+    private Response ableToSubscriberBid(int userID, String connID, int storeID, int productID, int productPrice, int quantity){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "subscriberBidding: The user " + userID + " is not connected");
         }
@@ -2528,21 +2550,54 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(store.CheckBidForProductExist(userID,productID)){
             return new Response(true, "subscriberBidding: The user "+userID+" try to to submit a bid for product " +productID +" but this product already has a bid");
         }
-        store.AddBidForProduct(productID,userID,productPrice,quantity); //?
-        Response resAlert = new Response(false, "The subscriber " + userID +
-                " has been submit a bid of "+productPrice+" for product: " + productID + " in your store: " + store.getName());
-        store.sendAlertToOwners(resAlert);
-        store.sendAlertOfBiddingToManager(resAlert);
-        return new Response(false,"The bid was submitted successfully");
+        return new Response(false,"able");
     }
 
     @Override
-    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, double productPrice, int userWhoOffer, int quantity) {
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeId, int productID, int productPrice, int userWhoOffer, int quantity, int mode) {
+        Store store = this.stores.get(storeId);
+        Response res = ableToResponseForSubmissionBid(userID, connID, storeId, store, productID, productPrice, userWhoOffer, quantity);
+        if (!res.getIsErr()) {
+            switch (mode) {
+                case 0:
+                    return store.refuseSubmissionBid(userID, userWhoOffer,productID);
+                case 1:
+                    return store.approveSubmissionBid(userID, userWhoOffer,productID);
+                case 2: {
+                    Product product = store.getProduct(productID);
+                    Response r = checkValidTOChangeBid(userID, productID, quantity, productPrice, product);
+                    if (!r.getIsErr()) {
+                        return store.changeSubmissionBid(userID, userWhoOffer, productID, productPrice, quantity);
+                    }
+                    return r;
+                }
+            }
+            return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " try to response for submission bid for store (" + storeId + ") with unValid mode");
+        }
+        return res;
+    }
+
+
+    private Response checkValidTOChangeBid(int userID,int productID,int quantity,int productPrice, Product product){
+        if(product==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for product ("+productID+ ") that not in the store");
+        }
+            if (quantity <= 0) {
+            return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " try to response for submission bid with quantity " + quantity + " but it is not bigger then 0");
+        }
+        if (productPrice <= 0 || productPrice > product.getPrice()) {
+            return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " try to to response for submission bid with price " + productPrice + " but it is not in the range: 0-" + product.getPrice());
+        }
+        return new Response(false,"valid");
+    }
+
+
+
+    private Response ableToResponseForSubmissionBid(int userID, String connID, int storeId,Store store, int productID, int productPrice, int userWhoOffer, int quantity){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
         }
-        User user=this.subscribers.get(userID);
-        if(user==null){
+        if(this.subscribers.get(userID)==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" is not in the subscriber");
         }
         if(this.subscribers.get(userWhoOffer)==null){
@@ -2550,33 +2605,15 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         Store store=this.stores.get(storeID);
         if(store==null){
-            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for store ("+storeID+ ") that not in the system");
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for store ("+storeId+ ") that not in the system");
         }
-        Product product=store.getProduct(productID);
-        if(product==null){
+        if(store.getProduct(productID)==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for product ("+productID+ ") that not in the store");
         }
-        if(quantity<=0){
-            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid with quantity " +quantity +" but it is not bigger then 0");
-        }
-        if(productPrice<=0||productPrice>product.getPrice()){
-            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response for submission bid with price " +productPrice +" but it is not in the range: 0-"+product.getPrice());
-        }
-        if(!store.CheckBidForProductExist(userWhoOffer,productID)){
+        if(store.getBid(userWhoOffer,productID)==null || store.getBid(userWhoOffer,productID).isFinalState()){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
         }
-        store.RemoveProductForPurchaseOffer(productID,userWhoOffer); //?
-        Response res =user.AddSpacialProductForCart(productID,storeID,productPrice,quantity); //?
-        if(res.getIsErr()){
-            Response resAlert = new Response(false, "You have received a Response for your bidding, but the product could not be added to the cart.\n"+
-                    "The reason: "+res.getMessage());
-            store.sendAlert(userWhoOffer,resAlert);
-            return res;
-        }
-        Response resAlert = new Response(false, "You have received a Response for your bidding.\n" +
-                "You may purchase " + product.getProductName() + " in store " + store.getName() + "at a price- " + productPrice + " (The original price is- " + product.getPrice() + ").");
-        store.sendAlert(userWhoOffer,resAlert);
-        return new Response(false,"The bid was Response successfully");
+        return new Response(false,"able");
     }
 
     @Override
@@ -2602,5 +2639,72 @@ public class TradingSystemImplRubin implements TradingSystem {
             return res;
         }
     }
+
+    @Override
+    public Response ShowSpecialProductInShoppingCart(String connID) {
+          if(connectedSubscribers.containsKey(connID)) {
+            int userID = connectedSubscribers.get(connID);
+
+            User user = subscribers.get(userID);
+            List<DummyProduct> list = user.ShowSpecialProductInShoppingCart();
+            Response res = new Response(false, "ShowSpecialProductInShoppingCart: Num of special products in my Shopping Cart is " + list.size());
+            res.AddPair("products", list);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+            return res;
+        }
+        else {
+            return new Response(true, "ShowSpecialProductInShoppingCart: The user doesn't Exist");
+        }
+    }
+
+
+    @Override
+    public Response removeSpecialProductFromCart(String connID, int storeID, int productID) {
+        if(connectedSubscribers.containsKey(connID)) {
+            int userID = connectedSubscribers.get(connID);
+            User user=subscribers.get(userID);
+            Response res = user.removeSpecialProductFromCart(storeID,productID);
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+            return res;
+        }
+        else {
+            return new Response(true, "RemoveFromCart: The user is not Exist");
+        }
+    }
+
+    @Override
+    public Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "subscriberPurchase: The user is not connected to the system");
+        } else {
+            User user = subscribers.get(userID);
+            Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
+            Response res = user.subscriberSpecialProductPurchase(credit_number, month, year, cvv, id, address, city, country, zip);
+            if (!res.getIsErr()) {
+                for (ShoppingBag bag : shoppingBags) {
+                    Store store = this.stores.get(bag.getStoreID());
+                    List<Integer> productsID = bag.getSpecialProductProductsList();
+                    String productsList = makeProductsList(store.getId(), productsID);
+                    Response resAlert = new Response(false, "The client " + user.getUserName() +
+                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
+                    store.sendAlertToOwners(resAlert);
+                }
+            }
+            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(), systemAdmins.containsKey(userID));
+            return res;
+
+        }
+    }
+
+
+    public Integer getStoreIDByName(String storeName){
+        for(Store s : stores.values())
+        {
+            if(s.getName().equals(storeName))
+                return s.getId();
+        }
+        return -1;
+    }
+
 
 }
