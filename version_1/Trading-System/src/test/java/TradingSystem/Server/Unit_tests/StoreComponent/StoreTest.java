@@ -2,6 +2,7 @@ package TradingSystem.Server.Unit_tests.StoreComponent;
 
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Bid;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
@@ -11,6 +12,9 @@ import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.RemoveProductTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.ResultUnitTests;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.Permission;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -191,6 +195,179 @@ class StoreTest {
         Double dailyIncome= store.getDailyIncome();
         assertEquals(dailyIncome, 0.0);
     }
+
+    //endregion
+
+    //region requirement 8.3: Bidding
+    @Test
+    void checkBidAddedAfterSubscribeBidding(){
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,1,2950,1);
+        boolean added=false;
+        for (Bid b:store.getBids()
+        ) {
+            if(b.getProductID()==1&&b.getUserID()==NofetID&&b.getPrice()==2950&&b.getQuantity()==1){
+                added=true;
+            }
+        }
+        assertTrue(added);
+    }
+
+    //todo how to implement
+    @Test
+    void checkManagerWithPermissionGetAlert(){
+        LinkedList<PermissionEnum.Permission> list=new LinkedList<>();
+        list.add(PermissionEnum.Permission.RequestBidding);
+        tradingSystem.AddNewManager(EuserId,EconnID,storeID,NofetID);
+        tradingSystem.EditManagerPermissions(EuserId,EconnID,storeID,NofetID,list);
+        Response Alert=new Response("Alert");
+        store.sendAlertOfBiddingToManager(Alert);
+        //??
+    }
+
+    @Test
+    void checkTheListOfTheOwnerAndManagerInTheBidUpdateRunTime() {
+
+        String guestMan1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guestMan1, "Man1", "123");
+        Response resMan1= tradingSystem.Login(guestMan1, "Man1", "123");
+        tradingSystem.AddNewManager(EuserId,EconnID,storeID,resMan1.returnUserID());
+        LinkedList<PermissionEnum.Permission> list=new LinkedList<>();
+        list.add(PermissionEnum.Permission.RequestBidding);
+        tradingSystem.EditManagerPermissions(EuserId,EconnID,storeID,resMan1.returnUserID(),list);
+
+        String guestMan2= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guestMan2, "Man2", "123");
+        Response resMan2= tradingSystem.Login(guestMan2, "Man2", "123");
+        tradingSystem.AddNewManager(EuserId,EconnID,storeID,resMan2.returnUserID());
+
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,3,20,2);
+
+        Response r1=store.approveSubmissionBid(resMan1.returnUserID(),NofetID,3);
+        tradingSystem.EditManagerPermissions(EuserId,EconnID,storeID,resMan2.returnUserID(),list);
+        Response r2=store.approveSubmissionBid(EuserId,NofetID,3);
+        assertFalse(store.getBid(NofetID,3).isFinalState());
+    }
+
+    @Test
+    void checkTheListOfTheOwnerAndManagerInTheBidUpdateAfterNewBidFromOwner() {
+
+        String guestMan1 = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guestMan1, "Man1", "123");
+        Response resMan1 = tradingSystem.Login(guestMan1, "Man1", "123");
+        tradingSystem.AddNewManager(EuserId, EconnID, storeID, resMan1.returnUserID());
+
+        LinkedList<PermissionEnum.Permission> list = new LinkedList<>();
+        list.add(PermissionEnum.Permission.RequestBidding);
+        tradingSystem.EditManagerPermissions(EuserId, EconnID, storeID, resMan1.returnUserID(), list);
+
+        tradingSystem.subscriberBidding(NofetID, NconnID, storeID, 3, 20, 2);
+
+        Response r1 = store.approveSubmissionBid(resMan1.returnUserID(), NofetID, 3);
+        Response r2 = store.changeSubmissionBid(EuserId, NofetID, 3, 30, 1);
+        assertFalse(store.getBid(NofetID,3).isFinalState());
+    }
+
+    @Test
+    void checkTheBidRemovedAfterOwnerRefusedTheBid() {
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,2,90,1);
+        Bid b1=store.getBid(NofetID,2);
+        store.refuseSubmissionBid(EuserId,NofetID,2);
+        Bid b2=store.getBid(NofetID,2);
+        assertTrue(b1!=null&&b2==null);
+    }
+
+    @Test
+    void checkTheBidRemovedAfterOwnerApproveTheBid() {
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,2,90,1);
+        Bid b1=store.getBid(NofetID,2);
+        store.approveSubmissionBid(EuserId,NofetID,2);
+        Bid b2=store.getBid(NofetID,2);
+        assertTrue(b1!=null&&b2==null);
+    }
+
+    @Test
+    void checkTheBidNotRemovedAfterOwnerChangeTheBid() {
+        String guestMan1 = tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guestMan1, "Man", "123");
+        Response resMan1 = tradingSystem.Login(guestMan1, "Man", "123");
+        tradingSystem.AddNewManager(EuserId, EconnID, storeID, resMan1.returnUserID());
+        LinkedList<PermissionEnum.Permission> list = new LinkedList<>();
+        list.add(PermissionEnum.Permission.RequestBidding);
+        tradingSystem.EditManagerPermissions(EuserId, EconnID, storeID, resMan1.returnUserID(), list);
+
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,2,80,1);
+        Bid b1=store.getBid(NofetID,2);
+        store.changeSubmissionBid(EuserId,NofetID,2,90,1);
+        Bid b2=store.getBid(NofetID,2);
+        assertTrue(b1!=null&&b2!=null);
+    }
+
+    @Test
+    void checkTheBidChangedAfterOwnerChangeTheBid() {
+        String guest= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest, "Manager1", "123");
+        Response res= tradingSystem.Login(guest, "Manager1", "123");
+        tradingSystem.AddNewManager(EuserId,EconnID,storeID,res.returnUserID());
+        LinkedList<PermissionEnum.Permission> list = new LinkedList<>();
+        list.add(PermissionEnum.Permission.RequestBidding);
+        tradingSystem.EditManagerPermissions(EuserId, EconnID, storeID, res.returnUserID(), list);
+
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,3,2000,2);
+        Bid b1=store.getBid(NofetID,3);
+         int Id=b1.getUserID();
+         int PId=b1.getProductID();
+         int quantity=b1.getQuantity();
+         int price=b1.getPrice();
+        store.changeSubmissionBid(EuserId,NofetID,3,2459,1);
+        Bid b2=store.getBid(NofetID,3);
+        assertTrue(Id==NofetID&&PId==3 && quantity==2 && price==2000&&
+                           b2.getUserID()==NofetID&&b2.getProductID()==3 && b2.getQuantity()==1 && b2.getPrice()==2459);
+    }
+
+    //todo check how get alert?
+    @Test
+    void checkTheManagerGetAlertAfterOwnerChangeTheBid() {
+        String guest= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest, "Manager2", "123");
+        Response res= tradingSystem.Login(guest, "Manager2", "123");
+        tradingSystem.AddNewManager(EuserId,EconnID,storeID,res.returnUserID());
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,4,20,2);
+        store.changeSubmissionBid(EuserId,NofetID,4,30,1);
+    }
+
+    //todo update
+    @Test
+    void checkApproveTheCorrectBid() {
+        String guest= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest, "M1", "123");
+        Response res= tradingSystem.Login(guest, "M1", "123");
+        tradingSystem.AddNewManager(EuserId,EconnID,storeID,res.returnUserID());
+        LinkedList<PermissionEnum.Permission> list = new LinkedList<>();
+        list.add(PermissionEnum.Permission.RequestBidding);
+        tradingSystem.EditManagerPermissions(EuserId, EconnID, storeID, res.returnUserID(), list);
+
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,3,2000,2);
+        store.changeSubmissionBid(EuserId,NofetID,3,2459,1);
+        Response r=store.approveSubmissionBid(res.returnUserID(),NofetID,3);
+        assertTrue(res.getIsErr());
+    }
+
+    @Test
+    void RefuseTheCorrectBid() {
+        String guest= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest, "M2", "123");
+        Response res= tradingSystem.Login(guest, "M2", "123");
+        tradingSystem.AddNewManager(EuserId,EconnID,storeID,res.returnUserID());
+        LinkedList<PermissionEnum.Permission> list = new LinkedList<>();
+        list.add(PermissionEnum.Permission.RequestBidding);
+        tradingSystem.EditManagerPermissions(EuserId, EconnID, storeID, res.returnUserID(), list);
+
+        tradingSystem.subscriberBidding(NofetID,NconnID,storeID,3,2000,2);
+        store.changeSubmissionBid(EuserId,NofetID,3,2459,1);
+        Response r=store.refuseSubmissionBid(res.returnUserID(),NofetID,3);
+        assertTrue(res.getIsErr());
+    }
+
 
     //endregion
 

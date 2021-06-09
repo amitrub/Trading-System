@@ -616,7 +616,8 @@ public class Store extends Observable {
         if(this.Bids==null) {
             this.Bids = new ConcurrentLinkedDeque<>();
         }
-        this.Bids.add(new Bid(userID, productID,this.id,productPrice,quantity,createOwnerList()));
+        ConcurrentHashMap<Integer,Boolean> list=this.createOwnerList();
+        this.Bids.add(new Bid(userID, productID,this.id,productPrice,quantity,list));
     }
 
     public ConcurrentHashMap<Integer, Boolean> createOwnerList() {
@@ -630,7 +631,7 @@ public class Store extends Observable {
                 list.put(key,false);
             }
         }
-        return null;
+        return list;
     }
 
     public boolean CheckBidForProductExist(Integer userID, Integer productID){

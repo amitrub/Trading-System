@@ -137,6 +137,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         RemoveProductTaskUnitTests.setTradingSystem(tradingSystem);
         Trading_Driver.setTradingSystem(tradingSystem);
         ClientProxy.setTradingSystem(tradingSystem);
+        Bid.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
@@ -2606,7 +2607,10 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(store.getProduct(productID)==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for product ("+productID+ ") that not in the store");
         }
-        if(store.getBid(userWhoOffer,productID)==null || store.getBid(userWhoOffer,productID).isFinalState()){
+        if(store.getBid(userWhoOffer,productID)==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding not exist");
+        }
+        if(store.getBid(userWhoOffer,productID).isFinalState()){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
         }
         return new Response(false,"able");
