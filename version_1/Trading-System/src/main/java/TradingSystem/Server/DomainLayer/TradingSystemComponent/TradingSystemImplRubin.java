@@ -909,10 +909,10 @@ public class TradingSystemImplRubin implements TradingSystem {
 
                 //Adds to the db
                 int storeID = data_controller.AddStore(storeName, userID);
-
                 Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
+                newStore.addOwnerPermission(userID,user.getOwnerPermission(storeID));
                 stores.put(newStore.getId(),newStore);
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddPair("storeID", newStore.getId());
