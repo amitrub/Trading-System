@@ -1,8 +1,8 @@
 {
 
-  "local": true,
+  "local": false,
 
-  "urlLocal" : "jdbc:postgresql://localhost:5432/trading",
+  "urlLocal" : "jdbc:postgresql://localhost:5432/reut",
   "userNameLocal" : "postgres",
   "passwordLocal" : "8119",
 

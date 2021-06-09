@@ -5,6 +5,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 
 import javax.persistence.*;
+import javax.xml.crypto.Data;
 
 @Entity
 public class DataDiscountPolicy {
@@ -36,5 +37,14 @@ public class DataDiscountPolicy {
 
     public DataDiscountPolicy(DiscountPolicy policy){
         this.store_id=policy.getStoreId();
+    }
+
+    public DBSale getSale(){
+        return sale;
+    }
+
+    public DataDiscountPolicy(int store_id, DBSale dataDiscountPolicy){
+        this.store_id=store_id;
+        this.sale= dataDiscountPolicy;
     }
 }

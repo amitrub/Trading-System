@@ -3,6 +3,8 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DBSale;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
@@ -2002,12 +2004,14 @@ public class TradingSystemImplRubin implements TradingSystem {
             return res;
         }
         Store s=this.stores.get(storeID);
-        Response r=sale.checkValidity(storeID);
-        if(r.getIsErr()){
-            return r;
-        }
+//        Response r=sale.checkValidity(storeID);
+//        if(r.getIsErr()){
+//            return r;
+//        }
         DiscountPolicy d=new DiscountPolicy(storeID,sale);
         s.setDiscountPolicy(d);
+        DataDiscountPolicy dataDiscountPolicy=new DataDiscountPolicy(storeID, new DBSale(sale, null));
+        data_controller.AddDiscountPolicy(dataDiscountPolicy);
         return new Response("the discountPolicy added successfully");
     }
 

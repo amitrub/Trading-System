@@ -5,6 +5,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -22,6 +23,8 @@ import java.util.Optional;
 public class Data_Controller {
     @Autowired
     private BuyingService buyingService;
+    @Autowired
+    private DiscountPolicyService discountPolicyService;
     @Autowired
     private SubcriberService subscriberService;
     @Autowired
@@ -186,6 +189,10 @@ public class Data_Controller {
 
     public void AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
         buyingService.AddBuyingPolicy(buyingPolicy);
+    }
+
+    public void AddDiscountPolicy(DataDiscountPolicy service){
+        discountPolicyService.AddDiscountPolicy(service);
     }
 //
 //    //Req 1.3 search Product By Name
