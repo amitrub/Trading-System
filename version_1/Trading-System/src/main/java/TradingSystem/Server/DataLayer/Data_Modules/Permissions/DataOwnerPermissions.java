@@ -46,7 +46,7 @@ public class DataOwnerPermissions {
     @ManyToOne
     @JoinColumn(
             name = "appointment_id",
-            nullable = false,
+//            nullable = false,
             referencedColumnName = "userID",
             foreignKey = @ForeignKey(
                     name = "appointment_owner_permissions_fk"

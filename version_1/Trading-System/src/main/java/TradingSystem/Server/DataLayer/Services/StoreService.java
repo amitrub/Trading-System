@@ -2,6 +2,7 @@ package TradingSystem.Server.DataLayer.Services;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreKey;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.*;
 import TradingSystem.Server.DataLayer.Repositories.*;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
@@ -11,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +47,10 @@ public class StoreService {
         DataSubscriber newOwner = subscriberRepository.getOne(newOwnerID);
         store.AddNewOwner(newOwner);
         storeRepository.saveAndFlush(store);
-        DataSubscriber appointment = subscriberRepository.getOne(OP.getAppointmentId());
+        DataSubscriber appointment = null;
+        if(OP.getAppointmentId()!=-1&&OP.getAppointmentId()!=null){
+            appointment = subscriberRepository.getOne(OP.getAppointmentId());
+        }
         DataOwnerPermissions dataOwnerPermissions = new DataOwnerPermissions(newOwner, store, appointment);
         ownerPermissionsRepository.saveAndFlush(dataOwnerPermissions);
         for (PermissionEnum.Permission permission: OP.getPermissions()){
@@ -69,6 +74,8 @@ public class StoreService {
             managerPermissionTypeRepository.saveAndFlush(permissionType);
         }
     }
+
+
 
     public List<DataStore> getAllStores(){
         return storeRepository.findAll();

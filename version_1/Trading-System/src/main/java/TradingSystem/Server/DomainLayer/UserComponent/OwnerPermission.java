@@ -18,7 +18,7 @@ public class OwnerPermission implements Permission {
     public OwnerPermission(Integer userId, Integer storeId) {
         this.userId = userId;
         this.storeId = storeId;
-        this.appointmentId=null;
+        this.appointmentId=-1;
         this.permissions.add(PermissionEnum.Permission.AddProduct);
         this.permissions.add(PermissionEnum.Permission.ReduceProduct);
         this.permissions.add(PermissionEnum.Permission.DeleteProduct);
@@ -40,7 +40,12 @@ public class OwnerPermission implements Permission {
     public OwnerPermission(DataOwnerPermissions dataOwnerPermission) {
         this.userId = dataOwnerPermission.getSubscriber().getUserID();
         this.storeId = dataOwnerPermission.getStore().getStoreID();
-        this.appointmentId = dataOwnerPermission.getAppointment().getUserID();
+        if(dataOwnerPermission.getAppointment()!=null){
+            this.appointmentId = dataOwnerPermission.getAppointment().getUserID();
+        }
+        else {
+            this.appointmentId=-1;
+        }
         for (DataOwnerPermissionType permissionType: dataOwnerPermission.getPermissions()){
             this.permissions.add(PermissionEnum.dataToPermission(permissionType.getKey().getPermission()));
         }
