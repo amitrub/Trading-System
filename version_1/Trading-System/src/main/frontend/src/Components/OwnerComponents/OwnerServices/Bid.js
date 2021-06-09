@@ -8,11 +8,12 @@ const apiHttp = createApiClientHttp();
 
 function Bid(props) {
   const [showInputBoxes, setShowInputBoxes] = useState(false);
-  const [quantity, setQuantity] = useState(props.quantity);
-  //   const [productID, setProductID] = useState("");
-  const [newPrice, setNewPriceOffer] = useState(props.price);
+  const [quantity, setQuantity] = useState(null);
+  const [newPrice, setNewPriceOffer] = useState(null);
+  const [showPopup, setShowPopup] = useState(false);
+  const [popupMsg, setPopupMsg] = useState("");
+
   //====
-  const [mode, setMode] = useState("");
 
   async function submitBiddingHandler(event, mode) {
     event.preventDefault();
@@ -22,16 +23,20 @@ function Bid(props) {
       props.userID,
       props.storeID,
       props.productID,
-      quantity,
-      newPrice,
+      quantity != null ? quantity : props.quantity,
+      newPrice != null ? newPrice : props.price,
       mode
     );
-    console.log("afterafter");
-    console.log(responedResponse);
+    // console.log("afterafter");
+    // console.log(responedResponse);
+
+    setPopupMsg(responedResponse.isErr);
+    setShowPopup(true);
 
     if (responedResponse.isErr) {
       console.log(responedResponse.message);
     } else {
+      props.onRefresh();
       //TODO HADAS !!!!!
       //   setBiddingList(biddingListResponse.returnObject.DailyIncome);
     }
@@ -49,23 +54,25 @@ function Bid(props) {
 
   function newOfferHandler(event) {
     setShowInputBoxes(true);
-    setMode(2);
   }
 
-  async function approveHandler(event) {
-    await setShowInputBoxes(false);
-    await setQuantity(props.quantity);
-    await setNewPriceOffer(props.price);
-    await setMode(1);
-    await submitBiddingHandler(event, 1);
-  }
-
-  async function ignoreHandler(event) {
+  function approveHandler(event) {
     setShowInputBoxes(false);
     setQuantity(props.quantity);
     setNewPriceOffer(props.price);
-    setMode(0);
-    await submitBiddingHandler(event, 0);
+    submitBiddingHandler(event, 1);
+  }
+
+  function ignoreHandler(event) {
+    setShowInputBoxes(false);
+    setQuantity(props.quantity);
+    setNewPriceOffer(props.price);
+    submitBiddingHandler(event, 0);
+  }
+
+  function onClosePopupBid() {
+    setShowPopup(false);
+    props.onRefresh();
   }
 
   return (
@@ -115,7 +122,7 @@ function Bid(props) {
               <form
                 method="post"
                 className="contact-form"
-                onSubmit={submitBiddingHandler}
+                onSubmit={(event) => submitBiddingHandler(event, 2)}
               >
                 {/* quantity */}
                 <div className="row">
@@ -165,6 +172,11 @@ function Bid(props) {
             ""
           )}
         </div>
+        {showPopup ? (
+          <MyPopup errMsg={popupMsg} onClosePopup={onClosePopupBid}></MyPopup>
+        ) : (
+          ""
+        )}
       </section>
     </Fragment>
   );

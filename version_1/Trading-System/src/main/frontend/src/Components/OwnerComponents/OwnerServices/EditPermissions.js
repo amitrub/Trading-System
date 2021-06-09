@@ -20,6 +20,10 @@ function EditPermissions(props) {
   const [getInfoRequests, setGetInfoRequests] = useState(false);
   const [responseRequests, setResponseRequests] = useState(false);
   const [getStoreHistory, setGetStoreHistory] = useState(false);
+  const [GetDailyIncomeForStore, setGetDailyIncomeForStore] = useState(false);
+  const [RequestBidding, setRequestBidding] = useState(false);
+  const [EditDiscountPolicy, setEditDiscountPolicy] = useState(false);
+  const [EditBuyingPolicy, setEditBuyingPolicy] = useState(false);
 
   const [managerID, setManagerID] = useState(-1);
   const [popupPermissions, setPopupPermissions] = useState(false);
@@ -46,7 +50,11 @@ function EditPermissions(props) {
       getInfoOfficials,
       getInfoRequests,
       responseRequests,
-      getStoreHistory
+      getStoreHistory,
+      GetDailyIncomeForStore,
+      RequestBidding,
+      EditDiscountPolicy,
+      EditBuyingPolicy
     );
 
     // console.log("EditPermissions");
@@ -345,9 +353,73 @@ function EditPermissions(props) {
                 />
               </div>
             </div>
-            {/* ) : (
-              ""
-            )} */}
+
+            {/* Checkbox GetDailyIncomeForStore*/}
+            {/* {permissions.includes("ResponseRequests") ? ( */}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Get Daily Income For Store</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="checkbox"
+                  name="responseRequests"
+                  id="ResponseRequests"
+                  checked={GetDailyIncomeForStore}
+                  onChange={() =>
+                    setGetDailyIncomeForStore(!GetDailyIncomeForStore)
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Checkbox RequestBidding*/}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Request Bidding</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="checkbox"
+                  name="responseRequests"
+                  id="ResponseRequests"
+                  checked={RequestBidding}
+                  onChange={() => setRequestBidding(!RequestBidding)}
+                />
+              </div>
+            </div>
+
+            {/* Checkbox EditDiscountPolicy*/}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Edit Discount Policy</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="checkbox"
+                  name="responseRequests"
+                  id="ResponseRequests"
+                  checked={EditDiscountPolicy}
+                  onChange={() => setEditDiscountPolicy(!EditDiscountPolicy)}
+                />
+              </div>
+            </div>
+
+            {/* Checkbox EditBuyingPolicy*/}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Edit Buying Policy</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="checkbox"
+                  name="responseRequests"
+                  id="ResponseRequests"
+                  checked={EditBuyingPolicy}
+                  onChange={() => setEditBuyingPolicy(!EditBuyingPolicy)}
+                />
+              </div>
+            </div>
 
             <div className="row">
               <div className="col span-1-of-3">

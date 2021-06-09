@@ -22,7 +22,7 @@ function Purchase(props) {
   const [popupPurchase, setPopupPurchase] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
 
-  const [cartSize, setCartSize] = useState("");
+  const [cartSize, setCartSize] = useState(0);
 
   async function fetchShopingCart() {
     const showCartResponse = await apiHttp.ShowShoppingCart(props.connID);
@@ -31,12 +31,24 @@ function Purchase(props) {
     if (showCartResponse.isErr) {
       console.log(showCartResponse.message);
     } else {
-      setCartSize(showCartResponse.returnObject.products.length);
+      setCartSize(cartSize + showCartResponse.returnObject.products.length);
+    }
+  }
+
+  async function fetchShopingCartBid() {
+    const showCartBidResponse = await apiHttp.ShowShoppingCartBid(props.connID);
+    // console.log(showCartResponse);
+
+    if (showCartBidResponse.isErr) {
+      console.log(showCartBidResponse.message);
+    } else {
+      setCartSize(cartSize + showCartBidResponse.returnObject.products.length);
     }
   }
 
   useEffect(() => {
     fetchShopingCart();
+    fetchShopingCartBid();
   }, [props.refresh]);
 
   function submitCheckoutHideForm() {

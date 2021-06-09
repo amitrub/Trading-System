@@ -88,6 +88,7 @@ function AddBidding(props) {
 
   function onClosePopup() {
     setShowPopUp(false);
+    props.closeAddBidding(false);
     props.onRefresh();
   }
 

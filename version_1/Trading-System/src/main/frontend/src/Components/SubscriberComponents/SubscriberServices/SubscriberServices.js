@@ -163,6 +163,7 @@ function SubscriberServices(props) {
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
+            closeAddBidding={setShowAddBidding}
           />
         ) : (
           ""

@@ -18,8 +18,6 @@ import createApiClientHttp from "./ApiClientHttp";
 import SubscriberServices from "./Components/SubscriberComponents/SubscriberServices/SubscriberServices";
 import ShoppingCart from "./Components/GuestComponents/ShoppingCart/ShoppingCart";
 import Purchase from "./Components/GuestComponents/Purchase/Purchase";
-import BiddingsShoppingCart from "./Components/GuestComponents/BiddingShoppingCart/BiddingShoppingCart";
-import BiddingsPurchase from "./Components/GuestComponents/BiddingPurchase/BiddingPurchase";
 
 const apiHttp = createApiClientHttp();
 const SOCKET_URL = "ws://localhost:8080/ws-message";
@@ -157,7 +155,7 @@ class App extends React.Component {
     clientConnection.subscribe(`/topic/${topicName}`, (msg) => {
       if (msg.body) {
         var jsonBody = JSON.parse(msg.body);
-        console.log(jsonBody);
+        // console.log(jsonBody);
         if (jsonBody.message) {
           this.setState(
             (prevState) => ({
@@ -323,21 +321,6 @@ class App extends React.Component {
           connID={connID}
           userID={userID}
         ></Purchase>
-
-        <BiddingsShoppingCart
-          refresh={refresh}
-          onRefresh={this.onRefresh}
-          connID={connID}
-          username={username}
-          userID={userID}
-        />
-
-        <BiddingsPurchase
-          refresh={refresh}
-          onRefresh={this.onRefresh}
-          connID={connID}
-          userID={userID}
-        />
       </Fragment>
     );
   };

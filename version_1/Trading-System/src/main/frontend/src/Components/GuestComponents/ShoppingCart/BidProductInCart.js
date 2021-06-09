@@ -10,7 +10,7 @@ function BidProductInCart(props) {
 
   async function sumbitRemoveProduct() {
     console.log("sumbitRemoveProduct");
-    const removeProdFromCartResponse = await apiHtml.RemoveProductFromCart(
+    const removeProdFromCartResponse = await apiHtml.RemoveProductFromBidCart(
       props.connID,
       product.storeID,
       product.productID

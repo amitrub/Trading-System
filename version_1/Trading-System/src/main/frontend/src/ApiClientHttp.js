@@ -152,8 +152,39 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
+    ShowShoppingCartBid: (connID) => {
+      let path = subscriberURL.concat(`shopping_cart_special`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    //DONE
     RemoveProductFromCart: (connID, storeID, productID) => {
       let path = guestURL.concat(`shopping_cart/remove_product`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        storeID: storeID,
+        productID: productID,
+      };
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        // console.log(res);
+        return res.data;
+      });
+    },
+
+    //DONE
+    RemoveProductFromBidCart: (connID, storeID, productID) => {
+      let path = subscriberURL.concat(`shopping_cart/remove_special_product`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
