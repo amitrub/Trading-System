@@ -1392,8 +1392,19 @@ public class TradingSystemImplRubin implements TradingSystem {
         MTE.editPermissions(userID,storeID,permissions);
         stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
         //NM.unlockUser();
-        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
+       //todo ---- from here its new
+        String Permissions="";
+        for (PermissionEnum.Permission p:permissions
+             ) {
+            Permissions=Permissions+ p.toString()+" ,";
+        }
+        Response resAlert=new Response("your permission for store "+ storeID+" changed. \n"+
+                    " You are now allowed to- \n"+
+                      Permissions);
+        stores.get(storeID).sendAlert(userID,resAlert);
+       //todo --- to here
         User user=subscribers.get(userID);
+        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res; 
     }

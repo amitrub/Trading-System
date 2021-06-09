@@ -2,6 +2,7 @@ package TradingSystem.Acceptence_tests;
 
 import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
+import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -12,6 +13,8 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class GuestTests {
 
@@ -217,6 +220,7 @@ public class GuestTests {
         assertTrue(response.getIsErr());
         assertEquals(client.showShoppingCart().returnProductList().size(), 0);
     }
+
     @Test
     void addProductToCart_SadStoreWithoutThisProduct() {
         Response response = client.addProductToCart(storeID, 10, 3);
@@ -232,7 +236,13 @@ public class GuestTests {
         assertEquals(client.showShoppingCart().returnProductList().size(), 0);
         assertTrue(res.getIsErr());
     }
-
+    @Test
+    void NotAddSpacialProductToBag() {
+        client.submissionBidding(storeID,productID1,3,1);
+        client.ResponseForSubmissionBidding(storeID,productID1,client.getUserID(),3,1,1);
+        Response r=client.addProductToCart(storeID,productID1,3);
+        assertTrue(r.getIsErr());
+    }
 
     /**
      * @requirement 2.8.1 show cart
@@ -339,6 +349,14 @@ public class GuestTests {
         assertTrue(res.getIsErr());
     }
 
+    @Test
+    void editShoppingCart_SadSpecialProduct()
+    {
+        client.submissionBidding(storeID,productID1,3,1);
+        client.ResponseForSubmissionBidding(storeID,productID1,client.getUserID(),3,1,1);
+        Response r=client.editShoppingCart(storeID,productID1,3);
+        assertTrue(r.getIsErr());
+    }
 
 
 
