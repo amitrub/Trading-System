@@ -10,10 +10,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 import javax.persistence.*;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -54,6 +51,13 @@ public class DataSubscriber {
             columnDefinition = "TEXT"
     )
     private String password;
+
+    @Column(
+            name = "date",
+            nullable = false,
+            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
+    )
+    private Date date;
 
     @OneToMany(
             mappedBy = "founder",
@@ -115,13 +119,11 @@ public class DataSubscriber {
 
     public DataSubscriber(String name, String password){
         this.name=name;
-        this.password=password;
+        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
+        this.password=encodedPassword;
+        this.date = new Date();
     }
 
-    public DataSubscriber(User user){
-        this.name=user.getUserName();
-        this.password=user.getPassword();
-    }
 
     public Integer getUserID() {
         return userID;
@@ -132,7 +134,22 @@ public class DataSubscriber {
     }
 
     public String getPassword() {
-        return password;
+        byte[] decodedBytes = Base64.getDecoder().decode(password);
+        String decodedPassword = new String(decodedBytes);
+        return decodedPassword;
+    }
+
+    public void setPassword(String password) {
+        String encodedPassword = Base64.getEncoder().encodeToString(password.getBytes());
+        this.password=encodedPassword;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public List<DataStore> getStoresFounder() {
