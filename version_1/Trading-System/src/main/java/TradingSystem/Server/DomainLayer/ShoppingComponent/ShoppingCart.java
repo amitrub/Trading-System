@@ -164,6 +164,7 @@ public class ShoppingCart {
         if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,tmpProducts)) {
             return new Response(true, "Adding the product "+productID+" is against the store policy");
         }
+        tmpProducts.remove(productID);
         this.shoppingBags.get(storeID).addSPacialProduct(productID, quantity,productPrice);
         //Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, this.shoppingBags.get(storeID).getProducts());
         Integer spacialPrice=  this.shoppingBags.get(storeID).calculateSpacialPrices();

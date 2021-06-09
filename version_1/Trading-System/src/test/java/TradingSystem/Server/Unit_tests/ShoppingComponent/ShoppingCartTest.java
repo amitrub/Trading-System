@@ -5,6 +5,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -16,6 +17,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -183,5 +185,87 @@ class ShoppingCartTest {
         shoppingCart1.mergeToMyCart(shoppingCart2);
         assertEquals(shoppingCart1.getShoppingBags().size(),4);
     }
+
+    //region requirement 8.3: Bidding
+    @Test
+     void productAddedAfterFinishApprove(){
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest1, "user1", "123");
+        Response res = tradingSystem.Login(guest1, "user1", "123");
+        List<DummyProduct> list0=tradingSystem.subscribers.get(res.returnUserID()).ShowSpecialProductInShoppingCart();
+        tradingSystem.subscriberBidding(res.returnUserID(),res.returnConnID(),storeID1,1,2700,1);
+        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,1,2700,res.returnUserID(),1,1);
+        List<DummyProduct> list1=tradingSystem.subscribers.get(res.returnUserID()).ShowSpecialProductInShoppingCart();
+        assertEquals(list0.size()+1,list1.size());
+    }
+
+    @Test
+    void productNotAddedAfterTempApprove(){
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest1, "user1", "123");
+        Response resUser = tradingSystem.Login(guest1, "user1", "123");
+
+        String guest2= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest2, "Manager", "123");
+        Response resManager = tradingSystem.Login(guest2, "Manager", "123");
+
+        tradingSystem.AddNewManager(NuserId,NconnID,storeID1,resManager.returnUserID());
+        LinkedList<PermissionEnum.Permission> list = new LinkedList<>();
+        list.add(PermissionEnum.Permission.RequestBidding);
+        tradingSystem.EditManagerPermissions(NuserId, NconnID, storeID1, resManager.returnUserID(), list);
+
+        List<DummyProduct> list0=tradingSystem.subscribers.get(resUser.returnUserID()).ShowSpecialProductInShoppingCart();
+        tradingSystem.subscriberBidding(resUser.returnUserID(),resUser.returnConnID(),storeID1,1,2700,1);
+        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,1,2700,resUser.returnUserID(),1,1);
+        List<DummyProduct> list1=tradingSystem.subscribers.get(resUser.returnUserID()).ShowSpecialProductInShoppingCart();
+
+        assertEquals(list0.size(),list1.size());
+    }
+
+    @Test
+    void specialProductRemoved(){
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest1, "user3", "123");
+        Response res = tradingSystem.Login(guest1, "user3", "123");
+        List<DummyProduct> list0=tradingSystem.subscribers.get(res.returnUserID()).ShowSpecialProductInShoppingCart();
+
+        tradingSystem.subscriberBidding(res.returnUserID(),res.returnConnID(),storeID1,1,2700,1);
+        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,1,2700,res.returnUserID(),1,1);
+        List<DummyProduct> list1=tradingSystem.subscribers.get(res.returnUserID()).ShowSpecialProductInShoppingCart();
+
+        tradingSystem.removeSpecialProductFromCart(res.returnConnID(),storeID1,1);
+        List<DummyProduct> list2=tradingSystem.subscribers.get(res.returnUserID()).ShowSpecialProductInShoppingCart();
+
+        assertTrue(list0.size()+1==list1.size()&&list0.size()==list2.size());
+    }
+
+    @Test
+    void calculateSpecialPrice(){
+        String guest1= tradingSystem.ConnectSystem().returnConnID();
+        tradingSystem.Register(guest1, "user4", "123");
+        Response res = tradingSystem.Login(guest1, "user4", "123");
+        tradingSystem.subscriberBidding(res.returnUserID(),res.returnConnID(),storeID1,1,2700,1);
+        tradingSystem.subscriberBidding(res.returnUserID(),res.returnConnID(),storeID1,2,70,1);
+        tradingSystem.subscriberBidding(res.returnUserID(),res.returnConnID(),storeID1,3,4000,1);
+        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,1,2700,res.returnUserID(),1,1);
+        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,2,70,res.returnUserID(),1,1);
+        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,3,4000,res.returnUserID(),1,1);
+        User user = tradingSystem.subscribers.get(res.returnUserID());
+        ShoppingCart SC = user.getShoppingCart();
+        ShoppingBag SB=null;
+        for (Integer key:SC.getShoppingBags().keySet()
+             ) {
+            if(key==storeID1){
+                SB=SC.getShoppingBags().get(key);
+            }
+        }
+        int price=0;
+        if(SB!=null){
+            price=SB.calculateSpacialPrices();
+        }
+        assertEquals(price,6770);
+    }
+
+    //endregion
 
 }

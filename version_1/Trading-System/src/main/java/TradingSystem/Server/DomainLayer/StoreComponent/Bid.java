@@ -4,6 +4,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.States.initState;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.State;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -19,7 +20,12 @@ public class Bid {
     private State state;
     private ConcurrentHashMap<Integer,Boolean> ownerAndManagerApprovals;
     private final Lock lock = new ReentrantLock();
+
     private static TradingSystemImplRubin tradingSystem;
+    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+        Bid.tradingSystem = tradingSystem;
+    }
+
 
     public Bid(Integer userID, Integer productID,Integer storeId, Integer price,Integer quantity,ConcurrentHashMap<Integer,Boolean> list) {
         this.productID = productID;
