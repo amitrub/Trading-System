@@ -2613,6 +2613,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(store.getBid(userWhoOffer,productID).isFinalState()){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
         }
+        if(!this.hasPermission(userID,storeId,PermissionEnum.Permission.RequestBidding)){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but he does not have permission to do so");
+        }
         return new Response(false,"able");
     }
 
@@ -2656,7 +2659,6 @@ public class TradingSystemImplRubin implements TradingSystem {
             return new Response(true, "ShowSpecialProductInShoppingCart: The user doesn't Exist");
         }
     }
-
 
     @Override
     public Response removeSpecialProductFromCart(String connID, int storeID, int productID) {

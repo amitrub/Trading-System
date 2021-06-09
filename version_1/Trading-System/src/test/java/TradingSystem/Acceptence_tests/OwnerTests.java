@@ -614,12 +614,12 @@ public class OwnerTests {
     //region requirement 3.8: Bidding
     //Response to subscriber bidding
         @Test
-        void HappyResponseToSubscriberBidding() {
-            client.openStore("deme6");
+        void HappyRefuseToSubscriberBidding() {
+            client.openStore("D1");
             DummyStore store=null;
             for (DummyStore s:client.showAllStores().getStores()
             ) {
-                if (s.getName().equals("deme6")){
+                if (s.getName().equals("D1")){
                     store=s;
                 }
             }
@@ -628,7 +628,50 @@ public class OwnerTests {
             }
             Integer storeID=store.getId();
             client.addProduct(storeID, "1", "1", 10, 20);
-            client.addProduct(storeID, "2", "1", 7, 20);
+            client.submissionBidding( storeID, 1, 1, 3);
+            Response r= client.ResponseForSubmissionBidding(storeID,1,client.getUserID(),1,3,1);
+            assertFalse(r.getIsErr());
+            System.out.println(r.getMessage());
+
+        }
+
+        @Test
+        void HappyApproveToSubscriberBidding() {
+            client.openStore("D2");
+            DummyStore store=null;
+            for (DummyStore s:client.showAllStores().getStores()
+            ) {
+                if (s.getName().equals("D2")){
+                    store=s;
+                }
+            }
+            if(store==null){
+                store=client.showAllStores().getStores().get(0);
+            }
+            Integer storeID=store.getId();
+            client.addProduct(storeID, "1", "1", 10, 20);
+            client.submissionBidding( storeID, 1, 1, 3);
+            Response r= client.ResponseForSubmissionBidding(storeID,1,client.getUserID(),1,3,1);
+            assertFalse(r.getIsErr());
+            System.out.println(r.getMessage());
+
+        }
+
+        @Test
+        void HappyChangeBidOfSubscriberBidding() {
+            client.openStore("D3");
+            DummyStore store=null;
+            for (DummyStore s:client.showAllStores().getStores()
+            ) {
+                if (s.getName().equals("D3")){
+                    store=s;
+                }
+            }
+            if(store==null){
+                store=client.showAllStores().getStores().get(0);
+            }
+            Integer storeID=store.getId();
+            client.addProduct(storeID, "1", "1", 10, 20);
             client.submissionBidding( storeID, 1, 1, 3);
             Response r= client.ResponseForSubmissionBidding(storeID,1,client.getUserID(),1,3,2);
             assertFalse(r.getIsErr());
@@ -653,11 +696,11 @@ public class OwnerTests {
 
         @Test
         void SadProductNotExist() {
-            client.openStore("deme1");
+            client.openStore("D4");
             DummyStore store=null;
             for (DummyStore s:client.showAllStores().getStores()
             ) {
-                if (s.getName().equals("deme1")){
+                if (s.getName().equals("D4")){
                     store=s;
                 }
             }
@@ -671,32 +714,8 @@ public class OwnerTests {
         }
 
         @Test
-        void SadBideHadResponseAlready() {
-            client.openStore("deme2");
-            DummyStore store=null;
-            for (DummyStore s:client.showAllStores().getStores()
-            ) {
-                if (s.getName().equals("deme2")){
-                    store=s;
-                }
-            }
-            if(store==null){
-                store=client.showAllStores().getStores().get(0);
-            }
-            Integer storeID=store.getId();
-            client.addProduct(storeID, "1", "1", 10, 20);
-            client.addProduct(storeID, "2", "1", 7, 20);
-            client.addProductToCart(storeID, 1, 3);
-            client.submissionBidding(storeID, 1, 1, 3);
-            client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,2);
-            Response r = client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,2);
-            assertTrue(r.getIsErr());
-            System.out.println(r.getMessage());
-        }
-
-        @Test
         void SadPriceNotInRange() {
-            client.openStore("deme3");
+            client.openStore("D6");
             DummyStore store=null;
             for (DummyStore s:client.showAllStores().getStores()
             ) {
@@ -709,7 +728,7 @@ public class OwnerTests {
             }
             Integer storeID=store.getId();
             client.addProduct(storeID, "1", "1", 10, 20);
-            client.addProduct(storeID, "2", "1", 7, 20);
+            client.submissionBidding(storeID, 1, 1, 3);
             Response r1 = client.ResponseForSubmissionBidding(storeID, 1,client.getUserID(), 1, -3,2);
             assertTrue(r1.getIsErr());
             System.out.println(r1.getMessage());
@@ -720,7 +739,7 @@ public class OwnerTests {
 
         @Test
         void SadNegativeQuantity() {
-            client.openStore("deme4");
+            client.openStore("D7");
             DummyStore store=null;
             for (DummyStore s:client.showAllStores().getStores()
             ) {
@@ -733,19 +752,72 @@ public class OwnerTests {
             }
             Integer storeID=store.getId();
             client.addProduct(storeID, "1", "1", 10, 20);
-            client.addProduct(storeID, "2", "1", 7, 20);
+            client.submissionBidding(storeID, 1, 1, 3);
             Response r1 = client.ResponseForSubmissionBidding(storeID, 1,client.getUserID(), -1, 3,2);
             assertTrue(r1.getIsErr());
             System.out.println(r1.getMessage());
         }
 
         @Test
-        void showBids() {
-            client.openStore("deme6");
+        void SadBideHadResponseAlready() {
+            client.openStore("D5");
             DummyStore store=null;
             for (DummyStore s:client.showAllStores().getStores()
             ) {
-                if (s.getName().equals("deme6")){
+                if (s.getName().equals("D5")){
+                    store=s;
+                }
+            }
+            if(store==null){
+                store=client.showAllStores().getStores().get(0);
+            }
+            Integer storeID=store.getId();
+            client.addProduct(storeID, "1", "1", 10, 20);
+            client.submissionBidding(storeID, 1, 1, 3);
+            client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,0);
+            Response r1 = client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,0);
+            Response r2 = client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,1);
+            Response r3 = client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,2);
+            assertTrue(r1.getIsErr()&&r2.getIsErr()&&r3.getIsErr());
+            System.out.println(r1.getMessage());
+            System.out.println(r2.getMessage());
+            System.out.println(r3.getMessage());
+        }
+
+        @Test
+        void SadManagerHasNoPermission() {
+            client.openStore("D9");
+            DummyStore store=null;
+            for (DummyStore s:client.showAllStores().getStores()
+            ) {
+                if (s.getName().equals("D9")){
+                    store=s;
+                }
+            }
+            if(store==null){
+                store=client.showAllStores().getStores().get(0);
+            }
+            Integer storeID=store.getId();
+            client.addProduct(storeID, "1", "1", 10, 20);
+            client.submissionBidding(storeID, 1, 1, 3);
+            client.Logout();
+
+            client.clearSystem();
+            client.connectSystem();
+            client.Register("gust", "123");
+            client.Login("gust", "123");
+            Response r=client.ResponseForSubmissionBidding(storeID, 1, client.getUserID(),1, 3,0);
+            assertTrue(r.getIsErr());
+            System.out.println(r.getMessage());
+        }
+
+        @Test
+        void showBids() {
+            client.openStore("D8");
+            DummyStore store=null;
+            for (DummyStore s:client.showAllStores().getStores()
+            ) {
+                if (s.getName().equals("D9")){
                     store=s;
                 }
             }
@@ -760,6 +832,37 @@ public class OwnerTests {
             Response r= client.ShowBids(storeID);
             assertEquals(r.returnBids().size(),2);
         }
+
+        @Test
+        void HappyRemoveSpecialProduct() {
+            client.openStore("D1");
+            DummyStore store=null;
+            for (DummyStore s:client.showAllStores().getStores()
+            ) {
+                if (s.getName().equals("D1")){
+                    store=s;
+                }
+            }
+            if(store==null){
+                store=client.showAllStores().getStores().get(0);
+            }
+            Integer storeID=store.getId();
+            client.addProduct(storeID, "1", "1", 10, 20);
+            client.submissionBidding( storeID, 1, 1, 3);
+            client.ResponseForSubmissionBidding(storeID,1,client.getUserID(),1,3,1);
+            client.RemoveSpecialProductProductFromCart(client.getConnID(),storeID,1);
+            List<DummyProduct> list=( List<DummyProduct>)client.ShowSpecialProductsInShoppingCart(client.getConnID()).getReturnObject().get("products");
+            assertTrue(list.isEmpty());
+
+        }
+
+    @Test
+    void SadRemoveSpecialProductTheProductIsNotExist() {
+        Response r=client.RemoveSpecialProductProductFromCart(client.getConnID(),storeID,-1);
+        assertTrue(r.getIsErr());
+    }
+
+
         //endregion: Bidding
 
     //region requirement 4.12: Daily Income

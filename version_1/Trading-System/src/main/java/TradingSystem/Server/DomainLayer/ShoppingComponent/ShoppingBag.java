@@ -300,8 +300,12 @@ public class ShoppingBag {
          */
     }
 
-    // TODO: implements
+
     public List<Integer> getSpecialProductProductsList() {
-        return null;
+        List<Integer> products=new ArrayList<>();
+        for(int productID : this.quantityOfSpacialProducts.keySet()){
+            products.add(productID);
+        }
+        return products;
     }
 }
