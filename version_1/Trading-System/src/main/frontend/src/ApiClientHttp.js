@@ -351,8 +351,44 @@ export const createApiClientHttp = () => {
       });
     },
 
-    displayAllBiddings: (connID, userID, storeID) => {
-      console.log("TODO HADAS !!!!!!!!!!!!!!!!!");
+    ShowAllBiddings: (connID, userID, storeID) => {
+      let path = ownerURL.concat(` ${userID}/store/${storeID}/show_bids`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    ResponsedToBidding: (
+      connID,
+      userID,
+      storeID,
+      productID,
+      quantity,
+      price,
+      mode
+    ) => {
+      let path = ownerURL.concat(`${userID}/response_for_submission_bidding`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        userWhoOffer: parseInt(userID),
+        storeID: parseInt(storeID),
+        productID: parseInt(productID),
+        quantity: parseInt(quantity),
+        productPrice: parseInt(price),
+        mode: parseInt(mode),
+      };
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        return res.data;
+      });
     },
 
     //Owner

@@ -3,20 +3,15 @@ import createApiClientHttp from "../../../ApiClientHttp";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import MyPopup from "../../OtherComponents/MyPopup/MyPopup";
+import Bid from "./Bid";
 
 const apiHttp = createApiClientHttp();
 
 function ShowBiddings(props) {
   const [biddingList, setBiddingList] = useState([]);
-  const [userID, setUserID] = useState("");
-  const [quantity, setQuantity] = useState("");
-  const [productID, setProductID] = useState("");
-  const [newPrice, setNewPrice] = useState("");
-  //====
-  const [status, setStatus] = useState("");
 
   async function fetchBiddings() {
-    const biddingListResponse = await apiHttp.displayAllBiddings(
+    const biddingListResponse = await apiHttp.ShowAllBiddings(
       props.connID,
       props.userID,
       props.storeID
@@ -26,58 +21,33 @@ function ShowBiddings(props) {
     if (biddingListResponse.isErr) {
       console.log(biddingListResponse.message);
     } else {
-      setBiddingList(biddingListResponse.returnObject.DailyIncome);
+      setBiddingList(biddingListResponse.returnObject.Bids);
     }
   }
 
-  function submitBiddingHandler(newPrice, newQuantity, status) {}
-
   useEffect(() => {
-    //TODO: fix this: function and remove the //
-    // fetchBiddings();
+    fetchBiddings();
   }, [props.refresh]);
 
   return (
     <Fragment>
-      <section className="section-form" id="shoppingcart">
-        <div>
-          <h5>
-            The client {userID} offers the next bidding: buy {quantity} of
-            product num {productID} in the price {newPrice} per unit{" "}
-          </h5>
-        </div>
-
-        <div className="row">
-          {/* Ignore */}
-          <button
-            className="buttonus"
-            value="load our stores..."
-            onClick={(e) => submitBiddingHandler(-1, -1, 0)}
-          >
-            Ignore
-            {/* {showStore ? "Hide" : "Show products"} */}
-          </button>
-
-          {/* Aprrove */}
-          <button
-            className="buttonus"
-            value="load our stores..."
-            onClick={(e) => submitBiddingHandler(-1, -1, 1)}
-          >
-            Approve
-            {/* {showStore ? "Hide" : "Show products"} */}
-          </button>
-
-          {/* New Offer */}
-          <button
-            className="buttonus"
-            value="load our stores..."
-            onClick={(e) => submitBiddingHandler(-1, -1, 1)}
-          >
-            New Offer
-            {/* {showStore ? "Hide" : "Show products"} */}
-          </button>
-        </div>
+      <section className="section-form">
+        {biddingList
+          ? biddingList.map((currBid, index) => (
+              <li key={index} className="curr bid">
+                <Bid
+                  refresh={props.refresh}
+                  onRefresh={props.onRefresh}
+                  connID={props.connID}
+                  userID={currBid.userID}
+                  storeID={props.storeID}
+                  productID={currBid.productID}
+                  quantity={currBid.quantity}
+                  price={currBid.price}
+                />
+              </li>
+            ))
+          : ""}
       </section>
     </Fragment>
   );

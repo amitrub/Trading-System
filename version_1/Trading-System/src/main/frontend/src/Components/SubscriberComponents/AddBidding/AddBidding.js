@@ -49,10 +49,10 @@ function AddBidding(props) {
     const biddingResponse = await apiHttp.submissionBidding(
       props.connID,
       props.userID,
-      chosenStoreID,
-      productId,
-      quantity,
-      newPriceOffer
+      parseInt(chosenStoreID),
+      parseInt(productId),
+      parseInt(quantity),
+      parseInt(newPriceOffer)
     );
 
     if (biddingResponse) {

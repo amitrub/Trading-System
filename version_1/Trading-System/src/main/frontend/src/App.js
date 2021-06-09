@@ -164,6 +164,12 @@ class App extends React.Component {
               popupMassages: [...prevState.popupMassages, jsonBody.message],
             }),
             () => {
+              if (jsonBody.tag === "bidShoppingCart") {
+                // this.setState({
+                // showBidShoppingCart: true,
+                // bidShoppingCart: bidShoppingCart,
+                // });
+              }
               // this.onRefresh();
             }
           );

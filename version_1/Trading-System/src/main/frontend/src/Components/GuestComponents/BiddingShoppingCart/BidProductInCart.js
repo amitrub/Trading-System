@@ -7,12 +7,6 @@ const apiHtml = createApiClientHttp();
 
 function BidProductInCart(props) {
   const product = props.currProduct;
-  const [editedQuantity, setEditedQuantity] = useState(product.quantity);
-
-  function submitNewQuantity(event) {
-    const strQuantity = event.target.value;
-    setEditedQuantity(parseInt(strQuantity));
-  }
 
   async function sumbitRemoveProduct() {
     console.log("sumbitRemoveProduct");
