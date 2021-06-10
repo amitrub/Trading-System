@@ -15,7 +15,7 @@ function DailyIncome(props) {
       props.userID,
       props.storeID
     );
-    // console.log(dailyIncomeResponse);
+    console.log(dailyIncomeResponse);
 
     if (dailyIncomeResponse.isErr) {
       console.log(dailyIncomeResponse.message);
