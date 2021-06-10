@@ -52,7 +52,7 @@ function StoresOwner(props) {
       props.connID,
       props.userID
     );
-    // console.log(managerStoresResponse);
+    console.log(managerStoresResponse);
 
     if (managerStoresResponse.isErr) {
       // console.log(managerStoresResponse.message);

@@ -56,7 +56,7 @@ function ManagerStoreService(props) {
       props.userID,
       props.currStore.id
     );
-    // console.log(permissionsResponse);
+    console.log(permissionsResponse);
 
     if (permissionsResponse.isErr) {
       console.log(permissionsResponse.message);
@@ -557,6 +557,7 @@ function ManagerStoreService(props) {
               ? hideAddBuyingPolicyHandler
               : showAddBuyingPolicyHandler
           }
+          disabled={!hasPermission("EditBuyingPolicy")}
         >
           {showAddBuyPolicy ? "Hide" : "Add Buying Policy"}
         </button>
@@ -570,6 +571,7 @@ function ManagerStoreService(props) {
               ? hideAddSellingPolicyHandler
               : showAddSellingPolicyHandler
           }
+          disabled={!hasPermission("EditDiscountPolicy")}
         >
           {showAddSellPolicy ? "Hide" : "Add Selling Policy"}
         </button>
@@ -581,6 +583,7 @@ function ManagerStoreService(props) {
           onClick={
             showDailyIncome ? hideDailyIncomeHandler : showDailyIncomeHandler
           }
+          disabled={!hasPermission("GetDailyIncomeForStore")}
         >
           {showDailyIncome ? "Hide" : "Show Daliy Income"}
         </button>
@@ -590,6 +593,7 @@ function ManagerStoreService(props) {
           className="buttonus"
           value="load our stores..."
           onClick={showBiddings ? hideBiddingHandler : showBiddingHandler}
+          disabled={!hasPermission("RequestBidding")}
         >
           {showBiddings ? "Hide" : "show Biddings"}
         </button>
