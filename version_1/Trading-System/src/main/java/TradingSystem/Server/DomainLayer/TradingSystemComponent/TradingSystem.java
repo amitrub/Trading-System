@@ -123,4 +123,5 @@ public interface TradingSystem {
 
     Response removeSpecialProductFromCart(String connID, int storeID, int productID);
 
-   }
+    Response GetAllManager(String connID, int stoerId);
+}

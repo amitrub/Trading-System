@@ -1400,8 +1400,8 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         Response resAlert=new Response("your permission for store "+ storeID+" changed. \n"+
                     " You are now allowed to- \n"+
-                      Permissions);
-        stores.get(storeID).sendAlert(userID,resAlert);
+                      Permissions.substring(0,Permissions.length()-1));
+        stores.get(storeID).sendAlert(managerID,resAlert);
        //todo --- to here
         User user=subscribers.get(userID);
         Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
@@ -2683,6 +2683,21 @@ public class TradingSystemImplRubin implements TradingSystem {
         else {
             return new Response(true, "RemoveFromCart: The user is not Exist");
         }
+    }
+
+    @Override
+    public Response GetAllManager(String connID, int stoerId) {
+        List<DummySubscriber> dummySubscribers = new ArrayList<>();
+        if(this.stores.get(stoerId)!=null) {
+            for (Integer id : this.stores.get(stoerId).getManagerIDs().keySet()) {
+                User u = this.subscribers.get(id);
+                DummySubscriber dummySubscriber = new DummySubscriber(u.getId(), u.getUserName());
+                dummySubscribers.add(dummySubscriber);
+            }
+        }
+        Response res = new Response("Get All Subscribers succeed");
+        res.AddPair("subscribers", dummySubscribers);
+        return  res;
     }
 
 
