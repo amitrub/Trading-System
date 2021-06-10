@@ -16,6 +16,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -212,6 +214,22 @@ public class Data_Controller {
     public Optional<DataDiscountPolicy> getdiscountByStoreId(Integer storeid){
         return discountPolicyService.getDiscountByStore(storeid);
     }
+
+    public HashMap<Date,Integer> getAllSubscribersWeek(){
+        return subscriberService.getAllSubscribersWeek();
+    }
+
+    public HashMap<Date,Integer> getAllStoresWeek(){
+        return storeService.getAllStoresWeek();
+    }
+    public HashMap<Date,Integer> getAllShoppingHistoriesWeek(){
+        return shoppingHistoryService.getAllShoppingHistoriesWeek();
+    }
+    public HashMap<Date,Integer> getAllMoneyWeek(){
+        return shoppingHistoryService.getAllMoneyWeek();
+    }
+
+
 //
 //    //Req 1.3 search Product By Name
 //    public List<DataProduct> serachByName(String productName, int minprice, int maxprice){
