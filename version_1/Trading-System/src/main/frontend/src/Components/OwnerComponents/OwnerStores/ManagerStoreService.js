@@ -423,7 +423,7 @@ function ManagerStoreService(props) {
         </h2>
       </div>
       <div className="row">
-        {/* Show Stores Btn */}
+        {/* Show products Btn */}
         <button
           className="buttonus"
           value="load our stores..."

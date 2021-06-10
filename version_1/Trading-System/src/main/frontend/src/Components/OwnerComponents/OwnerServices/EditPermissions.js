@@ -25,9 +25,28 @@ function EditPermissions(props) {
   const [EditDiscountPolicy, setEditDiscountPolicy] = useState(false);
   const [EditBuyingPolicy, setEditBuyingPolicy] = useState(false);
 
+  const [workers, setWorkers] = useState([]);
   const [managerID, setManagerID] = useState(-1);
   const [popupPermissions, setPopupPermissions] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
+
+  async function fetchWorkers() {
+    const workersResponse = await apiHttp.GetAllStoreManagers(
+      props.connID,
+      props.storeID
+    );
+    // console.log(workersResponse);
+
+    if (workersResponse.isErr) {
+      console.log(workersResponse.message);
+    } else {
+      setWorkers(workersResponse.returnObject.subscribers);
+    }
+  }
+
+  useEffect(() => {
+    fetchWorkers();
+  }, [props.refresh]);
 
   async function submitEditPermissionsHandler(event) {
     event.preventDefault();
@@ -99,7 +118,7 @@ function EditPermissions(props) {
           >
             {/* TODO: CHANGE TO ROLL THE EXIST MANAGERS */}
             {/* Manager ID */}
-            <div className="row">
+            {/* <div className="row">
               <div className="col span-1-of-3">
                 <label htmlFor="name">Manager ID</label>
               </div>
@@ -112,6 +131,32 @@ function EditPermissions(props) {
                   onChange={updateManagerID}
                   placeholder={"CHANGE TO ENROLL FROM THE EXISTING MANAGERS"}
                 />
+              </div>
+            </div> */}
+
+            {/* Manager id */}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Manager ID</label>
+              </div>
+              <div className="col span-2-of-3">
+                <select
+                  className="select"
+                  value={managerID}
+                  onChange={(e) => updateManagerID(e)}
+                  about="Show number of results:"
+                >
+                  {/* TOOD: change map to workersResponse.workers */}
+                  <option value={-1} disabled>
+                    {" "}
+                    choose manager{" "}
+                  </option>
+                  {workers.map((currWorker) => (
+                    <option value={currWorker.userID}>
+                      {currWorker.userID}:{currWorker.userName}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 

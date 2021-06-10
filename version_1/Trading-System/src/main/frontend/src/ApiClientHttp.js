@@ -736,6 +736,19 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
+    GetAllStoreManagers: (connID, storeID) => {
+      let path = subscriberURL.concat(`${storeID}/get_all_manager`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    //DONE
     RemoveManager: (connID, userID, storeID, managerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_manager/${managerID}`
@@ -767,7 +780,11 @@ export const createApiClientHttp = () => {
       GetInfoOfficials,
       GetInfoRequests,
       ResponseRequests,
-      GetStoreHistory
+      GetStoreHistory,
+      GetDailyIncomeForStore,
+      RequestBidding,
+      EditDiscountPolicy,
+      EditBuyingPolicy
     ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/edit_manager_permissions/${managerID}`
@@ -790,7 +807,15 @@ export const createApiClientHttp = () => {
         GetInfoRequests: GetInfoRequests,
         ResponseRequests: ResponseRequests,
         GetStoreHistory: GetStoreHistory,
+        RequestBidding: RequestBidding,
+        EditDiscountPolicy: EditDiscountPolicy,
+        EditBuyingPolicy: EditBuyingPolicy,
+        GetDailyIncomeForStore: GetDailyIncomeForStore,
       };
+
+      console.log("---------");
+      console.log(path);
+      console.log(body);
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
