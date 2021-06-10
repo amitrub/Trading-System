@@ -828,8 +828,10 @@ public class TradingSystemImplRubin implements TradingSystem {
                     Store store = this.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
                     String productsList = makeProductsList(store.getId(), productsID);
+                    List<Integer> specialProductsID = bag.getSpecialProductProductsList();
+                    String specialProductsList = makeProductsList(store.getId(), specialProductsID);
                     Response resAlert = new Response(false, "The client " + user.getUserName() +
-                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
+                            " has been purchased the products: " + productsList +" "+specialProductsList+ " from your store: " + store.getName());
                     store.sendAlertToOwners(resAlert);
                 }
             }
@@ -915,6 +917,7 @@ public class TradingSystemImplRubin implements TradingSystem {
                 Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
+                newStore.addOwnerPermission(userID,user.getOwnerPermission(storeID));
                 stores.put(newStore.getId(),newStore);
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddPair("storeID", newStore.getId());
@@ -1354,6 +1357,12 @@ public class TradingSystemImplRubin implements TradingSystem {
         Response res = new Response(false, "AddNewManager: The manager Added successfully");
         User user = subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+
+        //Alert
+        String ownerName = this.subscribers.get(userID).getUserName();
+        Response resAlert = new Response(false, ownerName + " appointed you to be manager of the store: " + stores.get(storeID).getName());
+        stores.get(storeID).sendAlert(newManager, resAlert);
+
         return res; 
     }
 
@@ -1397,8 +1406,19 @@ public class TradingSystemImplRubin implements TradingSystem {
         MTE.editPermissions(userID,storeID,permissions);
         stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
         //NM.unlockUser();
-        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
+
+        //Alert update Permissions
+        String Permissions="";
+        for (PermissionEnum.Permission p:permissions
+             ) {
+            Permissions=Permissions+ p.toString()+", ";
+        }
+        Response resAlert=new Response("your permission for store "+ storeID+" changed. \n"+
+                    " You are now allowed to- \n"+
+                      Permissions.substring(0,Permissions.length()-1));
+        stores.get(storeID).sendAlert(managerID,resAlert);
         User user=subscribers.get(userID);
+        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager " + managerID + " edit successfully");
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res; 
     }
@@ -1787,7 +1807,11 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!this.subscribers.containsKey(newRole)) {
             return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
         }
+        //TODO: check this
         if (!this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID) && !this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
+            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+        }
+        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
             return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
         }
         if(!this.hasPermission(userID,storeID,permission)) {
@@ -2670,7 +2694,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
     }
 
-
     @Override
     public Response removeSpecialProductFromCart(String connID, int storeID, int productID) {
         if(connectedSubscribers.containsKey(connID)) {
@@ -2684,10 +2707,11 @@ public class TradingSystemImplRubin implements TradingSystem {
             return new Response(true, "RemoveFromCart: The user is not Exist");
         }
     }
-    
+
+    @Override
     public Response GetAllManager(String connID, int stoerId) {
         List<DummySubscriber> dummySubscribers = new ArrayList<>();
-        if (this.stores.get(stoerId) != null) {
+        if(this.stores.get(stoerId)!=null) {
             for (Integer id : this.stores.get(stoerId).getManagerIDs().keySet()) {
                 User u = this.subscribers.get(id);
                 DummySubscriber dummySubscriber = new DummySubscriber(u.getId(), u.getUserName());
@@ -2696,8 +2720,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
         Response res = new Response("Get All Subscribers succeed");
         res.AddPair("subscribers", dummySubscribers);
-        return res;
+        return  res;
     }
+
 
     public Integer getStoreIDByName(String storeName){
         for(Store s : stores.values())
