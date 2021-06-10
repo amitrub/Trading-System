@@ -633,4 +633,11 @@ public class ProxyTrading implements TradingSystem {
         return null;
     }
 
+    @Override
+    public Response GetAllManager(String connID, int storeId) {
+        if(real!=null)
+            return real.GetAllManager(connID,storeId);
+        return null;
+    }
+
 }
