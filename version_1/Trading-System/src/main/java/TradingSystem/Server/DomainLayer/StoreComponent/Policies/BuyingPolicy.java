@@ -7,15 +7,12 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Comp
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.*;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 @RunWith(SpringRunner.class)
@@ -27,7 +24,7 @@ public class BuyingPolicy {
 
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    TradingSystemImpl tradingSystem;
 
 
     public BuyingPolicy(Integer storeID,Expression exp){

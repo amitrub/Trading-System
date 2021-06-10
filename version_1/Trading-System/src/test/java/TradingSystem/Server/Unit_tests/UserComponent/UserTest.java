@@ -4,7 +4,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.ResultUnitTests;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UserTest {
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     String NconnID;
     int NofetID;

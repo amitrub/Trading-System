@@ -3,7 +3,7 @@ package TradingSystem.Server.Unit_tests.ExternalServices;
 import TradingSystem.Server.DomainLayer.ExternalServices.AddressInfo;
 import TradingSystem.Server.DomainLayer.ExternalServices.PaymentInfo;
 import TradingSystem.Server.DomainLayer.ExternalServices.PaymentSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +20,7 @@ class PaymentSystemTest {
 
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     PaymentSystem paymentSystem = PaymentSystem.getInstance();
     String connID;

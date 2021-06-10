@@ -1,10 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
 import TradingSystem.Client.ClientProxy;
-import TradingSystem.Client.Client_Driver;
-import TradingSystem.Client.Client_Interface;
-import TradingSystem.Server.DomainLayer.StoreComponent.Bid;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
@@ -17,7 +13,6 @@ import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
@@ -25,7 +20,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -43,7 +37,7 @@ public class OwnerTests {
     Integer newUserID;
 
 //    @Autowired
-//    TradingSystemImplRubin tradingSystem;
+//    TradingSystemImpl tradingSystem;
 
     @BeforeEach
     void setUp() {

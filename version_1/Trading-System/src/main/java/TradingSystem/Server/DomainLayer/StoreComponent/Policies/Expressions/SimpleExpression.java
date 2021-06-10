@@ -1,7 +1,6 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions;
 
-import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public abstract class SimpleExpression  implements Expression{
 
     @Autowired
-    public static TradingSystemImplRubin tradingSystem;
+    public static TradingSystemImpl tradingSystem;
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         SimpleExpression.tradingSystem = tradingSystem;
     }
 

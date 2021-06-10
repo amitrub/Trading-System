@@ -10,7 +10,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfPro
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.QuantityForGetSale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -26,7 +26,7 @@ public class DiscountPolicy {
     private Sale sale;
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     public DiscountPolicy(Integer storeID,Sale s){
      this.storeID=storeID;

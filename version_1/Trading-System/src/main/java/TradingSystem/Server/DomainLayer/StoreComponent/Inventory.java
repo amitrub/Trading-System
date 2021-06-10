@@ -2,7 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,8 +21,8 @@ public class Inventory {
         Inventory.data_controller = data_controller;
     }
 
-    private static TradingSystemImplRubin tradingSystem;
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         Inventory.tradingSystem = tradingSystem;
     }
 

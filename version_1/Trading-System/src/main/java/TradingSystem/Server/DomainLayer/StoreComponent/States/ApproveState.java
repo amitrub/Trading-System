@@ -6,15 +6,15 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class approveState implements State {
+public class ApproveState implements State {
 
     private Bid bid;
 
-    public approveState(Bid bid) {
+    public ApproveState(Bid bid) {
         this.bid = bid;
     }
 
-    public approveState(){
+    public ApproveState(){
     }
     @Override
     public Response handle(int ownerId, ConcurrentHashMap<Integer, Boolean> ownersList, int userId) {

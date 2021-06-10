@@ -3,11 +3,9 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DataLayer.Data_Modules.DataComment;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
-import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
-import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataHistoryProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -24,8 +22,8 @@ public class Product {
         Product.data_controller = data_controller;
     }
     @Autowired
-    private static TradingSystemImplRubin tradingSystem;
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         Product.tradingSystem = tradingSystem;
     }
 

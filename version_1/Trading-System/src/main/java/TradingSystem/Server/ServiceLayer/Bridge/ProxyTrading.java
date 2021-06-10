@@ -640,4 +640,8 @@ public class ProxyTrading implements TradingSystem {
         return null;
     }
 
+    @Override
+    public Response ShowProductComments(String connID, int userID, int storeID) {
+        return null;
+    }
 }

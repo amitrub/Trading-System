@@ -1,7 +1,7 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import java.util.concurrent.ConcurrentHashMap;
@@ -9,9 +9,9 @@ import java.util.concurrent.ConcurrentHashMap;
 public class StoreSale extends SimpleSale {
 
     @Autowired
-    public static TradingSystemImplRubin tradingSystem;
+    public static TradingSystemImpl tradingSystem;
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         StoreSale.tradingSystem = tradingSystem;
     }
 
