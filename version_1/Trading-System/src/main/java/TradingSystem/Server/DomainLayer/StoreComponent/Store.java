@@ -8,10 +8,9 @@ import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.approveState;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.baseState;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.initState;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.refusalState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.BaseState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.InitState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.RefusalState;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
@@ -694,7 +693,7 @@ public class Store extends Observable {
         bid.setPrice(productPrice);
         bid.setQuantity(quantity);
         bid.UpdateOwnerList(this.createOwnerList());
-        bid.changeState(new initState());
+        bid.changeState(new InitState());
         return bid.handle(userID);
     }
 
@@ -715,7 +714,7 @@ public class Store extends Observable {
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
         }
         bid.UpdateOwnerList(createOwnerList());
-        bid.changeState(new baseState());
+        bid.changeState(new BaseState());
         return bid.handle(userID);
     }
 
@@ -735,7 +734,7 @@ public class Store extends Observable {
             bid.unlockBid();
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
         }
-        bid.changeState(new refusalState());
+        bid.changeState(new RefusalState());
         return bid.handle(userID);
     }
 

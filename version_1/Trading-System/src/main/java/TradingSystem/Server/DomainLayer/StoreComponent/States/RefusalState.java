@@ -5,15 +5,15 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.concurrent.ConcurrentHashMap;
 
-public class refusalState implements State {
+public class RefusalState implements State {
 
     private Bid bid;
 
-    public refusalState(Bid bid) {
+    public RefusalState(Bid bid) {
         this.bid = bid;
     }
 
-    public refusalState(){
+    public RefusalState(){
 
     }
     @Override

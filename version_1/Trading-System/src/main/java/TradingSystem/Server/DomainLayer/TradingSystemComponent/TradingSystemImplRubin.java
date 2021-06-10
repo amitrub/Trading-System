@@ -24,9 +24,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Cheaper;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Decision;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.approveState;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.baseState;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.refusalState;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.Task.AddManagerTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
@@ -2467,9 +2464,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         Store store=this.stores.get(storeID);
         if(store==null){
             return new Response(true, "getDailyIncomeForStore: The user "+userID+" try to get the daily income for store that not in the system ");
-        }
-        if(!store.checkOwner(userID)){
-            return new Response(true, "getDailyIncomeForStore: The user " + userID + " is not the owner of the store");
         }
         if(!this.hasPermission(userID,storeID, PermissionEnum.Permission.GetDailyIncomeForStore)){
             return new Response(true, "getDailyIncomeForStore: The user " + userID + " has no permissions to see this information");
