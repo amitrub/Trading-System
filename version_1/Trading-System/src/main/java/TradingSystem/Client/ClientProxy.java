@@ -2,22 +2,13 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
-import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.ContextConfiguration;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -28,9 +19,9 @@ public class ClientProxy implements Client_Interface {
 
 
     @Autowired
-    private static TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImpl tradingSystem;
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         ClientProxy.tradingSystem = tradingSystem;
     }
 

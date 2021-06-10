@@ -2,12 +2,10 @@ package TradingSystem.Server.Unit_tests.TradingSystemComponent;
 
 import TradingSystem.Server.DomainLayer.Task.RegisterTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.ResultUnitTests;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -27,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.*;
 public class ConnectionTest {
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     @Before
     public void setUp(){

@@ -641,7 +641,7 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response ShowProductComments(String connID, int userID, int storeID, int productID) {
+    public Response ShowProductComments(String connID, int userID, int storeID) {
         return null;
     }
 }

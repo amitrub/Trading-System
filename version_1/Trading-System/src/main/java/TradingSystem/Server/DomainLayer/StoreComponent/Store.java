@@ -11,7 +11,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.BaseState;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.InitState;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.RefusalState;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
@@ -38,8 +38,8 @@ public class Store extends Observable {
         Store.data_controller = data_controller;
     }
 
-    private static TradingSystemImplRubin tradingSystem;
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         Store.tradingSystem = tradingSystem;
     }
 

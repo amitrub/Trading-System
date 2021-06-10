@@ -701,9 +701,9 @@ public class StoreOwnerServiceHttp {
         return res;
     }
 
-    @GetMapping("{userID}/store/{storeID}/product/{productID}/comments")
-    public Response ShowProductComments(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID,@PathVariable int productID){
-        Response res = this.tradingSystem.ShowProductComments(connID,userID,storeID,productID);
+    @GetMapping("{userID}/store/{storeID}/comments")
+    public Response ShowProductComments(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        Response res = this.tradingSystem.ShowProductComments(connID,userID,storeID);
         WriteToLogger(res);
         return res;
     }

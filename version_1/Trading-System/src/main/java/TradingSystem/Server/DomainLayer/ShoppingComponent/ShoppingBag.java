@@ -6,7 +6,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagC
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,10 +19,10 @@ import java.util.concurrent.locks.Lock;
 
 public class ShoppingBag {
 
-    private static TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImpl tradingSystem;
 
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         ShoppingBag.tradingSystem = tradingSystem;
     }
 

@@ -9,7 +9,7 @@ import TradingSystem.Server.DomainLayer.Task.AddManagerTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.RemoveProductTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.ResultUnitTests;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.Before;
@@ -32,7 +32,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class OwnerTest {
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     String EconnID;
     String NconnID;

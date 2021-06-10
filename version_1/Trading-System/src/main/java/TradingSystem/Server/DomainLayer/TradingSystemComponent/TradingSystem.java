@@ -125,5 +125,5 @@ public interface TradingSystem {
 
     Response GetAllManager(String connID, int stoerId);
 
-    Response ShowProductComments(String connID, int userID, int storeID, int productID);
+    Response ShowProductComments(String connID, int userID, int storeID);
 }

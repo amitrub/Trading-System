@@ -2,7 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.States.InitState;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.State;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,8 +20,8 @@ public class Bid {
     private ConcurrentHashMap<Integer,Boolean> ownerAndManagerApprovals;
     private final Lock lock = new ReentrantLock();
 
-    private static TradingSystemImplRubin tradingSystem;
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         Bid.tradingSystem = tradingSystem;
     }
 

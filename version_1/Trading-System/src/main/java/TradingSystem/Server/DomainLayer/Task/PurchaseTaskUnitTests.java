@@ -1,11 +1,7 @@
 package TradingSystem.Server.DomainLayer.Task;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import java.time.LocalDateTime;
 import java.util.concurrent.Callable;
@@ -15,9 +11,9 @@ import static TradingSystem.Server.ServiceLayer.Configuration.ANSI_RESET;
 
 public class PurchaseTaskUnitTests implements Callable<ResultUnitTests> {
 
-    private static TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImpl tradingSystem;
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         PurchaseTaskUnitTests.tradingSystem = tradingSystem;
     }
 

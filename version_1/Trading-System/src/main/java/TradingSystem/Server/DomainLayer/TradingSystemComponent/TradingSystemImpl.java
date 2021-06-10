@@ -52,7 +52,7 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
 @Service
 @Scope("singleton")
-public class TradingSystemImplRubin implements TradingSystem {
+public class TradingSystemImpl implements TradingSystem {
 
     @Autowired
     public Data_Controller data_controller;
@@ -70,7 +70,7 @@ public class TradingSystemImplRubin implements TradingSystem {
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions = new ConcurrentHashMap<>();
 
-    public TradingSystemImplRubin(Data_Controller data_controller) {
+    public TradingSystemImpl(Data_Controller data_controller) {
         this.data_controller = data_controller;
         this.setData_controller(this.data_controller);
         this.setTradingSystem(this);
@@ -120,7 +120,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         ShoppingBag.setData_controller(data_controller);
     }
 
-    private void setTradingSystem(TradingSystemImplRubin tradingSystem){
+    private void setTradingSystem(TradingSystemImpl tradingSystem){
         User.setTradingSystem(tradingSystem);
         Store.setTradingSystem(tradingSystem);
         Product.setTradingSystem(tradingSystem);
@@ -2734,7 +2734,7 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     @Override
-    public Response ShowProductComments(String connID, int userID, int storeID, int productID) {
+    public Response ShowProductComments(String connID, int userID, int storeID) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ShowProductComments: The user " + userID + " is not connected");
         }
@@ -2744,17 +2744,14 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(!stores.get(storeID).checkOwner(userID)){
             return new Response(true, "ShowProductComments: The user " + userID + " has no permissions to see this information");
         }
-        if(!stores.get(storeID).isProductExist(productID)){
-            return new Response(true, "ShowProductComments: The product " + productID + " doesn't exist in the store");
-        }
         else {
             String storeName = stores.get(storeID).getName();
             List<DummyComment> comments = new ArrayList<>();
             for(Product p : stores.get(storeID).getProducts())
             {
-                List<String> list = p.getCommentsForProduct(productID);
+                List<String> list = p.getCommentsForProduct(p.getProductID());
                 for(String s:list) {
-                    DummyComment comment = new DummyComment(storeID, storeName, productID, p.getProductName(),s,userID);
+                    DummyComment comment = new DummyComment(storeID, storeName, p.getProductID(), p.getProductName(), s, userID);
                     comments.add(comment);
                 }
             }
