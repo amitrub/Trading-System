@@ -20,7 +20,7 @@ public class approveState implements State {
     public Response handle(int ownerId, ConcurrentHashMap<Integer, Boolean> ownersList, int userId) {
         Response res = bid.AddSpacialProductForCart();
         if (res.getIsErr()) {
-            Response resAlert = new Response(false, "You have received a Response for your bidding, but the product could not be added to the cart.\n" +
+            Response resAlert = new Response(false, "You have received a Response for your bidding for product "+bid.getProductID()+" in store "+bid.getStoreId()+".\n but the product could not be added to the cart.\n" +
                     "The reason: " + res.getMessage());
             bid.sendAlert(bid.getUserID(), resAlert);
             bid.removeBid();
@@ -29,7 +29,8 @@ public class approveState implements State {
         }
          Product p=bid.getProduct();
          Response resAlert = new Response(false, "You have received a Response for your bidding.\n" +
-                "You may purchase " + p.getProductName() + " in store " + bid.getStoreName() + "at a price- " +  bid.getPrice() + " (The original price is- " + p.getPrice() + ").");
+                "You may purchase " + p.getProductName() + " in store " + bid.getStoreName() + " at a price- " +  bid.getPrice() + ". (The original price is- " + p.getPrice() + ")." +
+                 "go to your ShoppingCart to see the product");
         resAlert.AddTag("bidShoppingCart");
         bid.sendAlert(bid.getUserID(), resAlert);
         bid.unlockBid();

@@ -827,8 +827,10 @@ public class TradingSystemImplRubin implements TradingSystem {
                     Store store = this.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
                     String productsList = makeProductsList(store.getId(), productsID);
+                    List<Integer> specialProductsID = bag.getSpecialProductProductsList();
+                    String specialProductsList = makeProductsList(store.getId(), specialProductsID);
                     Response resAlert = new Response(false, "The client " + user.getUserName() +
-                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
+                            " has been purchased the products: " + productsList +" "+specialProductsList+ " from your store: " + store.getName());
                     store.sendAlertToOwners(resAlert);
                 }
             }
@@ -1402,7 +1404,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         String Permissions="";
         for (PermissionEnum.Permission p:permissions
              ) {
-            Permissions=Permissions+ p.toString()+" ,";
+            Permissions=Permissions+ p.toString()+", ";
         }
         Response resAlert=new Response("your permission for store "+ storeID+" changed. \n"+
                     " You are now allowed to- \n"+
@@ -1410,7 +1412,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         stores.get(storeID).sendAlert(managerID,resAlert);
        //todo --- to here
         User user=subscribers.get(userID);
-        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
+        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager " + managerID + " edit successfully");
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res; 
     }

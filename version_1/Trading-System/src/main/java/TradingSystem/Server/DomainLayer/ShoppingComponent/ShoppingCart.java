@@ -121,6 +121,9 @@ public class ShoppingCart {
             this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
         }
         else {
+            if(this.shoppingBags.get(storeID).getSpecialProductProductsList().contains(productID)){
+                return new Response(true, "AddProductToCart: The product " + productID + " in your special products so you cant add it to cart");
+            }
             int oldQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
             if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity + oldQuantity)) {
                   return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
@@ -310,11 +313,13 @@ public class ShoppingCart {
             }
             this.storesReducedProductsVain.add(storeID);
         }
+
         if (!isGuest){
             for (Integer storeID : shoppingBagsSet) {
                 data_controller.deleteSubscriberBag(userID, storeID);
             }
         }
+
         res=new Response(false, "Purchase: The reduction was made successfully ");
         return res;
     }
@@ -489,57 +494,7 @@ public class ShoppingCart {
         this.supplySystem = supplySystem;
     }
 
-   /*
-    public Response specialProductPurchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
-        if (shoppingBags.size() == 0) {
-            return new Response(true, "Purchase: There is no products in the shopping cart");
-        }
-        List<Lock> lockList = this.getLockList();
-        Response productInStock = this.checkInventoryAndLockProduct(lockList);
-        if (productInStock.getIsErr()) {
-            return productInStock;
-        }
-        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer storeID : shoppingBagsSet) {
-            ConcurrentHashMap<Integer, Integer> products = this.shoppingBags.get(storeID).getProducts();
-            if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID, products)) {
-                this.releaseLocks(lockList);
-                return new Response(true, "Purchase in the store " + storeID + " is against the store policy");
-            }
-        }
-        PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
-        AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
-        Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
-        if (supplyResponse.getIsErr()) {
-            this.releaseLocks(lockList);
-            return supplyResponse;
-        }
-        Response paymentResponse = paymentSystem.purchase(paymentInfo, addressInfo);
-        if (paymentResponse.getIsErr()) {
-            supplySystem.Cancel(supplyResponse.getMessage());
-            this.releaseLocks(lockList);
-            return paymentResponse;
-        }
-        Response res = Buy(isGuest);
-        if(res.getIsErr()) {
-            this.releaseLocks(lockList);
-            return res;
-        }
-        //TODO add charge to a payment
-        //TODO Add payment to each store for the products
-
-        addShoppingHistory(isGuest);
-        this.storesReducedProductsVain=new HashSet<>();
-        this.shoppingBags = new ConcurrentHashMap<>();
-        this.releaseLocks(lockList);
-        return new Response("The purchase was made successfully");
-    }
-
-    */
 }
-
-
-
 /*
     public Integer addProduct(Integer productID, Integer quantity, Integer storeID, Double price)
     {

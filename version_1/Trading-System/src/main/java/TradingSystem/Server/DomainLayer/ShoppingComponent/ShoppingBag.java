@@ -151,8 +151,8 @@ public class ShoppingBag {
         for(int productID : this.products.keySet()){
             list.put(productID,this.products.get(productID));
         }
-        for (int productID : quantityOfSpacialProducts.keySet()) {
-            list.put(productID,this.quantityOfSpacialProducts.get(productID));
+        for (int p : quantityOfSpacialProducts.keySet()) {
+            list.put(p,this.quantityOfSpacialProducts.get(p));
         }
 
         return list;

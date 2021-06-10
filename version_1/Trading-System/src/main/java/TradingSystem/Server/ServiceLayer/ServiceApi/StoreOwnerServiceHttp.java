@@ -466,7 +466,7 @@ public class StoreOwnerServiceHttp {
             if((boolean) obj.get("GetStoreHistory"))
                 Permissions.add(PermissionEnum.Permission.GetStoreHistory);
             if((boolean) obj.get("GetDailyIncomeForStore"))
-                Permissions.add(PermissionEnum.Permission.GetStoreHistory);
+                Permissions.add(PermissionEnum.Permission.GetDailyIncomeForStore);
             if((boolean) obj.get("RequestBidding"))
                 Permissions.add(PermissionEnum.Permission.RequestBidding);
             if((boolean) obj.get("EditDiscountPolicy"))
