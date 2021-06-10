@@ -168,7 +168,7 @@ class App extends React.Component {
                 // bidShoppingCart: bidShoppingCart,
                 // });
               }
-              // this.onRefresh();
+              this.onRefresh();
             }
           );
           // console.log(jsonBody);

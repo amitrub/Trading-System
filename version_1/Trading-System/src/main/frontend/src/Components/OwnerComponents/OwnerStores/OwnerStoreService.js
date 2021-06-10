@@ -644,6 +644,7 @@ function OwnerStoreService(props) {
       <div className="row">
         {showAddOwner ? (
           <AddRemoveEmployee
+            refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
@@ -660,6 +661,7 @@ function OwnerStoreService(props) {
       <div className="row">
         {showRemoveOwner ? (
           <AddRemoveEmployee
+            refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
@@ -676,6 +678,7 @@ function OwnerStoreService(props) {
       <div className="row">
         {showAddManager ? (
           <AddRemoveEmployee
+            refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}
@@ -692,6 +695,7 @@ function OwnerStoreService(props) {
       <div className="row">
         {showRemoveManager ? (
           <AddRemoveEmployee
+            refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
             userID={props.userID}

@@ -52,7 +52,7 @@ function StoresOwner(props) {
       props.connID,
       props.userID
     );
-    console.log(managerStoresResponse);
+    // console.log(managerStoresResponse);
 
     if (managerStoresResponse.isErr) {
       // console.log(managerStoresResponse.message);
@@ -200,7 +200,7 @@ function StoresOwner(props) {
           {showManagedStores ? (
             <div>
               <h2>Managed stores</h2>
-              {managerStores && managerStores.length !== 0 ? (
+              {managerStores.length !== 0 ? (
                 managerStores.map((currStore, index) => (
                   <li key={index} className="curr store">
                     <ManagerStoreService

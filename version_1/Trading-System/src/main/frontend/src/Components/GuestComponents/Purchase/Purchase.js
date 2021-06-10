@@ -61,7 +61,7 @@ function Purchase(props) {
 
   async function submitPurchaseHandler(event) {
     event.preventDefault();
-    // console.log("purchase");
+    console.log("purchase");
     let purchaseResponse = "";
 
     if (props.userID === -1) {
@@ -95,7 +95,7 @@ function Purchase(props) {
     }
 
     // console.log("purchase");
-    // console.log(purchaseResponse);
+    console.log(purchaseResponse);
 
     if (purchaseResponse) {
       setPopupMsg(purchaseResponse.message);

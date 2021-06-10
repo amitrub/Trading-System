@@ -1352,6 +1352,12 @@ public class TradingSystemImplRubin implements TradingSystem {
         Response res = new Response(false, "AddNewManager: The manager Added successfully");
         User user = subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+
+        //Alert
+        String ownerName = this.subscribers.get(userID).getUserName();
+        Response resAlert = new Response(false, ownerName + " appointed you to be manager of the store: " + stores.get(storeID).getName());
+        stores.get(storeID).sendAlert(newManager, resAlert);
+
         return res; 
     }
 

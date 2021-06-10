@@ -9,6 +9,10 @@ import RemoveProduct from "../OwnerServices/RemoveProduct";
 import ChangeQuantityProduct from "../OwnerServices/ChangeQuantityProduct";
 import AddRemoveEmployee from "../OwnerServices/AddRemoveEmployee";
 import EditPermissions from "../OwnerServices/EditPermissions";
+import BuyingPolicies from "../OwnerServices/Policies/BuyingPolicies/BuyingPolicies";
+import SellingPolicies from "../OwnerServices/Policies/SellingPolicies/SellingPolicies";
+import DailyIncome from "../OwnerServices/DailyIncome";
+import ShowBiddings from "../OwnerServices/ShowBiddings";
 
 const apiHttp = createApiClientHttp();
 
@@ -421,6 +425,7 @@ function ManagerStoreService(props) {
         <h2>
           <strong>{store.name}</strong> rate:{store.storeRate}
         </h2>
+        <p>If some services blocked, ask permissions from owners</p>
       </div>
       <div className="row">
         {/* Show products Btn */}
@@ -750,6 +755,74 @@ function ManagerStoreService(props) {
             userID={props.userID}
             storeID={props.currStore.id}
           />
+        ) : (
+          ""
+        )}
+      </div>
+
+      {/* Add Buying Policy */}
+      <div className="row">
+        {showAddBuyPolicy ? (
+          <div>
+            <BuyingPolicies
+              refresh={props.refresh}
+              onRefresh={props.onRefresh}
+              connID={props.connID}
+              userID={props.userID}
+              storeID={props.currStore.id}
+            />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+
+      {/* Add Selling Policy */}
+      <div className="row">
+        {showAddSellPolicy ? (
+          <div>
+            <SellingPolicies
+              refresh={props.refresh}
+              onRefresh={props.onRefresh}
+              connID={props.connID}
+              userID={props.userID}
+              storeID={props.currStore.id}
+            />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+
+      {/* Daily Income */}
+      <div className="row">
+        {showDailyIncome ? (
+          <div>
+            <DailyIncome
+              refresh={props.refresh}
+              onRefresh={props.onRefresh}
+              connID={props.connID}
+              userID={props.userID}
+              storeID={props.currStore.id}
+            />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+
+      {/* Daily Income */}
+      <div className="row">
+        {showBiddings ? (
+          <div>
+            <ShowBiddings
+              refresh={props.refresh}
+              onRefresh={props.onRefresh}
+              connID={props.connID}
+              userID={props.userID}
+              storeID={props.currStore.id}
+            />
+          </div>
         ) : (
           ""
         )}

@@ -251,6 +251,10 @@ export const createApiClientHttp = () => {
         country: country,
         zip: mailNum,
       };
+
+      console.log(path);
+      console.log(body);
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -350,6 +354,10 @@ export const createApiClientHttp = () => {
         country: country,
         zip: mailNum,
       };
+
+      console.log(path);
+      console.log(body);
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -399,6 +407,7 @@ export const createApiClientHttp = () => {
       userID,
       storeID,
       productID,
+      userWhoOffer,
       quantity,
       price,
       mode
@@ -410,13 +419,17 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        userWhoOffer: parseInt(userID),
+        userWhoOffer: parseInt(userWhoOffer),
         storeID: parseInt(storeID),
         productID: parseInt(productID),
         quantity: parseInt(quantity),
         productPrice: parseInt(price),
         mode: parseInt(mode),
       };
+
+      console.log(path);
+      console.log(body);
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         return res.data;
       });
@@ -813,9 +826,11 @@ export const createApiClientHttp = () => {
         GetDailyIncomeForStore: GetDailyIncomeForStore,
       };
 
-      console.log("---------");
+      console.log("---------\n Edit Permissions \n");
       console.log(path);
       console.log(body);
+      console.log("---------");
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;

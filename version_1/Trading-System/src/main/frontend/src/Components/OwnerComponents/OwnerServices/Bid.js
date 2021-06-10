@@ -23,6 +23,7 @@ function Bid(props) {
       props.userID,
       props.storeID,
       props.productID,
+      props.userWhoOffer,
       quantity != null ? quantity : props.quantity,
       newPrice != null ? newPrice : props.price,
       mode
@@ -30,7 +31,7 @@ function Bid(props) {
     // console.log("afterafter");
     // console.log(responedResponse);
 
-    setPopupMsg(responedResponse.isErr);
+    setPopupMsg(responedResponse.message);
     setShowPopup(true);
 
     if (responedResponse.isErr) {
@@ -80,7 +81,7 @@ function Bid(props) {
       <section className="section-form" id="Bid">
         <div>
           <h5>
-            The client {props.userID}, offers the next bidding: buy{" "}
+            The client {props.userWhoOffer}, offers the next bidding: buy{" "}
             {props.quantity} units of product ID {props.productID} in the price{" "}
             {props.price} per unit{" "}
           </h5>

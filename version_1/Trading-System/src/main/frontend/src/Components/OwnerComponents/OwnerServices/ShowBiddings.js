@@ -39,7 +39,8 @@ function ShowBiddings(props) {
                 refresh={props.refresh}
                 onRefresh={props.onRefresh}
                 connID={props.connID}
-                userID={currBid.userID}
+                userID={props.userID}
+                userWhoOffer={currBid.userID}
                 storeID={props.storeID}
                 productID={currBid.productID}
                 quantity={currBid.quantity}

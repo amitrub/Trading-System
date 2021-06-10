@@ -8,7 +8,6 @@ const apiHttp = createApiClientHttp();
 
 function AddRemoveEmployee(props) {
   const [employeeID, setEmployeeID] = useState(-1);
-  const [employeeName, setEmployeeName] = useState("");
   const [popupRemove, setPopupRemove] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
   const [workers, setWorkers] = useState([]);
@@ -25,12 +24,6 @@ function AddRemoveEmployee(props) {
     } else {
       setWorkers(workersResponse.returnObject.subscribers);
     }
-
-    // const workers = [
-    //   { id: 1, name: "roee" },
-    //   { id: 2, name: "hadas" },
-    //   { id: 3, name: "chango" },
-    // ];
   }
 
   useEffect(() => {

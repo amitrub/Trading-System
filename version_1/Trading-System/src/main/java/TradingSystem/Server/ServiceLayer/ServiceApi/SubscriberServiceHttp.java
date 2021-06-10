@@ -33,8 +33,8 @@ public class SubscriberServiceHttp {
     }
 
     @GetMapping("{storeId}/get_all_manager")
-    public Response GetAllManager(@PathVariable int stoerId, @RequestHeader("connID") String connID) {
-        Response res = tradingSystem.GetAllManager(connID, stoerId);
+    public Response GetAllManager(@PathVariable int storeId, @RequestHeader("connID") String connID) {
+        Response res = tradingSystem.GetAllManager(connID, storeId);
         tradingSystem.printUsers();
         WriteToLogger(res);
         return res;
@@ -217,6 +217,7 @@ public class SubscriberServiceHttp {
             WriteToLogger(res);
             return res;
         }
+        System.out.println("\n\n---------PURCHASE----------------\n\n");
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
         WriteToLogger(res);
         return res;
