@@ -716,4 +716,37 @@ public class StoreOwnerServiceHttp {
             loggerController.WriteLogMsg("Guest: " + res.getMessage());
         }
     }
+
+    @GetMapping("{userID}/store/{storeID}/show_buying_policy_building_tree")
+    public Response ShowBuyingPolicyBuildingTree(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+//        Response res = this.tradingSystem.ShowBuyingPolicyBuildingTree(connID,userID,storeID);
+//        WriteToLogger(res);
+//        return res;
+        return null;
+    }
+
+    @PostMapping("{userID}/store/{storeID}/add_node_to_building_tree")
+    public Response AddNodeToBuildingTree(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int nodeID, quantity, productID;
+        String type;
+        try {
+            nodeID = (int) obj.get("nodeID");
+            quantity = (int) obj.get("quantity");
+            productID = (int) obj.get("productID");
+            type = (String) obj.get("type"); //AND, OR, COND, or one of the simples
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in Service Server parse body : AddNodeToBuildingTree");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+//        Response res = tradingSystem.AddNodeToBuildingTree(userID,connID,storeID, nodeID, quantity, productID, type);
+//        res.AddConnID(connID);
+//        WriteToLogger(res);
+//        return res;
+        return null;
+    }
+
 }

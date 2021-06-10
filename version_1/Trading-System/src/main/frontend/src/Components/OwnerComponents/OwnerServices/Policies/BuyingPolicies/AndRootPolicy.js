@@ -3,6 +3,7 @@ import createApiClientHttp from "../../../../../ApiClientHttp";
 import "../../../../../Design/grid.css";
 import "../../../../../Design/style.css";
 import MyPopup from "../../../../OtherComponents/MyPopup/MyPopup";
+import JSONDisplay from "../JSONDisplay";
 
 const apiHttp = createApiClientHttp();
 
@@ -111,8 +112,30 @@ function AndPolicyRoot(props) {
     fetchStoreProducts();
   }, [props.refresh]);
 
+  let testExp = {
+    AndComposite: {
+      NodeID: 1,
+      QuantityLimitForProduct: {
+        NodeID: 1.1,
+        maxQuantity: 7,
+        productID: 7,
+      },
+      QuantityLimitForCategory: {
+        NodeID: 1.2,
+        maxQuantity: 7,
+        category: "c",
+      },
+      QuantityLimitForStore: {
+        NodeID: 1.3,
+        maxQuantity: 7,
+      },
+    },
+  };
+
   return (
     <section>
+      <JSONDisplay expression={testExp}></JSONDisplay>
+
       <div>
         <div className="row">
           <h2>And Tree Policy</h2>

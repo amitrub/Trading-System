@@ -66,6 +66,23 @@ function Policies(props) {
 
   return (
     <section className="section-plans js--section-plans" id="store">
+      <div>
+        <div className="row">
+          <h2>Buying Policy</h2>
+        </div>
+
+        <div>
+          <h3>This is your current policies tree:</h3>
+        </div>
+
+        <div>
+          <h3>
+            Add your next node to the tree by choose his type, his father node
+            ID, and his properties
+          </h3>
+        </div>
+      </div>
+
       <div className="row">
         {/* Show and Btn */}
         <button
