@@ -1363,7 +1363,7 @@ public class TradingSystemImpl implements TradingSystem {
         Response resAlert = new Response(false, ownerName + " appointed you to be manager of the store: " + stores.get(storeID).getName());
         stores.get(storeID).sendAlert(newManager, resAlert);
 
-        return res; 
+        return res;
     }
 
     /**
@@ -2723,7 +2723,7 @@ public class TradingSystemImpl implements TradingSystem {
         return  res;
     }
 
-
+    @Override
     public Integer getStoreIDByName(String storeName){
         for(Store s : stores.values())
         {
@@ -2762,6 +2762,21 @@ public class TradingSystemImpl implements TradingSystem {
             response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
             return response;
         }
+    }
+    @Override
+    public Integer getProductIDByName(String productName, int storeID) {
+        for(Store s : stores.values())
+        {
+            if(s.getId() == storeID)
+            {
+                for(Product p : s.getProducts())
+                {
+                    if(p.getProductName().equals(productName))
+                        return p.getProductID();
+                }
+            }
+        }
+        return -1;
     }
 }
 

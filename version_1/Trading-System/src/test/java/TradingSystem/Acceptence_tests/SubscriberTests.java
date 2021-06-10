@@ -1,5 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
+import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -10,17 +11,19 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SubscriberTests {
 
-    Client_Interface client = Client_Driver.getClient();
+    //Client_Interface client = Client_Driver.getClient();
+    Client client;
 
     @BeforeEach
     void setUp() {
-      //  this.client = new Client();
+        client = new Client();
         client.clearSystem();
         client.connectSystem();
         client.Register("Elinor", "123");
@@ -33,28 +36,6 @@ public class SubscriberTests {
         client.clearSystem();
     }
 
-    //region other functions
-    Integer getStoreID(List<DummyStore> stores, String storename) {
-        for (DummyStore s : stores)
-        {
-            String name = s.getName();
-            if(name.equals(storename))
-                return s.getId();
-        }
-        return -1;
-    }
-
-    Integer getProductID(List<DummyProduct> storeProducts, String productName)
-    {
-        for (int i=0; i<storeProducts.size(); i++)
-        {
-            if(storeProducts.get(i).getProductName().equals(productName))
-                return storeProducts.get(i).getProductID();
-        }
-        return -1;
-    }
-
-    //endregion
 
     //region requirement 3.1: logout Tests
     @Test
@@ -99,8 +80,7 @@ public class SubscriberTests {
     void writeComment() {
         // Prepare
         Integer storeID = setUpBeforePurchase();
-        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(products, "Short Pants");
+        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();;
         client.addProductToCart(storeID, productID, 1);
         client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
@@ -113,8 +93,7 @@ public class SubscriberTests {
     void sad_didntBuy_writeComment() {
         //prepare
         Integer storeID = setUpBeforePurchase();
-        List<DummyProduct> products= client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(products, "Short Pants");
+        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();
 
         //Issue
         Response response = client.writeComment(storeID, productID, 3, "The product is nice");
@@ -125,8 +104,7 @@ public class SubscriberTests {
 
     Integer setUpBeforePurchase(){
         client.openStore("Adidas");
-        List<DummyStore> stores = client.showAllStores().getStores();
-        Integer storeID = getStoreID(stores, "Adidas");
+        Integer storeID = client.getStoreIDByName("Adidas").returnStoreID();
         client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
         return storeID;
     }
@@ -136,8 +114,7 @@ public class SubscriberTests {
     void Purchase_Happy() {
         // Prepare
         Integer storeID = setUpBeforePurchase();
-        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(products, "Short Pants");
+        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();
 
         client.addProductToCart(storeID, productID, 1);
         String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
@@ -148,11 +125,11 @@ public class SubscriberTests {
         Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
         List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
-
+        DummyProduct product = new DummyProduct((Map<String, Object>)productsAfter.get(0));
         //Assert
         assertFalse(response.getIsErr());
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
-        assertEquals(productsAfter.get(0).getQuantity(), preQuantity - 1); //check decrease quantity in store
+        assertEquals(product.getQuantity(), preQuantity - 1); //check decrease quantity in store
     }
 
     //case 3.4.2 input doesn't fit
@@ -160,8 +137,7 @@ public class SubscriberTests {
     void Purchase_Sad() {
         // Prepare
         Integer storeID = setUpBeforePurchase();
-        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = products.get(0).getProductID();
+        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();;
 
         client.addProductToCart(storeID, productID, 1);
         String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
@@ -179,8 +155,7 @@ public class SubscriberTests {
     @Test
     void showUsersHistory_Happy() {
         Integer storeID = setUpBeforePurchase();
-        List<DummyProduct> products = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(products, "Short Pants");
+        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();
         client.addProductToCart(storeID, productID, 1);
         client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         client.addProductToCart(storeID, productID, 1);

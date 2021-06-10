@@ -86,6 +86,12 @@ public class Response {
         List<DummyStore> hashMap= (List<DummyStore>)this.returnObject.get("stores");
         return hashMap;
     }
+
+    public Integer returnProduct(){
+        Integer productID = (Integer) this.returnObject.get("productID");
+        return productID;
+    }
+
 /*
     public List<DummyStore> returnStoreList(){
         if(!this.isErr){

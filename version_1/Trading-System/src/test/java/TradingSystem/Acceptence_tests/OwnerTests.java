@@ -1,5 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
+import TradingSystem.Client.Client;
 import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -19,18 +20,16 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-@RunWith(SpringRunner.class)
-@SpringBootTest
-@ContextConfiguration(classes = ClientProxy.class)
+
 public class OwnerTests {
 
-    @Autowired
-    ClientProxy client;
+    Client client;
 
     //Client_Interface client;
     Integer storeID;
@@ -41,7 +40,7 @@ public class OwnerTests {
 
     @BeforeEach
     void setUp() {
-        //client = Client_Driver.getClient();
+        client = new Client();
         client.clearSystem();
         client.connectSystem();
         newUserID = client.Register("Nofet", "123");
@@ -50,7 +49,7 @@ public class OwnerTests {
         client.Register("Elinor", "123");
         client.Login("Elinor", "123");
         client.openStore("Adidas");
-        storeID = getStoreID(client.showAllStores().getStores(),"Adidas");
+        storeID = client.getStoreIDByName("Adidas").returnStoreID();
         //client.addProduct(storeID, "Dress", "Dress", 80.0, 25);
     }
 
@@ -166,7 +165,7 @@ public class OwnerTests {
         //Prepare
         client.addProduct(storeID, "T-Shirt", "Tops", 80.0, 25);
         List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(storeProducts1,"T-Shirt");
+        Integer productID = client.getProductIDByName("T-Shirt", storeID).returnProduct();
         Integer preSize = storeProducts1.size();
 
         //happy remove
@@ -179,8 +178,7 @@ public class OwnerTests {
     @Test
     void BadRemove() {
         client.addProduct(storeID, "T-Shirt", "Tops", 80.0, 25);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(storeProducts1,"Arma Heels");
+        Integer productID = client.getProductIDByName("Arma Heels", storeID).returnProduct();
         client.removeProduct(storeID, productID);
         Integer preSize = client.showStoreProducts(storeID).returnProductList().size();
 
@@ -197,13 +195,13 @@ public class OwnerTests {
     @Test
     void HappyEditPrice() {
         client.addProduct(storeID, "T-Shirt", "Tops", 80.0, 25);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(storeProducts1,"T-Shirt");
+        Integer productID = client.getProductIDByName("T-Shirt", storeID).returnProduct();
 
         //happy edit price
         Response response = client.editProduct(storeID, productID, "T-Shirt", "Tops", 100.0,25);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID).returnProductList();
-        assertEquals(storeProducts2.get(0).getPrice(), 100.0, 0);
+        DummyProduct product = new DummyProduct((Map<String, Object>) storeProducts2.get(0));
+        assertEquals(product.getPrice(), 100.0, 0);
         assertEquals(storeProducts2.size(), 1);
         assertFalse(response.getIsErr());
     }
@@ -211,13 +209,13 @@ public class OwnerTests {
     @Test
     void HappyEditQuantity() {
         client.addProduct(storeID, "T-Shirt", "Tops", 80.0, 25);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(storeProducts1,"T-Shirt");
+        Integer productID = client.getProductIDByName("T-Shirt", storeID).returnProduct();
 
         //happy edit quantity
         Response response = client.editProduct(storeID, productID, "T-Shirt", "Tops", 80.0,35);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID).returnProductList();
-        assertEquals(storeProducts2.get(0).getQuantity(), 35);
+        DummyProduct product = new DummyProduct((Map<String, Object>) storeProducts2.get(0));
+        assertEquals(product.getQuantity(), 35);
         assertEquals(storeProducts2.size(), 1);
         assertFalse(response.getIsErr());
     }
@@ -225,13 +223,13 @@ public class OwnerTests {
     @Test
     void SadEditPrice() {
         client.addProduct(storeID, "T-Shirt", "Tops", 80.0, 25);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(storeProducts1,"T-Shirt");
+        Integer productID = client.getProductIDByName("T-Shirt", storeID).returnProduct();
 
         //sad edit
         Response response = client.editProduct(storeID, productID, "T-Shirt", "Tops", -120.0,25);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID).returnProductList();
-        assertEquals(storeProducts2.get(0).getPrice(), 80.0, 0);
+        DummyProduct product = new DummyProduct((Map<String, Object>) storeProducts2.get(0));
+        assertEquals(product.getPrice(), 80.0, 0);
         assertEquals(storeProducts2.size(), 1);
         assertTrue(response.getIsErr());
     }
@@ -239,15 +237,15 @@ public class OwnerTests {
     @Test
     void SadEditQuantity() {
         client.addProduct(storeID, "T-Shirt", "Tops", 80.0, 25);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(storeProducts1,"T-Shirt");
+        Integer productID = client.getProductIDByName("T-Shirt", storeID).returnProduct();
         Integer preSize = client.showStoreProducts(storeID).returnProductList().size();
 
         //sad edit
         Response response = client.editProduct(storeID, productID, "T-Shirt", "Tops", 120.0,-25);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID).returnProductList();
         Integer newSize = storeProducts2.size();
-        assertEquals(storeProducts2.get(0).getQuantity(), 25);
+        DummyProduct product = new DummyProduct((Map<String, Object>) storeProducts2.get(0));
+        assertEquals(product.getQuantity(), 25);
         assertEquals(newSize, preSize);
         assertTrue(response.getIsErr());
     }
@@ -255,8 +253,7 @@ public class OwnerTests {
     @Test
     void SadEditNonExist() {
         client.addProduct(storeID, "T-Shirt", "Tops", 80.0, 25);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(storeProducts1,"T-Shirt");
+        Integer productID = client.getProductIDByName("T-Shirt", storeID).returnProduct();
         client.removeProduct(storeID, productID);
         Integer preSize = client.showStoreProducts(storeID).returnProductList().size();
 
@@ -570,8 +567,7 @@ public class OwnerTests {
     @Test
     void HappyShowStoreHistory() {
         client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID = getProductID(storeProducts1,"Sneakers");
+        Integer productID = client.getProductIDByName("Sneakers", storeID).returnProduct();
         client.Logout();
 
         client.Login("Nofet", "123");
@@ -871,8 +867,8 @@ public class OwnerTests {
     @Test
     void SadUserNotOwnerOfTheStore(){
         client.openStore("banana");
-        int tmpStoreID = getStoreID(client.showAllStores().getStores(),"banana");
-         client.Logout();
+        int tmpStoreID = client.getStoreIDByName("banana").returnStoreID();
+        client.Logout();
         client.connectSystem();
         client.Register("tmp", "123");
         Integer tmpUserID=client.Login("tmp", "123").returnUserID();

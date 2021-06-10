@@ -644,4 +644,18 @@ public class ProxyTrading implements TradingSystem {
     public Response ShowProductComments(String connID, int userID, int storeID) {
         return null;
     }
+
+    @Override
+    public Integer getStoreIDByName(String storeName) {
+        if(real!=null)
+            return real.getStoreIDByName(storeName);
+        return -1;
+    }
+
+    @Override
+    public Integer getProductIDByName(String productName, int storeID) {
+        if(real!=null)
+            return real.getProductIDByName(productName, storeID);
+        return -1;
+    }
 }

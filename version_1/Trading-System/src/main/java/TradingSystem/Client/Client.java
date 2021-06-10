@@ -141,9 +141,26 @@ public class Client implements Client_Interface {
         Response response = Response.makeResponseFromJSON(jsonResponse);
         return response;
     }
+
     public Response showStoreProducts(int storeID) {
         String path = String.format("store/%s/products", storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    @Override
+    public Response showAllStoresSubscriber() {
+        String path = "stores_subscriber";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    @Override
+    public Response showStoreProductsSubscriber(int storeID) {
+        String path = String.format("store/%s/products_subscriber", storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         return response;
     }
@@ -856,4 +873,34 @@ public class Client implements Client_Interface {
         return response;
     }
 
+    @Override
+    public Response getStoreIDByName(String storeName)
+    {
+        String path = String.format("get_store_ID");
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("store", storeName);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addProduct, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(getStoreIDByName) response: " + response + ANSI_RESET);
+        return response;
+    }
+
+    @Override
+    public Response getProductIDByName(String productName, int StoreID) {
+        String path = String.format("%s/get_product_ID", StoreID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("productName", productName);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: ResponseForSubmissionBidding, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(getProductIDByName) response: " + response + ANSI_RESET);
+        return response;
+    }
 }
