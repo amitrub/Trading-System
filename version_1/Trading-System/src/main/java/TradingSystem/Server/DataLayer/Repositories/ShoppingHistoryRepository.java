@@ -6,6 +6,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingH
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.Date;
 import java.util.List;
 
 @Repository
@@ -15,5 +16,7 @@ public interface ShoppingHistoryRepository extends JpaRepository<DataShoppingHis
 //
     List<DataShoppingHistory> findAllBySubscriber(DataSubscriber subscriber);
     List<DataShoppingHistory> findAllByStore(DataStore store);
+    List<DataShoppingHistory> findAllByDateBetween(Date begin, Date end);
+
 }
 

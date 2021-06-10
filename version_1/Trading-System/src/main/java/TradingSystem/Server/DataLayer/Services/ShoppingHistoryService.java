@@ -11,7 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 @Service
@@ -62,6 +64,44 @@ public class ShoppingHistoryService {
     public List<DataShoppingHistory> findAllByStore(int storeid){
         DataStore store=storeRepository.getOne(storeid);
         return shoppingHistoryRepository.findAllByStore(store);
+    }
+    public HashMap<Date,Integer> getAllShoppingHistoriesWeek(){
+        HashMap<Date,Integer> hashMap=new HashMap<>();
+        Date date = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
+        c.add(Calendar.DATE, -i);
+        //   Date start = c.getTime();
+        for(int j=0;j<=6;j++){
+            Date start = c.getTime();
+            c.add(Calendar.DATE, 1);
+            Date end = c.getTime();
+            List<DataShoppingHistory> shoppingHistories=shoppingHistoryRepository.findAllByDateBetween(start,end);
+            hashMap.put(start,shoppingHistories.size());
+        }
+        return hashMap;
+    }
+    public HashMap<Date,Integer> getAllMoneyWeek(){
+        HashMap<Date,Integer> hashMap=new HashMap<>();
+        Date date = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
+        c.add(Calendar.DATE, -i);
+        //   Date start = c.getTime();
+        for(int j=0;j<=6;j++){
+            Date start = c.getTime();
+            c.add(Calendar.DATE, 1);
+            Date end = c.getTime();
+            List<DataShoppingHistory> shoppingHistories=shoppingHistoryRepository.findAllByDateBetween(start,end);
+            int sum=0;
+            for(DataShoppingHistory dataShoppingHistory: shoppingHistories){
+                sum+=dataShoppingHistory.getprice();
+            }
+            hashMap.put(start,sum);
+        }
+        return hashMap;
     }
 
 

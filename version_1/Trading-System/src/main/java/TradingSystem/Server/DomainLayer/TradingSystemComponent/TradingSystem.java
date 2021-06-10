@@ -129,4 +129,7 @@ public interface TradingSystem {
 
     Integer getProductIDByName(String productName, int storeID);
 
+    Response GetAllManager(String connID, int stoerId);
+
+    Response ShowProductComments(String connID, int userID, int storeID);
 }

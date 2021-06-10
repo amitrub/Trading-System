@@ -1,9 +1,11 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -14,13 +16,18 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
 @Service
 @Transactional
 public class Data_Controller {
-
+    @Autowired
+    private BuyingService buyingService;
+    @Autowired
+    private DiscountPolicyService discountPolicyService;
     @Autowired
     private SubcriberService subscriberService;
     @Autowired
@@ -95,11 +102,11 @@ public class Data_Controller {
     }
 
     public void EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
-        System.out.println(permissions);
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
         permissionsService.EditManagerPermissions(storeID, managerID, permissions);
+    }
+
+    public void addCommentToProduct(Integer productID, Integer userID, String comment) {
+        productService.addCommentToProduct(productID, userID, comment);
     }
 
 
@@ -191,6 +198,38 @@ public class Data_Controller {
     public void deleteSubscriberBag(Integer userID, Integer storeID){
         shoppingCartService.deleteSubscriberBag(userID, storeID);
     }
+
+    public void AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
+        buyingService.AddBuyingPolicy(buyingPolicy);
+    }
+
+    public void AddDiscountPolicy(DataDiscountPolicy service){
+        discountPolicyService.AddDiscountPolicy(service);
+    }
+
+    public Optional<DataBuyingPolicy> getBuyingByStoreId(Integer storeid){
+        return buyingService.getBuyingByStore(storeid);
+    }
+
+    public Optional<DataDiscountPolicy> getdiscountByStoreId(Integer storeid){
+        return discountPolicyService.getDiscountByStore(storeid);
+    }
+
+    public HashMap<Date,Integer> getAllSubscribersWeek(){
+        return subscriberService.getAllSubscribersWeek();
+    }
+
+    public HashMap<Date,Integer> getAllStoresWeek(){
+        return storeService.getAllStoresWeek();
+    }
+    public HashMap<Date,Integer> getAllShoppingHistoriesWeek(){
+        return shoppingHistoryService.getAllShoppingHistoriesWeek();
+    }
+    public HashMap<Date,Integer> getAllMoneyWeek(){
+        return shoppingHistoryService.getAllMoneyWeek();
+    }
+
+
 //
 //    //Req 1.3 search Product By Name
 //    public List<DataProduct> serachByName(String productName, int minprice, int maxprice){

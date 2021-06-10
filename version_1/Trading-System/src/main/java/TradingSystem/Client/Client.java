@@ -828,6 +828,40 @@ public class Client implements Client_Interface {
     }
 
     /**
+     * requirement 8.3.3
+     * @return Response
+     */
+
+    @Override
+    public Response RemoveSpecialProductProductFromCart(String connID, int storeID, int productID) {
+        String path = "shopping_cart/remove_special_product";
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("storeID", storeID);
+            jsonPost.put("productID", productID);
+
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: ResponseForSubmissionBidding, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(editProduct) ResponseForSubmissionBidding: " + response + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * requirement 8.3- None
+     * @return Response
+     */
+    @Override
+    public Response ShowSpecialProductsInShoppingCart(String connID) {
+        String path = "shopping_cart_special";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    /**
      * requirement 8.3- None
      * @return Response
      */

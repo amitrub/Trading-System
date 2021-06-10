@@ -88,4 +88,9 @@ public abstract class SimpleSale implements Sale {
 
      */
 
+    @Override
+    public String toString(){
+        return expression.toString();
+    }
+
 }

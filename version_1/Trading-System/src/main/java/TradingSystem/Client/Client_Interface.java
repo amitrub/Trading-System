@@ -4,6 +4,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expr
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -328,6 +329,17 @@ public interface Client_Interface {
      */
     public Response ResponseForSubmissionBidding( int storeID,int productID, int userWhoOffer,int quantity,int productPrice,int mode);
 
+    /**
+     * requirement 8.3.3
+     * @return Response
+     */
+    public Response RemoveSpecialProductProductFromCart( String connID, int storeID, int productID);
+
+    /**
+     * requirement 8.3-None
+     * @return Response
+     */
+    public Response ShowSpecialProductsInShoppingCart(String connID);
 
     /**
      * requirement 8.3-None

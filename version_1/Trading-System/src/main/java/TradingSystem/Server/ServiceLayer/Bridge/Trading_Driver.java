@@ -1,15 +1,15 @@
 package TradingSystem.Server.ServiceLayer.Bridge;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 
 public abstract class Trading_Driver {
 
     @Autowired
-    public static TradingSystemImplRubin tradingSystem;
+    public static TradingSystemImpl tradingSystem;
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         Trading_Driver.tradingSystem = tradingSystem;
     }
 

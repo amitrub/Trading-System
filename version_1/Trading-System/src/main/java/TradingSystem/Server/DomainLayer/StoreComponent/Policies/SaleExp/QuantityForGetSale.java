@@ -35,4 +35,16 @@ public class QuantityForGetSale extends SimpleExpression {
         }
         return new Response("correct");
     }
+
+    public Integer getQuantityForSale(){
+        return quantityForSale;
+    }
+
+    public Integer getProductId(){
+        return productId;
+    }
+    @Override
+    public String toString(){
+        return "product id "+productId+ " quantity "+quantityForSale;
+    }
 }

@@ -8,11 +8,10 @@ import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.approveState;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.baseState;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.initState;
-import TradingSystem.Server.DomainLayer.StoreComponent.States.refusalState;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.BaseState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.InitState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.RefusalState;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
@@ -39,8 +38,8 @@ public class Store extends Observable {
         Store.data_controller = data_controller;
     }
 
-    private static TradingSystemImplRubin tradingSystem;
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         Store.tradingSystem = tradingSystem;
     }
 
@@ -571,7 +570,15 @@ public class Store extends Observable {
     //send alert to all owners of the store
     public void sendAlertOfBiddingToManager(Response message){
         for(Integer ID : managersIDs) {
-            ManagerPermission MP=this.managersPermission.get(ID);
+            ManagerPermission MP = this.managersPermission.get(ID);
+            if (MP != null) {
+                if (MP.hasPermission(PermissionEnum.Permission.RequestBidding)) {
+                    sendAlert(ID, message);
+                }
+            }
+           }
+        }
+           /* ManagerPermission MP=this.managersPermission.get(ID);
             if(MP!=null) {
                 if(MP.hasPermission(PermissionEnum.Permission.RequestBidding)) {
                     User user = tradingSystem.subscribers.get(ID);
@@ -585,7 +592,7 @@ public class Store extends Observable {
         this.setChanged();
         this.notifyObservers(message);
         this.deleteObservers();
-    }
+            */
 
     //send alert to specific owner
     public void sendAlert(Integer ownerID, Response message){
@@ -616,7 +623,8 @@ public class Store extends Observable {
         if(this.Bids==null) {
             this.Bids = new ConcurrentLinkedDeque<>();
         }
-        this.Bids.add(new Bid(userID, productID,this.id,productPrice,quantity,createOwnerList()));
+        ConcurrentHashMap<Integer,Boolean> list=this.createOwnerList();
+        this.Bids.add(new Bid(userID, productID,this.id,productPrice,quantity,list));
     }
 
     public ConcurrentHashMap<Integer, Boolean> createOwnerList() {
@@ -630,7 +638,7 @@ public class Store extends Observable {
                 list.put(key,false);
             }
         }
-        return null;
+        return list;
     }
 
     public boolean CheckBidForProductExist(Integer userID, Integer productID){
@@ -685,7 +693,7 @@ public class Store extends Observable {
         bid.setPrice(productPrice);
         bid.setQuantity(quantity);
         bid.UpdateOwnerList(this.createOwnerList());
-        bid.changeState(new initState());
+        bid.changeState(new InitState());
         return bid.handle(userID);
     }
 
@@ -706,7 +714,7 @@ public class Store extends Observable {
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
         }
         bid.UpdateOwnerList(createOwnerList());
-        bid.changeState(new baseState());
+        bid.changeState(new BaseState());
         return bid.handle(userID);
     }
 
@@ -726,7 +734,7 @@ public class Store extends Observable {
             bid.unlockBid();
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
         }
-        bid.changeState(new refusalState());
+        bid.changeState(new RefusalState());
         return bid.handle(userID);
     }
 

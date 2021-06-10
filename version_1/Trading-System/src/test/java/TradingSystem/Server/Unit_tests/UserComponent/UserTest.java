@@ -4,7 +4,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.Task.PurchaseTaskUnitTests;
 import TradingSystem.Server.DomainLayer.Task.ResultUnitTests;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -31,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class UserTest {
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     String NconnID;
     int NofetID;
@@ -141,10 +141,13 @@ public class UserTest {
         tradingSystem.addBuyingPolicy(NofetID, NconnID, NofetStore, exp);
         Integer productID1 = Nstore.getProductID("computer");
         Integer productID2 = Nstore.getProductID("Bag");
+        Integer productID3 = Nstore.getProductID("Bed");
         Integer preQuantity = Nstore.getQuantity(productID1);
-        tradingSystem.Logout(NconnID);
         tradingSystem.AddProductToCart(EconnID, NofetStore, productID1, 1);
         tradingSystem.AddProductToCart(EconnID, NofetStore, productID2, 1);
+        Response rr=tradingSystem.subscriberBidding(ElinorID,EconnID,NofetStore,productID3,2700,1);
+        Response ww=tradingSystem.ResponseForSubmissionBidding(NofetID,NconnID,NofetStore,productID3,2700,ElinorID,1,1);
+
         Response response = Elinor.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         Assertions.assertFalse(response.getIsErr());
 

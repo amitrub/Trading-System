@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class SubscriberTests {
 
@@ -178,7 +179,7 @@ public class SubscriberTests {
     //region requirement 3.8
     // Subscriber Bidding
     @Test
-    void HappysubscriberBidding() {
+    void HappySubscriberBidding() {
         client.openStore("deme6");
         DummyStore store=null;
         for (DummyStore s:client.showAllStores().getStores()
@@ -196,25 +197,25 @@ public class SubscriberTests {
         Response r8 = client.submissionBidding( storeID, 1, 1, 3);
         assertFalse(r8.getIsErr());
         System.out.println(r8.getMessage());
-
     }
 
     @Test
-    void SadsubscriberBidding_unsubscribe() {
+    void SadSubscriberBidding_unsubscribe() {
         client.Logout();
         Response r = client.submissionBidding(-1, 1, 1, 3);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
+
     @Test
-    void SadsubscriberBidding_storeNotExist() {
+    void SadSubscriberBidding_storeNotExist() {
         Response r = client.submissionBidding(-1, 1, 1, 3);
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
 
     @Test
-    void SadsubscriberBidding_productNotExist() {
+    void SadSubscriberBidding_productNotExist() {
         client.openStore("deme1");
         DummyStore store=null;
         for (DummyStore s:client.showAllStores().getStores()
@@ -231,8 +232,9 @@ public class SubscriberTests {
         assertTrue(r.getIsErr());
         System.out.println(r.getMessage());
     }
+
     @Test
-    void SadsubscriberBidding_productInTheCartAlready() {
+    void SadSubscriberBidding_productInTheCartAlready() {
         client.openStore("deme2");
         DummyStore store=null;
         for (DummyStore s:client.showAllStores().getStores()
@@ -254,7 +256,7 @@ public class SubscriberTests {
     }
 
     @Test
-    void SadsubscriberBidding_priceNotInRange() {
+    void SadSubscriberBidding_priceNotInRange() {
         client.openStore("deme3");
         DummyStore store=null;
         for (DummyStore s:client.showAllStores().getStores()
@@ -278,7 +280,7 @@ public class SubscriberTests {
     }
 
     @Test
-    void SadsubscriberBidding_NegativeQuantity() {
+    void SadSubscriberBidding_NegativeQuantity() {
         client.openStore("deme4");
         DummyStore store=null;
         for (DummyStore s:client.showAllStores().getStores()
@@ -299,7 +301,7 @@ public class SubscriberTests {
     }
 
     @Test
-    void SadsubscriberBidding_BidAlreadyExist() {
+    void SadSubscriberBidding_BidAlreadyExist() {
         client.openStore("deme5");
         DummyStore store=null;
         for (DummyStore s:client.showAllStores().getStores()
@@ -314,12 +316,53 @@ public class SubscriberTests {
         Integer storeID=store.getId();
         client.addProduct(storeID, "1", "1", 10, 20);
         client.addProduct(storeID, "2", "1", 7, 20);
-        client.submissionBidding(storeID, 1, 1, 3);
+        Response r2=client.submissionBidding(storeID, 1, 1, 3);
         Response r1 = client.submissionBidding(storeID, 1, 1, 3);
-        assertTrue(r1.getIsErr());
+        assertTrue(!r2.getIsErr()&&r1.getIsErr());
         System.out.println(r1.getMessage());
     }
 
+    @Test
+    void SadProductAlreadyInCart() {
+        client.openStore("deme9");
+        DummyStore store=null;
+        for (DummyStore s:client.showAllStores().getStores()
+        ) {
+            if (s.getName().equals("deme9")){
+                store=s;
+            }
+        }
+        if(store==null){
+            store=client.showAllStores().getStores().get(0);
+        }
+        Integer storeID=store.getId();
+        client.addProduct(storeID, "1", "1", 10, 20);
+        client.addProductToCart(storeID, 1, 3);
+        Response r =client.submissionBidding(storeID, 1, 1, 3);
+        assertTrue(r.getIsErr());
+        System.out.println(r.getMessage());
+    }
+
+    @Test
+    void SadRemoveSpecialProduct() {
+        client.openStore("deme2");
+        DummyStore store=null;
+        for (DummyStore s:client.showAllStores().getStores()
+        ) {
+            if (s.getName().equals("deme2")){
+                store=s;
+            }
+        }
+        if(store==null){
+            store=client.showAllStores().getStores().get(0);
+        }
+        Integer storeID=store.getId();
+        client.addProduct(storeID, "1", "1", 10, 20);
+        client.addProductToCart(storeID, 1, 3);
+        Response r =client.submissionBidding(storeID, 1, 1, 3);
+        assertTrue(r.getIsErr());
+        System.out.println(r.getMessage());
+    }
     //endregion
 
     //region requirement 4.12

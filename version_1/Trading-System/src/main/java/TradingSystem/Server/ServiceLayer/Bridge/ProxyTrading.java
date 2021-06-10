@@ -634,9 +634,14 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
+    public Response GetAllManager(String connID, int storeId) {
         if(real!=null)
-            return real.subscriberSpecialProductPurchase(userID, connID, credit_number, month,  year,cvv,  id,  address, city,  country,  zip);
+            return real.GetAllManager(connID,storeId);
+        return null;
+    }
+
+    @Override
+    public Response ShowProductComments(String connID, int userID, int storeID) {
         return null;
     }
 

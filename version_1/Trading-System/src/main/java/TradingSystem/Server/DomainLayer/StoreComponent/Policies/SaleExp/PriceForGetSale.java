@@ -25,4 +25,13 @@ public class PriceForGetSale extends SimpleExpression {
         }
         return new Response("correct");
     }
+
+    public Integer getPriceForSale(){
+        return priceForSale;
+    }
+
+    @Override
+    public String toString(){
+        return "price for sale "+priceForSale;
+    }
 }

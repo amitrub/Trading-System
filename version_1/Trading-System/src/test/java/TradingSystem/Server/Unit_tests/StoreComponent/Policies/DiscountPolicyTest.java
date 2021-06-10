@@ -8,26 +8,18 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.Quantity
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorDecision.Cheaper;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
-import org.mockito.internal.matchers.Or;
-import java.io.Serializable;
 
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import org.json.JSONObject;
-import org.json.JSONString;
-import org.json.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import java.util.LinkedList;
-import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -37,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DiscountPolicyTest {
 
     @Autowired
-    TradingSystemImplRubin tradingSystem;
+    TradingSystemImpl tradingSystem;
 
     Store store;
     DiscountPolicy DC;
@@ -83,7 +75,17 @@ class DiscountPolicyTest {
         products.put(productID1, 1);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,3100.0);
+       // DiscountPolicy discountPolicy= new DiscountPolicy(storeID,sale);
+        tradingSystem.addDiscountPolicy(EuserId,EconnID,storeID,sale);
         assertEquals(2790.0, newPrice, 0);
+    }
+
+    @Test
+    void Happyupload(){
+        System.out.println("--------------------HELLLLLLLLLLLO---------------");
+        Store store=tradingSystem.stores.get(storeID);
+        DiscountPolicy discountPolicy=store.getDiscountPolicy();
+        System.out.println("Discount policy--------"+discountPolicy.toString());
     }
 
     @Test
@@ -112,6 +114,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products, 2 , 6100.0);
+        tradingSystem.addDiscountPolicy(EuserId,EconnID,storeID,sale);
         assertEquals(4900.0, newPrice,0);
     }
 
@@ -180,6 +183,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products,2,6100.0);
+        tradingSystem.addDiscountPolicy(EuserId,EconnID,storeID,sale);
         assertEquals(3050.0, newPrice,0);
     }
 
