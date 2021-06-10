@@ -11,12 +11,12 @@ import Login from "./Components/GuestComponents/Login/Login";
 import Stores from "./Components/GuestComponents/Stores/Stores";
 import "./Components/OtherComponents/Navbar/Navbar.css";
 import DownPage from "./Components/OtherComponents/MainPage/DownPage";
-import ShoppingCart from "./Components/GuestComponents/ShoppingCart/ShoppingCart";
 import OwnerStores from "./Components/OwnerComponents/OwnerStores/OwnerStores";
 import Logout from "./Components/SubscriberComponents/Logout/Logout";
 import MyPopup from "./Components/OtherComponents/MyPopup/MyPopup";
 import createApiClientHttp from "./ApiClientHttp";
 import SubscriberServices from "./Components/SubscriberComponents/SubscriberServices/SubscriberServices";
+import ShoppingCart from "./Components/GuestComponents/ShoppingCart/ShoppingCart";
 import Purchase from "./Components/GuestComponents/Purchase/Purchase";
 
 const apiHttp = createApiClientHttp();
@@ -155,14 +155,20 @@ class App extends React.Component {
     clientConnection.subscribe(`/topic/${topicName}`, (msg) => {
       if (msg.body) {
         var jsonBody = JSON.parse(msg.body);
-        console.log(jsonBody);
+        // console.log(jsonBody);
         if (jsonBody.message) {
           this.setState(
             (prevState) => ({
               popupMassages: [...prevState.popupMassages, jsonBody.message],
             }),
             () => {
-              // this.onRefresh();
+              if (jsonBody.tag === "bidShoppingCart") {
+                // this.setState({
+                // showBidShoppingCart: true,
+                // bidShoppingCart: bidShoppingCart,
+                // });
+              }
+              this.onRefresh();
             }
           );
           // console.log(jsonBody);
@@ -363,6 +369,17 @@ class App extends React.Component {
   endOfPage = () => {
     return (
       <Fragment>
+        {/* <table id="tabledata" class="table">
+          <tr>
+            <td>lables</td>
+            <td>date</td>
+          </tr>
+          <tr>
+            <td>lables</td>
+            <td>date</td>
+          </tr>
+        </table> */}
+
         <Recommendations />
         <Programers />
         <DownPage />

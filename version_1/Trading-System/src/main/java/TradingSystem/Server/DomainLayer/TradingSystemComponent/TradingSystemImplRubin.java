@@ -137,6 +137,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         RemoveProductTaskUnitTests.setTradingSystem(tradingSystem);
         Trading_Driver.setTradingSystem(tradingSystem);
         ClientProxy.setTradingSystem(tradingSystem);
+        Bid.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
@@ -826,8 +827,10 @@ public class TradingSystemImplRubin implements TradingSystem {
                     Store store = this.stores.get(bag.getStoreID());
                     List<Integer> productsID = bag.getProductsList();
                     String productsList = makeProductsList(store.getId(), productsID);
+                    List<Integer> specialProductsID = bag.getSpecialProductProductsList();
+                    String specialProductsList = makeProductsList(store.getId(), specialProductsID);
                     Response resAlert = new Response(false, "The client " + user.getUserName() +
-                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
+                            " has been purchased the products: " + productsList +" "+specialProductsList+ " from your store: " + store.getName());
                     store.sendAlertToOwners(resAlert);
                 }
             }
@@ -909,10 +912,10 @@ public class TradingSystemImplRubin implements TradingSystem {
                 //Adds to the db
                 int storeID = data_controller.AddStore(storeName, userID);
                 data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
-
                 Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
+                newStore.addOwnerPermission(userID,user.getOwnerPermission(storeID));
                 stores.put(newStore.getId(),newStore);
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddPair("storeID", newStore.getId());
@@ -1352,6 +1355,12 @@ public class TradingSystemImplRubin implements TradingSystem {
         Response res = new Response(false, "AddNewManager: The manager Added successfully");
         User user = subscribers.get(userID);
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+
+        //Alert
+        String ownerName = this.subscribers.get(userID).getUserName();
+        Response resAlert = new Response(false, ownerName + " appointed you to be manager of the store: " + stores.get(storeID).getName());
+        stores.get(storeID).sendAlert(newManager, resAlert);
+
         return res; 
     }
 
@@ -1395,8 +1404,19 @@ public class TradingSystemImplRubin implements TradingSystem {
         MTE.editPermissions(userID,storeID,permissions);
         stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
         //NM.unlockUser();
-        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager" + managerID + "edit successfully");
+       //todo ---- from here its new
+        String Permissions="";
+        for (PermissionEnum.Permission p:permissions
+             ) {
+            Permissions=Permissions+ p.toString()+", ";
+        }
+        Response resAlert=new Response("your permission for store "+ storeID+" changed. \n"+
+                    " You are now allowed to- \n"+
+                      Permissions.substring(0,Permissions.length()-1));
+        stores.get(storeID).sendAlert(managerID,resAlert);
+       //todo --- to here
         User user=subscribers.get(userID);
+        Response res = new Response(false, "EditManagerPermissions:: The permissions of manager " + managerID + " edit successfully");
         res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
         return res; 
     }
@@ -2613,8 +2633,14 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(store.getProduct(productID)==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for product ("+productID+ ") that not in the store");
         }
-        if(store.getBid(userWhoOffer,productID)==null || store.getBid(userWhoOffer,productID).isFinalState()){
+        if(store.getBid(userWhoOffer,productID)==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding not exist");
+        }
+        if(store.getBid(userWhoOffer,productID).isFinalState()){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        if(!this.hasPermission(userID,storeId,PermissionEnum.Permission.RequestBidding)){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but he does not have permission to do so");
         }
         return new Response(false,"able");
     }
@@ -2660,7 +2686,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
     }
 
-
     @Override
     public Response removeSpecialProductFromCart(String connID, int storeID, int productID) {
         if(connectedSubscribers.containsKey(connID)) {
@@ -2676,27 +2701,18 @@ public class TradingSystemImplRubin implements TradingSystem {
     }
 
     @Override
-    public Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
-        if (!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "subscriberPurchase: The user is not connected to the system");
-        } else {
-            User user = subscribers.get(userID);
-            Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
-            Response res = user.subscriberSpecialProductPurchase(credit_number, month, year, cvv, id, address, city, country, zip);
-            if (!res.getIsErr()) {
-                for (ShoppingBag bag : shoppingBags) {
-                    Store store = this.stores.get(bag.getStoreID());
-                    List<Integer> productsID = bag.getSpecialProductProductsList();
-                    String productsList = makeProductsList(store.getId(), productsID);
-                    Response resAlert = new Response(false, "The client " + user.getUserName() +
-                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
-                    store.sendAlertToOwners(resAlert);
-                }
+    public Response GetAllManager(String connID, int stoerId) {
+        List<DummySubscriber> dummySubscribers = new ArrayList<>();
+        if(this.stores.get(stoerId)!=null) {
+            for (Integer id : this.stores.get(stoerId).getManagerIDs().keySet()) {
+                User u = this.subscribers.get(id);
+                DummySubscriber dummySubscriber = new DummySubscriber(u.getId(), u.getUserName());
+                dummySubscribers.add(dummySubscriber);
             }
-            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(), systemAdmins.containsKey(userID));
-            return res;
-
         }
+        Response res = new Response("Get All Subscribers succeed");
+        res.AddPair("subscribers", dummySubscribers);
+        return  res;
     }
 
 
