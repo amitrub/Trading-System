@@ -11,6 +11,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingH
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -96,6 +97,14 @@ public class Data_Controller {
 
     public void AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
         storeService.AddNewManager(storeID, newManagerID, MP);
+    }
+
+    public void EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
+        System.out.println(permissions);
+        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
+        permissionsService.EditManagerPermissions(storeID, managerID, permissions);
     }
 
 

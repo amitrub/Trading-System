@@ -66,7 +66,18 @@ public class ShoppingCartService {
     }
 
     public void deleteSubscriberBag(Integer userID, Integer storeID){
-        shoppingCartRepository.deleteById(new UserStoreKey(userID, storeID));
+        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
+
+        List<DataShoppingBagProduct> productList = shoppingBagProductRepository.findAllByShoppingBag(bag);
+        for (DataShoppingBagProduct product: productList){
+            bag.removeProduct(product);
+        }
+        bag = shoppingCartRepository.saveAndFlush(bag);
+        setBagFinalPrice(userID,storeID, 0.0);
+
+        DataSubscriber subscriber = subscriberRepository.getOne(userID);
+        subscriber.removeShoppingBag(bag);
+        subscriberRepository.saveAndFlush(subscriber);
     }
 
     public List<DataShoppingBagCart> getSubscriberShoppingCart(int userID){

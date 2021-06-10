@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.*;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -23,7 +24,7 @@ import static javax.persistence.GenerationType.SEQUENCE;
                 @UniqueConstraint(name = "store_name_unique", columnNames = "storeName")
         }
 )
-public class DataStore implements Serializable {
+public class DataStore {
     @Id
     @SequenceGenerator(
             name = "STORE_SEQUENCE",
@@ -54,6 +55,12 @@ public class DataStore implements Serializable {
     )
     private Double storeRate;
 
+    @Column(
+            name = "date",
+            nullable = false,
+            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
+    )
+    private Date date;
 
     @ManyToOne
     @JoinColumn(
@@ -100,13 +107,13 @@ public class DataStore implements Serializable {
     )
     private List<DataProduct> products = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "store",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.EAGER
-    )
-    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
+//    @OneToMany(
+//            mappedBy = "store",
+//            orphanRemoval = true,
+//            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+//            fetch = FetchType.EAGER
+//    )
+//    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
 
     @OneToMany(
             mappedBy = "store",
@@ -116,25 +123,6 @@ public class DataStore implements Serializable {
     )
     private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 
-    @ManyToOne
-    @JoinColumn(
-            name = "discount",
-            referencedColumnName = "store_id",
-            foreignKey = @ForeignKey(
-                    name = "data_id_fk"
-            )
-    )
-    private DataDiscountPolicy dataDiscountPolicy;
-
-    @ManyToOne
-    @JoinColumn(
-            name = "buying",
-            referencedColumnName = "store_id",
-            foreignKey = @ForeignKey(
-                    name = "buying_id_fk"
-            )
-    )
-    private DataBuyingPolicy dataBuyingPolicy;
 
 //    @ElementCollection
 //    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
@@ -152,6 +140,7 @@ public class DataStore implements Serializable {
     public DataStore(String name){
         this.storeName = name;
         this.storeRate = 5.0;
+        this.date = new Date();
     }
 
     public Integer getStoreID() {
@@ -172,6 +161,14 @@ public class DataStore implements Serializable {
 
     public void setStoreRate(Double storeRate) {
         this.storeRate = storeRate;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Set<DataSubscriber> getOwners() {
@@ -227,7 +224,6 @@ public class DataStore implements Serializable {
         }
         newManager.AddManagerStore(this);
     }
-
 
     @Override
     public String toString() {
