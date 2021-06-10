@@ -2685,30 +2685,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
     }
 
-    @Override
-    public Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
-        if (!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "subscriberPurchase: The user is not connected to the system");
-        } else {
-            User user = subscribers.get(userID);
-            Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
-            Response res = user.subscriberSpecialProductPurchase(credit_number, month, year, cvv, id, address, city, country, zip);
-            if (!res.getIsErr()) {
-                for (ShoppingBag bag : shoppingBags) {
-                    Store store = this.stores.get(bag.getStoreID());
-                    List<Integer> productsID = bag.getSpecialProductProductsList();
-                    String productsList = makeProductsList(store.getId(), productsID);
-                    Response resAlert = new Response(false, "The client " + user.getUserName() +
-                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
-                    store.sendAlertToOwners(resAlert);
-                }
-            }
-            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(), systemAdmins.containsKey(userID));
-            return res;
-
-        }
-    }
-
 
     public Integer getStoreIDByName(String storeName){
         for(Store s : stores.values())
