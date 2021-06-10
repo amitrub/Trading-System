@@ -32,6 +32,14 @@ public class SubscriberServiceHttp {
         return res;
     }
 
+    @GetMapping("{storeId}/get_all_manager")
+    public Response GetAllManager(@PathVariable int stoerId, @RequestHeader("connID") String connID) {
+        Response res = tradingSystem.GetAllManager(connID, stoerId);
+        tradingSystem.printUsers();
+        WriteToLogger(res);
+        return res;
+    }
+
     /**
      * @requirement 3.1
      *
