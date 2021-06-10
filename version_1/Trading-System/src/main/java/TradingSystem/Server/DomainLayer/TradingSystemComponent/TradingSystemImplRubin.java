@@ -1811,9 +1811,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID) && !this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
             return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
         }
-        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
-            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
-        }
+//        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
+//            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+//        }
         if(!this.hasPermission(userID,storeID,permission)) {
             return new Response(true, "User " + userID + " is not allowed to "+permission.toString());
         }
