@@ -47,7 +47,7 @@ public class Data_Controller {
     }
 
     //Req 1.2 Register
-    public int AddSubscriber(String userName, String password){
+    public int AddSubscriber(String userName, String password) throws Exception{
         return subscriberService.AddSubscriber(userName, password);
     }
 

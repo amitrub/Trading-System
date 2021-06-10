@@ -3,13 +3,12 @@ package TradingSystem.Server.DataLayer.Services;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DataLayer.Repositories.BuyingRepository;
-import TradingSystem.Server.DataLayer.Repositories.CompositeExp;
+import TradingSystem.Server.DataLayer.Repositories.DBExpRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
-import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -19,7 +18,7 @@ public class BuyingService {
     @Autowired
     BuyingRepository buyingRepository;
     @Autowired
-    CompositeExp dataExpCompositeRepository;
+    DBExpRepository dataExpCompositeRepository;
 
     public Optional<DataBuyingPolicy> getBuyingByStore(Integer storeid) throws EntityNotFoundException
     {
