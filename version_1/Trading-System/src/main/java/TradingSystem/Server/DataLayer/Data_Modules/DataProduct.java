@@ -2,6 +2,9 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 
 import javax.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import static javax.persistence.GenerationType.SEQUENCE;
 
 
@@ -66,16 +69,13 @@ public class DataProduct{
     )
     private DataStore store;
 
-//    @ManyToOne
-//    @JoinColumn(
-//            name = "shopping_bag",
-////            nullable = false,
-//            referencedColumnName = "shoppingbagid",
-//            foreignKey = @ForeignKey(
-//                    name = "shopping_bag_id_FK"
-//            )
-//    )
-//    private DataShoppingBagCart shopping_bag;
+    @OneToMany(
+            mappedBy = "product",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.EAGER
+    )
+    private List<DataComment> comments = new ArrayList<>();
 
     public DataProduct() {
         // DO NOT DELETE
@@ -88,6 +88,15 @@ public class DataProduct{
         this.quantity = quantity;
     }
 
+    public void AddComment(DataComment comment) {
+        if (!this.comments.contains(comment)) {
+            this.comments.add(comment);
+        }
+    }
+
+    public List<DataComment> getComments() {
+        return comments;
+    }
 
     public Integer getProductID() {
         return productID;
@@ -148,6 +157,7 @@ public class DataProduct{
                 ", category='" + category + '\'' +
                 ", quantity=" + quantity +
                 ", store=" + store.getStoreID() +
+                ", comments=" + comments +
                 '}';
     }
 }

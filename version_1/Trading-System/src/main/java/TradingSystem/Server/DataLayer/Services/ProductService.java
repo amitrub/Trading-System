@@ -1,9 +1,13 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataComment;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Repositories.CommentRepository;
 import TradingSystem.Server.DataLayer.Repositories.ProductRepository;
 import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
+import TradingSystem.Server.DataLayer.Repositories.SubscriberRepository;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -19,7 +23,10 @@ public class ProductService {
     ProductRepository productRepository;
     @Autowired
     StoreRepository storeRepository;
-  //  SessionFactory sessionFactory = HibernateUtil.getSessionFactory();
+    @Autowired
+    SubscriberRepository subscriberRepository;
+    @Autowired
+    CommentRepository commentRepository;
 
 
     public ProductService() {
@@ -64,45 +71,14 @@ public class ProductService {
         productRepository.saveAndFlush(product);
     }
 
-//    //TODO make it transaction
-//    public void editProduct(DataProduct product){
-////        Session session = null;
-////        Transaction tx = null;
-////
-////        try {
-////            session = sessionFactory.openSession();
-////            tx = session.beginTransaction();
-//            productRepository.deleteById(product.getProductID());
-//            productRepository.saveAndFlush(product);
-////            tx.commit();
-////
-////        }catch (Exception ex) {
-////            ex.printStackTrace();
-////            tx.rollback();
-////        }
-////        finally {session.close();}
-//    }
-//
-//    public List<DataProduct> findDummyProductByStoreID(int storeId){
-//        return productRepository.findDummyProductByStoreID(storeId);
-//    }
-//    public List<DataProduct> findDummyProductByName(String storeName, double minprice, double maxprice){
-//        if(maxprice!=-1 && minprice!=-1){
-//            return productRepository.findDummyProductByCategoryAndPriceBetween(storeName,minprice,minprice);
-//        }
-//        else{
-//            return productRepository.findDummyProductByProductName(storeName);
-//        }
-//    }
-//
-//    public List<DataProduct> findDummyProductByCategory(String category, int minprice, int maxprice){
-//        if(maxprice!=-1 && minprice!=-1){
-//            return productRepository.findDummyProductByCategoryAndPriceBetween(category,minprice,minprice);
-//        }
-//        else{
-//            return productRepository.findDummyProductByCategory(category);
-//        }
-//    }
+    public void addCommentToProduct(Integer productID, Integer userID, String comment) {
+        DataProduct product = productRepository.getOne(productID);
+        DataSubscriber subscriber = subscriberRepository.getOne(userID);
+        DataComment comment1 = new DataComment(subscriber, product, comment);
+        commentRepository.saveAndFlush(comment1);
+    }
+
+
 
     public List<DataProduct> findAllByCategoryAndProductNameAndPriceBetween(String name,String category, int min, int max){
         return productRepository.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);

@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataComment;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
@@ -75,6 +76,9 @@ public class Product {
     }
 
     public Product(DataProduct product){
+        System.out.println("==================================");
+        System.out.println(product.getComments());
+        System.out.println("==================================");
         this.storeID=product.getStore().getStoreID();
         this.storeName=product.getStore().getStoreName();
         this.productID=product.getProductID();
@@ -83,6 +87,14 @@ public class Product {
         this.price=product.getPrice();
         //TODO add rate
         this.quantity = product.getQuantity();
+        for (DataComment comment: product.getComments()){
+            try {
+                productComments.putIfAbsent(comment.getSubscriber().getUserID(),comment.getComment());
+            }
+            catch (Exception e){
+
+            }
+        }
     }
 
     public Product(DataHistoryProduct product, int storeID, String storename){
@@ -160,6 +172,7 @@ public class Product {
         if(productComments.containsKey(userID)){
             return new Response(true, "User can not post more than one comment on a product");
         }
+        data_controller.addCommentToProduct(productID, userID, comment);
         this.productComments.put(userID,comment);
         return new Response("The response writing was performed successfully");
     }
