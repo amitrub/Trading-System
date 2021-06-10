@@ -1,10 +1,9 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.States.initState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.InitState;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.State;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -34,7 +33,7 @@ public class Bid {
         this.userID=userID;
         this.quantity=quantity;
         this.ownerAndManagerApprovals=list;
-        this.state=new initState();
+        this.state=new InitState();
         state.setBid(this);
     }
 
