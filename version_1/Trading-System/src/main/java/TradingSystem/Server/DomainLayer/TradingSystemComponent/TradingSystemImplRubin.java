@@ -1357,6 +1357,8 @@ public class TradingSystemImplRubin implements TradingSystem {
         Response resAlert = new Response(false, ownerName + " appointed you to be manager of the store: " + stores.get(storeID).getName());
         stores.get(storeID).sendAlert(newManager, resAlert);
 
+        System.out.println(resAlert.getMessage());
+
         return res; 
     }
 
