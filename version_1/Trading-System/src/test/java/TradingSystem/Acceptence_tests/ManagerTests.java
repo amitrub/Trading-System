@@ -1,5 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
+import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
@@ -17,12 +18,14 @@ import static org.junit.Assert.*;
 
 public class ManagerTests {
 
-    Client_Interface client = Client_Driver.getClient();
+    //Client_Interface client = Client_Driver.getClient();
+    Client client;
     Integer storeID;
     Integer newUserID;
 
     @BeforeEach
     void setUp() {
+        client = new Client();
         client.clearSystem();
         client.connectSystem();
         newUserID = client.Register("Reut", "123");
@@ -32,8 +35,7 @@ public class ManagerTests {
         client.Register("Elinor", "123");
         client.Login("Elinor", "123");
         client.openStore("Adidas");
-        List<DummyStore> stores = client.showAllStores().getStores();
-        storeID = getStoreID(stores, "Adidas");
+        storeID = client.getStoreIDByName("Adidas").returnStoreID();
         client.addManager(storeID, newUserID);
     }
 

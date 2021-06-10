@@ -1,5 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
+import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
@@ -17,24 +18,24 @@ import static org.junit.Assert.assertEquals;
 
 public class AdminTests {
 
-    Client_Interface client= Client_Driver.getClient();
+    //Client_Interface client= Client_Driver.getClient();
+    Client client;
     Integer storeID;
     Integer userID;
 
 
     @BeforeEach
     public void setUp() {
-    //    client = new Client();
+        client = new Client();
         client.clearSystem();
         client.connectSystem();
         client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Store");
-        storeID = getStoreID(client.showAllStores().getStores(),"Store");
+        storeID = client.getStoreIDByName("Store").returnStoreID();
         client.addProduct(storeID, "Sneakers", "Shoes", 80.0, 25);
         client.addProduct(storeID, "Boots", "Shoes", 100.0, 20);
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID1= getProductID(storeProducts1, "Sneakers");
+        Integer productID1= client.getProductIDByName("Sneakers", storeID).returnProduct();
         client.Logout();
 
         userID = client.Register("Reut", "123");

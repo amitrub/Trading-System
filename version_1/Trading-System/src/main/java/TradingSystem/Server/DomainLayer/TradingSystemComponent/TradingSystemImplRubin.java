@@ -2699,7 +2699,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         }
     }
 
-
+    @Override
     public Integer getStoreIDByName(String storeName){
         for(Store s : stores.values())
         {
@@ -2709,5 +2709,19 @@ public class TradingSystemImplRubin implements TradingSystem {
         return -1;
     }
 
-
+    @Override
+    public Integer getProductIDByName(String productName, int storeID) {
+        for(Store s : stores.values())
+        {
+            if(s.getId() == storeID)
+            {
+                for(Product p : s.getProducts())
+                {
+                    if(p.getProductName().equals(productName))
+                        return p.getProductID();
+                }
+            }
+        }
+        return -1;
+    }
 }

@@ -53,6 +53,10 @@ public interface Client_Interface {
     public Response showAllStores();
     public Response showStoreProducts(int storeID);
 
+    public Response showAllStoresSubscriber();
+    public Response showStoreProductsSubscriber(int storeID);
+
+
     /**
      * @requirement 2.6
      * @param mode mode
@@ -331,7 +335,8 @@ public interface Client_Interface {
      */
     public Response ShowBids( int storeID);
 
+    public Response getStoreIDByName(String storeName);
 
-
+    public Response getProductIDByName(String productName, int StoreID);
 
 }

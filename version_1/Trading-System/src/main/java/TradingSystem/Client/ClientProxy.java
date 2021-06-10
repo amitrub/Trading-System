@@ -126,6 +126,16 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
+    public Response showAllStoresSubscriber() {
+        return tradingSystem.ShowAllStores();
+    }
+
+    @Override
+    public Response showStoreProductsSubscriber(int storeID) {
+        return tradingSystem.ShowStoreProducts(storeID);
+    }
+
+    @Override
     public Response Search(String mode, String name, String minPrice, String maxPrice, String p_rank, String s_rank) {
         try {
             Integer min = Integer.parseInt(minPrice);
@@ -327,5 +337,19 @@ public class ClientProxy implements Client_Interface {
         return tradingSystem.ShowBids(this.userID,this.ConnID,storeID);
     }
 
+    @Override
+    public Response getStoreIDByName(String storeName) {
+        Integer storeID = tradingSystem.getStoreIDByName(storeName);
+        Response response = new Response();
+        response.AddPair("storeID", storeID);
+        return response;
+    }
 
+    @Override
+    public Response getProductIDByName(String productName, int StoreID) {
+        Integer productID = tradingSystem.getProductIDByName(productName,StoreID);
+        Response response = new Response();
+        response.AddPair("productID", productID);
+        return response;
+    }
 }
