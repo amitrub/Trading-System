@@ -674,13 +674,6 @@ public class StoreOwnerServiceHttp {
 
 
 
-
-
-
-
-
-
-
     /**
      * @requirement none
      *
@@ -704,6 +697,13 @@ public class StoreOwnerServiceHttp {
     @GetMapping("{userID}/stores_manager")
     public Response ShowManagerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
         Response res = this.tradingSystem.ShowManagerStores(userID, connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    @GetMapping("{userID}/store/{storeID}/product/{productID}/comments")
+    public Response ShowProductComments(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID,@PathVariable int productID){
+        Response res = this.tradingSystem.ShowProductComments(connID,userID,storeID,productID);
         WriteToLogger(res);
         return res;
     }

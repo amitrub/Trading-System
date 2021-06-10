@@ -2733,5 +2733,38 @@ public class TradingSystemImplRubin implements TradingSystem {
         return -1;
     }
 
-
+    @Override
+    public Response ShowProductComments(String connID, int userID, int storeID, int productID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "ShowProductComments: The user " + userID + " is not connected");
+        }
+        if(!stores.containsKey(storeID)){
+            return new Response(true, "ShowProductComments: The store " + storeID + " doesn't exist in the system");
+        }
+        if(!stores.get(storeID).checkOwner(userID)){
+            return new Response(true, "ShowProductComments: The user " + userID + " has no permissions to see this information");
+        }
+        if(!stores.get(storeID).isProductExist(productID)){
+            return new Response(true, "ShowProductComments: The product " + productID + " doesn't exist in the store");
+        }
+        else {
+            String storeName = stores.get(storeID).getName();
+            List<DummyComment> comments = new ArrayList<>();
+            for(Product p : stores.get(storeID).getProducts())
+            {
+                List<String> list = p.getCommentsForProduct(productID);
+                for(String s:list) {
+                    DummyComment comment = new DummyComment(storeID, storeName, productID, p.getProductName(),s,userID);
+                    comments.add(comment);
+                }
+            }
+            Response response = new Response(false, "ShowProductComments: Num of comments of the product: " + comments.size());
+            response.AddPair("ConnId",connID);
+            response.AddPair("comments", comments);
+            User user=subscribers.get(userID);
+            response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+            return response;
+        }
+    }
 }
+
