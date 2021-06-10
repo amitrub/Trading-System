@@ -437,6 +437,18 @@ export const createApiClientHttp = () => {
 
     //Owner
     //DONE
+    ShowStoreComments: (connID, userID, storeID) => {
+      let path = ownerURL.concat(`${userID}/store/${storeID}/comments`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     OwnerDailyIncomeForStore: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/owner_daily_income_for_store`
