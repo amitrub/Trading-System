@@ -145,7 +145,7 @@ public class ShoppingBag {
     public ConcurrentHashMap<Integer, Integer> getProducts() {
        return this.products;
     }
-/*
+
     public ConcurrentHashMap<Integer, Integer> getAllProducts() {
         ConcurrentHashMap<Integer, Integer> list=new ConcurrentHashMap<>();
         for(int productID : this.products.keySet()){
@@ -157,7 +157,7 @@ public class ShoppingBag {
 
         return list;
     }
-*/
+
     public void setProducts(ConcurrentHashMap<Integer, Integer> products) {
         this.products = products;
     }
@@ -188,6 +188,12 @@ public class ShoppingBag {
             Lock lock = tradingSystem.getProductLock(this.storeID, productID);
             output.add(lock);
         }
+        Set<Integer> specialProductsSet = this.quantityOfSpacialProducts.keySet();
+        for (Integer productID : specialProductsSet){
+            Lock lock = tradingSystem.getProductLock(this.storeID, productID);
+            output.add(lock);
+        }
+
         return output;
     }
 
@@ -198,14 +204,15 @@ public class ShoppingBag {
             if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
                 String storeName = tradingSystem.getStoreName(storeID);
                 String productName = tradingSystem.getProductName(storeID, productID);
-// =======
-//         ConcurrentHashMap<Integer, Integer> productsSet = this.getAllProducts();
-//         for (Integer productID : productsSet.keySet()){
-//             int productQuantity = productsSet.get(productID);
-//             if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
-//                 String storeName = tradingSystemImpl.getStoreName(storeID);
-//                 String productName = tradingSystemImpl.getProductName(storeID, productID);
-// >>>>>>> Version-3
+                String err = "Purchase: " + productName + " in The store: " + storeName + " is not exist in the stock";
+                return new Response(true, err);
+            }
+        }
+        for (Integer productID : this.quantityOfSpacialProducts.keySet()){
+            int productQuantity = this.quantityOfSpacialProducts.get(productID);
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
+                String storeName = tradingSystem.getStoreName(storeID);
+                String productName = tradingSystem.getProductName(storeID, productID);
                 String err = "Purchase: " + productName + " in The store: " + storeName + " is not exist in the stock";
                 return new Response(true, err);
             }

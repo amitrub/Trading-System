@@ -3,6 +3,7 @@ package TradingSystem.Server.Unit_tests.ShoppingComponent;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
@@ -73,6 +74,8 @@ class ShoppingCartTest {
         tradingSystem.addBuyingPolicy(NuserId, NconnID, storeID1, exp);
         Response res4=SC1.addProductToBag(storeID1,productID3,12,false);
 
+
+
         //happy
         assertFalse(res1.getIsErr());
 
@@ -84,6 +87,17 @@ class ShoppingCartTest {
 
         //sad_againstTheStorePolicy
         assertTrue(res4.getIsErr());
+    }
+
+    @Test
+    void NotAddSpacialProductToBag() {
+        Store Nstore = tradingSystem.stores.get(storeID1);
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystem.subscriberBidding(NuserId,NconnID,storeID1,productID1,5,1);
+        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,productID1,3,NuserId,3,1);
+        tradingSystem.AddProductToCart(NconnID,NuserId,productID1,3);
+        boolean prodExist=tradingSystem.subscribers.get(NuserId).getShoppingCart().getShoppingBags().get(storeID1).getProducts().keySet().contains(productID1);
+        assertFalse(prodExist);
     }
 
     //requirement 2.8
@@ -113,6 +127,17 @@ class ShoppingCartTest {
 
         //sad_productAgainstThePolicy
         assertTrue(res5.getIsErr());
+    }
+
+    @Test
+    void NotEditSpecialProductQuantityFromCart() {
+        Store Nstore = tradingSystem.stores.get(storeID1);
+        Integer productID1 = Nstore.getProductID("computer");
+        tradingSystem.subscriberBidding(NuserId,NconnID,storeID1,productID1,5,1);
+        tradingSystem.ResponseForSubmissionBidding(NuserId,NconnID,storeID1,productID1,3,NuserId,3,1);
+        tradingSystem.editProductQuantityFromCart(NconnID,NuserId,productID1,4);
+        int productQuantity=tradingSystem.subscribers.get(NuserId).getShoppingCart().getShoppingBags().get(storeID1).getQuantityOfSpacialProducts().get(productID1);
+        assertFalse(productQuantity==3);
     }
 
     //requirement 2.8

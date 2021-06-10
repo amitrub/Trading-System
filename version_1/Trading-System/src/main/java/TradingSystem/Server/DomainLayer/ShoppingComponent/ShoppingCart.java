@@ -302,7 +302,7 @@ public class ShoppingCart {
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
-            res = tradingSystem.reduceProducts(SB.getProducts(), storeID);
+            res = tradingSystem.reduceProducts(SB.getAllProducts(), storeID);
             if (res.getIsErr()) {
                 this.cancelReduceProducts();
                 this.storesReducedProductsVain=new HashSet<>();
@@ -321,7 +321,7 @@ public class ShoppingCart {
 
     private void cancelReduceProducts() {
         for (Integer storeID : this.storesReducedProductsVain) {
-            tradingSystem.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
+            tradingSystem.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getAllProducts());
         }
     }
 
@@ -488,7 +488,8 @@ public class ShoppingCart {
     public void setSupplySystem(ExternalServices supplySystem) {
         this.supplySystem = supplySystem;
     }
-    //todo implement!
+
+   /*
     public Response specialProductPurchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         if (shoppingBags.size() == 0) {
             return new Response(true, "Purchase: There is no products in the shopping cart");
@@ -533,6 +534,8 @@ public class ShoppingCart {
         this.releaseLocks(lockList);
         return new Response("The purchase was made successfully");
     }
+
+    */
 }
 
 

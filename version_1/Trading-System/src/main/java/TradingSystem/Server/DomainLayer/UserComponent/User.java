@@ -526,11 +526,7 @@ public class User implements Observer {
         return this.shoppingCart.removeSpecialProductFromCart(storeID, productID);
     }
 
-    //todo implements
-    public Response subscriberSpecialProductPurchase(String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
-        return shoppingCart.specialProductPurchase(false, this.userName, credit_number, month, year, cvv, id, address,city,country,zip);
     }
-}
 
 
 //    public List<DummySearch> getShoppingCart(){

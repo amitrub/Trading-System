@@ -234,7 +234,7 @@ class StoreTest {
         LinkedList<PermissionEnum.Permission> list=new LinkedList<>();
         list.add(PermissionEnum.Permission.RequestBidding);
         tradingSystem.EditManagerPermissions(EuserId,EconnID,storeID,resMan1.returnUserID(),list);
-
+        Response r=tradingSystem.GetPossiblePermissionsToManager(resMan1.returnUserID(), resMan1.returnConnID(), storeID);
         String guestMan2= tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(guestMan2, "Man2", "123");
         Response resMan2= tradingSystem.Login(guestMan2, "Man2", "123");
