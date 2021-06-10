@@ -58,5 +58,14 @@ public abstract class CompositeSale implements Sale{
     private void setChildren(List<Sale> children) {
         this.children = children;
     }
+
+    @Override
+    public String toString(){
+        StringBuilder res= new StringBuilder();
+        for(Sale sale:this.children){
+            res.append(sale.toString());
+        }
+        return res.toString();
+    }
 }
 

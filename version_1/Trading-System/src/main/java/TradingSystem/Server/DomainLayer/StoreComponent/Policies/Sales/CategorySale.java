@@ -72,6 +72,11 @@ public class CategorySale extends SimpleSale {
         return discountPercentage;
     }
 
+    @Override
+    public String toString(){
+        return category+" "+discountPercentage+" "+getExpression().toString();
+    }
+
 }
 
 /*

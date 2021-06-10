@@ -55,4 +55,7 @@ public class DataBuyingPolicy {
         this.expression=expression;
     }
 
+    public int getStore_id() {
+        return store_id;
+    }
 }

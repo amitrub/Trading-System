@@ -48,4 +48,8 @@ public class DataDiscountPolicy {
         this.store_id=store_id;
         this.sale= dataDiscountPolicy;
     }
+
+    public int getStore_id(){
+        return store_id;
+    }
 }

@@ -49,11 +49,11 @@ public class DBExpression {
     @Column(
             name = "minAge"
     )
-    Integer minAge;
+    private Integer minAge;
     @Column(
             name = "category"
     )
-    String  category;
+    private String  category;
     @JoinColumn(
             name = "product_id",
             nullable = false,
@@ -70,6 +70,8 @@ public class DBExpression {
     )
     Integer maxQuantity;
 
+    private String Type;
+
     public DBExpression(){
         this.parent=this;
     }
@@ -81,6 +83,7 @@ public class DBExpression {
     public DBExpression(Expression expression, DBExpression parent){
         if(expression instanceof OrComposite){
             this.parent=null;
+            Type="OR";
             subdomains=new ArrayList<>();
             for(Expression exp: ((OrComposite) expression).children){
                 DBExpression toadd= new DBExpression(exp, this);
@@ -89,6 +92,7 @@ public class DBExpression {
         }
         else if(expression instanceof AndComposite){
             this.parent=null;
+            Type="AND";
             subdomains=new ArrayList<>();
             for(Expression exp: ((AndComposite) expression).children){
                 DBExpression toadd= new DBExpression(exp,this);
@@ -97,31 +101,37 @@ public class DBExpression {
         }
         else if(expression instanceof AgeLimitForCategory){
             this.parent=parent;
+            Type="Limit_Category";
             this.category=((AgeLimitForCategory) expression).category;
             this.minAge=((AgeLimitForCategory) expression).minAge;
         }
         else if(expression instanceof AgeLimitForProduct){
             this.parent=parent;
+            Type="Limit_Product";
             this.minAge= ((AgeLimitForProduct) expression).getMinAge();
             this.productid=((AgeLimitForProduct) expression).getProductID();
         }
         else if(expression instanceof AgeLimitForStore){
             this.parent=parent;
+            Type="Limit_Store";
             this.minAge=((AgeLimitForStore) expression).getMinAge();
             this.storeId=((AgeLimitForStore) expression).getStoreID();
         }
         else if(expression instanceof QuantityLimitForStore){
             this.parent=parent;
+            Type="Quantity_Store";
             this.storeId=((QuantityLimitForStore) expression).getStoreID();
             this.maxQuantity=((QuantityLimitForStore) expression).getMaxQuantity();
         }
         else if(expression instanceof QuantityLimitForProduct){
             this.parent=parent;
+            Type="Quantity_Product";
             this.productid=((QuantityLimitForProduct) expression).getProductID();
             this.maxQuantity=((QuantityLimitForProduct) expression).getMaxQuantity();
         }
         else if(expression instanceof QuantityLimitForCategory){
             this.parent=parent;
+            Type="Quantity_Category";
             this.category=((QuantityLimitForCategory) expression).getCategory();
             this.maxQuantity=((QuantityLimitForCategory) expression).getMaxQuantity();
         }
@@ -144,5 +154,27 @@ public class DBExpression {
 
     public void setStoreId(int id){
         this.storeId=id;
+    }
+
+    public String getType(){
+        return Type;
+    }
+    public String getCategory(){
+        return category;
+    }
+    public Integer getMinAge(){
+        return minAge;
+    }
+
+    public int getProductid(){
+        return productid;
+    }
+
+    public int getStoreId(){
+        return storeId;
+    }
+
+    public Integer getMaxQuantity(){
+        return maxQuantity;
     }
 }

@@ -29,4 +29,9 @@ public class PriceForGetSale extends SimpleExpression {
     public Integer getPriceForSale(){
         return priceForSale;
     }
+
+    @Override
+    public String toString(){
+        return "price for sale "+priceForSale;
+    }
 }

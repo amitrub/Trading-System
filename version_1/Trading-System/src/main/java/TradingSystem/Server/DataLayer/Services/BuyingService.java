@@ -7,7 +7,10 @@ import TradingSystem.Server.DataLayer.Repositories.CompositeExp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -17,6 +20,12 @@ public class BuyingService {
     BuyingRepository buyingRepository;
     @Autowired
     CompositeExp dataExpCompositeRepository;
+
+    public Optional<DataBuyingPolicy> getBuyingByStore(Integer storeid) throws EntityNotFoundException
+    {
+        return buyingRepository.findById(storeid);
+    }
+
     //TODO make to transction
     public void AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
         DBExpression dataExpression= buyingPolicy.getExpression();

@@ -29,4 +29,9 @@ public class NumOfProductsForGetSale extends SimpleExpression {
     public Integer getNumOfProductsForSale(){
         return numOfProductsForSale;
     }
+
+    @Override
+    public String toString(){
+        return "num of products "+numOfProductsForSale;
+    }
 }

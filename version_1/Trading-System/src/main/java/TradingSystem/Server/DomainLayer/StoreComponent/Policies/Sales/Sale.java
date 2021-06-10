@@ -10,6 +10,8 @@ public interface Sale {
      public Sale setSale(Sale sale);
      public Sale getSale();
      Response checkValidity(int storeID);
+
+     public String toString();
     /**
       *option with Id
       */

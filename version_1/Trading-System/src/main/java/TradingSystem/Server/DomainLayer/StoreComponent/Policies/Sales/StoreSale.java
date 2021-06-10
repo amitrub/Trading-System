@@ -60,4 +60,8 @@ public class StoreSale extends SimpleSale {
         return discountPercentage;
     }
 
+    public String toString(){
+        return "store id "+storeID+" discount "+discountPercentage+" "+getExpression().toString();
+    }
+
 }

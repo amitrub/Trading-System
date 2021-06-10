@@ -65,7 +65,9 @@ public class ProductSale extends SimpleSale {
     public Integer getDiscountPercentage(){
         return discountPercentage;
     }
-
+    public String toString(){
+        return "product id "+productID+" discount "+discountPercentage+" "+getExpression().toString();
+    }
 }
 
 /*

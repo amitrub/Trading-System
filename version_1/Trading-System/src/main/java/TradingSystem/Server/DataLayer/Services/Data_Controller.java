@@ -195,6 +195,14 @@ public class Data_Controller {
     public void AddDiscountPolicy(DataDiscountPolicy service){
         discountPolicyService.AddDiscountPolicy(service);
     }
+
+    public Optional<DataBuyingPolicy> getBuyingByStoreId(Integer storeid){
+        return buyingService.getBuyingByStore(storeid);
+    }
+
+    public Optional<DataDiscountPolicy> getdiscountByStoreId(Integer storeid){
+        return discountPolicyService.getDiscountByStore(storeid);
+    }
 //
 //    //Req 1.3 search Product By Name
 //    public List<DataProduct> serachByName(String productName, int minprice, int maxprice){

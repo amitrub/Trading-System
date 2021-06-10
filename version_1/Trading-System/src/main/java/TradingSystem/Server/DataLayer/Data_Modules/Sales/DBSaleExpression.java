@@ -52,6 +52,8 @@ public class DBSaleExpression {
     @OneToOne(cascade= CascadeType.PERSIST)
     private DBSaleExpression parent;
 
+    private String Type;
+
     public DBSaleExpression(){
 
     }
@@ -60,19 +62,23 @@ public class DBSaleExpression {
       //  this.dbSale=saleID;
         if(expression instanceof NumOfProductsForGetSale){
             this.parent=parentexp;
+            Type="Number";
             this.numOfProductsForSale=((NumOfProductsForGetSale) expression).getNumOfProductsForSale();
         }
         else if(expression instanceof PriceForGetSale){
             this.parent=parentexp;
+            Type="Price";
             this.priceForSale=((PriceForGetSale) expression).getPriceForSale();
         }
         else if(expression instanceof QuantityForGetSale){
             this.parent=parentexp;
+            Type="Quantity";
             this.productId=((QuantityForGetSale) expression).getProductId();
             this.quantityForSale=((QuantityForGetSale) expression).getQuantityForSale();
         }
         else if(expression instanceof OrComposite){
             this.parent=null;
+            Type="OR";
             subdomains=new ArrayList<>();
             for(Expression exp: ((OrComposite) expression).children){
                 DBSaleExpression toadd= new DBSaleExpression(exp,saleID,this);
@@ -81,11 +87,36 @@ public class DBSaleExpression {
         }
         else if(expression instanceof AndComposite){
             this.parent=null;
+            Type="AND";
             subdomains=new ArrayList<>();
             for(Expression exp: ((AndComposite) expression).children){
                 DBSaleExpression toadd= new DBSaleExpression(exp,saleID,this);
                 subdomains.add(toadd);
             }
         }
+    }
+
+    public Integer getProductId() {
+        return productId;
+    }
+
+    public Integer getQuantityForSale() {
+        return quantityForSale;
+    }
+
+    public Integer getPriceForSale() {
+        return priceForSale;
+    }
+
+    public Integer getNumOfProductsForSale() {
+        return numOfProductsForSale;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public List<DBSaleExpression> getSubdomains(){
+        return subdomains;
     }
 }

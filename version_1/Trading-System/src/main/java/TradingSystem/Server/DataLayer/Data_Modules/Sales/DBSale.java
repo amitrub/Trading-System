@@ -41,9 +41,9 @@ public class DBSale {
     @OneToMany(cascade= CascadeType.PERSIST) //add column definitions as needed
     private List<DBSale> subdomains;
 
-    String category;
+    private String category;
 
-    Integer  discountPercentage;
+    private Integer  discountPercentage;
 
     @JoinColumn(
             name = "product_id",
@@ -53,7 +53,7 @@ public class DBSale {
                     name = "prodcut_id_fk"
             )
     )
-    Integer productID;
+    private Integer productID;
     @JoinColumn(
             name = "store_id",
             nullable = false,
@@ -67,6 +67,8 @@ public class DBSale {
 
     private Integer quantity;
 
+    private String Type;
+
     @OneToOne
     public DBSaleExpression expression;
 
@@ -77,6 +79,7 @@ public class DBSale {
     public DBSale(Sale sale, DBSale parent){
         if(sale instanceof AddComposite){
             this.parent=null;
+            Type= "ADD";
             subdomains=new ArrayList<>();
             for(Sale s: ((AddComposite) sale).children){
                 DBSale toadd= new DBSale(s,this);
@@ -85,6 +88,7 @@ public class DBSale {
         }
         else if(sale instanceof XorComposite){
             this.parent=null;
+            Type= "XOR";
             subdomains=new ArrayList<>();
             for(Sale s: ((XorComposite) sale).children){
                 DBSale toadd= new DBSale(s,this);
@@ -92,8 +96,8 @@ public class DBSale {
             }
         }
         else if(sale instanceof MaxComposite){
-            this.parent=parent;
             this.parent=null;
+            Type= "MAX";
             subdomains=new ArrayList<>();
             for(Sale s: ((MaxComposite) sale).children){
                 DBSale toadd= new DBSale(s,this);
@@ -102,20 +106,24 @@ public class DBSale {
         }
         else if(sale instanceof ProductSale){
             this.parent=parent;
+            Type= "Product";
             this.productID=((ProductSale) sale).getProductID();
             this.discountPercentage=((ProductSale) sale).getDiscountPercentage();
-            this.expression=new DBSaleExpression(((ProductSale) sale).getExpression(),this, new DBSaleExpression());
+            this.expression=new DBSaleExpression(((ProductSale) sale).getExpression(),this, null);
         }
         else if(sale instanceof StoreSale){
             this.parent=parent;
+            Type= "Store";
             this.storeID= ((StoreSale) sale).getStoreID();
             this.discountPercentage=((StoreSale) sale).getDiscountPercentage();
-            this.expression=new DBSaleExpression(((StoreSale) sale).getExpression(),this,new DBSaleExpression());
+            this.expression=new DBSaleExpression(((StoreSale) sale).getExpression(),this,null);
         }
-        else if(sale instanceof QuantityForGetSale){
+        else if(sale instanceof CategorySale){
             this.parent=parent;
-            this.productID=((QuantityForGetSale) sale).getProductId();
-            this.quantity=((QuantityForGetSale) sale).getQuantityForSale();
+            Type= "Category";
+            this.category=((CategorySale) sale).getCategory();
+            this.discountPercentage=((CategorySale) sale).getDiscountPercentage();
+            this.expression=new DBSaleExpression(((CategorySale) sale).getExpression(),this,null);
         }
         else{
             this.parent=null;
@@ -124,5 +132,33 @@ public class DBSale {
 
     public DBSaleExpression getExpression(){
         return expression;
+    }
+
+    public Integer getStoreID() {
+        return storeID;
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public String getType() {
+        return Type;
+    }
+
+    public String getCategory() {
+        return category;
+    }
+
+    public List<DBSale> getSubdomains(){
+        return subdomains;
+    }
+
+    public Integer getProductID() {
+        return productID;
+    }
+
+    public Integer getDiscountPercentage() {
+        return discountPercentage;
     }
 }

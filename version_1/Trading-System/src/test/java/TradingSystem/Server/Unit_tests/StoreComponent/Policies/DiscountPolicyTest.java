@@ -89,6 +89,14 @@ class DiscountPolicyTest {
     }
 
     @Test
+    void Happyupload(){
+        System.out.println("--------------------HELLLLLLLLLLLO---------------");
+        Store store=tradingSystem.stores.get(storeID);
+        DiscountPolicy discountPolicy=store.getDiscountPolicy();
+        System.out.println("Discount policy--------"+discountPolicy.toString());
+    }
+
+    @Test
     void SadStoreSaleTest() {
         PriceForGetSale exp = new PriceForGetSale( 5000);
         StoreSale sale = new StoreSale(exp, store.getId(), 10);
@@ -114,6 +122,7 @@ class DiscountPolicyTest {
         products.put(productID1, 2);
         products.put(productID2, 1);
         Double newPrice = DC.calculatePrice(products, 2 , 6100.0);
+        tradingSystem.addDiscountPolicy(EuserId,EconnID,storeID,sale);
         assertEquals(4900.0, newPrice,0);
     }
 
