@@ -132,4 +132,6 @@ public interface TradingSystem {
     Response GetAllManager(String connID, int stoerId);
 
     Response ShowProductComments(String connID, int userID, int storeID);
+
+    Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID);
 }

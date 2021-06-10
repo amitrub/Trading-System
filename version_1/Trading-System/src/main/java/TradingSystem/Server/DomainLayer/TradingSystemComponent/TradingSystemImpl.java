@@ -38,6 +38,7 @@ import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
@@ -2778,5 +2779,50 @@ public class TradingSystemImpl implements TradingSystem {
         }
         return -1;
     }
+
+    public Response  getTreeInBuild(Sale s){ //int storeID
+        //Sale s=stores.get(storeId).getDiscountPolicy().getSale();
+        JSONObject jsonPost = new JSONObject();
+        try{
+            jsonPost.put("Sale", s);
+        }
+        catch (Exception e) {
+            System.out.println(errMsgGenerator("Server", "TradingSystemImpl", "2789", "Error: getTreeInBuild, making post json"));
+        }
+        //JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner + path, jsonPost.toString(), this.connID);
+        //Response response = Response.makeResponseFromJSON(jsonResponse);
+        Response response = new Response("fine");
+        return  response;
+    }
+
+    @Override
+    public Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID){
+
+//        Integer productID1 = store.getProductID("computer");
+//        Integer productID2 = store.getProductID("Bag");
+        PriceForGetSale exp1 = new PriceForGetSale( 1000);
+        QuantityForGetSale exp2 = new QuantityForGetSale(3,2);
+        AndComposite andExpression = new AndComposite();
+        andExpression.add(exp1);
+        andExpression.add(exp2);
+        StoreSale sale = new StoreSale(andExpression, 56, 50);
+
+        JSONObject jsonPost = new JSONObject();
+        try{
+            jsonPost.put("Sale", sale);
+        }
+        catch (Exception e) {
+            System.out.println(errMsgGenerator("Server", "TradingSystemImpl", "2789", "Error: getTreeInBuild, making post json"));
+        }
+
+        Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
+        response.AddPair("expression", sale);
+
+        System.out.println("\n\n------ in TS ------\n");
+        System.out.println(response);
+
+        return response;
+    }
+
 }
 

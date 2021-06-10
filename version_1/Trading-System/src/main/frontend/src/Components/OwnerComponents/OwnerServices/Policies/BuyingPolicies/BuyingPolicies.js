@@ -2,10 +2,38 @@ import React, { useState, useEffect } from "react";
 import AndRootPolicy from "./AndRootPolicy";
 import OrRootPolicy from "./OrRootPolicy";
 import ConditionsPolicy from "./CondtionsRootPolicy";
+import JSONDisplay from "../JSONDisplay";
+import createApiClientHttp from "../../../../../ApiClientHttp";
+
+const apiHttp = createApiClientHttp();
 
 function Policies(props) {
   const store = props.currStore;
+  const [fetchedExpression, setFetchedExpression] = useState({
+    empty: "empty",
+  });
 
+  async function fetchBuildingExpression() {
+    console.log("fetch Building Expression");
+    const buyingPolicyResponse = await apiHttp.ShowBuyingPolicyBuildingTree(
+      props.connID,
+      2,
+      7
+    );
+    console.log(buyingPolicyResponse);
+
+    if (buyingPolicyResponse.isErr) {
+      console.log(buyingPolicyResponse.message);
+    } else {
+      setFetchedExpression(buyingPolicyResponse.returnObject.expression);
+    }
+  }
+
+  useEffect(() => {
+    fetchBuildingExpression();
+  }, [props.refresh]);
+
+  ///
   const [showAnd, setShowAnd] = useState(false);
   const [showConditions, setShowConditions] = useState(false);
   const [showOr, setShowOr] = useState(false);
@@ -74,6 +102,8 @@ function Policies(props) {
         <div>
           <h3>This is your current policies tree:</h3>
         </div>
+
+        <JSONDisplay expression={fetchedExpression}></JSONDisplay>
 
         <div>
           <h3>

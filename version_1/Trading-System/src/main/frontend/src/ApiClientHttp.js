@@ -915,6 +915,21 @@ export const createApiClientHttp = () => {
       });
     },
 
+    ShowBuyingPolicyBuildingTree: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/show_buying_policy_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      console.log(path);
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     // Admin
     // NOT IN USE
     AdminAllUsers: (connID, adminID) => {

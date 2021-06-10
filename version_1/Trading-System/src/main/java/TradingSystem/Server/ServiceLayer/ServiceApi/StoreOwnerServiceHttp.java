@@ -719,10 +719,11 @@ public class StoreOwnerServiceHttp {
 
     @GetMapping("{userID}/store/{storeID}/show_buying_policy_building_tree")
     public Response ShowBuyingPolicyBuildingTree(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
-//        Response res = this.tradingSystem.ShowBuyingPolicyBuildingTree(connID,userID,storeID);
-//        WriteToLogger(res);
-//        return res;
-        return null;
+        System.out.println("\n\n-----------------------DDDDDDDDDD -----------\n\n");
+        Response res = this.tradingSystem.ShowBuyingPolicyBuildingTree(connID,userID,storeID);
+        System.out.println(res);
+        WriteToLogger(res);
+        return res;
     }
 
     @PostMapping("{userID}/store/{storeID}/add_node_to_building_tree")
