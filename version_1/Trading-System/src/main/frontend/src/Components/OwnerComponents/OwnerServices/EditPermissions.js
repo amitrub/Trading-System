@@ -20,10 +20,33 @@ function EditPermissions(props) {
   const [getInfoRequests, setGetInfoRequests] = useState(false);
   const [responseRequests, setResponseRequests] = useState(false);
   const [getStoreHistory, setGetStoreHistory] = useState(false);
+  const [GetDailyIncomeForStore, setGetDailyIncomeForStore] = useState(false);
+  const [RequestBidding, setRequestBidding] = useState(false);
+  const [EditDiscountPolicy, setEditDiscountPolicy] = useState(false);
+  const [EditBuyingPolicy, setEditBuyingPolicy] = useState(false);
 
+  const [workers, setWorkers] = useState([]);
   const [managerID, setManagerID] = useState(-1);
   const [popupPermissions, setPopupPermissions] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
+
+  async function fetchWorkers() {
+    const workersResponse = await apiHttp.GetAllStoreManagers(
+      props.connID,
+      props.storeID
+    );
+    // console.log(workersResponse);
+
+    if (workersResponse.isErr) {
+      console.log(workersResponse.message);
+    } else {
+      setWorkers(workersResponse.returnObject.subscribers);
+    }
+  }
+
+  useEffect(() => {
+    fetchWorkers();
+  }, [props.refresh]);
 
   async function submitEditPermissionsHandler(event) {
     event.preventDefault();
@@ -46,7 +69,11 @@ function EditPermissions(props) {
       getInfoOfficials,
       getInfoRequests,
       responseRequests,
-      getStoreHistory
+      getStoreHistory,
+      GetDailyIncomeForStore,
+      RequestBidding,
+      EditDiscountPolicy,
+      EditBuyingPolicy
     );
 
     // console.log("EditPermissions");
@@ -91,7 +118,7 @@ function EditPermissions(props) {
           >
             {/* TODO: CHANGE TO ROLL THE EXIST MANAGERS */}
             {/* Manager ID */}
-            <div className="row">
+            {/* <div className="row">
               <div className="col span-1-of-3">
                 <label htmlFor="name">Manager ID</label>
               </div>
@@ -104,6 +131,32 @@ function EditPermissions(props) {
                   onChange={updateManagerID}
                   placeholder={"CHANGE TO ENROLL FROM THE EXISTING MANAGERS"}
                 />
+              </div>
+            </div> */}
+
+            {/* Manager id */}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Manager ID</label>
+              </div>
+              <div className="col span-2-of-3">
+                <select
+                  className="select"
+                  value={managerID}
+                  onChange={(e) => updateManagerID(e)}
+                  about="Show number of results:"
+                >
+                  {/* TOOD: change map to workersResponse.workers */}
+                  <option value={-1} disabled>
+                    {" "}
+                    choose manager{" "}
+                  </option>
+                  {workers.map((currWorker) => (
+                    <option value={currWorker.userID}>
+                      {currWorker.userID}:{currWorker.userName}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
 
@@ -345,9 +398,73 @@ function EditPermissions(props) {
                 />
               </div>
             </div>
-            {/* ) : (
-              ""
-            )} */}
+
+            {/* Checkbox GetDailyIncomeForStore*/}
+            {/* {permissions.includes("ResponseRequests") ? ( */}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Get Daily Income For Store</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="checkbox"
+                  name="responseRequests"
+                  id="ResponseRequests"
+                  checked={GetDailyIncomeForStore}
+                  onChange={() =>
+                    setGetDailyIncomeForStore(!GetDailyIncomeForStore)
+                  }
+                />
+              </div>
+            </div>
+
+            {/* Checkbox RequestBidding*/}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Request Bidding</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="checkbox"
+                  name="responseRequests"
+                  id="ResponseRequests"
+                  checked={RequestBidding}
+                  onChange={() => setRequestBidding(!RequestBidding)}
+                />
+              </div>
+            </div>
+
+            {/* Checkbox EditDiscountPolicy*/}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Edit Discount Policy</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="checkbox"
+                  name="responseRequests"
+                  id="ResponseRequests"
+                  checked={EditDiscountPolicy}
+                  onChange={() => setEditDiscountPolicy(!EditDiscountPolicy)}
+                />
+              </div>
+            </div>
+
+            {/* Checkbox EditBuyingPolicy*/}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Edit Buying Policy</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="checkbox"
+                  name="responseRequests"
+                  id="ResponseRequests"
+                  checked={EditBuyingPolicy}
+                  onChange={() => setEditBuyingPolicy(!EditBuyingPolicy)}
+                />
+              </div>
+            </div>
 
             <div className="row">
               <div className="col span-1-of-3">

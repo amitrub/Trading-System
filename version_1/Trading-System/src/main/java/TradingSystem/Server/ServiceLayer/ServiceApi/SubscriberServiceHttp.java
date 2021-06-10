@@ -32,6 +32,14 @@ public class SubscriberServiceHttp {
         return res;
     }
 
+    @GetMapping("{storeId}/get_all_manager")
+    public Response GetAllManager(@PathVariable int storeId, @RequestHeader("connID") String connID) {
+        Response res = tradingSystem.GetAllManager(connID, storeId);
+        tradingSystem.printUsers();
+        WriteToLogger(res);
+        return res;
+    }
+
     /**
      * @requirement 3.1
      *
@@ -209,6 +217,7 @@ public class SubscriberServiceHttp {
             WriteToLogger(res);
             return res;
         }
+        System.out.println("\n\n---------PURCHASE----------------\n\n");
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
         WriteToLogger(res);
         return res;
@@ -257,7 +266,7 @@ public class SubscriberServiceHttp {
     }
     //________________________________
     /**
-     * @requirement 2.8
+     * @requirement None
      *
      * @param connID: String (Header)
      * @return Response {
@@ -285,7 +294,7 @@ public class SubscriberServiceHttp {
     }
 
     /**
-     * @requirement 2.8
+     * @requirement 8.3.3
      *
      * @param connID: String (Header)
      * @param obj:{
@@ -318,48 +327,6 @@ public class SubscriberServiceHttp {
         WriteToLogger(res);
         return res;
 
-    }
-
-    /**
-     * @requirement 2.9
-     *
-     * @param userID: int (Path)
-     * @param connID: String (Header)
-     * @param obj:{
-     *  "credit_number": String
-     *  "phone_number": String
-     *  "address": String
-     * }
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
-    @PostMapping("{userID}/shopping_cart/special_purchase")
-    public Response specialProductsPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String credit_number, month, year, cvv, ID, address, city, country, zip;
-        try {
-            credit_number = (String) obj.get("credit_number");
-            month = (String) obj.get("month");
-            year = (String) obj.get("year");
-            cvv = (String) obj.get("cvv");
-            ID = (String) obj.get("ID");
-            address = (String) obj.get("address");
-            city = (String) obj.get("city");
-            country = (String) obj.get("country");
-            zip = (String) obj.get("zip");
-        }
-        catch (Exception e){
-            System.out.println(e);
-            Response res = new Response(true, "Error in parse body : subscriberPurchase");
-            System.out.println(res);
-            WriteToLogger(res);
-            return res;
-        }
-        Response res = tradingSystem.subscriberSpecialProductPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
-        WriteToLogger(res);
-        return res;
     }
     //___________________________________
 

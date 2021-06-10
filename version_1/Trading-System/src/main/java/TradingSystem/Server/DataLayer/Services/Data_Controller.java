@@ -100,11 +100,11 @@ public class Data_Controller {
     }
 
     public void EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
-        System.out.println(permissions);
-        System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++");
         permissionsService.EditManagerPermissions(storeID, managerID, permissions);
+    }
+
+    public void addCommentToProduct(Integer productID, Integer userID, String comment) {
+        productService.addCommentToProduct(productID, userID, comment);
     }
 
 

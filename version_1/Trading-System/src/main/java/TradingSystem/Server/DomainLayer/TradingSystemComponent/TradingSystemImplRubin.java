@@ -127,7 +127,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         User.setTradingSystem(tradingSystem);
         Store.setTradingSystem(tradingSystem);
         Product.setTradingSystem(tradingSystem);
-        Inventory.setTradingSystem(tradingSystem);
         ShoppingCart.setTradingSystem(tradingSystem);
         ShoppingBag.setTradingSystem(tradingSystem);
         SimpleExpression.setTradingSystem(tradingSystem);
@@ -140,6 +139,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         PurchaseTaskUnitTests.setTradingSystem(tradingSystem);
         RegisterTaskUnitTests.setTradingSystem(tradingSystem);
         RemoveProductTaskUnitTests.setTradingSystem(tradingSystem);
+        Trading_Driver.setTradingSystem(tradingSystem);
+        ClientProxy.setTradingSystem(tradingSystem);
+        Bid.setTradingSystem(tradingSystem);
     }
 
     public void setStores(ConcurrentHashMap<Integer, Store> stores){
@@ -958,8 +960,9 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(stores.get(storeId).getProduct(productId).isUserComment(userId)){
             return new Response(true, "WriteComment: The user already wrote comment for this product");
         }
+        stores.get(storeId).WriteComment(userId,productId,comment);
         Product product = stores.get(storeId).getProduct(productId);
-        product.addComment(userId, comment);
+        //product.addComment(userId, comment);
         String storeName = stores.get(storeId).getName();
 
         Response resAlert = new Response(false, "There is a new comment on your product: " + product.getProductName() +
@@ -2033,7 +2036,6 @@ public class TradingSystemImplRubin implements TradingSystem {
 
     private Sale createSale(Integer storeID,String saleName, Map<String, Object> o) {
         Sale s=null;
-
         if(saleName.equals("AddComposite")){
             LinkedList<Sale> list=new LinkedList<Sale>();
             AddComposite sale=new AddComposite(list);
@@ -2556,7 +2558,6 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(productPrice<=0||productPrice>product.getPrice()){
             return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid with price " +productPrice +" but it is not in the range: 0-"+product.getPrice());
         }
-
         if(quantity<=0){
             return new Response(true, "subscriberBidding: The user "+userID+" try to submit a bid with quantity " +quantity +" but it is not bigger then 0");
         }
@@ -2569,8 +2570,8 @@ public class TradingSystemImplRubin implements TradingSystem {
     @Override
     public Response ResponseForSubmissionBidding(int userID, String connID, int storeId, int productID, int productPrice, int userWhoOffer, int quantity, int mode) {
         Store store = this.stores.get(storeId);
-        Response res = ableToResponseForSubmissionBid(userID, connID, storeId, productID, productPrice, userWhoOffer, quantity);
-        if (!res.getIsErr()){
+        Response res = ableToResponseForSubmissionBid(userID, connID, storeId, store, productID, productPrice, userWhoOffer, quantity);
+        if (!res.getIsErr()) {
             switch (mode) {
                 case 0:
                     return store.refuseSubmissionBid(userID, userWhoOffer,productID);
@@ -2606,7 +2607,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
 
 
-    private Response ableToResponseForSubmissionBid(int userID, String connID, int storeId,int productID, int productPrice, int userWhoOffer, int quantity){
+    private Response ableToResponseForSubmissionBid(int userID, String connID, int storeId,Store store, int productID, int productPrice, int userWhoOffer, int quantity){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
         }
@@ -2616,15 +2617,20 @@ public class TradingSystemImplRubin implements TradingSystem {
         if(this.subscribers.get(userWhoOffer)==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userWhoOffer+" is not in the subscriber");
         }
-        Store store=this.stores.get(storeId);
         if(store==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for store ("+storeId+ ") that not in the system");
         }
         if(store.getProduct(productID)==null){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to response for submission bid for product ("+productID+ ") that not in the store");
         }
-        if(store.getBid(userWhoOffer,productID)==null || store.getBid(userWhoOffer,productID).isFinalState()){
+        if(store.getBid(userWhoOffer,productID)==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding not exist");
+        }
+        if(store.getBid(userWhoOffer,productID).isFinalState()){
             return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        if(!this.hasPermission(userID,storeId,PermissionEnum.Permission.RequestBidding)){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but he does not have permission to do so");
         }
         return new Response(false,"able");
     }
@@ -2684,31 +2690,20 @@ public class TradingSystemImplRubin implements TradingSystem {
             return new Response(true, "RemoveFromCart: The user is not Exist");
         }
     }
-
-    @Override
-    public Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
-        if (!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "subscriberPurchase: The user is not connected to the system");
-        } else {
-            User user = subscribers.get(userID);
-            Collection<ShoppingBag> shoppingBags = user.getShoppingCart().getShoppingBags().values();
-            Response res = user.subscriberSpecialProductPurchase(credit_number, month, year, cvv, id, address, city, country, zip);
-            if (!res.getIsErr()) {
-                for (ShoppingBag bag : shoppingBags) {
-                    Store store = this.stores.get(bag.getStoreID());
-                    List<Integer> productsID = bag.getSpecialProductProductsList();
-                    String productsList = makeProductsList(store.getId(), productsID);
-                    Response resAlert = new Response(false, "The client " + user.getUserName() +
-                            " has been purchased the products: " + productsList + " from your store: " + store.getName());
-                    store.sendAlertToOwners(resAlert);
-                }
+    
+    public Response GetAllManager(String connID, int stoerId) {
+        List<DummySubscriber> dummySubscribers = new ArrayList<>();
+        if (this.stores.get(stoerId) != null) {
+            for (Integer id : this.stores.get(stoerId).getManagerIDs().keySet()) {
+                User u = this.subscribers.get(id);
+                DummySubscriber dummySubscriber = new DummySubscriber(u.getId(), u.getUserName());
+                dummySubscribers.add(dummySubscriber);
             }
-            res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(), systemAdmins.containsKey(userID));
-            return res;
-
         }
+        Response res = new Response("Get All Subscribers succeed");
+        res.AddPair("subscribers", dummySubscribers);
+        return res;
     }
-
 
     public Integer getStoreIDByName(String storeName){
         for(Store s : stores.values())

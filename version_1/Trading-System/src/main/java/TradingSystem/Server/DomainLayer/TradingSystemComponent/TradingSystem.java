@@ -123,5 +123,5 @@ public interface TradingSystem {
 
     Response removeSpecialProductFromCart(String connID, int storeID, int productID);
 
-    Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip);
+    Response GetAllManager(String connID, int stoerId);
 }

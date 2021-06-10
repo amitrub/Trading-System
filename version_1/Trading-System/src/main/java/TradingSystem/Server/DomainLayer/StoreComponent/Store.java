@@ -571,7 +571,15 @@ public class Store extends Observable {
     //send alert to all owners of the store
     public void sendAlertOfBiddingToManager(Response message){
         for(Integer ID : managersIDs) {
-            ManagerPermission MP=this.managersPermission.get(ID);
+            ManagerPermission MP = this.managersPermission.get(ID);
+            if (MP != null) {
+                if (MP.hasPermission(PermissionEnum.Permission.RequestBidding)) {
+                    sendAlert(ID, message);
+                }
+            }
+           }
+        }
+           /* ManagerPermission MP=this.managersPermission.get(ID);
             if(MP!=null) {
                 if(MP.hasPermission(PermissionEnum.Permission.RequestBidding)) {
                     User user = tradingSystem.subscribers.get(ID);
@@ -585,7 +593,7 @@ public class Store extends Observable {
         this.setChanged();
         this.notifyObservers(message);
         this.deleteObservers();
-    }
+            */
 
     //send alert to specific owner
     public void sendAlert(Integer ownerID, Response message){
@@ -616,7 +624,8 @@ public class Store extends Observable {
         if(this.Bids==null) {
             this.Bids = new ConcurrentLinkedDeque<>();
         }
-        this.Bids.add(new Bid(userID, productID,this.id,productPrice,quantity,createOwnerList()));
+        ConcurrentHashMap<Integer,Boolean> list=this.createOwnerList();
+        this.Bids.add(new Bid(userID, productID,this.id,productPrice,quantity,list));
     }
 
     public ConcurrentHashMap<Integer, Boolean> createOwnerList() {
@@ -630,7 +639,7 @@ public class Store extends Observable {
                 list.put(key,false);
             }
         }
-        return null;
+        return list;
     }
 
     public boolean CheckBidForProductExist(Integer userID, Integer productID){

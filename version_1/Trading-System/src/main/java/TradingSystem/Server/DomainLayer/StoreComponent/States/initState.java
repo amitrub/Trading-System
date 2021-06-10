@@ -25,8 +25,8 @@ public class initState implements State {
            return bid.handle(ownerId);
         }
         Response resAlert = new Response(false, "The owner/manager " + ownerId + " brought a counter offer for the bid of user "
-                +bid.getUserID() + " for product " + bid.getProductID() + ", in your store: " + bid.getStoreId()
-                + "the ofer is: "+bid.getPrice());
+                +bid.getUserID() + " and product " + bid.getProductID() + ", in your store: " + bid.getStoreId()
+                + ".\n The ofer is- price: "+ bid.getPrice() +" quantity: "+bid.getQuantity()+".");
         resAlert.AddTag("updateBid");
         bid.sendAlertToOwner(resAlert);
         bid.unlockBid();
