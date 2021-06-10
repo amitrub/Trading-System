@@ -45,19 +45,6 @@ public class ManagerTests {
         client.clearSystem();
     }
 
-    //region other functions
-    Integer getStoreID(List<DummyStore> stores, String storeName)
-    {
-        for (int i=0; i<stores.size(); i++)
-        {
-            if(stores.get(i).getName().equals(storeName))
-                return stores.get(i).getId();
-        }
-        return -1;
-    }
-    //endregion
-
-    //region requirement 5.1
 
     @Test
     void PermissionsHappy() {

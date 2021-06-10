@@ -11,6 +11,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -46,25 +47,6 @@ public class GuestTests {
         client.clearSystem();
     }
 
-    Integer getStoreID(List<DummyStore> stores, String storename)
-    {
-        for (int i=0; i<stores.size(); i++)
-        {
-            if(stores.get(i).getName().equals(storename))
-                return stores.get(i).getId();
-        }
-        return -1;
-    }
-
-    Integer getProductID(List<DummyProduct> storeProducts, String productName)
-    {
-        for (int i=0; i<storeProducts.size(); i++)
-        {
-            if(storeProducts.get(i).getProductName().equals(productName))
-                return storeProducts.get(i).getProductID();
-        }
-        return -1;
-    }
 
     //region system Tests requirement 2.1-2.2
     /**
@@ -142,7 +124,7 @@ public class GuestTests {
     @Test
     void showAllStores_Happy() {
         Integer preSize = client.showAllStores().getStores().size();
-        client.openStore("Adidas");
+        client.openStore("Adidason");
         Response response = client.showAllStores();
         Integer newSize = response.getStores().size();
         assertTrue(newSize == preSize+1);
@@ -208,7 +190,8 @@ public class GuestTests {
         Response response = client.addProductToCart(storeID, productID1, 1);
         assertFalse(response.getIsErr());
         assertEquals(client.showShoppingCart().returnProductList().size(), 1);
-        String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
+        DummyProduct product = new DummyProduct((Map<String, Object>)client.showShoppingCart().returnProductList().get(0));
+        String ans1 =  product.getProductName();
         assertEquals(ans1, "Simple Dress");
     }
     @Test
@@ -242,7 +225,8 @@ public class GuestTests {
         client.addProductToCart(storeID, productID1 , 3);
         List<DummyProduct> dummyProducts = client.showShoppingCart().returnProductList();
         assertEquals(dummyProducts.size(), 1); //types
-        int quantity = dummyProducts.get(0).getQuantity();
+        DummyProduct product = new DummyProduct((Map<String, Object>) dummyProducts.get(0));
+        int quantity = product.getQuantity();
         assertEquals(quantity, 3); //quantity
     }
     @Test
@@ -297,7 +281,8 @@ public class GuestTests {
         assertFalse(response.getIsErr());
         Integer size = client.showShoppingCart().returnProductList().size();
         assertTrue(size == 1); //types
-        Integer quantity = client.showShoppingCart().returnProductList().get(0).getQuantity();
+        DummyProduct product = new DummyProduct((Map<String, Object>) client.showShoppingCart().returnProductList().get(0));
+        Integer quantity = product.getQuantity();
         assertTrue(quantity == 6); //quantity
     }
     @Test
@@ -312,7 +297,8 @@ public class GuestTests {
         assertTrue(response.getIsErr());
         Integer size = client.showShoppingCart().returnProductList().size();
         assertTrue(size == 1); //types
-        Integer quantity = client.showShoppingCart().returnProductList().get(0).getQuantity();
+        DummyProduct product = new DummyProduct((Map<String, Object>) client.showShoppingCart().returnProductList().get(0));
+        Integer quantity = product.getQuantity();
         assertTrue(quantity == 3); //quantity
     }
     @Test
@@ -334,8 +320,8 @@ public class GuestTests {
 
         //Issue
         Response res = client.editShoppingCart(storeID, productID1, 5);
-
-        assertEquals(client.showShoppingCart().returnProductList().get(0).getQuantity(), 1);
+        DummyProduct product = new DummyProduct((Map<String, Object>) client.showShoppingCart().returnProductList().get(0));
+        assertEquals(product.getQuantity(), 1);
         assertTrue(res.getIsErr());
     }
 
@@ -350,33 +336,37 @@ public class GuestTests {
         client.Logout();
         client.connectSystem();
         client.addProductToCart(storeID, productID1, 1);
-        //Integer preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
+        DummyProduct product = new DummyProduct((Map<String, Object>)client.showStoreProducts(storeID).returnProductList().get(0));
+        Integer preQuantity = product.getQuantity();
 
         //Issue
         Response response = client.guestPurchase("Roee","123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertFalse(response.getIsErr());
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
-        //List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
+        DummyProduct product2 = new DummyProduct((Map<String, Object>)client.showStoreProducts(storeID).returnProductList().get(0));
 
         //Assert
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
-        //assertEquals(productsAfter.get(0).getQuantity(), preQuantity-1);
+        assertEquals(product2.getQuantity(), preQuantity-1);
 
         //Try to buy the same product again
-        //preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
+        DummyProduct product3 = new DummyProduct((Map<String, Object>)client.showStoreProducts(storeID).returnProductList().get(0));
+        preQuantity =product3.getQuantity();
+
         client.addProductToCart(storeID, productID1, 1);
-        String productName = client.showShoppingCart().returnProductList().get(0).getProductName();
+        String productName = product3.getProductName();
         assertEquals(productName, "Simple Dress");
 
         //Issue
         response = client.guestPurchase("Roee", "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         assertFalse(response.getIsErr());
         cartAfter = client.showShoppingCart().returnProductList();
-        //productsAfter = client.showStoreProducts(storeID).returnProductList();
+        DummyProduct product4 = new DummyProduct((Map<String, Object>)client.showStoreProducts(storeID).returnProductList().get(0));
+
 
         //Assert
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
-        //assertEquals(productsAfter.get(0).getQuantity(), preQuantity-1); //check decrease quantity in store
+        assertEquals(product4.getQuantity(), preQuantity-1); //check decrease quantity in store
     }
     @Test
     void Purchase_SadWrongPayingDetails() {

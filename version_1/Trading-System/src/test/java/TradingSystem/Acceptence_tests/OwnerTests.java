@@ -24,6 +24,7 @@ import org.springframework.test.context.junit4.SpringRunner;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -203,7 +204,8 @@ public class OwnerTests {
         //happy edit price
         Response response = client.editProduct(storeID, productID, "T-Shirt", "Tops", 100.0,25);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID).returnProductList();
-        //assertEquals(storeProducts2.get(0).getPrice(), 100.0, 0);
+        DummyProduct product = new DummyProduct((Map<String, Object>) storeProducts2.get(0));
+        assertEquals(product.getPrice(), 100.0, 0);
         assertEquals(storeProducts2.size(), 1);
         assertFalse(response.getIsErr());
     }
@@ -216,7 +218,8 @@ public class OwnerTests {
         //happy edit quantity
         Response response = client.editProduct(storeID, productID, "T-Shirt", "Tops", 80.0,35);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID).returnProductList();
-        //assertEquals(storeProducts2.get(0).getQuantity(), 35);
+        DummyProduct product = new DummyProduct((Map<String, Object>) storeProducts2.get(0));
+        assertEquals(product.getQuantity(), 35);
         assertEquals(storeProducts2.size(), 1);
         assertFalse(response.getIsErr());
     }
@@ -229,7 +232,8 @@ public class OwnerTests {
         //sad edit
         Response response = client.editProduct(storeID, productID, "T-Shirt", "Tops", -120.0,25);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID).returnProductList();
-        //assertEquals(storeProducts2.get(0).getPrice(), 80.0, 0);
+        DummyProduct product = new DummyProduct((Map<String, Object>) storeProducts2.get(0));
+        assertEquals(product.getPrice(), 80.0, 0);
         assertEquals(storeProducts2.size(), 1);
         assertTrue(response.getIsErr());
     }
@@ -244,7 +248,8 @@ public class OwnerTests {
         Response response = client.editProduct(storeID, productID, "T-Shirt", "Tops", 120.0,-25);
         List<DummyProduct> storeProducts2 = client.showStoreProducts(storeID).returnProductList();
         Integer newSize = storeProducts2.size();
-        //assertEquals(storeProducts2.get(0).getQuantity(), 25);
+        DummyProduct product = new DummyProduct((Map<String, Object>) storeProducts2.get(0));
+        assertEquals(product.getQuantity(), 25);
         assertEquals(newSize, preSize);
         assertTrue(response.getIsErr());
     }

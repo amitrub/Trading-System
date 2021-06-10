@@ -25,12 +25,8 @@ public class SubscriberTests {
         client = new Client();
         client.clearSystem();
         client.connectSystem();
-        client.Register("Elinorrrr", "123");
-        client.Login("Elinorrrr", "123");
-        client.openStore("aaaaa");
-        List<DummyStore> stores= client.showAllStores().getStores();
-        DummyStore store = new DummyStore((Map<String, Object>)stores.get(0));
-        String s = store.getName();
+        client.Register("Elinor", "123");
+        client.Login("Elinor", "123");
     }
 
     @AfterEach
@@ -127,12 +123,12 @@ public class SubscriberTests {
         Integer preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
         Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
-        //List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
-
+        List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
+        DummyProduct product = new DummyProduct((Map<String, Object>)productsAfter.get(0));
         //Assert
         assertFalse(response.getIsErr());
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
-        //assertEquals(productsAfter.get(0).getQuantity(), preQuantity - 1); //check decrease quantity in store
+        assertEquals(product.getQuantity(), preQuantity - 1); //check decrease quantity in store
     }
 
     //case 3.4.2 input doesn't fit

@@ -49,27 +49,6 @@ public class AdminTests {
         client.exitSystem();
     }
 
-    //region other functions
-    Integer getStoreID(List<DummyStore> stores, String storeName)
-    {
-        for (int i=0; i<stores.size(); i++)
-        {
-            if(stores.get(i).getName().equals(storeName))
-                return stores.get(i).getId();
-        }
-        return -1;
-    }
-
-    Integer getProductID(List<DummyProduct> storeProducts, String productName)
-    {
-        for (int i=0; i<storeProducts.size(); i++)
-        {
-            if(storeProducts.get(i).getProductName().equals(productName))
-                return storeProducts.get(i).getProductID();
-        }
-        return -1;
-    }
-    //endregion
 
     //region requirement 6.4: Purchase history
     @Test
