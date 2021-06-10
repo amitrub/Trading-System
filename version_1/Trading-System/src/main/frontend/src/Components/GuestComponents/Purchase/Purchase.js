@@ -23,6 +23,7 @@ function Purchase(props) {
   const [popupMsg, setPopupMsg] = useState("");
 
   const [cartSize, setCartSize] = useState(0);
+  const [cartSize2, setCartSize2] = useState(0);
 
   async function fetchShopingCart() {
     const showCartResponse = await apiHttp.ShowShoppingCart(props.connID);
@@ -31,7 +32,7 @@ function Purchase(props) {
     if (showCartResponse.isErr) {
       console.log(showCartResponse.message);
     } else {
-      setCartSize(cartSize + showCartResponse.returnObject.products.length);
+      setCartSize(showCartResponse.returnObject.products.length);
     }
   }
 
@@ -42,7 +43,7 @@ function Purchase(props) {
     if (showCartBidResponse.isErr) {
       console.log(showCartBidResponse.message);
     } else {
-      setCartSize(cartSize + showCartBidResponse.returnObject.products.length);
+      setCartSize2(showCartBidResponse.returnObject.products.length);
     }
   }
 
@@ -183,7 +184,7 @@ function Purchase(props) {
 
   return (
     <section>
-      {cartSize !== 0 ? (
+      {cartSize !== 0 || cartSize2 !== 0 ? (
         <div>
           <div>
             <button
