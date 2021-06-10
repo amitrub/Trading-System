@@ -68,7 +68,8 @@ class DiscountPolicyTest {
     void tearDown() {
         store = null;
         DC = null;
-        tradingSystem.Initialization();
+        //tradingSystem.Initialization();
+        tradingSystem.ClearSystem();
     }
 
     //region Conditional discount tests

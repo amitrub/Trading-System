@@ -1,6 +1,7 @@
 package TradingSystem.Server;
 
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.ServiceLayer.LoggerController;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
@@ -14,27 +15,42 @@ import java.io.File;
 import java.util.Map;
 import java.util.Properties;
 
+import static javafx.application.Platform.exit;
+
 @SpringBootApplication
 @RestController
 @EnableJpaRepositories
 public class TradingSystemApplication {
 
-	@Autowired
-	public static TradingSystem tradingSystem;
+	//@Autowired
+	//public static TradingSystem tradingSystem;
+
+	private static final LoggerController loggerController=LoggerController.getInstance();
 
 	public static void main(String[] args) {
-		Properties props = createProps();
-		if(props!= null){
-			new SpringApplicationBuilder(TradingSystemApplication.class)
-					.properties(props).run(args);
-		}
+		if(args.length>0) {
+			String initializationPath = args[0];
+			Properties props = createProps(initializationPath);
+			if (props != null) {
+				try {
+					new SpringApplicationBuilder(TradingSystemApplication.class)
+							.properties(props).run(args);
+				} catch (Exception e) {
+					loggerController.WriteErrorMsg(e.getMessage());
+					System.out.println("------TESTT-------");
+					System.exit(-1);
+					//exit();
+					return;
+				}
+			}
 //		SpringApplication.run(TradingSystemApplication.class, args);
+		}
 	}
 
-	private static Properties createProps(){
+	private static Properties createProps(String path){
 		ObjectMapper objectMapper = new ObjectMapper();
 		try {
-			String path = "src/main/resources/initialization_System.json";
+			//String path = "src/main/resources/initialization_System.json";
 			File file = new File(path);
 			String absolutePath = file.getAbsolutePath();
 			JsonInitReader readJson = objectMapper.readValue(new File(absolutePath), JsonInitReader.class);
@@ -52,7 +68,7 @@ public class TradingSystemApplication {
 			return props;
 		}
 		catch (Exception e){
-			System.out.println("error in init file");
+			loggerController.WriteErrorMsg("error in init file");
 			return null;
 		}
 	}

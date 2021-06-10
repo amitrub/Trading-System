@@ -4,13 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 public class JsonStateReader {
-    public List<JsonUser> register;
+    public List<Map<String,String>> register;
     public List<Map<String,String>> login;
     public List<Map<String,String>> open_store;
     public List<Map<String,Object>> add_item;
     public List<Map<String,Object>> add_manager;
 
-    public List<JsonUser> getRegister() {
+    public List<Map<String,String>> getRegister() {
         return register;
     }
 

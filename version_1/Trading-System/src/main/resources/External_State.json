@@ -29,5 +29,5 @@
   "add_manager" : [{
     "owner": "u2",
     "newManager": "u3",
-    "permission": ["manage_inventory"]}]
+    "storeName":  "s1"}]
 }

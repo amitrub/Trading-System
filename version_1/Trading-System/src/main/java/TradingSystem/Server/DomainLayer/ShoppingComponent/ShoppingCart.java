@@ -30,10 +30,6 @@ public class ShoppingCart {
 
         ShoppingCart.data_controller = data_controller;
     }
-//    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
-//    private final SupplySystem supplySystem = SupplySystem.getInstance();
-    private ExternalServices paymentSystem = PaymentSystem.getInstance();
-    private ExternalServices supplySystem = SupplySystem.getInstance();
 
     private final Integer userID;
     //StoreID_ShoppingBag
@@ -208,14 +204,14 @@ public class ShoppingCart {
         }
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
         AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
-        Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
+        Response supplyResponse = TradingSystemImplRubin.getSupplySystem().purchase(paymentInfo, addressInfo);
         if(supplyResponse.getIsErr()){
             this.releaseLocks(lockList);
             return supplyResponse;
         }
-        Response paymentResponse = paymentSystem.purchase(paymentInfo, addressInfo);
+        Response paymentResponse = TradingSystemImplRubin.getPaymentSystem().purchase(paymentInfo, addressInfo);
         if(paymentResponse.getIsErr()){
-            supplySystem.Cancel(supplyResponse.getMessage());
+            TradingSystemImplRubin.getSupplySystem().Cancel(supplyResponse.getMessage());
             this.releaseLocks(lockList);
             return paymentResponse;
         }
@@ -470,13 +466,6 @@ public class ShoppingCart {
         return new Response(false, "RemoveFromCart: product removed successfully");
     }
 
-    public void setPaymentSystem(ExternalServices paymentSystem) {
-        this.paymentSystem = paymentSystem;
-    }
-    public void setSupplySystem(ExternalServices supplySystem) {
-        this.supplySystem = supplySystem;
-    }
-    //todo implement!
     public Response specialProductPurchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         if (shoppingBags.size() == 0) {
             return new Response(true, "Purchase: There is no products in the shopping cart");
@@ -496,14 +485,14 @@ public class ShoppingCart {
         }
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
         AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
-        Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
+        Response supplyResponse = TradingSystemImplRubin.getSupplySystem().purchase(paymentInfo, addressInfo);
         if (supplyResponse.getIsErr()) {
             this.releaseLocks(lockList);
             return supplyResponse;
         }
-        Response paymentResponse = paymentSystem.purchase(paymentInfo, addressInfo);
+        Response paymentResponse = TradingSystemImplRubin.getPaymentSystem().purchase(paymentInfo, addressInfo);
         if (paymentResponse.getIsErr()) {
-            supplySystem.Cancel(supplyResponse.getMessage());
+            TradingSystemImplRubin.getSupplySystem().Cancel(supplyResponse.getMessage());
             this.releaseLocks(lockList);
             return paymentResponse;
         }

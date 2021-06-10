@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -38,6 +39,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -69,7 +71,11 @@ public class TradingSystemImplRubin implements TradingSystem {
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions = new ConcurrentHashMap<>();
 
-    public TradingSystemImplRubin(Data_Controller data_controller) {
+    private static ExternalServices paymentSystem;
+    private static ExternalServices supplySystem;
+
+
+    public TradingSystemImplRubin(Data_Controller data_controller, ApplicationArguments args) {
         this.data_controller = data_controller;
         this.setData_controller(this.data_controller);
         this.setTradingSystem(this);
@@ -77,13 +83,26 @@ public class TradingSystemImplRubin implements TradingSystem {
         this.addFromDb= new AddFromDb(this,this.data_controller);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            String path = "src/main/resources/initialization_System.json";
-            File file = new File(path);
+            List<String> arg = args.getNonOptionArgs();
+            String initializationPath = arg.get(0);
+            String ExternalStatePath = arg.get(1);
+            //System.out.println(ANSI_YELLOW + "-----------TEST---------\n"+ ExternalStatePath + "\n------------END TEST----------------" + ANSI_RESET);
+            //String initializationPath = "src/main/resources/initialization_System.json";
+            File file = new File(initializationPath);
             String absolutePath = file.getAbsolutePath();
             JsonInitReader readJson = objectMapper.readValue(new File(absolutePath), JsonInitReader.class);
             Boolean externalState = readJson.getExternalState();
             if (externalState){
-                this.Initialization();
+                this.Initialization(ExternalStatePath);
+            }
+            Boolean externalServices = readJson.getExternalServices();
+            if(externalServices){
+                setPaymentSystem(PaymentSystem.getInstance());
+                setSupplySystem(SupplySystem.getInstance());
+            }
+            else{
+                setPaymentSystem(PaymentSystemMock.getInstance());
+                setSupplySystem(SupplySystemMock.getInstance());
             }
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
@@ -161,59 +180,77 @@ public class TradingSystemImplRubin implements TradingSystem {
         printUsers();
     }
 
-    public void Initialization() {
+
+
+    public void Initialization(String path) throws Exception {
         data_controller.deleteAll();
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            String path = "src/main/resources/External_State.json";
+            //String path = "src/main/resources/External_State.json";
             File file = new File(path);
             String absolutePath = file.getAbsolutePath();
             JsonStateReader readJson = objectMapper.readValue(new File(absolutePath), JsonStateReader.class);
             Map<String, Integer> userName_id = new HashMap<>();
 
             String connID = ConnectSystem().returnConnID();
-            for (JsonUser user: readJson.register){
-                Integer userID = Register(connID, user.getUserName(), user.getPassword()).returnUserID();
-                userName_id.put(user.getUserName(), userID);
+//            for (JsonUser user: readJson.register){
+//                Integer userID = Register(connID, user.getUserName(), user.getPassword()).returnUserID();
+//                userName_id.put(user.getUserName(), userID);
+//            }
+            for(Map<String, String> registerMap: readJson.register)
+            {
+                String userName = registerMap.get("userName");
+                String password = registerMap.get("password");
+                String conn = this.ConnectSystem().returnConnID();
+                Integer userID = Register(conn,userName,password).returnUserID();
+                userName_id.put(userName, userID);
             }
-            for (Map<String, String> loginMap : readJson.login){
+            for (Map<String, String> loginMap : readJson.login) {
                 String userName = loginMap.get("userName");
                 Integer userID = userName_id.get(userName);
                 String password = this.subscribers.get(userID).getPassword();
 
-                connID = Login(connID,userName,password).returnConnID();
+                connID = Login(connID, userName, password).returnConnID();
 
                 Map<String, Integer> storeName_id = new HashMap<>();
-                for (Map<String, String> openStoreMap : readJson.open_store){
+                for (Map<String, String> openStoreMap : readJson.open_store) {
                     String userNameOpenStore = openStoreMap.get("userName");
-                    if(userName.equals(userNameOpenStore)){
+                    if (userName.equals(userNameOpenStore)) {
                         String storeName = openStoreMap.get("storeName");
                         Integer storeID = AddStore(userID, connID, storeName).returnStoreID();
                         storeName_id.put(storeName, storeID);
                     }
                 }
-                for (Map<String, Object> addItemMap : readJson.add_item){
+                for (Map<String, Object> addItemMap : readJson.add_item) {
                     String userNameOpenStore = (String) addItemMap.get("userName");
-                    if(userName.equals(userNameOpenStore)){
+                    if (userName.equals(userNameOpenStore)) {
                         String storeName = (String) addItemMap.get("storeName");
                         Integer storeID = storeName_id.get(storeName);
                         String productName = (String) addItemMap.get("productName");
                         String category = (String) addItemMap.get("category");
                         Double price = (Double) addItemMap.get("price");
                         Integer quantity = (Integer) addItemMap.get("quantity");
-                        AddProductToStore(userID, connID, storeID, productName,category, price, quantity);
+                        AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
                     }
                 }
-//                TODO : add manager
-                for (Map<String, Object> addItemMap : readJson.add_manager){
+                for (Map<String, Object> addManagerMap : readJson.add_manager) {
+                    String owner = (String) addManagerMap.get("owner");
+                    if (userName.equals(owner)) {
+                        String newManager = (String) addManagerMap.get("newManager");
+                        Integer newManagerID = userName_id.get(newManager);
+                        String storeName = (String) addManagerMap.get("storeName");
+                        Integer storeID = this.getStoreIDByName(storeName);
+                        AddNewManager(userID, connID, storeID, newManagerID);
+                    }
                 }
                 connID = Logout(connID).returnConnID();
             }
             Exit(connID);
         }
         catch (Exception e){
-            System.out.println(e);
+            //System.exit(1);
+            throw new Exception("There is a problem with the External file");
         }
 
 
@@ -2709,5 +2746,19 @@ public class TradingSystemImplRubin implements TradingSystem {
         return -1;
     }
 
+    public static ExternalServices getPaymentSystem() {
+        return paymentSystem;
+    }
 
+    public static void setPaymentSystem(ExternalServices paymentSystem) {
+        TradingSystemImplRubin.paymentSystem = paymentSystem;
+    }
+
+    public static ExternalServices getSupplySystem() {
+        return supplySystem;
+    }
+
+    public static void setSupplySystem(ExternalServices supplySystem) {
+        TradingSystemImplRubin.supplySystem = supplySystem;
+    }
 }

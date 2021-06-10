@@ -20,7 +20,7 @@ public interface TradingSystem {
 
     public void ClearSystem();
 
-    public void Initialization();
+    public void Initialization(String path) throws Exception;
 
     public String errMsgGenerator(String side, String className, String line, String msg);
     //prints for debug
