@@ -14,4 +14,7 @@ public interface ShoppingBagProductRepository extends JpaRepository<DataShopping
 
     @Override
     void deleteById(DataShoppingBagProductKey dataShoppingBagProductKey);
+
+    void deleteAllByShoppingBag(DataShoppingBagCart shoppingBagCart);
+
 }

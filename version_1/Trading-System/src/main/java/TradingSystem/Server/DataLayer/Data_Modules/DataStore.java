@@ -7,10 +7,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagC
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static javax.persistence.GenerationType.SEQUENCE;
 
@@ -51,6 +48,13 @@ public class DataStore {
 //            columnDefinition = "TEXT"
     )
     private Double storeRate;
+
+    @Column(
+            name = "date",
+            nullable = false,
+            columnDefinition = "TIMESTAMP WITHOUT TIME ZONE"
+    )
+    private Date date;
 
     @ManyToOne
     @JoinColumn(
@@ -97,13 +101,13 @@ public class DataStore {
     )
     private List<DataProduct> products = new ArrayList<>();
 
-    @OneToMany(
-            mappedBy = "store",
-            orphanRemoval = true,
-            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
-            fetch = FetchType.EAGER
-    )
-    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
+//    @OneToMany(
+//            mappedBy = "store",
+//            orphanRemoval = true,
+//            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+//            fetch = FetchType.EAGER
+//    )
+//    private List<DataShoppingBagCart> shoppingBagsCart= new ArrayList<>();
 
     @OneToMany(
             mappedBy = "store",
@@ -114,15 +118,6 @@ public class DataStore {
     private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
 
 
-//    @ElementCollection
-//    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
-//    private List<Integer> ownersIDs;
-//    @ElementCollection
-//    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
-//    private List<Integer> managersIDs;
-
-
-
     public DataStore() {
         // DO NOT DELETE
     }
@@ -130,6 +125,7 @@ public class DataStore {
     public DataStore(String name){
         this.storeName = name;
         this.storeRate = 5.0;
+        this.date = new Date();
     }
 
     public Integer getStoreID() {
@@ -150,6 +146,14 @@ public class DataStore {
 
     public void setStoreRate(Double storeRate) {
         this.storeRate = storeRate;
+    }
+
+    public Date getDate() {
+        return date;
+    }
+
+    public void setDate(Date date) {
+        this.date = date;
     }
 
     public Set<DataSubscriber> getOwners() {

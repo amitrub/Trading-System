@@ -167,7 +167,7 @@ public class ShoppingBag {
     }
 
     public void setFinalPrice(Double finalPrice) {
-        if(userID>1){
+        if(userID>=1){
             data_controller.setBagFinalPrice(userID, storeID, finalPrice);
         }
         this.finalPrice = finalPrice;

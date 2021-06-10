@@ -911,6 +911,7 @@ public class TradingSystemImplRubin implements TradingSystem {
 
                 //Adds to the db
                 int storeID = data_controller.AddStore(storeName, userID);
+                data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
                 Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
                 user.AddStore(newStore.getId());
@@ -1397,6 +1398,9 @@ public class TradingSystemImplRubin implements TradingSystem {
             return res2;
         }
 
+        //Adds to the db
+        data_controller.EditManagerPermissions(storeID, managerID, permissions);
+
         MTE.editPermissions(userID,storeID,permissions);
         stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
         //NM.unlockUser();
@@ -1747,6 +1751,9 @@ public class TradingSystemImplRubin implements TradingSystem {
             if(!hasPer && this.systemManagerPermissions.get(userID)!=null){
                 hasPer = this.systemManagerPermissions.get(userID).hasPermission(p);
             }
+            if(u.getMyFoundedStoresIDs().contains(storeID)){
+                hasPer = true;
+            }
         }
         return hasPer ;
     }
@@ -1798,7 +1805,7 @@ public class TradingSystemImplRubin implements TradingSystem {
         if (!this.subscribers.containsKey(newRole)) {
             return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
         }
-        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
+        if (!this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID) && !this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
             return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
         }
         if(!this.hasPermission(userID,storeID,permission)) {
