@@ -37,6 +37,7 @@ import TradingSystem.Server.JsonUser;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
+import TradingSystem.Server.TradingSystemApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
@@ -249,8 +250,8 @@ public class TradingSystemImplRubin implements TradingSystem {
             Exit(connID);
         }
         catch (Exception e){
-            //System.exit(1);
-            throw new Exception("There is a problem with the External file");
+            TradingSystemApplication.WriteToLogger("There is a problem with the External file");
+            System.exit(1);
         }
 
 

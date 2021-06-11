@@ -32,16 +32,9 @@ public class TradingSystemApplication {
 			String initializationPath = args[0];
 			Properties props = createProps(initializationPath);
 			if (props != null) {
-				try {
-					new SpringApplicationBuilder(TradingSystemApplication.class)
-							.properties(props).run(args);
-				} catch (Exception e) {
-					loggerController.WriteErrorMsg(e.getMessage());
-					System.out.println("------TESTT-------");
-					System.exit(-1);
-					//exit();
-					return;
-				}
+				new SpringApplicationBuilder(TradingSystemApplication.class)
+						.properties(props).run(args);
+
 			}
 //		SpringApplication.run(TradingSystemApplication.class, args);
 		}
@@ -75,5 +68,9 @@ public class TradingSystemApplication {
 
 	@GetMapping
 	public String hello(){ return "Hello Trading-System"; }
+
+	public static void WriteToLogger(String message){
+		loggerController.WriteErrorMsg(message);
+	}
 
 }
