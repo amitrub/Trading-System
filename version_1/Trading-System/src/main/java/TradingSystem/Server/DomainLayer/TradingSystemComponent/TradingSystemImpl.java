@@ -2844,6 +2844,13 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
 
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return
+     */
     //Viewing daily system's conduct
     public Response getAllSubscribersWeek(String connID, int userID){
         if (!ValidConnectedUser(userID, connID)) {
@@ -2875,6 +2882,13 @@ public class TradingSystemImpl implements TradingSystem {
         return response;
     }
 
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return
+     */
     public Response getAllStoresWeek(String connID, int userID){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "getAllSubscribersWeek: The user " + userID + " is not connected");
@@ -2905,6 +2919,13 @@ public class TradingSystemImpl implements TradingSystem {
         return response;
     }
 
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return
+     */
     public Response getAllShoppingHistoriesWeek(String connID, int userID) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "getAllSubscribersWeek: The user " + userID + " is not connected");
@@ -2935,6 +2956,13 @@ public class TradingSystemImpl implements TradingSystem {
         return response;
     }
 
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return
+     */
     public Response getAllMoneyWeek(String connID, int userID) {
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "getAllSubscribersWeek: The user " + userID + " is not connected");

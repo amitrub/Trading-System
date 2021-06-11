@@ -149,6 +149,8 @@ public class AdminServiceHttp {
     }
 
     /**
+     * @requirement 6.5
+     *
      * @param userID
      * @param connID
      * @return
@@ -162,6 +164,8 @@ public class AdminServiceHttp {
     }
 
     /**
+     * @requirement 6.5
+     *
      * @param userID
      * @param connID
      * @return
@@ -175,6 +179,8 @@ public class AdminServiceHttp {
     }
 
     /**
+     * @requirement 6.5
+     *
      * @param userID
      * @param connID
      * @return
@@ -188,6 +194,8 @@ public class AdminServiceHttp {
     }
 
     /**
+     * @requirement 6.5
+     *
      * @param userID
      * @param connID
      * @return
