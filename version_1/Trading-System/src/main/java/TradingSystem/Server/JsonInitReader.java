@@ -15,6 +15,7 @@ public class JsonInitReader {
     private JsonUser admin;
     private Boolean externalState;
     private Boolean externalServices;
+    private Boolean LoadTest;
 
     public String getUrl() {
         if (local){
@@ -100,6 +101,10 @@ public class JsonInitReader {
     }
 
     public Boolean getExternalServices() { return externalServices; }
+
+    public Boolean getLoadTest() {
+        return LoadTest;
+    }
 
     @Override
     public String toString() {
