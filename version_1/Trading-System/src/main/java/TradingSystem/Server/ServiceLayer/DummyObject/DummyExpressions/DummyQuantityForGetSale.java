@@ -41,7 +41,7 @@ public class DummyQuantityForGetSale extends DummySimpleExpression {
     public Map<String,Object> createMap() {
         Map<String,Object> mapElements=new HashMap<>();
         mapElements.put("NodeId",NodeID);
-        mapElements.put("productId",productId);
+        mapElements.put("productID",productId);
         mapElements.put("quantityForSale",quantityForSale);
         //Map<String,Object> mapType=new HashMap<>();
        // mapType.put("QuantityForGetSale",mapElements);

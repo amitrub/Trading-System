@@ -6,12 +6,12 @@ import java.util.Map;
 public class DummyCategorySale extends DummySimpleSale{
 
     private String category;
-    private Integer  discountPercentage;
+    private Integer  discount;
 
     public DummyCategorySale(Integer nodeID, String category, Integer discountPercentage) {
         super(nodeID);
         this.category = category;
-        this.discountPercentage = discountPercentage;
+        this.discount = discountPercentage;
     }
 
     @Override
@@ -19,7 +19,7 @@ public class DummyCategorySale extends DummySimpleSale{
         Map<String,Object> mapElements=new HashMap<>();
         mapElements.put("NodeId",NodeID);
         mapElements.put("category",category);
-        mapElements.put("discountPercentage",discountPercentage);
+        mapElements.put("discount",discount);
         mapElements.put("expression",expression.createMap());
         //Map<String,Object> mapType=new HashMap<>();
         //mapType.put("CategorySale",mapElements);
@@ -36,6 +36,6 @@ public class DummyCategorySale extends DummySimpleSale{
     }
 
     public Integer getDiscountPercentage() {
-        return discountPercentage;
+        return discount;
     }
 }

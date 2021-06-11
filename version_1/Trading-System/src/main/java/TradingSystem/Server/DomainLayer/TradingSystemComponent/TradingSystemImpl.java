@@ -37,9 +37,7 @@ import TradingSystem.Server.JsonUser;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions.*;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummyMaxSale;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummyProductSale;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummyStoreSale;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
@@ -74,6 +72,11 @@ public class TradingSystemImpl implements TradingSystem {
     public ConcurrentHashMap<Integer, Store> stores= new ConcurrentHashMap<>();
     //storeID_systemManagerPermission
     private ConcurrentHashMap<Integer, SystemManagerPermission> systemManagerPermissions = new ConcurrentHashMap<>();
+
+    //storeID_DiscountPolicy
+    private ConcurrentHashMap<Integer, DummySale> tmpDiscountPolicyForStore = new ConcurrentHashMap<>();
+    //storeID_BuyingPolicy
+    private ConcurrentHashMap<Integer, DummyExpression> tmpBuyingPolicyForStore = new ConcurrentHashMap<>();
 
     public TradingSystemImpl(Data_Controller data_controller) {
         this.data_controller = data_controller;
@@ -151,7 +154,6 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
 
-
     public void ClearSystem() {
         this.connectedSubscribers = new ConcurrentHashMap<>();
         this.subscribers = new ConcurrentHashMap<>();
@@ -159,6 +161,8 @@ public class TradingSystemImpl implements TradingSystem {
         this.stores = new ConcurrentHashMap<>();
         this.systemAdmins = new ConcurrentHashMap<>();
         this.systemManagerPermissions=new ConcurrentHashMap<>();
+        this.tmpDiscountPolicyForStore=new ConcurrentHashMap<>();
+        this.tmpBuyingPolicyForStore=new ConcurrentHashMap<>();
 
         User defaultAdmin = new User("amit", "qweasd");
         int userID = defaultAdmin.getId();
@@ -2784,7 +2788,7 @@ public class TradingSystemImpl implements TradingSystem {
         return -1;
     }
 
-    public Response  getTreeInBuild(Sale s){ //int storeID
+    public Response getTreeInBuild(Sale s){ //int storeID
         //Sale s=stores.get(storeId).getDiscountPolicy().getSale();
         JSONObject jsonPost = new JSONObject();
         try{
@@ -2799,40 +2803,57 @@ public class TradingSystemImpl implements TradingSystem {
         return  response;
     }
 
+
+
+    //todo ____________________NeeFunctions___________________
+
     @Override
     public Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID){
 
-        DummyMaxSale Max =new DummyMaxSale(1);
-
-        DummyStoreSale storeSale = new DummyStoreSale(2,56, 50);
-        DummyAndExpression andExpression = new DummyAndExpression(4);
-
-        DummyProductSale productSale=new DummyProductSale(3,4,10);
-        DummyOrExpression Or=new DummyOrExpression(5);
-
-        DummyPriceForGetSale exp1 = new DummyPriceForGetSale( 6,1000);
-        DummyQuantityForGetSale exp2 = new DummyQuantityForGetSale(7,3,2);
-
-        DummyPriceForGetSale exp11=new DummyPriceForGetSale(8,10000);
-        DummyNumOfProductsForGetSale exp22=new DummyNumOfProductsForGetSale(9,10);
-
-
-        Max.setSale(1,productSale);
-        Max.setSale(1,storeSale);
-
-        Max.setExpression(2,andExpression);
-        Max.setExpression(3,Or);
-
-        Max.setExpression(4,exp1);
-        Max.setExpression(4,exp2);
-
-        Max.setExpression(5,exp11);
-        Max.setExpression(5,exp22);
-
-
+//        DummyMaxSale Max =new DummyMaxSale(1);
+//
+//        DummyStoreSale storeSale = new DummyStoreSale(2,56, 50);
+//        DummyAndExpression andExpression = new DummyAndExpression(4);
+//
+//        DummyProductSale productSale=new DummyProductSale(3,4,10);
+//        DummyOrExpression Or=new DummyOrExpression(5);
+//
+//        DummyPriceForGetSale exp1 = new DummyPriceForGetSale( 6,1000);
+//        DummyQuantityForGetSale exp2 = new DummyQuantityForGetSale(7,3,2);
+//
+//        DummyPriceForGetSale exp11=new DummyPriceForGetSale(8,10000);
+//        DummyNumOfProductsForGetSale exp22=new DummyNumOfProductsForGetSale(9,10);
+//
+//
+//        Max.setSale(1,productSale);
+//        Max.setSale(1,storeSale);
+//
+//        Max.setExpression(2,andExpression);
+//        Max.setExpression(3,Or);
+//
+//        Max.setExpression(4,exp1);
+//        Max.setExpression(4,exp2);
+//
+//        Max.setExpression(5,exp11);
+//        Max.setExpression(5,exp22);
+//
+//
          Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
-         //response.AddPair("tree1",andExpression);
-         response.AddPair("tree",Max.createMap());
+          //response.AddPair("tree1",andExpression);
+         response.AddPair("tree",this.tmpBuyingPolicyForStore.get(storeID));
+//
+        System.out.println("\n\n------ in TS ------\n");
+        System.out.println(response);
+
+        return response;
+    }
+
+    @Override
+    public Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID){
+
+        Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
+        //response.AddPair("tree1",andExpression);
+        response.AddPair("tree",this.tmpDiscountPolicyForStore.get(storeID));
 
         System.out.println("\n\n------ in TS ------\n");
         System.out.println(response);
@@ -2840,5 +2861,188 @@ public class TradingSystemImpl implements TradingSystem {
         return response;
     }
 
-}
+    @Override
+    public Response AddNodeToBuildingTree(int userID, String connID, int storeID, int nodeID, int quantity, int productID, int maxQuantity, String category, int numOfProductsForSale, int priceForSale, int quantityForSale, int discount, int mode, String type) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "AddNodeToBuildingTree: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "AddNodeToBuildingTree: The user "+userID+" is not in the list");
+        }
+        if(stores.get(storeID)==null){
+            return new Response(true, "AddNodeToBuildingTree: The store "+storeID+" is not exist");
+        }
+        switch (mode){
+           case  1:
+            return createSaleNode(storeID, nodeID, quantity,productID, maxQuantity, category, numOfProductsForSale, priceForSale, quantityForSale, discount, type);
+           case 2:
+            return createExpNode(storeID, nodeID, productID, maxQuantity, category, type);
+        }
+        return new Response(true, "AddNodeToBuildingTree: The mode "+mode+" is not valid");
+    }
+
+    private Response createExpNode(int storeID, int nodeID,int productID, int maxQuantity, String category,String type) {
+        switch (type) {
+            case "OrComposite": {
+                DummyOrExpression OrExp = new DummyOrExpression(stores.get(storeID).getNextExpressionID());
+                if (this.tmpBuyingPolicyForStore.get(storeID) == null) {
+                    this.tmpBuyingPolicyForStore.put(storeID, OrExp);
+                } else {
+                    this.tmpBuyingPolicyForStore.get(storeID).setExpression(nodeID, OrExp);
+                }
+                return new Response("createExpNode: The node OrComposite added successfully");
+            }
+            case "AndComposite": {
+                DummyAndExpression AndExp = new DummyAndExpression(stores.get(storeID).getNextExpressionID());
+                if (this.tmpBuyingPolicyForStore.get(storeID) == null) {
+                    this.tmpBuyingPolicyForStore.put(storeID, AndExp);
+                } else {
+                    this.tmpBuyingPolicyForStore.get(storeID).setExpression(nodeID, AndExp);
+                }
+                return new Response("createExpNode: The node AndComposite added successfully");
+            }
+            case "QuantityLimitForProduct": {
+                if (maxQuantity < 0 || productID < 0) {
+                    return new Response(true, "createExpNode: in create QuantityLimitForProduct there is invalid parameters");
+                }
+                DummyQuantityLimitForProduct QLFPExp = new DummyQuantityLimitForProduct(stores.get(storeID).getNextExpressionID(), maxQuantity, productID);
+                if (this.tmpBuyingPolicyForStore.get(storeID) == null) {
+                    this.tmpBuyingPolicyForStore.put(storeID, QLFPExp);
+                } else {
+                    this.tmpBuyingPolicyForStore.get(storeID).setExpression(nodeID, QLFPExp);
+                }
+                return new Response("createExpNode: The node QuantityLimitForStore added successfully");
+            }
+            case "QuantityLimitForCategory": {
+                if (maxQuantity < 0 || category == null) {
+                    return new Response(true, "createExpNode: in create QuantityLimitForCategory there is invalid parameters");
+                }
+                DummyQuantityLimitForCategory QLFQExp = new DummyQuantityLimitForCategory(stores.get(storeID).getNextExpressionID(), maxQuantity, category);
+                if (this.tmpBuyingPolicyForStore.get(storeID) == null) {
+                    this.tmpBuyingPolicyForStore.put(storeID, QLFQExp);
+                } else {
+                    this.tmpBuyingPolicyForStore.get(storeID).setExpression(nodeID, QLFQExp);
+                }
+                return new Response("createExpNode: The node QuantityLimitForCategory added successfully");
+            }
+            case "QuantityLimitForStore" : {
+                if (category == null) {
+                    return new Response(true, "createExpNode: in create QuantityLimitForStore there is invalid parameters");
+                }
+                DummyQuantityLimitForStore QLFSExp = new DummyQuantityLimitForStore(stores.get(storeID).getNextExpressionID(), maxQuantity, storeID);
+                if (this.tmpBuyingPolicyForStore.get(storeID) == null) {
+                    this.tmpBuyingPolicyForStore.put(storeID, QLFSExp);
+                } else {
+                    this.tmpBuyingPolicyForStore.get(storeID).setExpression(nodeID, QLFSExp);
+                }
+                return new Response("createExpNode: The node QuantityLimitForStore added successfully");
+            }
+        }
+        return  new Response(true, "createExpNode: the type is not valid");
+    };
+
+    private Response createSaleNode(int storeID, int nodeID, int quantity, int productID, int maxQuantity, String category, int numOfProductsForSale, int priceForSale, int quantityForSale, int discount, String type) {
+        switch (type) {
+            case "AddComposite": {
+                DummyAddSale AddSale = new DummyAddSale(stores.get(storeID).getNextSaleID());
+                if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
+                    this.tmpDiscountPolicyForStore.put(storeID, AddSale);
+                } else {
+                    this.tmpDiscountPolicyForStore.get(storeID).setSale(nodeID, AddSale);
+                }
+                return new Response("createSaleNode: The node AddComposite added successfully");
+            }
+            case "MaxComposite": {
+                DummyMaxSale MaxSale = new DummyMaxSale(stores.get(storeID).getNextSaleID());
+                if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
+                    this.tmpDiscountPolicyForStore.put(storeID, MaxSale);
+                } else {
+                    this.tmpDiscountPolicyForStore.get(storeID).setSale(nodeID, MaxSale);
+                }
+                return new Response("createSaleNode: The node MaxComposite added successfully");
+            }
+            case "XorComposite": {
+                DummyXorComposite XorSale = new DummyXorComposite(stores.get(storeID).getNextSaleID());
+                if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
+                    this.tmpDiscountPolicyForStore.put(storeID, XorSale);
+                } else {
+                    this.tmpDiscountPolicyForStore.get(storeID).setSale(nodeID, XorSale);
+                }
+                return new Response("createSaleNode: The node XorComposite added successfully");
+            }
+            case "StoreSale": {
+                DummyStoreSale StoreSale = new DummyStoreSale(stores.get(storeID).getNextSaleID(), storeID, discount);
+                if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
+                    this.tmpDiscountPolicyForStore.put(storeID, StoreSale);
+                } else {
+                    this.tmpDiscountPolicyForStore.get(storeID).setSale(nodeID, StoreSale);
+                }
+                return new Response("createSaleNode: The node StoreSale added successfully");
+            }
+            case "ProductSale": {
+                DummyProductSale ProductSale = new DummyProductSale(stores.get(storeID).getNextSaleID(), productID, discount);
+                if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
+                    this.tmpDiscountPolicyForStore.put(storeID, ProductSale);
+                } else {
+                    this.tmpDiscountPolicyForStore.get(storeID).setSale(nodeID, ProductSale);
+                }
+                return new Response("createSaleNode: The node ProductSale added successfully");
+            }
+            case "CategorySale": {
+                DummyCategorySale ProductSale = new DummyCategorySale(stores.get(storeID).getNextSaleID(), category, discount);
+                if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
+                    this.tmpDiscountPolicyForStore.put(storeID, ProductSale);
+                } else {
+                    this.tmpDiscountPolicyForStore.get(storeID).setSale(nodeID, ProductSale);
+                }
+                return new Response("createSaleNode: The node DummyCategorySale added successfully");
+            }
+            //return crateExpForSale(storeID, nodeID, productID, numOfProductsForSale, priceForSale, quantityForSale,type);
+        }
+        return crateExpForSale(storeID, nodeID, productID, numOfProductsForSale, priceForSale, quantityForSale,type);
+    }
+
+    private Response crateExpForSale(int storeID, int nodeID, int productID, int numOfProductsForSale, int priceForSale, int quantityForSale, String type) {
+        if(this.tmpDiscountPolicyForStore.get(storeID) == null) {
+            return new Response(true, "crateExpForSale: you try to put Exp "+type+" for store "+storeID+" in node "+ nodeID+" but there is no sale in the store. add sale before.");
+        }
+        switch (type) {
+            case "OrComposite": {
+                DummyOrExpression OrExp = new DummyOrExpression(stores.get(storeID).getNextSaleID());
+                this.tmpDiscountPolicyForStore.get(storeID).setExpression(nodeID, OrExp);
+                return new Response("crateExpForSale: The node OrComposite added successfully");
+            }
+            case "AndComposite": {
+                DummyAndExpression AndExp = new DummyAndExpression(stores.get(storeID).getNextSaleID());
+                this.tmpDiscountPolicyForStore.get(storeID).setExpression(nodeID, AndExp);
+                return new Response("crateExpForSale: The node AndComposite added successfully");
+            }
+            case "NumOfProductsForGetSale":{
+                if (numOfProductsForSale < 0 ) {
+                    return new Response(true, "crateExpForSale: in create NumOfProductsForGetSale there is invalid parameter 'numOfProductsForSale'");
+                }
+                DummyNumOfProductsForGetSale NOPFGSExp = new DummyNumOfProductsForGetSale(stores.get(storeID).getNextSaleID(),numOfProductsForSale);
+                this.tmpDiscountPolicyForStore.get(storeID).setExpression(nodeID, NOPFGSExp);
+                return new Response("crateExpForSale: The node NumOfProductsForGetSale added successfully");
+            }
+            case "PriceForGetSale" : {
+            if (priceForSale < 0 ) {
+                return new Response(true, "crateExpForSale: in create PriceForGetSale there is invalid parameter 'priceForSale'");
+            }
+            DummyPriceForGetSale PFGSExp = new DummyPriceForGetSale(stores.get(storeID).getNextSaleID(),priceForSale);
+            this.tmpDiscountPolicyForStore.get(storeID).setExpression(nodeID, PFGSExp);
+            return new Response("crateExpForSale: The node PriceForGetSale added successfully");
+            }
+            case "QuantityForGetSale" : {
+                if (productID<0||quantityForSale < 0 ) {
+                    return new Response(true, "crateExpForSale: in create QuantityForGetSale there is invalid parameters");
+                }
+                DummyQuantityForGetSale DQFGSExp = new DummyQuantityForGetSale(stores.get(storeID).getNextSaleID(),productID,quantityForSale);
+                this.tmpDiscountPolicyForStore.get(storeID).setExpression(nodeID, DQFGSExp);
+                return new Response("crateExpForSale: The node QuantityForGetSale added successfully");}
+            }
+        return  new Response(true, "crateNodeSale: the type is not valid");
+        }
+
+    }
 
