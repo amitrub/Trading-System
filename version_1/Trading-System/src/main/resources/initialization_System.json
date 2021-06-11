@@ -21,8 +21,6 @@
 
   "externalState": false,
 
-  "externalServices": false,
-
-  "LoadTestState": false
+  "externalServices": false
 
 }
