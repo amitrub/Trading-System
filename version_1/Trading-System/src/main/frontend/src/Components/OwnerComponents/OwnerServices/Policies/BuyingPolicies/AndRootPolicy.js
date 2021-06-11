@@ -3,7 +3,7 @@ import createApiClientHttp from "../../../../../ApiClientHttp";
 import "../../../../../Design/grid.css";
 import "../../../../../Design/style.css";
 import MyPopup from "../../../../OtherComponents/MyPopup/MyPopup";
-import JSONDisplay from "../JSONDisplay";
+// import JSONDisplay from "../JSONDisplay";
 
 const apiHttp = createApiClientHttp();
 
@@ -134,7 +134,7 @@ function AndPolicyRoot(props) {
 
   return (
     <section>
-      <JSONDisplay expression={testExp}></JSONDisplay>
+      {/* <JSONDisplay expression={testExp}></JSONDisplay> */}
 
       <div>
         <div className="row">

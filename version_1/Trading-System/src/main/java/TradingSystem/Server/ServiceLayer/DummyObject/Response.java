@@ -11,7 +11,9 @@ public class Response {
     private boolean isErr = false;
     private String message = "";
     private String header = "";
+    private JSONObject jsonPost;
     Map<String, Object> returnObject = new HashMap<>();
+
 
 
     public Response() {
@@ -63,6 +65,10 @@ public class Response {
         }
         else
             return -1;
+    }
+
+    public void setJsonPost(JSONObject jsonPost) {
+        this.jsonPost = jsonPost;
     }
 
     public Integer returnStoreID(){

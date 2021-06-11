@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import AndRootPolicy from "./AndRootPolicy";
 import OrRootPolicy from "./OrRootPolicy";
 import ConditionsPolicy from "./CondtionsRootPolicy";
-import JSONDisplay from "../JSONDisplay";
+//import JSONDisplay from "../JSONDisplay";
 import createApiClientHttp from "../../../../../ApiClientHttp";
 
 const apiHttp = createApiClientHttp();
@@ -25,7 +25,7 @@ function Policies(props) {
     if (buyingPolicyResponse.isErr) {
       console.log(buyingPolicyResponse.message);
     } else {
-      setFetchedExpression(buyingPolicyResponse.returnObject.expression);
+      setFetchedExpression(buyingPolicyResponse.returnObject.tree);
     }
   }
 
@@ -103,7 +103,7 @@ function Policies(props) {
           <h3>This is your current policies tree:</h3>
         </div>
 
-        <JSONDisplay expression={fetchedExpression}></JSONDisplay>
+        {/* <JSONDisplay expression={fetchedExpression}></JSONDisplay> */}
 
         <div>
           <h3>

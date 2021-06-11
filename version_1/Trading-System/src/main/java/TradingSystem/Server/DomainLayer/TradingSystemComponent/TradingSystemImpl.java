@@ -36,6 +36,10 @@ import TradingSystem.Server.JsonStateReader;
 import TradingSystem.Server.JsonUser;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions.*;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummyMaxSale;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummyProductSale;
+import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummyStoreSale;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
@@ -2798,25 +2802,37 @@ public class TradingSystemImpl implements TradingSystem {
     @Override
     public Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID){
 
-//        Integer productID1 = store.getProductID("computer");
-//        Integer productID2 = store.getProductID("Bag");
-        PriceForGetSale exp1 = new PriceForGetSale( 1000);
-        QuantityForGetSale exp2 = new QuantityForGetSale(3,2);
-        AndComposite andExpression = new AndComposite();
-        andExpression.add(exp1);
-        andExpression.add(exp2);
-        StoreSale sale = new StoreSale(andExpression, 56, 50);
+        DummyMaxSale Max =new DummyMaxSale(1);
 
-        JSONObject jsonPost = new JSONObject();
-        try{
-            jsonPost.put("Sale", sale);
-        }
-        catch (Exception e) {
-            System.out.println(errMsgGenerator("Server", "TradingSystemImpl", "2789", "Error: getTreeInBuild, making post json"));
-        }
+        DummyStoreSale storeSale = new DummyStoreSale(2,56, 50);
+        DummyAndExpression andExpression = new DummyAndExpression(4);
 
-        Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
-        response.AddPair("expression", sale);
+        DummyProductSale productSale=new DummyProductSale(3,4,10);
+        DummyOrExpression Or=new DummyOrExpression(5);
+
+        DummyPriceForGetSale exp1 = new DummyPriceForGetSale( 6,1000);
+        DummyQuantityForGetSale exp2 = new DummyQuantityForGetSale(7,3,2);
+
+        DummyPriceForGetSale exp11=new DummyPriceForGetSale(8,10000);
+        DummyNumOfProductsForGetSale exp22=new DummyNumOfProductsForGetSale(9,10);
+
+
+        Max.setSale(1,productSale);
+        Max.setSale(1,storeSale);
+
+        Max.setExpression(2,andExpression);
+        Max.setExpression(3,Or);
+
+        Max.setExpression(4,exp1);
+        Max.setExpression(4,exp2);
+
+        Max.setExpression(5,exp11);
+        Max.setExpression(5,exp22);
+
+
+         Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
+         //response.AddPair("tree1",andExpression);
+         response.AddPair("tree",Max.createMap());
 
         System.out.println("\n\n------ in TS ------\n");
         System.out.println(response);
