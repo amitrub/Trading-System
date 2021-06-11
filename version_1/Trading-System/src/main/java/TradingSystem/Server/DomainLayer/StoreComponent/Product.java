@@ -161,8 +161,10 @@ public class Product {
     }
 
     public void setQuantity(Integer quantity) {
-        data_controller.setQuantity(productID, quantity);
-        this.quantity = quantity;
+        Response response= data_controller.setQuantity(productID, quantity);
+        if(!response.getIsErr()){
+            this.quantity = quantity;
+        }
     }
 
     public Response addComment(Integer userID, String comment)
@@ -170,7 +172,10 @@ public class Product {
         if(productComments.containsKey(userID)){
             return new Response(true, "User can not post more than one comment on a product");
         }
-        data_controller.addCommentToProduct(productID, userID, comment);
+        Response response= data_controller.addCommentToProduct(productID, userID, comment);
+        if(response.getIsErr()){
+            return response;
+        }
         this.productComments.put(userID,comment);
         return new Response("The response writing was performed successfully");
     }

@@ -88,10 +88,12 @@ public class TradingSystemImpl implements TradingSystem {
             }
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
-            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password);
+            Response response=this.data_controller.GetSubscriber(userName, password);
+            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).getDataSubscriber();
             int userID;
             if (subscriber==null){
-                userID = data_controller.AddSubscriber(userName, password);
+            //    Response response= data_controller.AddSubscriber(userName, password);
+                userID = data_controller.AddSubscriber(userName, password).returnUserID();
             } else {
                 userID = subscriber.getUserID();
             }
@@ -460,15 +462,19 @@ public class TradingSystemImpl implements TradingSystem {
                 return new Response(true, "Register Error: user name is taken");
             }
             //Adds to the db
-            int userID = data_controller.AddSubscriber(userName, password);
+            Response response= data_controller.AddSubscriber(userName, password);
+            if(response.getIsErr()){
+                return response;
+            }
+            int userID = data_controller.AddSubscriber(userName, password).returnUserID();
 
             User newUser = new User(userID, userName, password);
             subscribers.put(newUser.getId(), newUser);
-            Response res = new Response(false,"Register: Registration of " + userName + " was successful");
-            res.AddConnID(connID);
-            res.AddUserID(newUser.getId());
-            res.AddUserGuest();
-            return res;
+        //    Response res = new Response(false,"Register: Registration of " + userName + " was successful");
+            response.AddConnID(connID);
+        //    res.AddUserID(newUser.getId());
+            response.AddUserGuest();
+            return response;
         }
     }
 
@@ -911,8 +917,11 @@ public class TradingSystemImpl implements TradingSystem {
             else {
 
                 //Adds to the db
-                int storeID = data_controller.AddStore(storeName, userID);
-                data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
+                int storeID = data_controller.AddStore(storeName, userID).returnStoreID();
+                Response response= data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
+                if(response.getIsErr()){
+                    return response;
+                }
 
                 Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
@@ -1220,7 +1229,10 @@ public class TradingSystemImpl implements TradingSystem {
         OP.setAppointmentId(userID);
 
         //Adds to the db
-        data_controller.AddNewOwner(storeID, newOwner, OP);
+        Response response= data_controller.AddNewOwner(storeID, newOwner, OP);
+        if(response.getIsErr()){
+            return response;
+        }
 
         NO.AddStoreInOwner(storeID, OP);
         Store store = stores.get(storeID);
@@ -1267,7 +1279,10 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " has no permissions to do this operation");
         }
         else{
-            data_controller.RemoveOwner(storeID, removeOwnerID);
+            Response response= data_controller.RemoveOwner(storeID, removeOwnerID);
+            if(response.getIsErr()){
+                return response;
+            }
 
             User owner=subscribers.get(ownerID);
             Store store = stores.get(storeID);
@@ -1348,7 +1363,10 @@ public class TradingSystemImpl implements TradingSystem {
         MP.setAppointmentId(userID);
 
         //Adds to the db
-        data_controller.AddNewManager(storeID, newManager, MP);
+        Response response= data_controller.AddNewManager(storeID, newManager, MP);
+        if(response.getIsErr()){
+            return response;
+        }
 
         NM.AddStoreInManager(storeID, MP);
         stores.get(storeID).addNewManager(userID, newManager);
@@ -1401,7 +1419,9 @@ public class TradingSystemImpl implements TradingSystem {
         }
 
         //Adds to the db
-        data_controller.EditManagerPermissions(storeID, managerID, permissions);
+        Response response= data_controller.EditManagerPermissions(storeID, managerID, permissions);
+        if(response.getIsErr())
+            return response;
 
         MTE.editPermissions(userID,storeID,permissions);
         stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
@@ -1771,11 +1791,12 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
-
-        data_controller.addHistoryToStoreAndUser(sh);
-        this.stores.get(sh.getStoreID()).addHistory(sh);
-        if (!isGuest)
-            this.subscribers.get(sh.getUserID()).addHistory(sh);
+        Response response= data_controller.addHistoryToStoreAndUser(sh);
+        if(!response.getIsErr()){
+            this.stores.get(sh.getStoreID()).addHistory(sh);
+            if (!isGuest)
+                this.subscribers.get(sh.getUserID()).addHistory(sh);
+        }
     }
 /*
     public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
@@ -2051,7 +2072,9 @@ public class TradingSystemImpl implements TradingSystem {
         DiscountPolicy d=new DiscountPolicy(storeID,sale);
         s.setDiscountPolicy(d);
         DBSale parent=new DBSale(sale,null);
-        data_controller.AddDiscountPolicy(new DataDiscountPolicy(storeID,parent));
+        res= data_controller.AddDiscountPolicy(new DataDiscountPolicy(storeID,parent));
+        if(res.getIsErr())
+            return res;
         return new Response("the discountPolicy added successfully");
     }
 
@@ -2259,7 +2282,10 @@ public class TradingSystemImpl implements TradingSystem {
         s.setBuyingPolicy(b);
         //ADD to db
         DBExpression parent=new DBExpression(exp,null);
-        data_controller.AddBuyingPolicy(new DataBuyingPolicy(storeID,parent));
+        res = data_controller.AddBuyingPolicy(new DataBuyingPolicy(storeID,parent));
+        if(res.getIsErr()){
+            return res;
+        }
         return new Response("Buying Policy added successes");
     }
 

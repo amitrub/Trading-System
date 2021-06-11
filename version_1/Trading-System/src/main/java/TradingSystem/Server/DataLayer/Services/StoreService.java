@@ -8,6 +8,7 @@ import TradingSystem.Server.DataLayer.Repositories.*;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -31,75 +32,111 @@ public class StoreService {
     @Autowired
     ManagerPermissionTypeRepository managerPermissionTypeRepository;
 
-    public int AddStore(String storeName, int founderID){
+    public Response AddStore(String storeName, int founderID){
         DataStore store = new DataStore(storeName);
         DataSubscriber founder = subscriberRepository.getOne(founderID);
         store.setFounder(founder);
         DataStore dataStore = storeRepository.saveAndFlush(store);
-        return dataStore.getStoreID();
+        Response response=new Response(false,"Store was added successfully");
+        response.AddStoreID(dataStore.getStoreID());
+        return response;
     }
 
 
-    public void AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
-        DataStore store = storeRepository.getOne(storeID);
-        DataSubscriber newOwner = subscriberRepository.getOne(newOwnerID);
-        store.AddNewOwner(newOwner);
-        storeRepository.saveAndFlush(store);
+    public Response AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
+        Optional<DataStore> store = storeRepository.findById(storeID);
+        Optional<DataSubscriber> newOwner = subscriberRepository.findById(newOwnerID);
+        if(!store.isPresent() || !newOwner.isPresent()){
+            return new Response(true,"Cannot find store or user");
+        }
+        store.get().AddNewOwner(newOwner.get());
+        storeRepository.saveAndFlush(store.get());
         DataSubscriber appointment = null;
         if(OP.getAppointmentId()!=-1&&OP.getAppointmentId()!=null){
             appointment = subscriberRepository.getOne(OP.getAppointmentId());
         }
-        DataOwnerPermissions dataOwnerPermissions = new DataOwnerPermissions(newOwner, store, appointment);
+        DataOwnerPermissions dataOwnerPermissions = new DataOwnerPermissions(newOwner.get(), store.get(), appointment);
         ownerPermissionsRepository.saveAndFlush(dataOwnerPermissions);
         for (PermissionEnum.Permission permission: OP.getPermissions()){
             DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
             DataOwnerPermissionType permissionType = new DataOwnerPermissionType(dataOwnerPermissions, dataPermission);
             ownerPermissionTypeRepository.saveAndFlush(permissionType);
         }
+        return new Response(false," ");
     }
 
-    public void AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
-        DataStore store = storeRepository.getOne(storeID);
-        DataSubscriber newManager = subscriberRepository.getOne(newManagerID);
-        store.AddNewManager(newManager);
-        storeRepository.saveAndFlush(store);
+    public Response AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
+        Optional<DataStore> store = storeRepository.findById(storeID);
+        Optional<DataSubscriber> newManager = subscriberRepository.findById(newManagerID);
+        if(!store.isPresent() || !newManager.isPresent()){
+            return new Response(true,"Could not find store or manager");
+        }
+        store.get().AddNewManager(newManager.get());
+        storeRepository.saveAndFlush(store.get());
         DataSubscriber appointment = subscriberRepository.getOne(MP.getAppointmentId());
-        DataManagerPermissions dataManagerPermissions = new DataManagerPermissions(newManager, store, appointment);
+        DataManagerPermissions dataManagerPermissions = new DataManagerPermissions(newManager.get(), store.get(), appointment);
         managerPermissionsRepository.saveAndFlush(dataManagerPermissions);
         for (PermissionEnum.Permission permission: MP.getPermissions()){
             DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
             DataManagerPermissionType permissionType = new DataManagerPermissionType(dataManagerPermissions, dataPermission);
             managerPermissionTypeRepository.saveAndFlush(permissionType);
         }
+        return new Response(false," ");
     }
 
 
 
-    public List<DataStore> getAllStores(){
-        return storeRepository.findAll();
+    public Response getAllStores(){
+        Response response= new Response();
+        response.AddDBStoresList(storeRepository.findAll());
+        return response;
     }
 
-    public Optional<DataStore> findStorebyId(int storeid){
+    public Response findStorebyId(int storeid){
        Optional<DataStore> res= storeRepository.findById(storeid);
-        return res;
+       if(!res.isPresent()){
+           return new Response(true,"Store id doesn't exist");
+       }
+        Response response= new Response();
+        response.AddDataStore(res.get());
+        return response;
     }
+
     public void deleteAll(){
         storeRepository.deleteAll();
     }
 
-    public List<DataStore> getAllStoresOfOwner(int userId){
-        DataSubscriber subscriber= subscriberRepository.getOne(userId);
-        return storeRepository.findAllByOwnersContains(subscriber);
+    public Response getAllStoresOfOwner(int userId){
+        Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
+        if(!subscriber.isPresent()){
+            return new Response(true,"Could not find user");
+        }
+        List<DataStore> stores= storeRepository.findAllByOwnersContains(subscriber.get());
+        Response response=new Response(false," ");
+        response.AddDBStoresList(stores);
+        return response;
     }
 
-    public List<DataStore> getAllStoresofFounder(int userId){
-        DataSubscriber subscriber= subscriberRepository.getOne(userId);
-        return storeRepository.findAllByFounder(subscriber);
+    public Response getAllStoresofFounder(int userId){
+        Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
+        if(!subscriber.isPresent()){
+            return new Response(true,"Could not found user id");
+        }
+        List<DataStore> stores= storeRepository.findAllByFounder(subscriber.get());
+        Response response=new Response(false," ");
+        response.AddDBStoresList(stores);
+        return response;
     }
 
-    public List<DataStore> getAllStoresofManager(int userId){
-        DataSubscriber subscriber= subscriberRepository.getOne(userId);
-        return storeRepository.findAllByManagersContains(subscriber);
+    public Response getAllStoresofManager(int userId) {
+        Optional<DataSubscriber> subscriber = subscriberRepository.findById(userId);
+        if (!subscriber.isPresent()) {
+            return new Response(true, "could not find subscriber");
+        }
+        List<DataStore> stores = storeRepository.findAllByManagersContains(subscriber.get());
+        Response response = new Response(false, " ");
+        response.AddDBStoresList(stores);
+        return response;
     }
 //    public void AddNewOwner(int storeId, Integer userId, Integer newOwnerId){
 //        DataSubscriber owner= subscriberRepository.getOne(userId);
