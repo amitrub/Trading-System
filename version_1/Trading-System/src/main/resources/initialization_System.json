@@ -1,6 +1,6 @@
 {
 
-  "local": false,
+  "local": true,
 
   "urlLocal" : "jdbc:postgresql://localhost:5432/postgres",
   "userNameLocal" : "amit",
