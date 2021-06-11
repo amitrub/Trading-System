@@ -122,7 +122,8 @@ public class TradingSystemImplRubin implements TradingSystem {
 
         }
         catch (Exception e){
-            System.out.println(e);
+            TradingSystemApplication.WriteToLogger("There is a problem with the Initialization file ");
+            System.exit(1);
         }
     }
 
