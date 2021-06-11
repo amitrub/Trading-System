@@ -482,13 +482,6 @@ public class ShoppingCart {
         return new Response(false, "RemoveFromCart: product removed successfully");
     }
 
-    public void setPaymentSystem(ExternalServices paymentSystem) {
-        this.paymentSystem = paymentSystem;
-    }
-    public void setSupplySystem(ExternalServices supplySystem) {
-        this.supplySystem = supplySystem;
-    }
-
 }
 /*
     public Integer addProduct(Integer productID, Integer quantity, Integer storeID, Double price)

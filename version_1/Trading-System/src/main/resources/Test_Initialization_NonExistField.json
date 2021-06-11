@@ -19,8 +19,6 @@
     "password": "qweasd"
   },
 
-  "externalState": true,
-
   "externalServices": false
 
 }

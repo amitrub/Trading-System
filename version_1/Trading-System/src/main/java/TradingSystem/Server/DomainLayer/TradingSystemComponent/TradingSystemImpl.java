@@ -186,7 +186,7 @@ public class TradingSystemImpl implements TradingSystem {
 
 
 
-    public void Initialization(String path) throws Exception {
+    public void Initialization(String path){
         data_controller.deleteAll();
 
         try {
@@ -2817,13 +2817,13 @@ public class TradingSystemImpl implements TradingSystem {
         }
         return -1;
     }
-}
+
     public static ExternalServices getPaymentSystem() {
         return paymentSystem;
     }
 
     public static void setPaymentSystem(ExternalServices paymentSystem) {
-        TradingSystemImplRubin.paymentSystem = paymentSystem;
+        TradingSystemImpl.paymentSystem = paymentSystem;
     }
 
     public static ExternalServices getSupplySystem() {
@@ -2831,6 +2831,6 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public static void setSupplySystem(ExternalServices supplySystem) {
-        TradingSystemImplRubin.supplySystem = supplySystem;
+        TradingSystemImpl.supplySystem = supplySystem;
     }
 }
