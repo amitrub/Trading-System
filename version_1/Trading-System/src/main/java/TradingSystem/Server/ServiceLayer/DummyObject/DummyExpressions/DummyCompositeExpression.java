@@ -24,6 +24,7 @@ public abstract class DummyCompositeExpression implements DummyExpression {
             this.children.add(exp);
         }
         else {
+
             for (DummyExpression s : children
             ) {
                 s.setExpression(id, exp);
