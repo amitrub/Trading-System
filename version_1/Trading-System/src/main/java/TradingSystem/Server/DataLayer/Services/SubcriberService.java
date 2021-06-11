@@ -28,10 +28,17 @@ public class SubcriberService {
     StoreRepository storeRepository;
 
 
-    public int AddSubscriber(String userName, String password){
-        DataSubscriber subscriber = new DataSubscriber(userName,password);
-        DataSubscriber ret = subscriberRepository.saveAndFlush(subscriber);
-        return ret.getUserID();
+    public Response AddSubscriber(String userName, String password){
+        try {
+            DataSubscriber subscriber = new DataSubscriber(userName,password);
+            DataSubscriber ret = subscriberRepository.saveAndFlush(subscriber);
+            Response response=new Response(false,"User "+userName+" registered successfully");
+            response.AddUserID(ret.getUserID());
+            return response;
+        }
+        catch (Exception e){
+            return new Response(true,"Could not add subscriber");
+        }
     }
 
     public Response GetSubscriber(String userName, String password) {

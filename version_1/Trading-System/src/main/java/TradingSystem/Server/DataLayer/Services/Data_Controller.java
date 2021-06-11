@@ -53,10 +53,7 @@ public class Data_Controller {
             return new Response(true,"User name or password can't be empty");
         }
         else{
-            int id = subscriberService.AddSubscriber(userName, password);
-            Response response=new Response(false,"Register: Registration of "+userName + " was successful");
-            response.AddUserID(id);
-            return response;
+            return subscriberService.AddSubscriber(userName, password);
         }
     }
 

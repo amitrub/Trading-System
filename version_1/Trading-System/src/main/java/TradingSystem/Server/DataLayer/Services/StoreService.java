@@ -34,8 +34,11 @@ public class StoreService {
 
     public Response AddStore(String storeName, int founderID){
         DataStore store = new DataStore(storeName);
-        DataSubscriber founder = subscriberRepository.getOne(founderID);
-        store.setFounder(founder);
+        Optional<DataSubscriber> founder = subscriberRepository.findById(founderID);
+        if(!founder.isPresent()){
+            return new Response(true,"Could not find founder");
+        }
+        store.setFounder(founder.get());
         DataStore dataStore = storeRepository.saveAndFlush(store);
         Response response=new Response(false,"Store was added successfully");
         response.AddStoreID(dataStore.getStoreID());

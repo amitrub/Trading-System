@@ -466,8 +466,7 @@ public class TradingSystemImpl implements TradingSystem {
             if(response.getIsErr()){
                 return response;
             }
-            int userID = data_controller.AddSubscriber(userName, password).returnUserID();
-
+            int userID=response.returnUserID();
             User newUser = new User(userID, userName, password);
             subscribers.put(newUser.getId(), newUser);
         //    Response res = new Response(false,"Register: Registration of " + userName + " was successful");
@@ -917,8 +916,12 @@ public class TradingSystemImpl implements TradingSystem {
             else {
 
                 //Adds to the db
-                int storeID = data_controller.AddStore(storeName, userID).returnStoreID();
-                Response response= data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
+                Response response = data_controller.AddStore(storeName, userID);
+                if(response.getIsErr()){
+                    return response;
+                }
+                Integer storeID=response.returnStoreID();
+                response= data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
                 if(response.getIsErr()){
                     return response;
                 }
