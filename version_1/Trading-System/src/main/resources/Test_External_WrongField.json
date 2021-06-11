@@ -24,7 +24,7 @@
     "productName": "Bamba",
     "category": "food",
     "price": 30.1,
-    "quantity": 20}],
+    "quantity": -10}],
 
   "add_manager" : [{
     "owner": "u2",

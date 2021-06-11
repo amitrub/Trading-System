@@ -4,16 +4,18 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 public class PaymentSystemMock implements ExternalServices {
 
-    PaymentSystem real;
+    private static PaymentSystemMock paymentSystem = null;
 
-    public PaymentSystemMock() {
-        this.real = null;
+    private PaymentSystemMock(){
     }
 
-    public void setRealBridge(PaymentSystem implementation) {
-        if (real == null)
-            real = implementation;
+    public static PaymentSystemMock getInstance() {
+        if (paymentSystem == null) {
+            paymentSystem = new PaymentSystemMock();
+        }
+        return paymentSystem;
     }
+
 
     @Override
     public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {

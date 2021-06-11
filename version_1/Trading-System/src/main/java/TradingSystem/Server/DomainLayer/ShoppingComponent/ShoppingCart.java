@@ -29,10 +29,6 @@ public class ShoppingCart {
 
         ShoppingCart.data_controller = data_controller;
     }
-//    private final PaymentSystem paymentSystem = PaymentSystem.getInstance();
-//    private final SupplySystem supplySystem = SupplySystem.getInstance();
-    private ExternalServices paymentSystem = PaymentSystem.getInstance();
-    private ExternalServices supplySystem = SupplySystem.getInstance();
 
     private final Integer userID;
     //StoreID_ShoppingBag
@@ -222,14 +218,14 @@ public class ShoppingCart {
         }
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
         AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
-        Response supplyResponse = supplySystem.purchase(paymentInfo, addressInfo);
+        Response supplyResponse = TradingSystemImpl.getSupplySystem().purchase(paymentInfo, addressInfo);
         if(supplyResponse.getIsErr()){
             this.releaseLocks(lockList);
             return supplyResponse;
         }
-        Response paymentResponse = paymentSystem.purchase(paymentInfo, addressInfo);
+        Response paymentResponse = TradingSystemImpl.getPaymentSystem().purchase(paymentInfo, addressInfo);
         if(paymentResponse.getIsErr()){
-            supplySystem.Cancel(supplyResponse.getMessage());
+            TradingSystemImpl.getSupplySystem().Cancel(supplyResponse.getMessage());
             this.releaseLocks(lockList);
             return paymentResponse;
         }
@@ -484,13 +480,6 @@ public class ShoppingCart {
 
         }
         return new Response(false, "RemoveFromCart: product removed successfully");
-    }
-
-    public void setPaymentSystem(ExternalServices paymentSystem) {
-        this.paymentSystem = paymentSystem;
-    }
-    public void setSupplySystem(ExternalServices supplySystem) {
-        this.supplySystem = supplySystem;
     }
 
 }

@@ -52,7 +52,7 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public void Initialization() {
+    public void Initialization(String path) {
         if (real != null)
             real.ClearSystem();
     }

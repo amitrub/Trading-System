@@ -59,7 +59,8 @@ class BuyingPolicyTest {
     void tearDown() {
         store = null;
         BC = null;
-        tradingSystem.Initialization();
+        //tradingSystem.Initialization();
+        tradingSystem.ClearSystem();
     }
 
     //region Simple buying rules

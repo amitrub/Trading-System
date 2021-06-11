@@ -14,6 +14,7 @@ public class JsonInitReader {
     private String formatSql;
     private JsonUser admin;
     private Boolean externalState;
+    private Boolean externalServices;
 
     public String getUrl() {
         if (local){
@@ -97,6 +98,8 @@ public class JsonInitReader {
     public String getPasswordRemote() {
         return passwordRemote;
     }
+
+    public Boolean getExternalServices() { return externalServices; }
 
     @Override
     public String toString() {

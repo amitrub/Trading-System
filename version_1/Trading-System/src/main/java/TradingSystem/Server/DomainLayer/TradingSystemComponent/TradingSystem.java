@@ -20,7 +20,7 @@ public interface TradingSystem {
 
     public void ClearSystem();
 
-    public void Initialization();
+    public void Initialization(String path) throws Exception;
 
     public String errMsgGenerator(String side, String className, String line, String msg);
     //prints for debug
@@ -123,7 +123,7 @@ public interface TradingSystem {
 
     Response removeSpecialProductFromCart(String connID, int storeID, int productID);
 
-    Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip);
+    //Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip);
 
     Integer getStoreIDByName(String storeName);
 
