@@ -1,5 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
+import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
@@ -22,7 +23,9 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PoliciesTests {
 
-    Client_Interface client = Client_Driver.getClient();
+    //Client_Interface client = Client_Driver.getClient();
+
+    Client client;
     Integer storeID;
 
     //region other functions
@@ -49,12 +52,13 @@ public class PoliciesTests {
 
     @BeforeEach
     void setUp() {
+        client = new Client();
         client.clearSystem();
         client.connectSystem();
         client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Adidas");
-        storeID = getStoreID(client.showAllStores().getStores(),"Adidas");
+        storeID = client.getStoreIDByName("Adidas").returnStoreID();
         client.addProduct(storeID, "Black T-Shirt", "Tops", 80.0, 25);
         client.addProduct(storeID, "White T-Shirt", "Tops", 100.0, 25);
     }

@@ -117,11 +117,19 @@ public interface TradingSystem {
 
     Response ShowBids(int userID, String connID, int storeID);
     void setSubscribers(ConcurrentHashMap<Integer, User> subscribers);
-    public void setStores(ConcurrentHashMap<Integer, Store> stores);
+    void setStores(ConcurrentHashMap<Integer, Store> stores);
 
     Response ShowSpecialProductInShoppingCart(String connID);
 
     Response removeSpecialProductFromCart(String connID, int storeID, int productID);
 
     Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip);
+
+    Integer getStoreIDByName(String storeName);
+
+    Integer getProductIDByName(String productName, int storeID);
+
+    Response GetAllManager(String connID, int stoerId);
+
+    Response ShowProductComments(String connID, int userID, int storeID);
 }

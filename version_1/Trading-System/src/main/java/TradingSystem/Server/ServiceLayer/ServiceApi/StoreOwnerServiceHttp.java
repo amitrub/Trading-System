@@ -465,6 +465,8 @@ public class StoreOwnerServiceHttp {
                 Permissions.add(PermissionEnum.Permission.ResponseRequests);
             if((boolean) obj.get("GetStoreHistory"))
                 Permissions.add(PermissionEnum.Permission.GetStoreHistory);
+            if((boolean) obj.get("GetDailyIncomeForStore"))
+                Permissions.add(PermissionEnum.Permission.GetDailyIncomeForStore);
             if((boolean) obj.get("RequestBidding"))
                 Permissions.add(PermissionEnum.Permission.RequestBidding);
             if((boolean) obj.get("EditDiscountPolicy"))
@@ -672,13 +674,6 @@ public class StoreOwnerServiceHttp {
 
 
 
-
-
-
-
-
-
-
     /**
      * @requirement none
      *
@@ -702,6 +697,13 @@ public class StoreOwnerServiceHttp {
     @GetMapping("{userID}/stores_manager")
     public Response ShowManagerStores(@PathVariable int userID, @RequestHeader("connID") String connID) {
         Response res = this.tradingSystem.ShowManagerStores(userID, connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    @GetMapping("{userID}/store/{storeID}/comments")
+    public Response ShowProductComments(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        Response res = this.tradingSystem.ShowProductComments(connID,userID,storeID);
         WriteToLogger(res);
         return res;
     }

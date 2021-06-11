@@ -2,11 +2,17 @@ package TradingSystem.Server.DataLayer.Data_Modules;
 
 
 
-import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 
 import javax.persistence.*;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.*;
 
 import static javax.persistence.GenerationType.SEQUENCE;
@@ -116,6 +122,15 @@ public class DataStore {
             fetch = FetchType.EAGER
     )
     private List<DataShoppingHistory> shoppingBagsHistory= new ArrayList<>();
+
+
+//    @ElementCollection
+//    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
+//    private List<Integer> ownersIDs;
+//    @ElementCollection
+//    @CollectionTable(name="dummy_user", joinColumns=@JoinColumn(name="userid"))
+//    private List<Integer> managersIDs;
+
 
 
     public DataStore() {

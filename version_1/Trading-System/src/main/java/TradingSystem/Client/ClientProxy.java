@@ -2,22 +2,13 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
-import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.TestConfiguration;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
-import org.springframework.test.context.ContextConfiguration;
 
-import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -28,9 +19,9 @@ public class ClientProxy implements Client_Interface {
 
 
     @Autowired
-    private static TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImpl tradingSystem;
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         ClientProxy.tradingSystem = tradingSystem;
     }
 
@@ -122,6 +113,16 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public Response showStoreProducts(int storeID) {
+        return tradingSystem.ShowStoreProducts(storeID);
+    }
+
+    @Override
+    public Response showAllStoresSubscriber() {
+        return tradingSystem.ShowAllStores();
+    }
+
+    @Override
+    public Response showStoreProductsSubscriber(int storeID) {
         return tradingSystem.ShowStoreProducts(storeID);
     }
 
@@ -323,9 +324,33 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
+    public Response RemoveSpecialProductProductFromCart(String connID, int storeID, int productID) {
+        return  tradingSystem.removeSpecialProductFromCart(connID,storeID,productID);
+    }
+
+    @Override
+    public Response ShowSpecialProductsInShoppingCart(String connID) {
+        return tradingSystem.ShowSpecialProductInShoppingCart(connID);
+    }
+
+    @Override
     public Response ShowBids(int storeID) {
         return tradingSystem.ShowBids(this.userID,this.ConnID,storeID);
     }
 
+    @Override
+    public Response getStoreIDByName(String storeName) {
+        Integer storeID = tradingSystem.getStoreIDByName(storeName);
+        Response response = new Response();
+        response.AddPair("storeID", storeID);
+        return response;
+    }
 
+    @Override
+    public Response getProductIDByName(String productName, int StoreID) {
+        Integer productID = tradingSystem.getProductIDByName(productName,StoreID);
+        Response response = new Response();
+        response.AddPair("productID", productID);
+        return response;
+    }
 }

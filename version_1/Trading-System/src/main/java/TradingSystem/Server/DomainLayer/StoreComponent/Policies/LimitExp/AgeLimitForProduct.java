@@ -8,8 +8,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AgeLimitForProduct extends SimpleExpression {
 
-    Integer minAge;
-    Integer productID;
+    private Integer minAge;
+    private Integer productID;
 
     public AgeLimitForProduct(Integer minAge,Integer productID) {
       //  super(expId);
@@ -34,5 +34,13 @@ public class AgeLimitForProduct extends SimpleExpression {
             return new Response(true, "product is not exist in the store");
         }
         return new Response("correct");
+    }
+
+    public Integer getMinAge() {
+        return minAge;
+    }
+
+    public Integer getProductID(){
+        return productID;
     }
 }

@@ -22,7 +22,8 @@ function Purchase(props) {
   const [popupPurchase, setPopupPurchase] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
 
-  const [cartSize, setCartSize] = useState("");
+  const [cartSize, setCartSize] = useState(0);
+  const [cartSize2, setCartSize2] = useState(0);
 
   async function fetchShopingCart() {
     const showCartResponse = await apiHttp.ShowShoppingCart(props.connID);
@@ -35,8 +36,20 @@ function Purchase(props) {
     }
   }
 
+  async function fetchShopingCartBid() {
+    const showCartBidResponse = await apiHttp.ShowShoppingCartBid(props.connID);
+    // console.log(showCartResponse);
+
+    if (showCartBidResponse.isErr) {
+      console.log(showCartBidResponse.message);
+    } else {
+      setCartSize2(showCartBidResponse.returnObject.products.length);
+    }
+  }
+
   useEffect(() => {
     fetchShopingCart();
+    fetchShopingCartBid();
   }, [props.refresh]);
 
   function submitCheckoutHideForm() {
@@ -49,7 +62,7 @@ function Purchase(props) {
 
   async function submitPurchaseHandler(event) {
     event.preventDefault();
-    // console.log("purchase");
+    console.log("purchase");
     let purchaseResponse = "";
 
     if (props.userID === -1) {
@@ -83,7 +96,7 @@ function Purchase(props) {
     }
 
     // console.log("purchase");
-    // console.log(purchaseResponse);
+    console.log(purchaseResponse);
 
     if (purchaseResponse) {
       setPopupMsg(purchaseResponse.message);
@@ -171,7 +184,7 @@ function Purchase(props) {
 
   return (
     <section>
-      {cartSize !== 0 ? (
+      {cartSize !== 0 || cartSize2 !== 0 ? (
         <div>
           <div>
             <button

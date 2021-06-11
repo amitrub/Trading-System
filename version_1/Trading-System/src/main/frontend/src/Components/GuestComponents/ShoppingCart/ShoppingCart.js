@@ -3,11 +3,13 @@ import createApiClientHttp from "../../../ApiClientHttp";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import ProductInCart from "./ProductInCart";
+import BidProductInCart from "./BidProductInCart";
 
 const apiHttp = createApiClientHttp();
 
 function ShoppingCart(props) {
   const [shoppingCart, setShoppingCart] = useState([]);
+  const [shoppingCartBid, setShoppingCartBid] = useState([]);
 
   async function fetchShopingCart() {
     const showCartResponse = await apiHttp.ShowShoppingCart(props.connID);
@@ -20,8 +22,20 @@ function ShoppingCart(props) {
     }
   }
 
+  async function fetchShopingCartBid() {
+    const showCartBidResponse = await apiHttp.ShowShoppingCartBid(props.connID);
+    // console.log(showCartResponse);
+
+    if (showCartBidResponse.isErr) {
+      console.log(showCartBidResponse.message);
+    } else {
+      setShoppingCartBid(showCartBidResponse.returnObject.products);
+    }
+  }
+
   useEffect(() => {
     fetchShopingCart();
+    fetchShopingCartBid();
   }, [props.refresh]);
 
   return (
@@ -33,6 +47,8 @@ function ShoppingCart(props) {
             <strong>{props.username}'s Shopping Cart</strong>
           </h2>
         </div>
+
+        <h3> Regular Products </h3>
 
         <div className="row">
           {shoppingCart.length > 0 ? (
@@ -46,6 +62,30 @@ function ShoppingCart(props) {
                         connID={props.connID}
                         currProduct={currProduct}
                       ></ProductInCart>
+                    </li>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            "No products, Go Shop bitch!"
+          )}
+        </div>
+
+        <h3> Bidding Products </h3>
+
+        <div className="row">
+          {shoppingCartBid.length > 0 ? (
+            <div>
+              <div>
+                {shoppingCartBid.map((currProduct, index) => (
+                  <div className="col span-1-of-4">
+                    <li key={index} className="curr product">
+                      <BidProductInCart
+                        onRefresh={props.onRefresh}
+                        connID={props.connID}
+                        currProduct={currProduct}
+                      ></BidProductInCart>
                     </li>
                   </div>
                 ))}

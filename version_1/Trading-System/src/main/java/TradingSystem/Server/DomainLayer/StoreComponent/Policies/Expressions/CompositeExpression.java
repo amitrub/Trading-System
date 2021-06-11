@@ -15,6 +15,7 @@ public abstract class CompositeExpression implements Expression {
         this.children=c;
     }
 
+
     public CompositeExpression()
     {
         this.children = new LinkedList<>();

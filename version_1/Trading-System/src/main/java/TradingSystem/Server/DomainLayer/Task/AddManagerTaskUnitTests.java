@@ -1,6 +1,6 @@
 package TradingSystem.Server.DomainLayer.Task;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.time.LocalDateTime;
@@ -11,9 +11,9 @@ import static TradingSystem.Server.ServiceLayer.Configuration.*;
 public class AddManagerTaskUnitTests implements Callable<ResultUnitTests> {
 
     //@Autowired
-    public static TradingSystemImplRubin tradingSystem;
+    public static TradingSystemImpl tradingSystem;
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         AddManagerTaskUnitTests.tradingSystem = tradingSystem;
     }
 

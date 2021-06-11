@@ -12,7 +12,7 @@ import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -36,8 +36,8 @@ public class User implements Observer {
         Store.data_controller = data_controller;
     }
 
-    private static TradingSystemImplRubin tradingSystem;
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         User.tradingSystem = tradingSystem;
     }
     private List<Object> messages = new ArrayList<>();
@@ -526,11 +526,7 @@ public class User implements Observer {
         return this.shoppingCart.removeSpecialProductFromCart(storeID, productID);
     }
 
-    //todo implements
-    public Response subscriberSpecialProductPurchase(String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip) {
-        return shoppingCart.specialProductPurchase(false, this.userName, credit_number, month, year, cvv, id, address,city,country,zip);
     }
-}
 
 
 //    public List<DummySearch> getShoppingCart(){

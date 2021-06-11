@@ -1,8 +1,8 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.States.initState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.InitState;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.State;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.concurrent.ConcurrentHashMap;
@@ -19,7 +19,12 @@ public class Bid {
     private State state;
     private ConcurrentHashMap<Integer,Boolean> ownerAndManagerApprovals;
     private final Lock lock = new ReentrantLock();
-    private static TradingSystemImplRubin tradingSystem;
+
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        Bid.tradingSystem = tradingSystem;
+    }
+
 
     public Bid(Integer userID, Integer productID,Integer storeId, Integer price,Integer quantity,ConcurrentHashMap<Integer,Boolean> list) {
         this.productID = productID;
@@ -28,7 +33,7 @@ public class Bid {
         this.userID=userID;
         this.quantity=quantity;
         this.ownerAndManagerApprovals=list;
-        this.state=new initState();
+        this.state=new InitState();
         state.setBid(this);
     }
 

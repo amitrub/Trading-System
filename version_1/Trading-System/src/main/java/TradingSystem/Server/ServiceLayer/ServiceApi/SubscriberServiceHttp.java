@@ -6,6 +6,7 @@ import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.persistence.criteria.CriteriaBuilder;
 import java.util.Map;
 
 
@@ -27,6 +28,14 @@ public class SubscriberServiceHttp {
     @GetMapping("{userID}/get_all_subscribers")
     public Response GetAllSubscribers(@PathVariable int userID, @RequestHeader("connID") String connID) {
         Response res = tradingSystem.GetAllSubscribers(connID, userID);
+        tradingSystem.printUsers();
+        WriteToLogger(res);
+        return res;
+    }
+
+    @GetMapping("{storeId}/get_all_manager")
+    public Response GetAllManager(@PathVariable int storeId, @RequestHeader("connID") String connID) {
+        Response res = tradingSystem.GetAllManager(connID, storeId);
         tradingSystem.printUsers();
         WriteToLogger(res);
         return res;
@@ -209,6 +218,7 @@ public class SubscriberServiceHttp {
             WriteToLogger(res);
             return res;
         }
+        System.out.println("\n\n---------PURCHASE----------------\n\n");
         Response res = tradingSystem.subscriberPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
         WriteToLogger(res);
         return res;
@@ -256,8 +266,56 @@ public class SubscriberServiceHttp {
         return res;
     }
     //________________________________
+
     /**
-     * @requirement 2.8
+     * @requirement 2.5
+     *
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "stores": [{
+     *      "storeID": int
+     *      "storeName": String
+     *  }]
+     * }
+     */
+    @GetMapping("stores_subscriber")
+    public Response showAllStoresSubscriber() {
+        Response res = this.tradingSystem.ShowAllStores();
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 2.5
+     *
+     * @param storeID: int (path)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "products": List [{
+     *      "storeID": int
+     *      "storeName": String
+     *      "productID": int
+     *      "productName": String
+     *      "price": double
+     *      "category": String
+     *      "quantity": int
+     *  }]
+     * }
+     */
+    @GetMapping("store/{storeID}/products_subscriber")
+    public Response showStoreProductsSubscriber(@PathVariable int storeID) {
+        Response res = this.tradingSystem.ShowStoreProducts(storeID);
+        WriteToLogger(res);
+        return res;
+    }
+
+
+    /**
+     * @requirement None
      *
      * @param connID: String (Header)
      * @return Response {
@@ -285,7 +343,7 @@ public class SubscriberServiceHttp {
     }
 
     /**
-     * @requirement 2.8
+     * @requirement 8.3.3
      *
      * @param connID: String (Header)
      * @param obj:{
@@ -320,47 +378,48 @@ public class SubscriberServiceHttp {
 
     }
 
-    /**
-     * @requirement 2.9
-     *
-     * @param userID: int (Path)
-     * @param connID: String (Header)
-     * @param obj:{
-     *  "credit_number": String
-     *  "phone_number": String
-     *  "address": String
-     * }
-     * @return Response{
-     *  "isErr: boolean
-     *  "message": String
-     *  "connID": String
-     * }
-     */
-    @PostMapping("{userID}/shopping_cart/special_purchase")
-    public Response specialProductsPurchase(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        String credit_number, month, year, cvv, ID, address, city, country, zip;
+    @PostMapping("get_store_ID")
+    public Response getStoreIDByName(@RequestBody Map<String, Object> obj){
+        String storeName;
         try {
-            credit_number = (String) obj.get("credit_number");
-            month = (String) obj.get("month");
-            year = (String) obj.get("year");
-            cvv = (String) obj.get("cvv");
-            ID = (String) obj.get("ID");
-            address = (String) obj.get("address");
-            city = (String) obj.get("city");
-            country = (String) obj.get("country");
-            zip = (String) obj.get("zip");
+            storeName = (String) obj.get("store");
         }
         catch (Exception e){
             System.out.println(e);
-            Response res = new Response(true, "Error in parse body : subscriberPurchase");
+            Response res = new Response(true, "Error in parse body : getStoreIDByName");
             System.out.println(res);
             WriteToLogger(res);
             return res;
         }
-        Response res = tradingSystem.subscriberSpecialProductPurchase(userID, connID, credit_number, month, year, cvv, ID, address,city,country,zip );
+        Integer storeID = tradingSystem.getStoreIDByName(storeName);
+        Response res = new Response();
+        res.AddPair("storeID", storeID);
         WriteToLogger(res);
         return res;
     }
+
+    @PostMapping("{storeID}/get_product_ID")
+    public Response getProductIDByName(@PathVariable int storeID, @RequestBody Map<String, Object> obj){
+        String productName;
+        try {
+            productName = (String) obj.get("productName");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : getProductIDByName");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Integer productID = tradingSystem.getProductIDByName(productName, storeID);
+        Response res = new Response();
+        res.AddPair("productID", productID);
+        WriteToLogger(res);
+        return res;
+    }
+
+
+
     //___________________________________
 
     private void WriteToLogger(Response res){

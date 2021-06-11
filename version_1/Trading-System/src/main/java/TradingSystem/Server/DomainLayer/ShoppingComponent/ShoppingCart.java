@@ -5,8 +5,7 @@ import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -19,8 +18,8 @@ import java.util.concurrent.locks.Lock;
 
 public class ShoppingCart {
 
-    private static TradingSystemImplRubin tradingSystem;
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         ShoppingCart.tradingSystem = tradingSystem;
     }
 
@@ -117,6 +116,9 @@ public class ShoppingCart {
             this.shoppingBags.put(storeID, new ShoppingBag(this.userID,storeID));
         }
         else {
+            if(this.shoppingBags.get(storeID).getSpecialProductProductsList().contains(productID)){
+                return new Response(true, "AddProductToCart: The product " + productID + " in your special products so you cant add it to cart");
+            }
             int oldQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
             if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, quantity + oldQuantity)) {
                   return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
@@ -160,6 +162,7 @@ public class ShoppingCart {
         if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,tmpProducts)) {
             return new Response(true, "Adding the product "+productID+" is against the store policy");
         }
+        tmpProducts.remove(productID);
         this.shoppingBags.get(storeID).addSPacialProduct(productID, quantity,productPrice);
         //Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, this.shoppingBags.get(storeID).getProducts());
         Integer spacialPrice=  this.shoppingBags.get(storeID).calculateSpacialPrices();
@@ -176,6 +179,17 @@ public class ShoppingCart {
         for (Integer key : shoppingBagsSet) {
             ShoppingBag p = this.shoppingBags.get(key);
             price = price + p.getFinalPrice();
+
+        }
+        return price;
+    }
+
+    private synchronized Integer calculateSpecialPrice(){
+        int price = 0;
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        for (Integer key : shoppingBagsSet) {
+            ShoppingBag p = this.shoppingBags.get(key);
+            price = price + p.getSpecialPrice();
 
         }
         return price;
@@ -204,14 +218,14 @@ public class ShoppingCart {
         }
         PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
         AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
-        Response supplyResponse = TradingSystemImplRubin.getSupplySystem().purchase(paymentInfo, addressInfo);
+        Response supplyResponse = TradingSystemImpl.getSupplySystem().purchase(paymentInfo, addressInfo);
         if(supplyResponse.getIsErr()){
             this.releaseLocks(lockList);
             return supplyResponse;
         }
-        Response paymentResponse = TradingSystemImplRubin.getPaymentSystem().purchase(paymentInfo, addressInfo);
+        Response paymentResponse = TradingSystemImpl.getPaymentSystem().purchase(paymentInfo, addressInfo);
         if(paymentResponse.getIsErr()){
-            TradingSystemImplRubin.getSupplySystem().Cancel(supplyResponse.getMessage());
+            TradingSystemImpl.getSupplySystem().Cancel(supplyResponse.getMessage());
             this.releaseLocks(lockList);
             return paymentResponse;
         }
@@ -286,7 +300,7 @@ public class ShoppingCart {
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
-            res = tradingSystem.reduceProducts(SB.getProducts(), storeID);
+            res = tradingSystem.reduceProducts(SB.getAllProducts(), storeID);
             if (res.getIsErr()) {
                 this.cancelReduceProducts();
                 this.storesReducedProductsVain=new HashSet<>();
@@ -294,18 +308,20 @@ public class ShoppingCart {
             }
             this.storesReducedProductsVain.add(storeID);
         }
+
         if (!isGuest){
             for (Integer storeID : shoppingBagsSet) {
                 data_controller.deleteSubscriberBag(userID, storeID);
             }
         }
+
         res=new Response(false, "Purchase: The reduction was made successfully ");
         return res;
     }
 
     private void cancelReduceProducts() {
         for (Integer storeID : this.storesReducedProductsVain) {
-            tradingSystem.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getProducts());
+            tradingSystem.cancelReduceProducts(storeID,this.shoppingBags.get(storeID).getAllProducts());
         }
     }
 
@@ -452,7 +468,7 @@ public class ShoppingCart {
 
     public Response removeSpecialProductFromCart(int storeID, int productID) {
         if (this.shoppingBags.get(storeID) == null ||
-                !this.shoppingBags.get(storeID).getProductsList().contains(productID)) {
+                !this.shoppingBags.get(storeID).getSpecialProductProductsList().contains(productID)) {
             return new Response(true, "removeSpecialProductFromCart: product that does not exist in the cart cannot be removed");
         }
         else {
@@ -466,54 +482,14 @@ public class ShoppingCart {
         return new Response(false, "RemoveFromCart: product removed successfully");
     }
 
-    public Response specialProductPurchase(boolean isGuest, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
-        if (shoppingBags.size() == 0) {
-            return new Response(true, "Purchase: There is no products in the shopping cart");
-        }
-        List<Lock> lockList = this.getLockList();
-        Response productInStock = this.checkInventoryAndLockProduct(lockList);
-        if (productInStock.getIsErr()) {
-            return productInStock;
-        }
-        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
-        for (Integer storeID : shoppingBagsSet) {
-            ConcurrentHashMap<Integer, Integer> products = this.shoppingBags.get(storeID).getProducts();
-            if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID, products)) {
-                this.releaseLocks(lockList);
-                return new Response(true, "Purchase in the store " + storeID + " is against the store policy");
-            }
-        }
-        PaymentInfo paymentInfo = new PaymentInfo(credit_number, month, year, name, cvv, ID);
-        AddressInfo addressInfo = new AddressInfo(name, country, city, address, zip);
-        Response supplyResponse = TradingSystemImplRubin.getSupplySystem().purchase(paymentInfo, addressInfo);
-        if (supplyResponse.getIsErr()) {
-            this.releaseLocks(lockList);
-            return supplyResponse;
-        }
-        Response paymentResponse = TradingSystemImplRubin.getPaymentSystem().purchase(paymentInfo, addressInfo);
-        if (paymentResponse.getIsErr()) {
-            TradingSystemImplRubin.getSupplySystem().Cancel(supplyResponse.getMessage());
-            this.releaseLocks(lockList);
-            return paymentResponse;
-        }
-        Response res = Buy(isGuest);
-        if(res.getIsErr()) {
-            this.releaseLocks(lockList);
-            return res;
-        }
-        //TODO add charge to a payment
-        //TODO Add payment to each store for the products
-
-        addShoppingHistory(isGuest);
-        this.storesReducedProductsVain=new HashSet<>();
-        this.shoppingBags = new ConcurrentHashMap<>();
-        this.releaseLocks(lockList);
-        return new Response("The purchase was made successfully");
+    public void setPaymentSystem(ExternalServices paymentSystem) {
+        this.paymentSystem = paymentSystem;
     }
+    public void setSupplySystem(ExternalServices supplySystem) {
+        this.supplySystem = supplySystem;
+    }
+
 }
-
-
-
 /*
     public Integer addProduct(Integer productID, Integer quantity, Integer storeID, Double price)
     {

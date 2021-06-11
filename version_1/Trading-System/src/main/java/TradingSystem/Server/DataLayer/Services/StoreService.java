@@ -12,9 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @Transactional
@@ -109,4 +107,21 @@ public class StoreService {
 //        DataStore store=storeRepository.getOne(storeId);
 //
 //    }
+    public HashMap<Date,Integer> getAllStoresWeek(){
+        HashMap<Date,Integer> hashMap=new HashMap<>();
+        Date date = new Date();
+        Calendar c = Calendar.getInstance();
+        c.setTime(date);
+        int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
+        c.add(Calendar.DATE, -i);
+        //   Date start = c.getTime();
+        for(int j=0;j<=6;j++){
+            Date start = c.getTime();
+            c.add(Calendar.DATE, 1);
+            Date end = c.getTime();
+            List<DataStore> stores=storeRepository.findAllByDateBetween(start,end);
+            hashMap.put(start,stores.size());
+        }
+        return hashMap;
+    }
 }

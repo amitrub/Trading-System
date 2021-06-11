@@ -152,8 +152,39 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
+    ShowShoppingCartBid: (connID) => {
+      let path = subscriberURL.concat(`shopping_cart_special`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    //DONE
     RemoveProductFromCart: (connID, storeID, productID) => {
       let path = guestURL.concat(`shopping_cart/remove_product`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        storeID: storeID,
+        productID: productID,
+      };
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        // console.log(res);
+        return res.data;
+      });
+    },
+
+    //DONE
+    RemoveProductFromBidCart: (connID, storeID, productID) => {
+      let path = subscriberURL.concat(`shopping_cart/remove_special_product`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
@@ -220,6 +251,10 @@ export const createApiClientHttp = () => {
         country: country,
         zip: mailNum,
       };
+
+      console.log(path);
+      console.log(body);
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -319,6 +354,10 @@ export const createApiClientHttp = () => {
         country: country,
         zip: mailNum,
       };
+
+      console.log(path);
+      console.log(body);
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -351,8 +390,65 @@ export const createApiClientHttp = () => {
       });
     },
 
+    ShowAllBiddings: (connID, userID, storeID) => {
+      let path = ownerURL.concat(` ${userID}/store/${storeID}/show_bids`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    ResponsedToBidding: (
+      connID,
+      userID,
+      storeID,
+      productID,
+      userWhoOffer,
+      quantity,
+      price,
+      mode
+    ) => {
+      let path = ownerURL.concat(`${userID}/response_for_submission_bidding`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        userWhoOffer: parseInt(userWhoOffer),
+        storeID: parseInt(storeID),
+        productID: parseInt(productID),
+        quantity: parseInt(quantity),
+        productPrice: parseInt(price),
+        mode: parseInt(mode),
+      };
+
+      console.log(path);
+      console.log(body);
+
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     //Owner
     //DONE
+    ShowStoreComments: (connID, userID, storeID) => {
+      let path = ownerURL.concat(`${userID}/store/${storeID}/comments`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     OwnerDailyIncomeForStore: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/owner_daily_income_for_store`
@@ -665,6 +761,19 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
+    GetAllStoreManagers: (connID, storeID) => {
+      let path = subscriberURL.concat(`${storeID}/get_all_manager`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    //DONE
     RemoveManager: (connID, userID, storeID, managerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_manager/${managerID}`
@@ -696,7 +805,11 @@ export const createApiClientHttp = () => {
       GetInfoOfficials,
       GetInfoRequests,
       ResponseRequests,
-      GetStoreHistory
+      GetStoreHistory,
+      GetDailyIncomeForStore,
+      RequestBidding,
+      EditDiscountPolicy,
+      EditBuyingPolicy
     ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/edit_manager_permissions/${managerID}`
@@ -719,7 +832,17 @@ export const createApiClientHttp = () => {
         GetInfoRequests: GetInfoRequests,
         ResponseRequests: ResponseRequests,
         GetStoreHistory: GetStoreHistory,
+        RequestBidding: RequestBidding,
+        EditDiscountPolicy: EditDiscountPolicy,
+        EditBuyingPolicy: EditBuyingPolicy,
+        GetDailyIncomeForStore: GetDailyIncomeForStore,
       };
+
+      console.log("---------\n Edit Permissions \n");
+      console.log(path);
+      console.log(body);
+      console.log("---------");
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;

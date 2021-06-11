@@ -6,7 +6,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagC
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImplRubin;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -19,10 +19,10 @@ import java.util.concurrent.locks.Lock;
 
 public class ShoppingBag {
 
-    private static TradingSystemImplRubin tradingSystem;
+    private static TradingSystemImpl tradingSystem;
 
 
-    public static void setTradingSystem(TradingSystemImplRubin tradingSystem) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
         ShoppingBag.tradingSystem = tradingSystem;
     }
 
@@ -145,19 +145,19 @@ public class ShoppingBag {
     public ConcurrentHashMap<Integer, Integer> getProducts() {
        return this.products;
     }
-/*
+
     public ConcurrentHashMap<Integer, Integer> getAllProducts() {
         ConcurrentHashMap<Integer, Integer> list=new ConcurrentHashMap<>();
         for(int productID : this.products.keySet()){
             list.put(productID,this.products.get(productID));
         }
-        for (int productID : quantityOfSpacialProducts.keySet()) {
-            list.put(productID,this.quantityOfSpacialProducts.get(productID));
+        for (int p : quantityOfSpacialProducts.keySet()) {
+            list.put(p,this.quantityOfSpacialProducts.get(p));
         }
 
         return list;
     }
-*/
+
     public void setProducts(ConcurrentHashMap<Integer, Integer> products) {
         this.products = products;
     }
@@ -188,6 +188,12 @@ public class ShoppingBag {
             Lock lock = tradingSystem.getProductLock(this.storeID, productID);
             output.add(lock);
         }
+        Set<Integer> specialProductsSet = this.quantityOfSpacialProducts.keySet();
+        for (Integer productID : specialProductsSet){
+            Lock lock = tradingSystem.getProductLock(this.storeID, productID);
+            output.add(lock);
+        }
+
         return output;
     }
 
@@ -198,14 +204,15 @@ public class ShoppingBag {
             if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
                 String storeName = tradingSystem.getStoreName(storeID);
                 String productName = tradingSystem.getProductName(storeID, productID);
-// =======
-//         ConcurrentHashMap<Integer, Integer> productsSet = this.getAllProducts();
-//         for (Integer productID : productsSet.keySet()){
-//             int productQuantity = productsSet.get(productID);
-//             if (!tradingSystemImpl.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
-//                 String storeName = tradingSystemImpl.getStoreName(storeID);
-//                 String productName = tradingSystemImpl.getProductName(storeID, productID);
-// >>>>>>> Version-3
+                String err = "Purchase: " + productName + " in The store: " + storeName + " is not exist in the stock";
+                return new Response(true, err);
+            }
+        }
+        for (Integer productID : this.quantityOfSpacialProducts.keySet()){
+            int productQuantity = this.quantityOfSpacialProducts.get(productID);
+            if (!tradingSystem.validation.checkProductsExistInTheStore(storeID, productID, productQuantity)) {
+                String storeName = tradingSystem.getStoreName(storeID);
+                String productName = tradingSystem.getProductName(storeID, productID);
                 String err = "Purchase: " + productName + " in The store: " + storeName + " is not exist in the stock";
                 return new Response(true, err);
             }
@@ -300,8 +307,12 @@ public class ShoppingBag {
          */
     }
 
-    // TODO: implements
+
     public List<Integer> getSpecialProductProductsList() {
-        return null;
+        List<Integer> products=new ArrayList<>();
+        for(int productID : this.quantityOfSpacialProducts.keySet()){
+            products.add(productID);
+        }
+        return products;
     }
 }
