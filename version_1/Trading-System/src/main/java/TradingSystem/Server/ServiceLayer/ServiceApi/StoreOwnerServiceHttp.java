@@ -728,12 +728,19 @@ public class StoreOwnerServiceHttp {
 
     @PostMapping("{userID}/store/{storeID}/add_node_to_building_tree")
     public Response AddNodeToBuildingTree(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        int nodeID, quantity, productID;
-        String type;
+        int nodeID, quantity, productID,numOfProductsForSale,priceForSale,quantityForSale,discount,maxQuantity,mode;
+        String category,type;
         try {
             nodeID = (int) obj.get("nodeID");
             quantity = (int) obj.get("quantity");
             productID = (int) obj.get("productID");
+            maxQuantity = (int) obj.get("maxQuantity");
+            category = (String) obj.get("category");
+            numOfProductsForSale = (int) obj.get("numOfProductsForSale");
+            priceForSale = (int) obj.get("priceForSale");
+            quantityForSale = (int) obj.get("quantityForSale");
+            discount = (int) obj.get("discount");
+            mode = (int) obj.get("mode");
             type = (String) obj.get("type"); //AND, OR, COND, or one of the simples
         }
         catch (Exception e){
@@ -743,11 +750,11 @@ public class StoreOwnerServiceHttp {
             WriteToLogger(res);
             return res;
         }
-//        Response res = tradingSystem.AddNodeToBuildingTree(userID,connID,storeID, nodeID, quantity, productID, type);
+//        Response res = tradingSystem.AddNodeToBuildingTree(userID,connID,storeID, nodeID, quantity, productID,maxQuantity,category,numOfProductsForSale,priceForSale,quantityForSale,discount,mode, type);
 //        res.AddConnID(connID);
 //        WriteToLogger(res);
 //        return res;
-        return null;
+        return new Response(false, "not implemented");
     }
 
 }
