@@ -1,6 +1,6 @@
 {
 
-  "local": true,
+  "local": false,
 
   "urlLocal" : "jdbc:postgresql://localhost:5432/postgres",
   "userNameLocal" : "amit",
@@ -15,11 +15,11 @@
   "dialect" : "org.hibernate.dialect.PostgreSQLDialect",
   "formatSql" : "true",
   "admin" : {
-    "userName": "amit",
+
     "password": "qweasd"
   },
 
-  "externalState": false,
+  "externalState": true,
 
   "externalServices": false,
 

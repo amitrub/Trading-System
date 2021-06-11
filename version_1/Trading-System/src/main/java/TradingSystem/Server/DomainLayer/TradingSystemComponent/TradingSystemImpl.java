@@ -115,6 +115,10 @@ public class TradingSystemImpl implements TradingSystem {
             } else {
                 userID = subscriber.getUserID();
             }
+            if(readJson.getLoadTest())
+            {
+                LoadTestInfo();
+            }
 
             User defaultAdmin = new User(userID,userName, password);
             this.systemAdmins.put(userID, userID);
@@ -286,6 +290,11 @@ public class TradingSystemImpl implements TradingSystem {
 //
 //        this.connectedSubscribers = new ConcurrentHashMap<>();
         printUsers();
+    }
+
+    public void LoadTestInfo(){
+        //String connID = this.ConnectSystem().returnConnID();
+
     }
 
     public void AddStoreOwnerPermission(){

@@ -19,6 +19,8 @@
     "password": "qweasd"
   },
 
-  "externalServices": false
+  "externalServices": false,
+
+  "LoadTestState": false
 
 }
