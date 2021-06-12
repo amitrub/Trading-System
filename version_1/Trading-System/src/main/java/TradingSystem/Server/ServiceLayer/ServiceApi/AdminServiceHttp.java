@@ -148,6 +148,68 @@ public class AdminServiceHttp {
         return res;
     }
 
+    /**
+     * @requirement 6.5
+     *
+     * @param userID
+     * @param connID
+     * @return
+     */
+    @GetMapping("{userID}/admin_subscribers_week")
+    public Response AdminAllSubscribersWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getAllSubscribersWeek(connID,userID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param userID
+     * @param connID
+     * @return
+     */
+    @GetMapping("{userID}/admin_stores_week")
+    public Response AdminAllStoresWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getAllStoresWeek(connID,userID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param userID
+     * @param connID
+     * @return
+     */
+    @GetMapping("{userID}/admin_shopping_history_week")
+    public Response AdminAllShoppingHistoriesWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getAllShoppingHistoriesWeek(connID,userID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param userID
+     * @param connID
+     * @return
+     */
+    @GetMapping("{userID}/admin_money_week")
+    public Response AdminAllMoneyWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getAllMoneyWeek(connID,userID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+
+
 
 
 
