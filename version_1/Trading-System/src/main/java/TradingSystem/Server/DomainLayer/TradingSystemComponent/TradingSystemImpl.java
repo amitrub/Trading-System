@@ -2849,7 +2849,14 @@ public class TradingSystemImpl implements TradingSystem {
      *
      * @param connID
      * @param userID
-     * @return
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
      */
     //Viewing daily system's conduct
     public Response getAllSubscribersWeek(String connID, int userID){
@@ -2859,14 +2866,13 @@ public class TradingSystemImpl implements TradingSystem {
         if(this.subscribers.get(userID)==null){
             return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not in the list");
         }
-        if(!this.systemAdmins.keySet().contains(userID)){
+        if(!this.systemAdmins.containsKey(userID)){
             return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not the admin of the system");
         }
 
-        //TODO permission
-//        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
-//            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
-//        }
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
+        }
         HashMap<Date,Integer> hashMap = this.data_controller.getAllSubscribersWeek();
         List<DummyDaily> list = new ArrayList<>();
         for(Map.Entry<Date, Integer> s : hashMap.entrySet())
@@ -2887,7 +2893,14 @@ public class TradingSystemImpl implements TradingSystem {
      *
      * @param connID
      * @param userID
-     * @return
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
      */
     public Response getAllStoresWeek(String connID, int userID){
         if (!ValidConnectedUser(userID, connID)) {
@@ -2896,14 +2909,13 @@ public class TradingSystemImpl implements TradingSystem {
         if(this.subscribers.get(userID)==null){
             return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not in the list");
         }
-        if(!this.systemAdmins.keySet().contains(userID)){
+        if(!this.systemAdmins.containsKey(userID)){
             return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not the admin of the system");
         }
 
-        //TODO permission
-//        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
-//            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
-//        }
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
+        }
         HashMap<Date,Integer> hashMap = this.data_controller.getAllStoresWeek();
         List<DummyDaily> list = new ArrayList<>();
         for(Map.Entry<Date, Integer> s : hashMap.entrySet())
@@ -2924,7 +2936,14 @@ public class TradingSystemImpl implements TradingSystem {
      *
      * @param connID
      * @param userID
-     * @return
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
      */
     public Response getAllShoppingHistoriesWeek(String connID, int userID) {
         if (!ValidConnectedUser(userID, connID)) {
@@ -2933,14 +2952,13 @@ public class TradingSystemImpl implements TradingSystem {
         if(this.subscribers.get(userID)==null){
             return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not in the list");
         }
-        if(!this.systemAdmins.keySet().contains(userID)){
+        if(!this.systemAdmins.containsKey(userID)){
             return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not the admin of the system");
         }
 
-        //TODO permission
-//        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
-//            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
-//        }
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
+        }
         HashMap<Date,Integer> hashMap = this.data_controller.getAllShoppingHistoriesWeek();
         List<DummyDaily> list = new ArrayList<>();
         for(Map.Entry<Date, Integer> s : hashMap.entrySet())
@@ -2961,7 +2979,14 @@ public class TradingSystemImpl implements TradingSystem {
      *
      * @param connID
      * @param userID
-     * @return
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
      */
     public Response getAllMoneyWeek(String connID, int userID) {
         if (!ValidConnectedUser(userID, connID)) {
@@ -2970,14 +2995,13 @@ public class TradingSystemImpl implements TradingSystem {
         if(this.subscribers.get(userID)==null){
             return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not in the list");
         }
-        if(!this.systemAdmins.keySet().contains(userID)){
+        if(!this.systemAdmins.containsKey(userID)){
             return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not the admin of the system");
         }
 
-        //TODO permission
-//        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
-//            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
-//        }
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
+        }
         HashMap<Date,Integer> hashMap = this.data_controller.getAllMoneyWeek();
         List<DummyDaily> list = new ArrayList<>();
         for(Map.Entry<Date, Integer> s : hashMap.entrySet())
