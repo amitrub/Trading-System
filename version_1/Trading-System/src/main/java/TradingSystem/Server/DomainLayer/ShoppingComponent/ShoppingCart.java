@@ -311,10 +311,12 @@ public class ShoppingCart {
 
         if (!isGuest){
             for (Integer storeID : shoppingBagsSet) {
-                data_controller.deleteSubscriberBag(userID, storeID);
+                Response response= data_controller.deleteSubscriberBag(userID, storeID);
+                if(response.getIsErr()){
+                    return response;
+                }
             }
         }
-
         res=new Response(false, "Purchase: The reduction was made successfully ");
         return res;
     }

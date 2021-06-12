@@ -7,14 +7,12 @@ import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingH
 import TradingSystem.Server.DataLayer.Repositories.*;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
+import java.util.*;
 
 @Service
 @Transactional
@@ -34,7 +32,7 @@ public class ShoppingHistoryService {
     ShoppingBagProductRepository shoppingBagProductRepository;
 
 
-    public void addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
+    public Response addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
         Integer userID = shoppingHistory.getUserID();
         Integer storeID = shoppingHistory.getStoreID();
         Date date = shoppingHistory.getDate();
@@ -43,8 +41,11 @@ public class ShoppingHistoryService {
         if (userID>=1){
             user = subscriberRepository.getOne(userID);
         }
-        DataStore store = storeRepository.getOne(storeID);
-        DataShoppingHistory dataShoppingHistory = new DataShoppingHistory(user, store, date, finalPrice);
+        Optional<DataStore> store = storeRepository.findById(storeID);
+        if(!store.isPresent()){
+            return new Response(true,"Could not add history");
+        }
+        DataShoppingHistory dataShoppingHistory = new DataShoppingHistory(user, store.get(), date, finalPrice);
 
         List<Product> products = shoppingHistory.getProducts();
         for (Product p : products){
@@ -52,7 +53,9 @@ public class ShoppingHistoryService {
             dataShoppingHistory.addProduct(historyProduct);
         }
         shoppingHistoryRepository.save(dataShoppingHistory);
+        return new Response(true,"History wad added successfully");
     }
+
     public void deleteAll(){
         shoppingHistoryRepository.deleteAll();
     }
