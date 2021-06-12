@@ -1,14 +1,18 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DBSale;
 import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
@@ -204,13 +208,27 @@ public class Data_Controller {
         return shoppingCartService.deleteSubscriberBag(userID, storeID);
     }
 
-    public Response AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
+    public Response AddBuyingPolicy(Integer storeId, Expression expression){
+        DBExpression parent=new DBExpression(expression,null);
+        Response response=findStorebyId(storeId);
+        if(response.getIsErr()){
+            return new Response(true,"Could not found storeid");
+        }
+        DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.getDataStore(),parent);
         return buyingService.AddBuyingPolicy(buyingPolicy);
     }
-
-    public Response AddDiscountPolicy(DataDiscountPolicy service){
-        return discountPolicyService.AddDiscountPolicy(service);
+    public Response AddDiscountPolicy(Integer storeId, Sale sale){
+        DBSale parent=new DBSale(sale,null);
+        Response response= findStorebyId(storeId);
+        if(response.getIsErr()){
+            return new Response(true,"Could not found storeid");
+        }
+        DataDiscountPolicy dataDiscountPolicy= new DataDiscountPolicy(response.getDataStore(),parent);
+        return discountPolicyService.AddDiscountPolicy(dataDiscountPolicy);
     }
+//    public Response AddDiscountPolicy(DataDiscountPolicy service){
+//        return discountPolicyService.AddDiscountPolicy(service);
+//    }
 
     public Response getBuyingByStoreId(Integer storeid){
         return buyingService.getBuyingByStore(storeid);

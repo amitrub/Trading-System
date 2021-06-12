@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Client.ClientProxy;
@@ -2074,8 +2075,9 @@ public class TradingSystemImpl implements TradingSystem {
         }
         DiscountPolicy d=new DiscountPolicy(storeID,sale);
         s.setDiscountPolicy(d);
-        DBSale parent=new DBSale(sale,null);
-        res= data_controller.AddDiscountPolicy(new DataDiscountPolicy(storeID,parent));
+//        DBSale parent=new DBSale(sale,null);
+//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+        res= data_controller.AddDiscountPolicy(storeID,sale);
         if(res.getIsErr())
             return res;
         return new Response("the discountPolicy added successfully");
@@ -2284,8 +2286,9 @@ public class TradingSystemImpl implements TradingSystem {
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(b);
         //ADD to db
-        DBExpression parent=new DBExpression(exp,null);
-        res = data_controller.AddBuyingPolicy(new DataBuyingPolicy(storeID,parent));
+//        DBExpression parent=new DBExpression(exp,null);
+//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+        res = data_controller.AddBuyingPolicy(storeID,exp);
         if(res.getIsErr()){
             return res;
         }
