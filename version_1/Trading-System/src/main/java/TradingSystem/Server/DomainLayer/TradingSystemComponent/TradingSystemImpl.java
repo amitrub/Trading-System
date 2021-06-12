@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Client.ClientProxy;
@@ -8,6 +9,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Sales.DBSale;
 import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingCart;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
@@ -39,9 +41,11 @@ import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
+import TradingSystem.Server.TradingSystemApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Service;
 
@@ -78,7 +82,11 @@ public class TradingSystemImpl implements TradingSystem {
     //storeID_BuyingPolicy
     private ConcurrentHashMap<Integer, DummyExpression> tmpBuyingPolicyForStore = new ConcurrentHashMap<>();
 
-    public TradingSystemImpl(Data_Controller data_controller) {
+    private static ExternalServices paymentSystem;
+    private static ExternalServices supplySystem;
+
+
+    public TradingSystemImpl(Data_Controller data_controller, ApplicationArguments args) {
         this.data_controller = data_controller;
         this.setData_controller(this.data_controller);
         this.setTradingSystem(this);
@@ -86,23 +94,42 @@ public class TradingSystemImpl implements TradingSystem {
         this.addFromDb= new AddFromDb(this,this.data_controller);
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            String path = "src/main/resources/initialization_System.json";
-            File file = new File(path);
+            List<String> arg = args.getNonOptionArgs();
+            String initializationPath = arg.get(0);
+            String ExternalStatePath = arg.get(1);
+            //System.out.println(ANSI_YELLOW + "-----------TEST---------\n"+ ExternalStatePath + "\n------------END TEST----------------" + ANSI_RESET);
+            //String initializationPath = "src/main/resources/initialization_System.json";
+            File file = new File(initializationPath);
             String absolutePath = file.getAbsolutePath();
             JsonInitReader readJson = objectMapper.readValue(new File(absolutePath), JsonInitReader.class);
             Boolean externalState = readJson.getExternalState();
             if (externalState){
-                this.Initialization();
+                this.Initialization(ExternalStatePath);
+            }
+            Boolean externalServices = readJson.getExternalServices();
+            if(externalServices){
+                setPaymentSystem(PaymentSystem.getInstance());
+                setSupplySystem(SupplySystem.getInstance());
+            }
+            else{
+                setPaymentSystem(PaymentSystemMock.getInstance());
+                setSupplySystem(SupplySystemMock.getInstance());
             }
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
-            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password);
+            Response response=this.data_controller.GetSubscriber(userName, password);
+            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).getDataSubscriber();
             int userID;
             if (subscriber==null){
-                userID = data_controller.AddSubscriber(userName, password);
+            //    Response response= data_controller.AddSubscriber(userName, password);
+                userID = data_controller.AddSubscriber(userName, password).returnUserID();
             } else {
                 userID = subscriber.getUserID();
             }
+//            if(readJson.getLoadTest())
+//            {
+//                LoadTestInfo();
+//            }
 
             User defaultAdmin = new User(userID,userName, password);
             this.systemAdmins.put(userID, userID);
@@ -111,7 +138,8 @@ public class TradingSystemImpl implements TradingSystem {
 
         }
         catch (Exception e){
-            System.out.println(e);
+            TradingSystemApplication.WriteToLogger("There is a problem with the Initialization file ");
+            System.exit(1);
         }
     }
 
@@ -172,59 +200,77 @@ public class TradingSystemImpl implements TradingSystem {
         printUsers();
     }
 
-    public void Initialization() {
+
+
+    public void Initialization(String path){
         data_controller.deleteAll();
 
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            String path = "src/main/resources/External_State.json";
+            //String path = "src/main/resources/External_State.json";
             File file = new File(path);
             String absolutePath = file.getAbsolutePath();
             JsonStateReader readJson = objectMapper.readValue(new File(absolutePath), JsonStateReader.class);
             Map<String, Integer> userName_id = new HashMap<>();
 
             String connID = ConnectSystem().returnConnID();
-            for (JsonUser user: readJson.register){
-                Integer userID = Register(connID, user.getUserName(), user.getPassword()).returnUserID();
-                userName_id.put(user.getUserName(), userID);
+//            for (JsonUser user: readJson.register){
+//                Integer userID = Register(connID, user.getUserName(), user.getPassword()).returnUserID();
+//                userName_id.put(user.getUserName(), userID);
+//            }
+            for(Map<String, String> registerMap: readJson.register)
+            {
+                String userName = registerMap.get("userName");
+                String password = registerMap.get("password");
+                String conn = this.ConnectSystem().returnConnID();
+                Integer userID = Register(conn,userName,password).returnUserID();
+                userName_id.put(userName, userID);
             }
-            for (Map<String, String> loginMap : readJson.login){
+            for (Map<String, String> loginMap : readJson.login) {
                 String userName = loginMap.get("userName");
                 Integer userID = userName_id.get(userName);
                 String password = this.subscribers.get(userID).getPassword();
 
-                connID = Login(connID,userName,password).returnConnID();
+                connID = Login(connID, userName, password).returnConnID();
 
                 Map<String, Integer> storeName_id = new HashMap<>();
-                for (Map<String, String> openStoreMap : readJson.open_store){
+                for (Map<String, String> openStoreMap : readJson.open_store) {
                     String userNameOpenStore = openStoreMap.get("userName");
-                    if(userName.equals(userNameOpenStore)){
+                    if (userName.equals(userNameOpenStore)) {
                         String storeName = openStoreMap.get("storeName");
                         Integer storeID = AddStore(userID, connID, storeName).returnStoreID();
                         storeName_id.put(storeName, storeID);
                     }
                 }
-                for (Map<String, Object> addItemMap : readJson.add_item){
+                for (Map<String, Object> addItemMap : readJson.add_item) {
                     String userNameOpenStore = (String) addItemMap.get("userName");
-                    if(userName.equals(userNameOpenStore)){
+                    if (userName.equals(userNameOpenStore)) {
                         String storeName = (String) addItemMap.get("storeName");
                         Integer storeID = storeName_id.get(storeName);
                         String productName = (String) addItemMap.get("productName");
                         String category = (String) addItemMap.get("category");
                         Double price = (Double) addItemMap.get("price");
                         Integer quantity = (Integer) addItemMap.get("quantity");
-                        AddProductToStore(userID, connID, storeID, productName,category, price, quantity);
+                        AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
                     }
                 }
-//                TODO : add manager
-                for (Map<String, Object> addItemMap : readJson.add_manager){
+                for (Map<String, Object> addManagerMap : readJson.add_manager) {
+                    String owner = (String) addManagerMap.get("owner");
+                    if (userName.equals(owner)) {
+                        String newManager = (String) addManagerMap.get("newManager");
+                        Integer newManagerID = userName_id.get(newManager);
+                        String storeName = (String) addManagerMap.get("storeName");
+                        Integer storeID = this.getStoreIDByName(storeName);
+                        AddNewManager(userID, connID, storeID, newManagerID);
+                    }
                 }
                 connID = Logout(connID).returnConnID();
             }
             Exit(connID);
         }
         catch (Exception e){
-            System.out.println(e);
+            TradingSystemApplication.WriteToLogger("There is a problem with the External file");
+            System.exit(1);
         }
 
 
@@ -256,6 +302,11 @@ public class TradingSystemImpl implements TradingSystem {
 //
 //        this.connectedSubscribers = new ConcurrentHashMap<>();
         printUsers();
+    }
+
+    public void LoadTestInfo(){
+        //String connID = this.ConnectSystem().returnConnID();
+
     }
 
     public void AddStoreOwnerPermission(){
@@ -469,15 +520,18 @@ public class TradingSystemImpl implements TradingSystem {
                 return new Response(true, "Register Error: user name is taken");
             }
             //Adds to the db
-            int userID = data_controller.AddSubscriber(userName, password);
-
+            Response response= data_controller.AddSubscriber(userName, password);
+            if(response.getIsErr()){
+                return response;
+            }
+            int userID=response.returnUserID();
             User newUser = new User(userID, userName, password);
             subscribers.put(newUser.getId(), newUser);
-            Response res = new Response(false,"Register: Registration of " + userName + " was successful");
-            res.AddConnID(connID);
-            res.AddUserID(newUser.getId());
-            res.AddUserGuest();
-            return res;
+        //    Response res = new Response(false,"Register: Registration of " + userName + " was successful");
+            response.AddConnID(connID);
+        //    res.AddUserID(newUser.getId());
+            response.AddUserGuest();
+            return response;
         }
     }
 
@@ -920,8 +974,15 @@ public class TradingSystemImpl implements TradingSystem {
             else {
 
                 //Adds to the db
-                int storeID = data_controller.AddStore(storeName, userID);
-                data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
+                Response response = data_controller.AddStore(storeName, userID);
+                if(response.getIsErr()){
+                    return response;
+                }
+                Integer storeID=response.returnStoreID();
+                response= data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
+                if(response.getIsErr()){
+                    return response;
+                }
 
                 Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
@@ -1229,7 +1290,10 @@ public class TradingSystemImpl implements TradingSystem {
         OP.setAppointmentId(userID);
 
         //Adds to the db
-        data_controller.AddNewOwner(storeID, newOwner, OP);
+        Response response= data_controller.AddNewOwner(storeID, newOwner, OP);
+        if(response.getIsErr()){
+            return response;
+        }
 
         NO.AddStoreInOwner(storeID, OP);
         Store store = stores.get(storeID);
@@ -1276,7 +1340,10 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " has no permissions to do this operation");
         }
         else{
-            data_controller.RemoveOwner(storeID, removeOwnerID);
+            Response response= data_controller.RemoveOwner(storeID, removeOwnerID);
+            if(response.getIsErr()){
+                return response;
+            }
 
             User owner=subscribers.get(ownerID);
             Store store = stores.get(storeID);
@@ -1357,7 +1424,10 @@ public class TradingSystemImpl implements TradingSystem {
         MP.setAppointmentId(userID);
 
         //Adds to the db
-        data_controller.AddNewManager(storeID, newManager, MP);
+        Response response= data_controller.AddNewManager(storeID, newManager, MP);
+        if(response.getIsErr()){
+            return response;
+        }
 
         NM.AddStoreInManager(storeID, MP);
         stores.get(storeID).addNewManager(userID, newManager);
@@ -1410,7 +1480,9 @@ public class TradingSystemImpl implements TradingSystem {
         }
 
         //Adds to the db
-        data_controller.EditManagerPermissions(storeID, managerID, permissions);
+        Response response= data_controller.EditManagerPermissions(storeID, managerID, permissions);
+        if(response.getIsErr())
+            return response;
 
         MTE.editPermissions(userID,storeID,permissions);
         stores.get(storeID).editManagerPermissions(userID, managerID,permissions);
@@ -1780,11 +1852,12 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
-
-        data_controller.addHistoryToStoreAndUser(sh);
-        this.stores.get(sh.getStoreID()).addHistory(sh);
-        if (!isGuest)
-            this.subscribers.get(sh.getUserID()).addHistory(sh);
+        Response response= data_controller.addHistoryToStoreAndUser(sh);
+        if(!response.getIsErr()){
+            this.stores.get(sh.getStoreID()).addHistory(sh);
+            if (!isGuest)
+                this.subscribers.get(sh.getUserID()).addHistory(sh);
+        }
     }
 /*
     public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
@@ -2062,8 +2135,11 @@ public class TradingSystemImpl implements TradingSystem {
             this.tmpDiscountPolicyForStore.remove(storeID);
         }
         s.setDiscountPolicy(d);
-        DBSale parent=new DBSale(sale,null);
-        data_controller.AddDiscountPolicy(new DataDiscountPolicy(storeID,parent));
+//        DBSale parent=new DBSale(sale,null);
+//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+        res= data_controller.AddDiscountPolicy(storeID,sale);
+        if(res.getIsErr())
+            return res;
         return new Response("the discountPolicy added successfully");
     }
 
@@ -2273,8 +2349,12 @@ public class TradingSystemImpl implements TradingSystem {
         }
         s.setBuyingPolicy(b);
         //ADD to db
-        DBExpression parent=new DBExpression(exp,null);
-        data_controller.AddBuyingPolicy(new DataBuyingPolicy(storeID,parent));
+//        DBExpression parent=new DBExpression(exp,null);
+//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+        res = data_controller.AddBuyingPolicy(storeID,exp);
+        if(res.getIsErr()){
+            return res;
+        }
         return new Response("Buying Policy added successes");
     }
 
@@ -3059,3 +3139,194 @@ public class TradingSystemImpl implements TradingSystem {
 
     }
 
+    public static ExternalServices getPaymentSystem() {
+        return paymentSystem;
+    }
+
+    public static void setPaymentSystem(ExternalServices paymentSystem) {
+        TradingSystemImpl.paymentSystem = paymentSystem;
+    }
+
+    public static ExternalServices getSupplySystem() {
+        return supplySystem;
+    }
+
+    public static void setSupplySystem(ExternalServices supplySystem) {
+        TradingSystemImpl.supplySystem = supplySystem;
+    }
+
+
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
+     */
+    //Viewing daily system's conduct
+    public Response getAllSubscribersWeek(String connID, int userID){
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not in the list");
+        }
+        if(!this.systemAdmins.containsKey(userID)){
+            return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not the admin of the system");
+        }
+
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
+        }
+        HashMap<Date,Integer> hashMap = this.data_controller.getAllSubscribersWeek();
+        List<DummyDaily> list = new ArrayList<>();
+        for(Map.Entry<Date, Integer> s : hashMap.entrySet())
+        {
+            String date = s.getKey().toString();
+            DummyDaily daily = new DummyDaily(date, s.getValue());
+            list.add(daily);
+        }
+        Response response = new Response(false, "getAllSubscribersWeek successfully");
+        response.AddPair("DailyReview", list);
+        User user=subscribers.get(userID);
+        response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return response;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
+     */
+    public Response getAllStoresWeek(String connID, int userID){
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not in the list");
+        }
+        if(!this.systemAdmins.containsKey(userID)){
+            return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not the admin of the system");
+        }
+
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
+        }
+        HashMap<Date,Integer> hashMap = this.data_controller.getAllStoresWeek();
+        List<DummyDaily> list = new ArrayList<>();
+        for(Map.Entry<Date, Integer> s : hashMap.entrySet())
+        {
+            String date = s.getKey().toString();
+            DummyDaily daily = new DummyDaily(date, s.getValue());
+            list.add(daily);
+        }
+        Response response = new Response(false, "getAllSubscribersWeek successfully");
+        response.AddPair("DailyReview", list);
+        User user=subscribers.get(userID);
+        response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return response;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
+     */
+    public Response getAllShoppingHistoriesWeek(String connID, int userID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not in the list");
+        }
+        if(!this.systemAdmins.containsKey(userID)){
+            return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not the admin of the system");
+        }
+
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
+        }
+        HashMap<Date,Integer> hashMap = this.data_controller.getAllShoppingHistoriesWeek();
+        List<DummyDaily> list = new ArrayList<>();
+        for(Map.Entry<Date, Integer> s : hashMap.entrySet())
+        {
+            String date = s.getKey().toString();
+            DummyDaily daily = new DummyDaily(date, s.getValue());
+            list.add(daily);
+        }
+        Response response = new Response(false, "getAllSubscribersWeek successfully");
+        response.AddPair("DailyReview", list);
+        User user=subscribers.get(userID);
+        response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return response;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
+     */
+    public Response getAllMoneyWeek(String connID, int userID) {
+        if (!ValidConnectedUser(userID, connID)) {
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " is not connected");
+        }
+        if(this.subscribers.get(userID)==null){
+            return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not in the list");
+        }
+        if(!this.systemAdmins.containsKey(userID)){
+            return new Response(true, "getAllSubscribersWeek: The user "+userID+" is not the admin of the system");
+        }
+
+        if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
+            return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
+        }
+        HashMap<Date,Integer> hashMap = this.data_controller.getAllMoneyWeek();
+        List<DummyDaily> list = new ArrayList<>();
+        for(Map.Entry<Date, Integer> s : hashMap.entrySet())
+        {
+            String date = s.getKey().toString();
+            DummyDaily daily = new DummyDaily(date, s.getValue());
+            list.add(daily);
+        }
+        Response response = new Response(false, "getAllSubscribersWeek successfully");
+        response.AddPair("DailyReview", list);
+        User user=subscribers.get(userID);
+        response.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+        return response;
+    }
+
+}

@@ -1,19 +1,36 @@
 package TradingSystem.Server.DataLayer.Data_Modules.Expressions;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 
 import javax.persistence.*;
 
+import static javax.persistence.GenerationType.SEQUENCE;
+
 @Entity
 @Table(name = "Buying_Policy")
 public class DataBuyingPolicy {
+    @Id
+    @SequenceGenerator(
+            name = "Buying_SEQUENCE",
+            sequenceName = "Buying_SEQUENCE",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = SEQUENCE,
+            generator = "Buying_SEQUENCE"
+    )
+    @Column(
+            name = "BuyingID"
+    )
+    private Integer BuyingID;
 
 //    @EmbeddedId
 //    @Column(name = "buying_id")
 //    private BuyingPolicyKey key;
 
-    @Id
+    @OneToOne
     @JoinColumn(
             name = "store_id",
             nullable = false,
@@ -22,7 +39,7 @@ public class DataBuyingPolicy {
                     name = "store_id_fk"
             )
     )
-    int store_id;
+    DataStore store_id;
     @ManyToOne
     @JoinColumn(
             name = "expression",
@@ -38,15 +55,15 @@ public class DataBuyingPolicy {
 
     }
 
-    public DataBuyingPolicy(int store_id, DBExpression expression){
+    public DataBuyingPolicy(DataStore store_id, DBExpression expression){
         this.store_id = store_id;
         this.expression=expression;
     }
 
-    public DataBuyingPolicy(BuyingPolicy buyingPolicy){
-        this.store_id=buyingPolicy.getStoreID();
-        this.expression=new DBExpression(buyingPolicy.getExp(),new DBExpression());
-    }
+//    public DataBuyingPolicy(BuyingPolicy buyingPolicy){
+//        this.store_id=buyingPolicy.getStoreID();
+//        this.expression=new DBExpression(buyingPolicy.getExp(),new DBExpression());
+//    }
 
     public DBExpression getExpression(){
         return expression;
@@ -55,7 +72,7 @@ public class DataBuyingPolicy {
         this.expression=expression;
     }
 
-    public int getStore_id() {
+    public DataStore getStore() {
         return store_id;
     }
 }

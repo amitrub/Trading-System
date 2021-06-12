@@ -168,7 +168,7 @@ public class ShoppingBag {
 
     public void setFinalPrice(Double finalPrice) {
         if(userID>=1){
-            data_controller.setBagFinalPrice(userID, storeID, finalPrice);
+            Response response= data_controller.setBagFinalPrice(userID, storeID, finalPrice);
         }
         this.finalPrice = finalPrice;
     }
@@ -240,19 +240,23 @@ public class ShoppingBag {
     }
 
     public void editProductQuantity(int productID, int quantity) {
-        if(userID>=1){
-        data_controller.setBagProductQuantity(userID, storeID, productID, quantity);
+        if (userID >= 1) {
+            Response response = data_controller.setBagProductQuantity(userID, storeID, productID, quantity);
+            if (!response.getIsErr()) {
+                this.products.remove(productID);
+                this.products.put(productID, quantity);
+            }
         }
-        this.products.remove(productID);
-        this.products.put(productID,quantity);
     }
   
     public void RemoveProduct(int productID) {
         if(this.products.containsKey(productID)) {
             if(userID>=1){
-                data_controller.RemoveBagProduct(userID, storeID, productID);
+                Response response= data_controller.RemoveBagProduct(userID, storeID, productID);
+                if(!response.getIsErr()){
+                    this.products.remove(productID);
+                }
             }
-            this.products.remove(productID);
         }
     }
 

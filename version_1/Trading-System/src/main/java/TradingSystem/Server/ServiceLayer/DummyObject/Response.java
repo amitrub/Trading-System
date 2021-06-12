@@ -1,8 +1,16 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 
+import javax.xml.crypto.Data;
 import java.util.*;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
@@ -57,6 +65,57 @@ public class Response {
     public void AddUserID(int value){
         this.returnObject.put("userID", value);
     }
+    public void AddStoreID(int value){this.returnObject.put("storeID",value);}
+    public void AddDataStore(DataStore store){
+        this.returnObject.put("storeID",store);
+    }
+    public void AddProductID(int value){
+        this.returnObject.put("productID", value);
+    }
+    public void AddDataSubscriber(DataSubscriber subscriber){ this.returnObject.put("DataSubscriber",subscriber);}
+    public void AddDBProductsList(List<DataProduct> list){
+        this.returnObject.put("DBProducts",list);
+    }
+    public void AddDBStoresList(List<DataStore> list){
+        this.returnObject.put("DBStores",list);
+    }
+    public void AddDBShoppingCart(List<DataShoppingBagCart> list){
+        this.returnObject.put("DBShoppingCart",list);
+    }
+    public void AddDBBuyingPolicy(DataBuyingPolicy buyingPolicy){
+        this.returnObject.put("DB_Buying",buyingPolicy);
+    }
+    public void AddDBDiscountPolicy(DataDiscountPolicy dataDiscountPolicy){
+        this.returnObject.put("DB_Discount",dataDiscountPolicy);
+    }
+    public DataSubscriber getDataSubscriber(){
+        return (DataSubscriber)this.returnObject.get("DataSubscriber");
+    }
+    public void AddDBSubscribers(List<DataSubscriber> list){
+        this.returnObject.put("DBsubscribers",list);
+    }
+    public DataStore getDataStore(){
+        return (DataStore) this.returnObject.get("storeID");
+    }
+    public DataBuyingPolicy getDBBuying(){
+        return (DataBuyingPolicy) this.returnObject.get("DB_Buying");
+    }
+    public DataDiscountPolicy getDBDiscount(){
+        return (DataDiscountPolicy) this.returnObject.get("DB_Discount");
+    }
+    
+    public List<DataSubscriber> getDBsubscribers(){
+        return (List<DataSubscriber>)this.returnObject.get("DBsubscribers");
+    }
+    public List<DataProduct> getProductsDB(){
+        return (List<DataProduct>)this.returnObject.get("DBProducts");
+    }
+    public List<DataStore> getStoresDB(){
+        return (List<DataStore>)this.returnObject.get("DBStores");
+    }
+    public List<DataShoppingBagCart> getDBshoppingCart(){
+        return (List<DataShoppingBagCart>)this.returnObject.get("DBShoppingCart");
+    }
 
     public Integer returnUserID(){
         if(!this.isErr){
@@ -86,6 +145,14 @@ public class Response {
         }
         else
             return "";
+    }
+    public Integer returnProductID(){
+        if(!this.isErr){
+            Integer productID = (Integer) this.returnObject.get("productID");
+            return productID;
+        }
+        else
+            return -1;
     }
 
     public List<DummyStore> getStores(){

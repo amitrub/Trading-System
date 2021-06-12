@@ -4,6 +4,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
 import TradingSystem.Server.DataLayer.Repositories.SubscriberRepository;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.hibernate.SQLQuery;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
@@ -27,25 +28,47 @@ public class SubcriberService {
     StoreRepository storeRepository;
 
 
-    public int AddSubscriber(String userName, String password){
-        DataSubscriber subscriber = new DataSubscriber(userName,password);
-        DataSubscriber ret = subscriberRepository.saveAndFlush(subscriber);
-        return ret.getUserID();
+    public Response AddSubscriber(String userName, String password){
+        try {
+            DataSubscriber subscriber = new DataSubscriber(userName,password);
+            DataSubscriber ret = subscriberRepository.saveAndFlush(subscriber);
+            Response response=new Response(false,"User "+userName+" registered successfully");
+            response.AddUserID(ret.getUserID());
+            return response;
+        }
+        catch (Exception e){
+            return new Response(true,"Could not add subscriber");
+        }
     }
 
-    public DataSubscriber GetSubscriber(String userName, String password) {
+    public Response GetSubscriber(String userName, String password) {
 //        return null;
         DataSubscriber subscriber = subscriberRepository.findByName(userName);
-        return subscriber;
+        if(subscriber==null){
+            return new Response(true,"Cannot find user with the name "+userName);
+        }
+        else{
+            Response response=new Response(false, "The user was found");
+            response.AddDataSubscriber(subscriber);
+            return response;
+        }
     }
 
-    public List<DataSubscriber> getAllSubscribers(){
+    public Response getAllSubscribers(){
         List<DataSubscriber> subscribers = subscriberRepository.findAll();
-        return subscribers;
+        Response response= new Response(false,"Found a the users");
+        response.AddDBSubscribers(subscribers);
+        return response;
     }
 
-    public Optional<DataSubscriber> findSubscriberById(int subscriberid){
-        return subscriberRepository.findById(subscriberid);
+    public Response findSubscriberById(int subscriberid){
+        Optional<DataSubscriber> subscriber= subscriberRepository.findById(subscriberid);
+        if (!subscriber.isPresent()){
+            return new Response(true,"Could not find subscriber");
+        }
+        Response response=new Response(false,"found subscriber");
+        response.AddDataSubscriber(subscriber.get());
+        return response;
     }
     public void deleteAll(){
         subscriberRepository.deleteAll();
