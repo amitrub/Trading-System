@@ -106,6 +106,7 @@ public class Data_Controller {
 
     public void RemoveBagSpacialProduct(int userID, Integer storeID, int productID) {
         shoppingCartService.RemoveBagSpacialProduct(userID, storeID, productID);
+    }
 
     public Response RemoveBagProduct(int userID, Integer storeID, int productID) {
         return shoppingCartService.RemoveBagProduct(userID, storeID, productID);
@@ -131,7 +132,8 @@ public class Data_Controller {
     }
 
     public Response EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
-        return permissionsService.EditManagerPermissions(storeID, managerID, permissions);
+        permissionsService.EditManagerPermissions(storeID, managerID, permissions);
+        return new Response("");
     }
 
     public Response addCommentToProduct(Integer productID, Integer userID, String comment) {
@@ -224,7 +226,8 @@ public class Data_Controller {
     }
 
     public Response RemoveOwner(int storeID, int ownerID){
-        return permissionsService.RemoveOwner(storeID, ownerID);
+        permissionsService.RemoveOwner(storeID, ownerID);
+        return new Response(false, "");
     }
 
     public void RemoveManager(int storeID, int managerID){

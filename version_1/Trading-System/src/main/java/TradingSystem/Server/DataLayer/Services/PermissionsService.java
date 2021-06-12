@@ -75,7 +75,7 @@ public class PermissionsService {
         DataOwnerPermissions ownerPermission = ownerPermissionsRepository.getOne(new UserStoreKey(ownerID, storeID));
         owner.RemoveOwnerPermission(ownerPermission);
         subscriberRepository.saveAndFlush(owner);
-        List<DataOwnerPermissions> ownerPermissions = ownerPermissionsRepository.findAllByAppointment(owner.get());
+        List<DataOwnerPermissions> ownerPermissions = ownerPermissionsRepository.findAllByAppointment(owner);
         for (DataOwnerPermissions ownerPermissionByAppointment: ownerPermissions){
             DataSubscriber ownerByAppointment = ownerPermissionByAppointment.getSubscriber();
             store.RemoveOwner(ownerByAppointment);
@@ -85,7 +85,7 @@ public class PermissionsService {
             subscriberRepository.saveAndFlush(ownerByAppointment);
         }
 
-        List<DataManagerPermissions> managerPermissions = managerPermissionsRepository.findAllByAppointment(owner.get());
+        List<DataManagerPermissions> managerPermissions = managerPermissionsRepository.findAllByAppointment(owner);
         for (DataManagerPermissions managerPermissionByAppointment: managerPermissions){
             DataSubscriber managerByAppointment = managerPermissionByAppointment.getSubscriber();
             store.RemoveManager(managerByAppointment);
