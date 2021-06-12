@@ -6,30 +6,32 @@ import MyPopup from "../../../../OtherComponents/MyPopup/MyPopup";
 
 const apiHttp = createApiClientHttp();
 
-function InsertBuyingCompositeNode(props) {
+function CategorySale(props) {
   const [nodeID, setNodeID] = useState([]);
+  const [category, setCategory] = useState("");
+  const [categoryDiscount, setCategoryDiscount] = useState("");
   const [showPopUp, setShowPopUp] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
 
-  async function submitInsertBuyingCompositeNode(event) {
+  async function submitCategoryDiscount(event) {
     event.preventDefault();
-    console.log("submitInsertBuyingCompositeNode");
+    console.log("submitCategoryDiscount");
 
     const insertNodeResponse = await apiHttp.AddNodeToBuildingTree(
       props.connID,
       props.userID,
       props.storeID,
-      props.mode,
+      props.mode, //Discount Policy
       props.type,
       parseInt(nodeID),
       -1, // quantity,
       -1, //productID,
       -1, //maxQuantity,
-      "-1", //category,
+      category, //category,
       -1, //numOfProductsForSale,
       -1, //priceForSale,
       -1, //quantityForSale,
-      -1 //discount,
+      parseInt(categoryDiscount) //discount,
     );
     if (insertNodeResponse) {
       setPopupMsg(insertNodeResponse.message);
@@ -51,16 +53,14 @@ function InsertBuyingCompositeNode(props) {
     <section>
       <div>
         <div className="row">
-          <h3>
-            <strong>Insert And node (Composite)</strong>
-          </h3>
+          <h3>Insert Categoryr-Sale node (Simple)</h3>
         </div>
 
         <div className="row">
           <form
             method="post"
             className="contact-form"
-            onSubmit={submitInsertBuyingCompositeNode}
+            onSubmit={submitCategoryDiscount}
           >
             {/* Father Node ID */}
             <div className="row">
@@ -81,12 +81,47 @@ function InsertBuyingCompositeNode(props) {
               </div>
             </div>
 
+            {/* category */}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Category</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="text"
+                  name="Name"
+                  id="Name"
+                  required
+                  onChange={(e) => setCategory(e.target.value)}
+                  placeholder={"choose category"}
+                />
+              </div>
+            </div>
+
+            {/* Discount Category */}
+            <div className="row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Discount</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="number"
+                  name="Name"
+                  id="Name"
+                  required
+                  onChange={(e) => setCategoryDiscount(e.target.value)}
+                  placeholder={"%"}
+                />
+              </div>
+            </div>
+
+            {/* End Of Form */}
             <div className="row">
               <div className="col span-1-of-3">
                 <label>&nbsp;</label>
               </div>
               <div className="col span-1-of-3">
-                <input type="submit" value="Insert Composite Node" />
+                <input type="submit" value="Insert Node" />
               </div>
             </div>
           </form>
@@ -101,4 +136,4 @@ function InsertBuyingCompositeNode(props) {
   );
 }
 
-export default InsertBuyingCompositeNode;
+export default CategorySale;

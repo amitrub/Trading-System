@@ -81,9 +81,9 @@ class App extends React.Component {
 
   loadProducts = () => {
     const productResponse = this.state.response.returnObject;
-    console.log(productResponse);
+    // console.log(productResponse);
     const products = productResponse.products;
-    console.log(products);
+    // console.log(products);
     this.setState({
       products: products,
     });
@@ -91,9 +91,9 @@ class App extends React.Component {
 
   loadSearchedProducts = () => {
     const productResponse = this.state.response.returnObject;
-    console.log(productResponse);
+    // console.log(productResponse);
     const products = productResponse.products;
-    console.log(products);
+    // console.log(products);
     this.setState({
       searchedProducts: products,
     });

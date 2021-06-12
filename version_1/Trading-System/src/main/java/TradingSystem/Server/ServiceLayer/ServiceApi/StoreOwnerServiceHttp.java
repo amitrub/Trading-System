@@ -261,7 +261,7 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-
+        System.out.println("---------add_buying_policy----------");
         Map<String,Object> map=(Map<String,Object>)obj.get("expression");
         Expression exp=tradingSystem.CreateExpForBuy(storeID,map);
         Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);

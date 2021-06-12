@@ -1,25 +1,26 @@
-import React, { useState, useEffect } from "react";
-import createApiClientHttp from "../../../../../ApiClientHttp";
-import "../../../../../Design/grid.css";
-import "../../../../../Design/style.css";
-import MyPopup from "../../../../OtherComponents/MyPopup/MyPopup";
+import React, { useState } from "react";
+import createApiClientHttp from "../../../../../../ApiClientHttp";
+import "../../../../../../Design/grid.css";
+import "../../../../../../Design/style.css";
+import MyPopup from "../../../../../OtherComponents/MyPopup/MyPopup";
 
 const apiHttp = createApiClientHttp();
 
-function InsertBuyingCompositeNode(props) {
+function PriceForGetSale(props) {
   const [nodeID, setNodeID] = useState([]);
+  const [price, setPrice] = useState("");
   const [showPopUp, setShowPopUp] = useState(false);
   const [popupMsg, setPopupMsg] = useState("");
 
-  async function submitInsertBuyingCompositeNode(event) {
+  async function submitPriceForGetSale(event) {
     event.preventDefault();
-    console.log("submitInsertBuyingCompositeNode");
+    console.log("submitPriceForGetSale");
 
     const insertNodeResponse = await apiHttp.AddNodeToBuildingTree(
       props.connID,
       props.userID,
       props.storeID,
-      props.mode,
+      props.mode, //Discount Policy
       props.type,
       parseInt(nodeID),
       -1, // quantity,
@@ -27,7 +28,7 @@ function InsertBuyingCompositeNode(props) {
       -1, //maxQuantity,
       "-1", //category,
       -1, //numOfProductsForSale,
-      -1, //priceForSale,
+      parseInt(price), //priceForSale,
       -1, //quantityForSale,
       -1 //discount,
     );
@@ -51,16 +52,14 @@ function InsertBuyingCompositeNode(props) {
     <section>
       <div>
         <div className="row">
-          <h3>
-            <strong>Insert And node (Composite)</strong>
-          </h3>
+          <h3>Insert Price-For-Get-Sale node (Expression)</h3>
         </div>
 
         <div className="row">
           <form
             method="post"
             className="contact-form"
-            onSubmit={submitInsertBuyingCompositeNode}
+            onSubmit={submitPriceForGetSale}
           >
             {/* Father Node ID */}
             <div className="row">
@@ -74,19 +73,35 @@ function InsertBuyingCompositeNode(props) {
                   id="NodeID"
                   required
                   onChange={(e) => setNodeID(e.target.value)}
-                  placeholder={
-                    "You need to choose where do you want to insert the And node to the tree"
-                  }
+                  placeholder={"Simple Discount!!!"}
                 />
               </div>
             </div>
 
+            {/* PriceForGetSale */}
+            <div className=" row">
+              <div className="col span-1-of-3">
+                <label htmlFor="name">Price For Get Sale</label>
+              </div>
+              <div className="col span-2-of-3">
+                <input
+                  type="number"
+                  name="Name"
+                  id="Name"
+                  required
+                  onChange={(e) => setPrice(e.target.value)}
+                  //   placeholder={"%"}
+                />
+              </div>
+            </div>
+
+            {/* End Of Form */}
             <div className="row">
               <div className="col span-1-of-3">
                 <label>&nbsp;</label>
               </div>
               <div className="col span-1-of-3">
-                <input type="submit" value="Insert Composite Node" />
+                <input type="submit" value="Insert Node" />
               </div>
             </div>
           </form>
@@ -101,4 +116,4 @@ function InsertBuyingCompositeNode(props) {
   );
 }
 
-export default InsertBuyingCompositeNode;
+export default PriceForGetSale;

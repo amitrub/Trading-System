@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
-import InsertBuyingCompositeNode from "./InsertBuyingCompositeNode";
-import InsertBuyingSimpleNode from "./InsertBuyingSimpleNode";
+import InsertBuyingCompositeNode from "../BuyingPolicies/InsertBuyingCompositeNode";
+import InsertDiscountSimpleNode from "../SellingPolicies/InsertDiscountSimpleNode";
 import JSONDisplay from "../JSONDisplay";
 import createApiClientHttp from "../../../../../ApiClientHttp";
 import MyPopup from "../../../../OtherComponents/MyPopup/MyPopup";
+import AddExpressionToSale from "../DiscountSimple/AddExpressionToSale";
 
 const apiHttp = createApiClientHttp();
 
-function BuyingPolicy(props) {
+function DiscountPolicy(props) {
   const [type, setType] = useState("choose type");
   const [fetchedExpression, setFetchedExpression] = useState({
     emptyTree: "your buying policy building tree is empty, start build it :)",
@@ -17,19 +18,19 @@ function BuyingPolicy(props) {
 
   async function fetchBuildingExpression() {
     // console.log("fetch Building Expression");
-    const buyingPolicyResponse = await apiHttp.ShowBuyingPolicyBuildingTree(
+    const discountPolicyResponse = await apiHttp.ShowDiscountPolicyBuildingTree(
       props.connID,
       props.userID,
       props.storeID
     );
-    console.log("fetch Building Expression");
-    console.log(buyingPolicyResponse);
+    // console.log("fetch Building Expression");
+    // console.log(discountPolicyResponse);
 
-    if (buyingPolicyResponse.isErr) {
-      console.log(buyingPolicyResponse.message);
+    if (discountPolicyResponse.isErr) {
+      console.log(discountPolicyResponse.message);
     } else {
-      if (buyingPolicyResponse.returnObject.tree != null) {
-        setFetchedExpression(buyingPolicyResponse.returnObject.tree);
+      if (discountPolicyResponse.returnObject.tree != null) {
+        setFetchedExpression(discountPolicyResponse.returnObject.tree);
       }
     }
   }
@@ -38,23 +39,23 @@ function BuyingPolicy(props) {
     fetchBuildingExpression();
   }, [props.refresh]);
 
-  async function updateBuyingPolicy() {
-    console.log("updateBuyingPolicy");
-    const updateBuyingPolicyResponse = await apiHttp.AddBuyingPolicy(
-      props.connID,
-      props.userID,
-      props.storeID,
-      fetchedExpression
-    );
-    // console.log(updateBuyingPolicyResponse);
+  async function updateDiscountPolicy() {
+    console.log("updateDiscountPolicy");
+    // const updateDiscountPolicyResponse = await apiHttp.AddDiscountPolicy(
+    //   props.connID,
+    //   props.userID,
+    //   props.storeID,
+    //   fetchedExpression
+    // );
+    // // console.log(updateDiscountPolicyResponse);
 
-    if (updateBuyingPolicyResponse) {
-      setPopupMsg(updateBuyingPolicyResponse.message);
-      setShowPopUp(true);
-    }
-    if (updateBuyingPolicyResponse.isErr) {
-      console.log(updateBuyingPolicyResponse.message);
-    }
+    // if (updateDiscountPolicyResponse) {
+    //   setPopupMsg(updateDiscountPolicyResponse.message);
+    //   setShowPopUp(true);
+    // }
+    // if (updateDiscountPolicyResponse.isErr) {
+    //   console.log(updateDiscountPolicyResponse.message);
+    // }
   }
 
   function onClosePopup() {
@@ -66,11 +67,11 @@ function BuyingPolicy(props) {
     <section className="section-plans js--section-plans" id="store">
       <div>
         <div className="row">
-          <h2>Buying Policy</h2>
+          <h2>Discount Policy</h2>
         </div>
 
         <div>
-          <h3>This is your buying Policy tree in building</h3>
+          <h3>This is your discount Policy tree in building</h3>
         </div>
 
         <div>
@@ -78,7 +79,7 @@ function BuyingPolicy(props) {
           <button
             className="buttonus"
             value="load our stores..."
-            onClick={updateBuyingPolicy}
+            onClick={updateDiscountPolicy}
           >
             Update
           </button>
@@ -86,12 +87,18 @@ function BuyingPolicy(props) {
 
         <JSONDisplay value={fetchedExpression}></JSONDisplay>
 
+        <AddExpressionToSale
+          refresh={props.refresh}
+          onRefresh={props.onRefresh}
+          connID={props.connID}
+          userID={props.userID}
+          storeID={props.storeID}
+          type={type}
+          mode={1} //Discount Policy
+        ></AddExpressionToSale>
+
         <div>
-          <h4>
-            Add your next node to the tree by choose his type, his father node
-            ID, and his properties
-          </h4>
-          <h4>Choose type for your new node:</h4>
+          <h4>Add the next node to your policy, Choose type and props:</h4>
           <p>---</p>
         </div>
 
@@ -108,24 +115,12 @@ function BuyingPolicy(props) {
               about="Show number of results:"
             >
               <option value={-1}> choose node type </option>
-              <option value={"AndComposite"}> And (Composite) </option>
-              <option value={"OrComposite"}> Or (Composite) </option>
-              <option value={"CondComposite"} disabled>
-                {" "}
-                Condition (Composite){" "}
-              </option>
-              <option value={"QuantityLimitForProduct"}>
-                {" "}
-                Quantity Limit For Product (Simple){" "}
-              </option>
-              <option value={"QuantityLimitForCategory"}>
-                {" "}
-                Quantity Limit For Category (Simple){" "}
-              </option>
-              <option value={"QuantityLimitForStore"}>
-                {" "}
-                Quantity Limit For Store (Simple){" "}
-              </option>
+              <option value={"AddComposite"}> Add (Composite) </option>
+              <option value={"MaxComposite"}> Max (Composite) </option>
+              <option value={"XorComposite"}> Xor (Composite) </option>
+              <option value={"StoreSale"}> Store Sale (Simple) </option>
+              <option value={"ProductSale"}> Product Sale (Simple) </option>
+              <option value={"CategorySale"}> Category Sale (Simple) </option>
             </select>
           </div>
         </div>
@@ -133,9 +128,9 @@ function BuyingPolicy(props) {
 
       {/* Insert Conposite Node (And, Or, Cond)*/}
       <div className="row">
-        {type === "AndComposite" ||
-        type === "OrComposite" ||
-        type === "CondComposite" ? (
+        {type === "AddComposite" ||
+        type === "MaxComposite" ||
+        type === "XorComposite" ? (
           <InsertBuyingCompositeNode
             refresh={props.refresh}
             onRefresh={props.onRefresh}
@@ -143,7 +138,7 @@ function BuyingPolicy(props) {
             userID={props.userID}
             storeID={props.storeID}
             type={type}
-            mode={2} //Buying Policy
+            mode={1} //Discount Policy
           />
         ) : (
           ""
@@ -152,10 +147,10 @@ function BuyingPolicy(props) {
 
       {/* Insert Simple Node */}
       <div className="row">
-        {type === "QuantityLimitForProduct" ||
-        type === "QuantityLimitForCategory" ||
-        type === "QuantityLimitForStore" ? (
-          <InsertBuyingSimpleNode
+        {type === "StoreSale" ||
+        type === "ProductSale" ||
+        type === "CategorySale" ? (
+          <InsertDiscountSimpleNode
             refresh={props.refresh}
             onRefresh={props.onRefresh}
             connID={props.connID}
@@ -176,4 +171,4 @@ function BuyingPolicy(props) {
   );
 }
 
-export default BuyingPolicy;
+export default DiscountPolicy;
