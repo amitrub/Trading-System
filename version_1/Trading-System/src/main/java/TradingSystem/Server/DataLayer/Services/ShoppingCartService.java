@@ -9,11 +9,14 @@ import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreKey;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagSpacialProduct;
 import TradingSystem.Server.DataLayer.Repositories.*;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Transactional
@@ -32,36 +35,72 @@ public class ShoppingCartService {
     @Autowired
     ShoppingBagSpacialProductRepository shoppingBagSpacialProductRepository;
 
-    public void addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity) {
-        DataSubscriber user = subscriberRepository.getOne(userID);
-        DataStore store = storeRepository.getOne(storeID);
-        DataProduct product = productRepository.getOne(productID);
-        DataShoppingBagCart bag = user.FindBag(storeID);
-        if(bag==null){
-            bag = new DataShoppingBagCart(user, store);
-            shoppingCartRepository.saveAndFlush(bag);
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    public Response addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity) {
+        try {
+            Optional<DataSubscriber> user = subscriberRepository.findById(userID);
+            Optional<DataStore> store = storeRepository.findById(storeID);
+            Optional<DataProduct> product = productRepository.findById(productID);
+            if(!user.isPresent() || !store.isPresent() || !product.isPresent()){
+                return new Response(true,"could not add product to Bag");
+            }
+            DataShoppingBagCart bag = user.get().FindBag(storeID);
+            if(bag==null){
+                bag = new DataShoppingBagCart(user.get(), store.get());
+                shoppingCartRepository.saveAndFlush(bag);
+            }
+            DataShoppingBagProduct dataProduct = new DataShoppingBagProduct(bag, product.get(), quantity);
+            shoppingBagProductRepository.saveAndFlush(dataProduct);
+            return new Response(false,"Product was added successfully");
         }
-        DataShoppingBagProduct dataProduct = new DataShoppingBagProduct(bag, product, quantity);
-        shoppingBagProductRepository.saveAndFlush(dataProduct);
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Time limit is over, upload to db failed");
+        }
+
+    }
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    public Response setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
+        try {
+            DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
+            bag.setFinalPrice(finalPrice);
+            shoppingCartRepository.saveAndFlush(bag);
+            return new Response(false,"Set final price was done successfully");
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Time limit is over, upload to db failed");
+        }
     }
 
-    public void setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
-        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
-        bag.setFinalPrice(finalPrice);
-        shoppingCartRepository.saveAndFlush(bag);
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    public Response setBagProductQuantity(int userID, Integer storeID, int productID, Integer quantity) {
+        try {
+            Optional<DataShoppingBagProduct> product = shoppingBagProductRepository.findById(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
+            if(!product.isPresent()){
+                return new Response(true,"Couldn't set Product Quantity");
+            }
+            product.get().setQuantity(quantity);
+            shoppingBagProductRepository.saveAndFlush(product.get());
+            return new Response(false,"Set Product Quantity successfully");
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Time limit is over, upload to db failed");
+        }
     }
-
-    public void setBagProductQuantity(int userID, Integer storeID, int productID, Integer quantity) {
-        DataShoppingBagProduct product = shoppingBagProductRepository.getOne(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
-        product.setQuantity(quantity);
-        shoppingBagProductRepository.saveAndFlush(product);
-    }
-
-    public void RemoveBagProduct(int userID, Integer storeID, int productID) {
-        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
-        DataShoppingBagProduct product = shoppingBagProductRepository.getOne(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
-        bag.removeProduct(product);
-        shoppingCartRepository.saveAndFlush(bag);
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    public Response RemoveBagProduct(int userID, Integer storeID, int productID) {
+        try {
+            Optional<DataShoppingBagCart> bag = shoppingCartRepository.findById(new UserStoreKey(userID, storeID));
+            Optional<DataShoppingBagProduct> product = shoppingBagProductRepository.findById(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
+            if(!bag.isPresent() || !product.isPresent()){
+                return new Response(true,"Couldn't remove Product");
+            }
+            bag.get().removeProduct(product.get());
+            shoppingCartRepository.saveAndFlush(bag.get());
+            return new Response(true,"Successfully removed product");
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Time limit is over, upload to db failed");
+        }
     }
 
     public void addSpacialProductToBag(int userID, Integer storeID, Integer productID, Integer quantity, int price) {
@@ -98,12 +137,29 @@ public class ShoppingCartService {
         shoppingCartRepository.deleteAll();
     }
 
-    public void deleteSubscriberBag(Integer userID, Integer storeID){
-        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    public Response deleteSubscriberBag(Integer userID, Integer storeID){
+        try {
+            Optional<DataShoppingBagCart> bag_opt = shoppingCartRepository.findById(new UserStoreKey(userID, storeID));
+            Optional<DataSubscriber> subscriber_opt = subscriberRepository.findById(userID);
+            if(!bag_opt.isPresent() || !subscriber_opt.isPresent()){
+                return new Response("Wrong details in user id or store id");
+            }
+            DataShoppingBagCart bag=bag_opt.get();
+            List<DataShoppingBagProduct> productList = shoppingBagProductRepository.findAllByShoppingBag(bag);
+            for (DataShoppingBagProduct product: productList){
+                bag.removeProduct(product);
+            }
+            bag = shoppingCartRepository.saveAndFlush(bag);
+            setBagFinalPrice(userID,storeID, 0.0);
 
-        List<DataShoppingBagProduct> productList = shoppingBagProductRepository.findAllByShoppingBag(bag);
-        for (DataShoppingBagProduct product: productList){
-            bag.removeProduct(product);
+            DataSubscriber subscriber = subscriberRepository.getOne(userID);
+            subscriber.removeShoppingBag(bag);
+            subscriberRepository.saveAndFlush(subscriber);
+            return new Response(false," ");
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Time limit is over, upload to db failed");
         }
         List<DataShoppingBagSpacialProduct> spacialProductList = shoppingBagSpacialProductRepository.findAllByShoppingBag(bag);
         for (DataShoppingBagSpacialProduct product: spacialProductList){
@@ -116,15 +172,26 @@ public class ShoppingCartService {
         DataSubscriber subscriber = subscriberRepository.getOne(userID);
         subscriber.removeShoppingBag(bag);
         subscriberRepository.saveAndFlush(subscriber);
-    }
 
-    public List<DataShoppingBagCart> getSubscriberShoppingCart(int userID){
-        DataSubscriber subscriber = subscriberRepository.getOne(userID);
-        List<DataShoppingBagCart> list= shoppingCartRepository.findAllBySubscriber(subscriber);
+    }
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    public Response getSubscriberShoppingCart(int userID){
+        try {
+            Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
+            if(!subscriber.isPresent()){
+                return new Response(true,"could not find subscriber");
+            }
+            List<DataShoppingBagCart> list= shoppingCartRepository.findAllBySubscriber(subscriber.get());
 //        for(DataShoppingBagCart shoppingBagCart:list){
 //            shoppingBagCart.setProducts(shoppingBagProductRepository.findAllByShoppingBag(shoppingBagCart));
 //        }
-        return list;
+            Response response=new Response(false," ");
+            response.AddDBShoppingCart(list);
+            return response;
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Time limit is over, upload to db failed");
+        }
     }
     public List<DataShoppingBagCart> getAllcardsBystore(int storeid){
         DataStore store=storeRepository.getOne(storeid);

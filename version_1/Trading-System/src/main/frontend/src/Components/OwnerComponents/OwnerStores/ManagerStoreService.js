@@ -9,8 +9,8 @@ import RemoveProduct from "../OwnerServices/RemoveProduct";
 import ChangeQuantityProduct from "../OwnerServices/ChangeQuantityProduct";
 import AddRemoveEmployee from "../OwnerServices/AddRemoveEmployee";
 import EditPermissions from "../OwnerServices/EditPermissions";
-import BuyingPolicies from "../OwnerServices/Policies/BuyingPolicies/BuyingPolicies";
-import SellingPolicies from "../OwnerServices/Policies/SellingPolicies/SellingPolicies";
+import BuyingPolicy from "../OwnerServices/Policies/BuyingPolicies/BuyingPolicy";
+import DiscountPolicy from "../OwnerServices/Policies/SellingPolicies/DiscountPolicy";
 import DailyIncome from "../OwnerServices/DailyIncome";
 import ShowBiddings from "../OwnerServices/ShowBiddings";
 
@@ -764,7 +764,7 @@ function ManagerStoreService(props) {
       <div className="row">
         {showAddBuyPolicy ? (
           <div>
-            <BuyingPolicies
+            <BuyingPolicy
               refresh={props.refresh}
               onRefresh={props.onRefresh}
               connID={props.connID}
@@ -781,7 +781,7 @@ function ManagerStoreService(props) {
       <div className="row">
         {showAddSellPolicy ? (
           <div>
-            <SellingPolicies
+            <DiscountPolicy
               refresh={props.refresh}
               onRefresh={props.onRefresh}
               connID={props.connID}

@@ -33,7 +33,7 @@ public class BuyingPolicy {
     }
 
     public BuyingPolicy(DataBuyingPolicy buyingPolicy) {
-        this.storeID = buyingPolicy.getStore_id();
+        this.storeID = buyingPolicy.getStore();
         this.exp= buildExp(buyingPolicy.getExpression());
     }
 

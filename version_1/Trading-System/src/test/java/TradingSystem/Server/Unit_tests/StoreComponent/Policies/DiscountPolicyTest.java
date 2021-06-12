@@ -295,4 +295,30 @@ class DiscountPolicyTest {
 
     //endregion
 
+    @Test
+    void basicSenario() {
+        tradingSystem.ShowBuyingPolicyBuildingTree("",1,2);
+
+//        Integer productID1 = store.getProductID("computer");
+//        Integer productID2 = store.getProductID("Bag");
+//        PriceForGetSale exp1 = new PriceForGetSale( 6000);
+//        ProductSale PS1=new ProductSale(productID1,15);
+//        PS1.setExpression(exp1);
+//        QuantityForGetSale exp2 = new QuantityForGetSale(productID2,3);
+//        ProductSale PS2=new ProductSale(productID2,15);
+//        PS2.setExpression(exp2);
+//        Cheaper c=new Cheaper();
+//        XorComposite xorExpression = new XorComposite();
+//        xorExpression.add(PS1);
+//        xorExpression.add(PS2);
+//        xorExpression.setDes(c);
+//        DiscountPolicy dc=new DiscountPolicy(store.getId(),xorExpression);
+//        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+//        products.put(productID1, 1);
+//        products.put(productID2, 2);
+
+
+
+    }
+
 }

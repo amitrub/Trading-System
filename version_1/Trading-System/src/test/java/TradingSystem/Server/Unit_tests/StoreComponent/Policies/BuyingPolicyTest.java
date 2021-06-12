@@ -1,5 +1,7 @@
 package TradingSystem.Server.Unit_tests.StoreComponent.Policies;
 
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Conditioning;
@@ -19,6 +21,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -29,6 +32,8 @@ class BuyingPolicyTest {
 
     @Autowired
     TradingSystemImpl tradingSystem;
+    @Autowired
+    Data_Controller controller;
 
     Store store;
     BuyingPolicy BC;
@@ -74,11 +79,28 @@ class BuyingPolicyTest {
 //        store.setBuyingPolicy(b);
 //        tradingSystem.AddStoreToList(store);
         ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+        tradingSystem.addBuyingPolicy(EuserId,EconnID,storeID,exp);
         products.put(productID1, 1);
         products.put(productID2, 3);
         boolean isLegal = store.checkBuyingPolicy(2, products);
         assertTrue(isLegal);
     }
+//    @Test
+//    void TestTimeOut() throws InterruptedException {
+//        Integer productID1 = store.getProductID("computer");
+//        Integer productID2 = store.getProductID("Bag");
+//        QuantityLimitForProduct exp = new QuantityLimitForProduct(1, productID1);
+//        BC.setExp(exp);
+//        BuyingPolicy b=new BuyingPolicy(store.getId(),exp);
+////        store.setBuyingPolicy(b);
+////        tradingSystem.AddStoreToList(store);
+//        controller.AddBuyingPolicy(new DataBuyingPolicy(b));
+//        ConcurrentHashMap<Integer,Integer> products = new ConcurrentHashMap<>();
+//        products.put(productID1, 1);
+//        products.put(productID2, 3);
+//        boolean isLegal = store.checkBuyingPolicy(2, products);
+//        assertTrue(isLegal);
+//    }
 
     @Test
     void SadProductRule() {

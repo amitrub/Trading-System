@@ -47,6 +47,7 @@ public class Store extends Observable {
     private static int nextStoreID=0;
 
     private static int nextExpressionID=0;
+    private static int nextSaleID=0;
 
     private Integer id;
     private String name;
@@ -149,9 +150,14 @@ public class Store extends Observable {
         return nextStoreID;
     }
 
-    private static synchronized int getNextExpressionID() {
+    public static synchronized int getNextExpressionID() {
         nextExpressionID++;
         return nextExpressionID;
+    }
+
+    public static synchronized int getNextSaleID() {
+        nextSaleID++;
+        return nextSaleID;
     }
 
     public void setInventory(Inventory inventory){

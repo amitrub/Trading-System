@@ -9,10 +9,12 @@ import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissi
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataPermission;
 import TradingSystem.Server.DataLayer.Repositories.*;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PermissionsService {
@@ -30,10 +32,15 @@ public class PermissionsService {
     @Autowired
     ManagerPermissionTypeRepository managerPermissionTypeRepository;
 
-    public List<DataOwnerPermissions> getOwnerPermissions(int userID, int storeID){
-        DataSubscriber subscriber = subscriberRepository.getOne(userID);
-        List<DataOwnerPermissions> ownerPermissions = ownerPermissionsRepository.findAllBySubscriber(subscriber);
-        return ownerPermissions;
+    public Response getOwnerPermissions(int userID, int storeID){
+        Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
+        if(!subscriber.isPresent()){
+            return new Response(true,"Could not find user");
+        }
+        List<DataOwnerPermissions> ownerPermissions = ownerPermissionsRepository.findAllBySubscriber(subscriber.get());
+        Response response=new Response(false,"Found permissions");
+        response.AddPair("Owner_permissions", ownerPermissions);
+        return response;
     }
 
     public void EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
@@ -44,10 +51,7 @@ public class PermissionsService {
         DataManagerPermissions managerPermission = managerPermissionsRepository.getOne(new UserStoreKey(managerID, storeID));
         manager.RemoveManagerPermission(managerPermission);
         subscriberRepository.save(manager);
-
         int appointmentID = managerPermission.getAppointment().getUserID();
-
-
         store = storeRepository.getOne(storeID);
         DataSubscriber newManager = subscriberRepository.getOne(managerID);
         store.AddNewManager(newManager);
@@ -60,7 +64,6 @@ public class PermissionsService {
             DataManagerPermissionType permissionType = new DataManagerPermissionType(dataManagerPermissions, dataPermission);
             managerPermissionTypeRepository.saveAndFlush(permissionType);
         }
-
     }
 
     public void RemoveOwner(int storeID, int ownerID){
@@ -72,17 +75,17 @@ public class PermissionsService {
         DataOwnerPermissions ownerPermission = ownerPermissionsRepository.getOne(new UserStoreKey(ownerID, storeID));
         owner.RemoveOwnerPermission(ownerPermission);
         subscriberRepository.saveAndFlush(owner);
-
-        List<DataOwnerPermissions> ownerPermissions = ownerPermissionsRepository.findAllByAppointment(owner);
+        List<DataOwnerPermissions> ownerPermissions = ownerPermissionsRepository.findAllByAppointment(owner.get());
         for (DataOwnerPermissions ownerPermissionByAppointment: ownerPermissions){
             DataSubscriber ownerByAppointment = ownerPermissionByAppointment.getSubscriber();
             store.RemoveOwner(ownerByAppointment);
             storeRepository.saveAndFlush(store);
             ownerByAppointment.RemoveOwnerPermission(ownerPermissionByAppointment);
+
             subscriberRepository.saveAndFlush(ownerByAppointment);
         }
 
-        List<DataManagerPermissions> managerPermissions = managerPermissionsRepository.findAllByAppointment(owner);
+        List<DataManagerPermissions> managerPermissions = managerPermissionsRepository.findAllByAppointment(owner.get());
         for (DataManagerPermissions managerPermissionByAppointment: managerPermissions){
             DataSubscriber managerByAppointment = managerPermissionByAppointment.getSubscriber();
             store.RemoveManager(managerByAppointment);
@@ -90,6 +93,7 @@ public class PermissionsService {
             managerByAppointment.RemoveManagerPermission(managerPermissionByAppointment);
             subscriberRepository.saveAndFlush(managerByAppointment);
         }
+
     }
 
     public void RemoveManager(int storeID, int managerID){

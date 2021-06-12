@@ -1,20 +1,27 @@
 package TradingSystem.Server.DataLayer.Services;
 
+
 import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
+import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
+import TradingSystem.Server.DataLayer.Data_Modules.Sales.DBSale;
 import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -51,40 +58,43 @@ public class Data_Controller {
     }
 
     //Req 1.2 Register
-    public int AddSubscriber(String userName, String password){
-        return subscriberService.AddSubscriber(userName, password);
+    public Response AddSubscriber(String userName, String password){
+        if(userName== null || password==null){
+            return new Response(true,"User name or password can't be empty");
+        }
+        else{
+            return subscriberService.AddSubscriber(userName, password);
+        }
     }
 
-    public DataSubscriber GetSubscriber(String userName, String password){
+    public Response GetSubscriber(String userName, String password){
         return subscriberService.GetSubscriber(userName, password);
     }
 
     //Req 2.1 add new store
-    public int AddStore(String storeName, int userID){
+    public Response AddStore(String storeName, int userID){
         return storeService.AddStore(storeName, userID);
     }
 
     //Req 4.1 storeOwner can add products and edit them
-    public int AddProductToStore(int storeID, String productName,
+    public Response AddProductToStore(int storeID, String productName,
                                   String category, Double price, int quantity){
         return productService.AddProductToStore(storeID, productName, category, price, quantity);
     }
 
-    public void addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity){
-        shoppingCartService.addProductToBag(userID, storeID, productID, quantity);
+    public Response addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity){
+        return shoppingCartService.addProductToBag(userID, storeID, productID, quantity);
     }
 
-    public void setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
-        shoppingCartService.setBagFinalPrice(userID, storeID, finalPrice);
+    public Response setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
+        return shoppingCartService.setBagFinalPrice(userID, storeID, finalPrice);
     }
 
-    public void setBagProductQuantity(int userID, Integer storeID, int productID, Integer quantity) {
-        shoppingCartService.setBagProductQuantity(userID, storeID, productID, quantity);
+    public Response setBagProductQuantity(int userID, Integer storeID, int productID, Integer quantity) {
+        return shoppingCartService.setBagProductQuantity(userID, storeID, productID, quantity);
     }
 
-    public void RemoveBagProduct(int userID, Integer storeID, int productID) {
-        shoppingCartService.RemoveBagProduct(userID, storeID, productID);
-    }
+
 
     public void addSpacialProductToBag(int userID, Integer storeID, Integer productID, Integer quantity, int price) {
         shoppingCartService.addSpacialProductToBag(userID, storeID, productID, quantity, price);
@@ -96,32 +106,36 @@ public class Data_Controller {
 
     public void RemoveBagSpacialProduct(int userID, Integer storeID, int productID) {
         shoppingCartService.RemoveBagSpacialProduct(userID, storeID, productID);
+
+    public Response RemoveBagProduct(int userID, Integer storeID, int productID) {
+        return shoppingCartService.RemoveBagProduct(userID, storeID, productID);
     }
 
-    public List<DataOwnerPermissions> getOwnerPermissions(int userID, int storeID){
+    //ADD pair Owner_permissions to get list of the permissions
+    public Response getOwnerPermissions(int userID, int storeID){
         return permissionsService.getOwnerPermissions(userID, storeID);
     }
 
-    public void addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
-        shoppingHistoryService.addHistoryToStoreAndUser(shoppingHistory);
+    public Response addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
+        return shoppingHistoryService.addHistoryToStoreAndUser(shoppingHistory);
     }
-    public List<DataProduct> findAllByCategoryAndProductNameAndPriceBetween(String name, String category, int min,int max){
+    public Response findAllByCategoryAndProductNameAndPriceBetween(String name, String category, int min,int max){
         return productService.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);
     }
-    public void AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
-        storeService.AddNewOwner(storeID, newOwnerID, OP);
+    public Response AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
+        return storeService.AddNewOwner(storeID, newOwnerID, OP);
     }
 
-    public void AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
-        storeService.AddNewManager(storeID, newManagerID, MP);
+    public Response AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
+        return storeService.AddNewManager(storeID, newManagerID, MP);
     }
 
-    public void EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
-        permissionsService.EditManagerPermissions(storeID, managerID, permissions);
+    public Response EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
+        return permissionsService.EditManagerPermissions(storeID, managerID, permissions);
     }
 
-    public void addCommentToProduct(Integer productID, Integer userID, String comment) {
-        productService.addCommentToProduct(productID, userID, comment);
+    public Response addCommentToProduct(Integer productID, Integer userID, String comment) {
+        return productService.addCommentToProduct(productID, userID, comment);
     }
 
     public void AddBidForProduct(int productID, int userID, Integer productPrice,Integer quantity, ConcurrentHashMap<Integer,Boolean> managerList) {
@@ -156,18 +170,17 @@ public class Data_Controller {
         return bidService.getAllBids();
     }
 
-    public void RemoveProduct(int productId) {
-        productService.RemoveProduct(productId);
+    public Response RemoveProduct(int productId) {
+        return productService.RemoveProduct(productId);
     }
 
-    public List<DataSubscriber> getAllSubscribers(){
-        List<DataSubscriber> subscribers = subscriberService.getAllSubscribers();
-        return subscribers;
+    public Response getAllSubscribers(){
+        return subscriberService.getAllSubscribers();
     }
 
 
     //Req 1.2 get information on store
-    public List<DataStore> getAllStores(){
+    public Response getAllStores(){
         return storeService.getAllStores();
     }
 //
@@ -176,15 +189,15 @@ public class Data_Controller {
 //        return productService.findDummyProductByStoreID(storeid);
 //    }
 
-    public Optional<DataStore> findStorebyId(int storeid){
+    public Response findStorebyId(int storeid){
         return storeService.findStorebyId(storeid);
     }
 
-    public Optional<DataSubscriber> findSubscriberById(int subscriberId){
+    public Response findSubscriberById(int subscriberId){
         return subscriberService.findSubscriberById(subscriberId);
     }
 
-    public List<DataProduct> findDummyProductByStore(Integer storeID){
+    public Response findDummyProductByStore(Integer storeID){
         return productService.findDummyProductByStore(storeID);
     }
 
@@ -196,21 +209,22 @@ public class Data_Controller {
         shoppingCartService.deleteAll();
     }
 
-    public List<DataStore> getAllFoundedStores(int userid){
+    public Response getAllFoundedStores(int userid){
         return storeService.getAllStoresofFounder(userid);
     }
-    public List<DataStore> getAllOwnedStores(int userid){
+    public Response getAllOwnedStores(int userid){
         return storeService.getAllStoresOfOwner(userid);
     }
-    public List<DataStore> getAllManagerStores(int userid){
+    public Response getAllManagerStores(int userid){
         return storeService.getAllStoresofManager(userid);
     }
+
     public List<DataShoppingHistory> getAllHistoryOfSubscriber(int userid){
         return shoppingHistoryService.findAllBySubscriber(userid);
     }
 
-    public void RemoveOwner(int storeID, int ownerID){
-        permissionsService.RemoveOwner(storeID, ownerID);
+    public Response RemoveOwner(int storeID, int ownerID){
+        return permissionsService.RemoveOwner(storeID, ownerID);
     }
 
     public void RemoveManager(int storeID, int managerID){
@@ -218,46 +232,61 @@ public class Data_Controller {
     }
 
 
-    public List<DataSubscriber> findAllStoresManagerContains(int storeid){
-        return subscriberService.findAllByStoresManagerContains(storeid);
-    }
-    public List<DataSubscriber> findAllByStoresOwnedContains(int storeid){
-        return subscriberService.findAllByStoresOwnedContains(storeid);
-    }
+//    public List<DataSubscriber> findAllStoresManagerContains(int storeid){
+//        return subscriberService.findAllByStoresManagerContains(storeid);
+//    }
+//    public List<DataSubscriber> findAllByStoresOwnedContains(int storeid){
+//        return subscriberService.findAllByStoresOwnedContains(storeid);
+//    }
+//
+//    public List<DataShoppingHistory> findAllByStore(int storeid){
+//        return shoppingHistoryService.findAllByStore(storeid);
+//    }
 
-    public List<DataShoppingHistory> findAllByStore(int storeid){
-        return shoppingHistoryService.findAllByStore(storeid);
-    }
-
-    public List<DataShoppingBagCart> getSubscriberShoppingCart(int userID){
+    public Response getSubscriberShoppingCart(int userID){
         return shoppingCartService.getSubscriberShoppingCart(userID);
     }
 
-    public void setQuantity(Integer productID, int newQuantity){
-        productService.setQuantity(productID, newQuantity);
+    public Response setQuantity(Integer productID, int newQuantity){
+        return productService.setQuantity(productID, newQuantity);
+    }
+//
+    public Response editProductDetails(Integer productID, String productName, Double price, String category, Integer quantity) {
+        return productService.editProductDetails(productID, productName, price, category, quantity);
     }
 
-    public void editProductDetails(Integer productID, String productName, Double price, String category, Integer quantity) {
-        productService.editProductDetails(productID, productName, price, category, quantity);
+    public Response deleteSubscriberBag(Integer userID, Integer storeID){
+        return shoppingCartService.deleteSubscriberBag(userID, storeID);
     }
 
-    public void deleteSubscriberBag(Integer userID, Integer storeID){
-        shoppingCartService.deleteSubscriberBag(userID, storeID);
+    public Response AddBuyingPolicy(Integer storeId, Expression expression){
+        DBExpression parent=new DBExpression(expression,null);
+        Response response=findStorebyId(storeId);
+        if(response.getIsErr()){
+            return new Response(true,"Could not found storeid");
+        }
+        DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.getDataStore().getStoreID(),parent);
+        return buyingService.AddBuyingPolicy(buyingPolicy);
     }
 
-    public void AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
-        buyingService.AddBuyingPolicy(buyingPolicy);
+    public Response AddDiscountPolicy(Integer storeId, Sale sale){
+        DBSale parent=new DBSale(sale,null);
+        Response response= findStorebyId(storeId);
+        if(response.getIsErr()){
+            return new Response(true,"Could not found storeid");
+        }
+        DataDiscountPolicy dataDiscountPolicy= new DataDiscountPolicy(response.getDataStore().getStoreID(),parent);
+        return discountPolicyService.AddDiscountPolicy(dataDiscountPolicy);
     }
+//    public Response AddDiscountPolicy(DataDiscountPolicy service){
+//        return discountPolicyService.AddDiscountPolicy(service);
+//    }
 
-    public void AddDiscountPolicy(DataDiscountPolicy service){
-        discountPolicyService.AddDiscountPolicy(service);
-    }
-
-    public Optional<DataBuyingPolicy> getBuyingByStoreId(Integer storeid){
+    public Response getBuyingByStoreId(Integer storeid){
         return buyingService.getBuyingByStore(storeid);
     }
 
-    public Optional<DataDiscountPolicy> getdiscountByStoreId(Integer storeid){
+    public Response getdiscountByStoreId(Integer storeid){
         return discountPolicyService.getDiscountByStore(storeid);
     }
 

@@ -7,11 +7,25 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import javax.persistence.*;
 import javax.xml.crypto.Data;
 
+import static javax.persistence.GenerationType.SEQUENCE;
+
 @Entity
 @Table(name = "Discount_Policy")
 public class DataDiscountPolicy {
-
     @Id
+    @SequenceGenerator(
+            name = "Discount_SEQUENCE",
+            sequenceName = "Discount_SEQUENCE",
+            allocationSize = 1
+    )
+    @GeneratedValue(
+            strategy = SEQUENCE,
+            generator = "Discount_SEQUENCE"
+    )
+    @Column(
+            name = "DiscountID"
+    )
+    private Integer DiscountID;
     @JoinColumn(
             name = "store_id",
             nullable = false,
@@ -20,7 +34,7 @@ public class DataDiscountPolicy {
                     name = "store_id_fk"
             )
     )
-    int store_id;
+    Integer store_id;
     @ManyToOne
     @JoinColumn(
             name = "sale",
@@ -36,20 +50,20 @@ public class DataDiscountPolicy {
 
     }
 
-    public DataDiscountPolicy(DiscountPolicy policy){
-        this.store_id=policy.getStoreId();
-    }
+//    public DataDiscountPolicy(DiscountPolicy policy){
+//        this.store_id=policy.getStoreId();
+//    }
 
     public DBSale getSale(){
         return sale;
     }
 
-    public DataDiscountPolicy(int store_id, DBSale dataDiscountPolicy){
+    public DataDiscountPolicy(Integer store_id, DBSale dataDiscountPolicy){
         this.store_id=store_id;
         this.sale= dataDiscountPolicy;
     }
 
-    public int getStore_id(){
+    public Integer getStore(){
         return store_id;
     }
 }

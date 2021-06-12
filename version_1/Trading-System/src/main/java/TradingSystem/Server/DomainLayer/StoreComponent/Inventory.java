@@ -68,7 +68,7 @@ public class Inventory {
     public Response addProduct(String productName, String category, Double price, int quantity){
         if (!IsProductNameExist(productName)){
             //Adds to the db
-            Integer productID = data_controller.AddProductToStore(storeID, productName, category, price, quantity);
+            Integer productID = data_controller.AddProductToStore(storeID, productName, category, price, quantity).returnProductID();
 
             Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
             this.products.put(productID,p);
@@ -112,7 +112,9 @@ public class Inventory {
     public Response deleteProduct(Integer productID) {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
-            data_controller.RemoveProduct(productID);
+            Response response= data_controller.RemoveProduct(productID);
+            if(response.getIsErr())
+                return response;
             this.products.remove(productID);
 //            this.productLock.remove(productID);
             return new Response(false, "RemoveProduct: Remove product " + productID + " from the Inventory was successful");
@@ -230,7 +232,10 @@ public class Inventory {
             int id = (int) pair.getKey();
             if (id == productID) {
                 Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
-                data_controller.editProductDetails(productID, productName, price, category, quantity);
+                Response response= data_controller.editProductDetails(productID, productName, price, category, quantity);
+                if(response.getIsErr()){
+                    return response;
+                }
                 this.products.remove(productID);
                 this.products.put(id, p);
                 return new Response(false, "EditProduct: The product " + productName + " update successfully");
@@ -262,7 +267,7 @@ public class Inventory {
                 }
             }
         }
-        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).stream()
+        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).getProductsDB().stream()
                 .map(DataProduct::getProductID)
                 .collect(Collectors.toList());;
         products.addAll(productsDb);

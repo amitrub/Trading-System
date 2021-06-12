@@ -529,6 +529,8 @@ public class Client implements Client_Interface {
         return response;
     }
 
+
+
     /**
      * @requirement 4.2.3
      * @param storeID
