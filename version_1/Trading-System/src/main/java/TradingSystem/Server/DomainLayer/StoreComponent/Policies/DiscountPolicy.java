@@ -63,7 +63,7 @@ public class DiscountPolicy {
     }
 
     public DiscountPolicy(DataDiscountPolicy dataDiscountPolicy){
-        this.storeID=dataDiscountPolicy.getStore().getStoreID();
+        this.storeID=dataDiscountPolicy.getStore();
         this.sale=createSale(dataDiscountPolicy.getSale());
     }
 

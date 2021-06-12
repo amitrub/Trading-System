@@ -215,7 +215,7 @@ public class Data_Controller {
         if(response.getIsErr()){
             return new Response(true,"Could not found storeid");
         }
-        DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.getDataStore(),parent);
+        DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.getDataStore().getStoreID(),parent);
         return buyingService.AddBuyingPolicy(buyingPolicy);
     }
 
@@ -225,7 +225,7 @@ public class Data_Controller {
         if(response.getIsErr()){
             return new Response(true,"Could not found storeid");
         }
-        DataDiscountPolicy dataDiscountPolicy= new DataDiscountPolicy(response.getDataStore(),parent);
+        DataDiscountPolicy dataDiscountPolicy= new DataDiscountPolicy(response.getDataStore().getStoreID(),parent);
         return discountPolicyService.AddDiscountPolicy(dataDiscountPolicy);
     }
 //    public Response AddDiscountPolicy(DataDiscountPolicy service){
