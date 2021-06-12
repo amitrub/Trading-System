@@ -1,5 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
+import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
@@ -12,7 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NotificationTests {
 
-    Client_Interface client = Client_Driver.getClient();
+    //Client_Interface client = Client_Driver.getClient();
+    Client client;
     Integer userID;
     Integer storeID;
     Integer productID;
@@ -20,6 +22,7 @@ public class NotificationTests {
 
     @BeforeEach
     void setUp() {
+        client = new Client();
         client.clearSystem();
         client.connectSystem();
         userID = client.Register("Elinor", "123");

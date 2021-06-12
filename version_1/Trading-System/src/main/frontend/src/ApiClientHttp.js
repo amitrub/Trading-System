@@ -252,8 +252,8 @@ export const createApiClientHttp = () => {
         zip: mailNum,
       };
 
-      console.log(path);
-      console.log(body);
+      // console.log(path);
+      // console.log(body);
 
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -304,7 +304,7 @@ export const createApiClientHttp = () => {
         productID: parseInt(productID),
         comment: comment,
       };
-      console.log(body);
+      // console.log(body);
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -355,8 +355,8 @@ export const createApiClientHttp = () => {
         zip: mailNum,
       };
 
-      console.log(path);
-      console.log(body);
+      // console.log(path);
+      // console.log(body);
 
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -427,8 +427,8 @@ export const createApiClientHttp = () => {
         mode: parseInt(mode),
       };
 
-      console.log(path);
-      console.log(body);
+      // console.log(path);
+      // console.log(body);
 
       return axios.post(path, body, { headers: headers }).then((res) => {
         return res.data;
@@ -437,6 +437,18 @@ export const createApiClientHttp = () => {
 
     //Owner
     //DONE
+    ShowStoreComments: (connID, userID, storeID) => {
+      let path = ownerURL.concat(`${userID}/store/${storeID}/comments`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     OwnerDailyIncomeForStore: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/owner_daily_income_for_store`
@@ -590,7 +602,6 @@ export const createApiClientHttp = () => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_buying_policy`
       );
-      console.log(path);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
@@ -599,7 +610,8 @@ export const createApiClientHttp = () => {
       const body = {
         expression: expression,
       };
-      console.log(body);
+      // console.log(path);
+      // console.log(body);
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -611,7 +623,6 @@ export const createApiClientHttp = () => {
         `${userID}/store/${storeID}/add_discount_policy`
       );
 
-      console.log(path);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
@@ -620,6 +631,9 @@ export const createApiClientHttp = () => {
       const body = {
         expression: expression,
       };
+      // console.log(path);
+      // console.log(body);
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -826,10 +840,10 @@ export const createApiClientHttp = () => {
         GetDailyIncomeForStore: GetDailyIncomeForStore,
       };
 
-      console.log("---------\n Edit Permissions \n");
-      console.log(path);
-      console.log(body);
-      console.log("---------");
+      // console.log("---------\n Edit Permissions \n");
+      // console.log(path);
+      // console.log(body);
+      // console.log("---------");
 
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -899,6 +913,80 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    ShowBuyingPolicyBuildingTree: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/show_buying_policy_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    ShowDiscountPolicyBuildingTree: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/show_discount_policy_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AddNodeToBuildingTree: (
+      connID,
+      userID,
+      storeID,
+      mode,
+      type,
+      nodeID,
+      quantity,
+      productID,
+      maxQuantity,
+      category,
+      numOfProductsForSale,
+      priceForSale,
+      quantityForSale,
+      discount
+    ) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/add_node_to_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        mode: mode,
+        type: type,
+        nodeID: nodeID,
+        quantity: quantity,
+        productID: productID,
+        maxQuantity: maxQuantity,
+        category: category,
+        numOfProductsForSale: numOfProductsForSale,
+        priceForSale: priceForSale,
+        quantityForSale: quantityForSale,
+        discount: discount,
+      };
+      // console.log("Add node insert checkkk");
+      // console.log(path);
+      // console.log(body);
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        // console.log(res);
         return res.data;
       });
     },

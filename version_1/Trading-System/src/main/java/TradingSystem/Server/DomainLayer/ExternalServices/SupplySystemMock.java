@@ -4,16 +4,18 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 public class SupplySystemMock implements ExternalServices {
 
-    SupplySystem real;
+    private static SupplySystemMock supplySystem = null;
 
-    public SupplySystemMock() {
-        this.real = null;
+    private SupplySystemMock(){
     }
 
-    public void setRealBridge(SupplySystem implementation) {
-        if (real == null)
-            real = implementation;
+    public static SupplySystemMock getInstance() {
+        if (supplySystem == null) {
+            supplySystem = new SupplySystemMock();
+        }
+        return supplySystem;
     }
+
 
     @Override
     public Response purchase(PaymentInfo paymentInfo, AddressInfo addressInfo) {

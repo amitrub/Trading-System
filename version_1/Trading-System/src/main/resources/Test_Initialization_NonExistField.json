@@ -1,0 +1,26 @@
+{
+
+  "local": false,
+
+  "urlLocal" : "jdbc:postgresql://localhost:5432/postgres",
+  "userNameLocal" : "amit",
+  "passwordLocal" : "qweasd",
+
+  "urlRemote" : "jdbc:postgresql://ec2-34-206-8-52.compute-1.amazonaws.com:5432/d7mk6k3335rlt5",
+  "userNameRemote" : "quhpcujnwqvqdm",
+  "passwordRemote" : "3449692b73c15abc8af3746d92eb5f75d0601cb147cfdc658894e0ff77aeffbb",
+
+  "ddlAuto" : "create",
+  "showSql" : "true",
+  "dialect" : "org.hibernate.dialect.PostgreSQLDialect",
+  "formatSql" : "true",
+  "admin" : {
+    "userName": "amit",
+    "password": "qweasd"
+  },
+
+  "externalServices": false,
+
+  "LoadTestState": false
+
+}

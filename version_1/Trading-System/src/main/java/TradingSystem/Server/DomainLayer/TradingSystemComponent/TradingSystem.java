@@ -20,7 +20,7 @@ public interface TradingSystem {
 
     public void ClearSystem();
 
-    public void Initialization();
+    public void Initialization(String path) throws Exception;
 
     public String errMsgGenerator(String side, String className, String line, String msg);
     //prints for debug
@@ -117,13 +117,23 @@ public interface TradingSystem {
 
     Response ShowBids(int userID, String connID, int storeID);
     void setSubscribers(ConcurrentHashMap<Integer, User> subscribers);
-    public void setStores(ConcurrentHashMap<Integer, Store> stores);
+    void setStores(ConcurrentHashMap<Integer, Store> stores);
 
     Response ShowSpecialProductInShoppingCart(String connID);
 
     Response removeSpecialProductFromCart(String connID, int storeID, int productID);
 
+    Integer getStoreIDByName(String storeName);
+
+    Integer getProductIDByName(String productName, int storeID);
+
     Response GetAllManager(String connID, int stoerId);
 
     Response ShowProductComments(String connID, int userID, int storeID);
+
+    Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID);
+
+    Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID);
+
+    Response AddNodeToBuildingTree(int userID, String connID, int storeID, int nodeID, int quantity, int productID, int maxQuantity, String category, int numOfProductsForSale, int priceForSale, int quantityForSale, int discount, int mode, String type);
 }

@@ -261,7 +261,7 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-
+        System.out.println("---------add_buying_policy----------");
         Map<String,Object> map=(Map<String,Object>)obj.get("expression");
         Expression exp=tradingSystem.CreateExpForBuy(storeID,map);
         Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
@@ -716,4 +716,53 @@ public class StoreOwnerServiceHttp {
             loggerController.WriteLogMsg("Guest: " + res.getMessage());
         }
     }
+
+    @GetMapping("{userID}/store/{storeID}/show_buying_policy_building_tree")
+    public Response ShowBuyingPolicyBuildingTree(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        System.out.println("\n\n-----------------------DDDDDDDDDD -----------\n\n");
+        Response res = this.tradingSystem.ShowBuyingPolicyBuildingTree(connID,userID,storeID);
+        System.out.println(res);
+        WriteToLogger(res);
+        return res;
+    }
+
+    @GetMapping("{userID}/store/{storeID}/show_discount_policy_building_tree")
+    public Response ShowDiscountPolicyBuildingTree(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        System.out.println("\n\n-----------------------DDDDDDDDDD -----------\n\n");
+        Response res = this.tradingSystem.ShowDiscountPolicyBuildingTree(connID,userID,storeID);
+        System.out.println(res);
+        WriteToLogger(res);
+        return res;
+    }
+
+    @PostMapping("{userID}/store/{storeID}/add_node_to_building_tree")
+    public Response AddNodeToBuildingTree(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int nodeID, quantity, productID,numOfProductsForSale,priceForSale,quantityForSale,discount,maxQuantity,mode;
+        String category,type;
+        try {
+            nodeID = (int) obj.get("nodeID");
+            quantity = (int) obj.get("quantity");
+            productID = (int) obj.get("productID");
+            maxQuantity = (int) obj.get("maxQuantity");
+            category = (String) obj.get("category");
+            numOfProductsForSale = (int) obj.get("numOfProductsForSale");
+            priceForSale = (int) obj.get("priceForSale");
+            quantityForSale = (int) obj.get("quantityForSale");
+            discount = (int) obj.get("discount");
+            mode = (int) obj.get("mode");
+            type = (String) obj.get("type"); //AND, OR, COND, or one of the simples
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in Service Server parse body : AddNodeToBuildingTree");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.AddNodeToBuildingTree(userID,connID,storeID, nodeID, quantity, productID,maxQuantity,category,numOfProductsForSale,priceForSale,quantityForSale,discount,mode, type);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
 }
