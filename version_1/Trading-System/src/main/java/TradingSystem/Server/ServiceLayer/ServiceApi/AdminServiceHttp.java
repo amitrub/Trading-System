@@ -151,9 +151,16 @@ public class AdminServiceHttp {
     /**
      * @requirement 6.5
      *
-     * @param userID
      * @param connID
-     * @return
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
      */
     @GetMapping("{userID}/admin_subscribers_week")
     public Response AdminAllSubscribersWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
@@ -166,9 +173,16 @@ public class AdminServiceHttp {
     /**
      * @requirement 6.5
      *
-     * @param userID
      * @param connID
-     * @return
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
      */
     @GetMapping("{userID}/admin_stores_week")
     public Response AdminAllStoresWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
@@ -181,9 +195,16 @@ public class AdminServiceHttp {
     /**
      * @requirement 6.5
      *
-     * @param userID
      * @param connID
-     * @return
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
      */
     @GetMapping("{userID}/admin_shopping_history_week")
     public Response AdminAllShoppingHistoriesWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
@@ -196,9 +217,16 @@ public class AdminServiceHttp {
     /**
      * @requirement 6.5
      *
-     * @param userID
      * @param connID
-     * @return
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
      */
     @GetMapping("{userID}/admin_money_week")
     public Response AdminAllMoneyWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
