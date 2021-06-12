@@ -46,7 +46,7 @@ public class ShoppingHistory {
         this.storeID = toCopyShoppingBag.getStoreID();
         this.products = products;
         this.date = new Date(System.currentTimeMillis());
-        this.finalPrice = toCopyShoppingBag.getFinalPrice();
+        this.finalPrice = toCopyShoppingBag.getFinalPrice()+toCopyShoppingBag.getSpecialPrice();
     }
 
     public ShoppingHistory(DataShoppingHistory dataShoppingHistory){

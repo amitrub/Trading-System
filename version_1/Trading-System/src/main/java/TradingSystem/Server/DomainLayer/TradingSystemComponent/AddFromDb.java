@@ -1,5 +1,6 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
@@ -29,6 +30,7 @@ public class AddFromDb {
         tradingSystem.AddStoreOwnerPermission();
         tradingSystem.AddStoreManagerPermission();
         tradingSystem.AddStoreHistory();
+        UploadAllBids();
     }
 
     private void UploadAllStores(){
@@ -52,6 +54,13 @@ public class AddFromDb {
         for(DataSubscriber subscriber:subscribers){
             User toAdd = new User(subscriber);
             tradingSystem.AddSubscriberIfNotExist(toAdd);
+        }
+    }
+
+    private void UploadAllBids(){
+        List<DataBid> bids = data_controller.getAllBids();
+        for (DataBid bid: bids){
+            tradingSystem.UploadBidToStore(bid.getProduct().getStore().getStoreID(), bid);
         }
     }
 

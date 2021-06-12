@@ -1,9 +1,14 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
+import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBidManagerApproves;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.BaseState;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.InitState;
 import TradingSystem.Server.DomainLayer.StoreComponent.States.State;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.locks.Lock;
@@ -17,8 +22,14 @@ public class Bid {
     private Integer quantity;
     private Integer price;
     private State state;
-    private ConcurrentHashMap<Integer,Boolean> ownerAndManagerApprovals;
+    private ConcurrentHashMap<Integer,Boolean> ownerAndManagerApprovals = new ConcurrentHashMap<>();
     private final Lock lock = new ReentrantLock();
+
+    @Autowired
+    public static Data_Controller data_controller;
+    public static void setData_controller(Data_Controller data_controller) {
+        Bid.data_controller = data_controller;
+    }
 
     private static TradingSystemImpl tradingSystem;
     public static void setTradingSystem(TradingSystemImpl tradingSystem) {
@@ -34,6 +45,22 @@ public class Bid {
         this.quantity=quantity;
         this.ownerAndManagerApprovals=list;
         this.state=new InitState();
+        state.setBid(this);
+    }
+
+    public Bid(DataBid dataBid){
+        this.productID = dataBid.getProduct().getProductID();
+        this.storeId = dataBid.getProduct().getStore().getStoreID();
+        this.price = dataBid.getPrice();
+        this.userID = dataBid.getSubscriber().getUserID();
+        this.quantity = dataBid.getQuantity();
+        this.state=new InitState();
+        for (DataBidManagerApproves managerApproves: dataBid.getOwnerAndManagerApprovals()){
+            this.ownerAndManagerApprovals.putIfAbsent(managerApproves.getManager().getUserID(), managerApproves.isApproves());
+            if(managerApproves.isApproves()){
+                this.state=new BaseState();
+            }
+        }
         state.setBid(this);
     }
 
@@ -70,6 +97,7 @@ public class Bid {
     }
 
     public void setPrice(Integer price) {
+        data_controller.setBidPrice(productID, userID, price);
         this.price = price;
     }
 
@@ -78,6 +106,7 @@ public class Bid {
     }
 
     public void setQuantity(Integer quantity) {
+        data_controller.setBidQuantity(productID, userID, quantity);
         this.quantity = quantity;
     }
 
@@ -98,8 +127,7 @@ public class Bid {
     public boolean isFinalState(){ return state.isFinalState(); }
 
     public boolean checkApproveBid() {
-        for (Integer key:this.ownerAndManagerApprovals.keySet()
-             ) {
+        for (Integer key:this.ownerAndManagerApprovals.keySet()) {
             if(!this.ownerAndManagerApprovals.get(key)){
                 return false;
             }
@@ -107,25 +135,25 @@ public class Bid {
         return true;
     }
 
-    public void approveBid(int userID) {
-        if(this.ownerAndManagerApprovals.get(userID)==null){
-            this.ownerAndManagerApprovals.put(userID,true);
+    public void approveBid(int managerID) {
+        data_controller.approveBid(productID, userID, managerID);
+        if(this.ownerAndManagerApprovals.get(managerID)==null){
+            this.ownerAndManagerApprovals.put(managerID,true);
         }
         else{
-            this.ownerAndManagerApprovals.remove(userID);
-            this.ownerAndManagerApprovals.put(userID,true);
+            this.ownerAndManagerApprovals.remove(managerID);
+            this.ownerAndManagerApprovals.put(managerID,true);
         }
     }
 
     public void UpdateOwnerList(ConcurrentHashMap<Integer, Boolean> ownerList) {
-        for (Integer key :ownerList.keySet()
-             ) {
+        data_controller.UpdateOwnerList(productID, userID, ownerList);
+        for (Integer key :ownerList.keySet()) {
               if(!this.ownerAndManagerApprovals.keySet().contains(key)){
                   this.ownerAndManagerApprovals.put(key,false);
               }
         }
-        for (Integer key :ownerAndManagerApprovals.keySet()
-        ) {
+        for (Integer key :ownerAndManagerApprovals.keySet()) {
             if(!ownerList.keySet().contains(key)){
                 this.ownerAndManagerApprovals.remove(key);
             }
@@ -133,8 +161,8 @@ public class Bid {
     }
 
     public void initialAprrovment() {
-        for (Integer key:this.ownerAndManagerApprovals.keySet()
-             ) {
+        data_controller.initialAprrovment(productID, userID);
+        for (Integer key:this.ownerAndManagerApprovals.keySet()) {
             this.ownerAndManagerApprovals.remove(key);
             this.ownerAndManagerApprovals.put(key,false);
         }

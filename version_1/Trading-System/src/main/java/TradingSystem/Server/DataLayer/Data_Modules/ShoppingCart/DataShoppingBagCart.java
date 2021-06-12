@@ -49,12 +49,27 @@ public class DataShoppingBagCart {
     )
     List<DataShoppingBagProduct> products = new ArrayList<>();
 
+    @OneToMany(
+            mappedBy = "shoppingBag",
+            orphanRemoval = true,
+            cascade = {CascadeType.PERSIST, CascadeType.REMOVE},
+            fetch = FetchType.EAGER
+    )
+    List<DataShoppingBagSpacialProduct> spacialProducts = new ArrayList<>();
+
     @Column(
             name = "finalPrice"
 //            nullable = false,
 //            columnDefinition = "TEXT"
     )
-    private Double finalPrice;
+    private Double finalPrice=0.0;
+
+    @Column(
+            name = "finalPriceSpacialProducts"
+//            nullable = false,
+//            columnDefinition = "TEXT"
+    )
+    private int finalPriceSpacial =0;
 
     public DataShoppingBagCart(){
         // DO NOT DELETE
@@ -77,12 +92,31 @@ public class DataShoppingBagCart {
         }
     }
 
+    public void addSpacialProduct(DataShoppingBagSpacialProduct product) {
+        if (!this.spacialProducts.contains(product)) {
+            this.spacialProducts.add(product);
+        }
+    }
+    public void removeSpacialProduct(DataShoppingBagSpacialProduct product) {
+        if (this.spacialProducts.contains(product)) {
+            this.spacialProducts.remove(product);
+        }
+    }
+
     public List<DataShoppingBagProduct> getProducts(){
         return this.products;
     }
 
     public void setProducts(List<DataShoppingBagProduct> products) {
         this.products = products;
+    }
+
+    public List<DataShoppingBagSpacialProduct> getSpacialProducts() {
+        return spacialProducts;
+    }
+
+    public void setSpacialProducts(List<DataShoppingBagSpacialProduct> spacialProducts) {
+        this.spacialProducts = spacialProducts;
     }
 
     public UserStoreKey getKey() {
@@ -115,6 +149,14 @@ public class DataShoppingBagCart {
 
     public void setFinalPrice(Double finalPrice) {
         this.finalPrice = finalPrice;
+    }
+
+    public int getFinalPriceSpacial() {
+        return finalPriceSpacial;
+    }
+
+    public void setFinalPriceSpacial(int finalPriceSpacial) {
+        this.finalPriceSpacial = finalPriceSpacial;
     }
 
     @Override

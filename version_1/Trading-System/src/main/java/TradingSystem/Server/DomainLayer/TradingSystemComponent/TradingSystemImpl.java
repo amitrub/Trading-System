@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
@@ -154,6 +155,7 @@ public class TradingSystemImpl implements TradingSystem {
         Inventory.setData_controller(data_controller);
         ShoppingCart.setData_controller(data_controller);
         ShoppingBag.setData_controller(data_controller);
+        Bid.setData_controller(data_controller);
     }
 
     private void setTradingSystem(TradingSystemImpl tradingSystem){
@@ -365,6 +367,13 @@ public class TradingSystemImpl implements TradingSystem {
         User manager = subscribers.get(managerID);
         store.AddManagerIfNotExist(managerID);
         manager.AddManagerStoresIfNotExist(storeID);
+    }
+
+    public void UploadBidToStore(int storeID, DataBid dataBid) {
+        if(stores.containsKey(storeID)){
+            Store store = stores.get(storeID);
+            store.UploadBidToStore(dataBid);
+        }
     }
 
     public void AddStoreProductIfNotExist(Integer storeID, Product product){
@@ -2535,7 +2544,9 @@ public class TradingSystemImpl implements TradingSystem {
             String productName = product.getProductName();
             output = output + productName + ", ";
         }
-        output = output.substring(0, output.length()-2);
+        if(output.length()>2){
+            output = output.substring(0, output.length()-2);
+        }
         return output;
     }
 
