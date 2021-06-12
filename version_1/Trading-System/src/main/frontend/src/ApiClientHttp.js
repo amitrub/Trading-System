@@ -1040,6 +1040,66 @@ export const createApiClientHttp = () => {
         return res.data;
       });
     },
+
+    AdminDailyIncomeForSystem: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_daily_income_for_system`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminAllSubscribersWeek: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_subscribers_week`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminAllStoresWeek: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_stores_week`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminAllShoppingHistoriesWeek: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_shopping_history_week`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminAllMoneyWeek: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_money_week`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
   };
 };
 
