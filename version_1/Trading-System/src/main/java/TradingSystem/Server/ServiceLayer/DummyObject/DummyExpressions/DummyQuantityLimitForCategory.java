@@ -1,5 +1,7 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForCategory;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,6 +65,10 @@ public class DummyQuantityLimitForCategory extends DummySimpleExpression {
         return "QuantityLimitForCategory";
     }
 
+    @Override
+    public Expression closeExp() {
+        return new QuantityLimitForCategory(maxQuantity,category);
+    }
 
 
 }

@@ -1,5 +1,6 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummySales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions.DummyExpression;
 
 import java.util.Map;
@@ -13,5 +14,7 @@ public interface DummySale {
 
     public Map<String,Object> createMap();
     public String getName();
+
+    public Sale closeSale();
 
 }

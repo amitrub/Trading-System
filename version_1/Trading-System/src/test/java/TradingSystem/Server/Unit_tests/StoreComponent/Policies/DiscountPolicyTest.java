@@ -295,9 +295,9 @@ class DiscountPolicyTest {
 
     //endregion
 
-    @Test
-    void basicSenario() {
-        tradingSystem.ShowBuyingPolicyBuildingTree("",1,2);
+//    @Test
+//    void basicSenario() {
+    //    tradingSystem.ShowBuyingPolicyBuildingTree("",1,2);
 
 //        Integer productID1 = store.getProductID("computer");
 //        Integer productID2 = store.getProductID("Bag");
@@ -317,8 +317,33 @@ class DiscountPolicyTest {
 //        products.put(productID1, 1);
 //        products.put(productID2, 2);
 
-
-
-    }
+//        DummyMaxSale Max =new DummyMaxSale(1);
+//
+//        DummyStoreSale storeSale = new DummyStoreSale(2,56, 50);
+//        DummyAndExpression andExpression = new DummyAndExpression(4);
+//
+//        DummyProductSale productSale=new DummyProductSale(3,4,10);
+//        DummyOrExpression Or=new DummyOrExpression(5);
+//
+//        DummyPriceForGetSale exp1 = new DummyPriceForGetSale( 6,1000);
+//        DummyQuantityForGetSale exp2 = new DummyQuantityForGetSale(7,3,2);
+//
+//        DummyPriceForGetSale exp11=new DummyPriceForGetSale(8,10000);
+//        DummyNumOfProductsForGetSale exp22=new DummyNumOfProductsForGetSale(9,10);
+//
+//
+//        Max.setSale(1,productSale);
+//        Max.setSale(1,storeSale);
+//
+//        Max.setExpression(2,andExpression);
+//        Max.setExpression(3,Or);
+//
+//        Max.setExpression(4,exp1);
+//        Max.setExpression(4,exp2);
+//
+//        Max.setExpression(5,exp11);
+//        Max.setExpression(5,exp22);
+//
+//// }
 
 }

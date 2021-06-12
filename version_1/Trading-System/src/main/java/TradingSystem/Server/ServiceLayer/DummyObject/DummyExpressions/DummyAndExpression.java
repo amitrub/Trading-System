@@ -1,12 +1,9 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions;
 
-import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummyStoreSale;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class DummyAndExpression extends DummyCompositeExpression {
@@ -49,6 +46,17 @@ public class DummyAndExpression extends DummyCompositeExpression {
     @Override
     public String getName() {
         return "AndComposite";
+    }
+
+    @Override
+    public Expression closeExp() {
+        AndComposite And=new AndComposite();
+        for (DummyExpression DE:children
+             ) {
+            Expression Exp =DE.closeExp();
+            And.add(Exp);
+        }
+        return And;
     }
 
 

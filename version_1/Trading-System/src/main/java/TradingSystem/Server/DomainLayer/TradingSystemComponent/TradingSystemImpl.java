@@ -722,7 +722,8 @@ public class TradingSystemImpl implements TradingSystem {
         System.out.println("---------------------AddProductToCart----------------------");
         if(guests.containsKey(connID)){
             User myGuest= guests.get(connID);
-            Response res = myGuest.AddProductToCart(StoreId,productId,quantity);
+            Response response = myGuest.AddProductToCart(StoreId, productId, quantity);
+            Response res = response;
             res.AddUserGuest();
             return res;
 
@@ -1868,28 +1869,6 @@ public class TradingSystemImpl implements TradingSystem {
                 this.subscribers.get(sh.getUserID()).addHistory(sh);
         }
     }
-/*
-    public List<DummyProduct> SearchProductByName(String name, int minprice, int maxprice, int prank , int srank){
-        List<DummyProduct> dummyProducts = new ArrayList<>();
-        for(Store store: stores.values()){
-            if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
-                dummyProducts.addAll(store.SearchByName(name, minprice, maxprice,prank));
-            }
-        }
-        return dummyProducts;
-    }
-
-    public List<DummyProduct> SearchProductByCategory(String category, int minprice, int maxprice, int prank , int srank){
-        List<DummyProduct> dummyProducts = new ArrayList<>();
-        for(Store store: stores.values()){
-            if(!store.SearchByCategory(category, minprice, maxprice,prank).isEmpty()){
-                dummyProducts.addAll(store.SearchByCategory(category, minprice, maxprice,prank));
-            }
-        }
-        return dummyProducts;
-    }
-
- */
 
     public Response systemRoleChecks(int userID, int storeID, int newRole, PermissionEnum.Permission permission) {
         if (!this.subscribers.containsKey(userID)) {
@@ -2729,8 +2708,6 @@ public class TradingSystemImpl implements TradingSystem {
         return new Response(false,"valid");
     }
 
-
-
     private Response ableToResponseForSubmissionBid(int userID, String connID, int storeId,Store store, int productID, int productPrice, int userWhoOffer, int quantity){
         if (!ValidConnectedUser(userID, connID)) {
             return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " is not connected");
@@ -2869,6 +2846,7 @@ public class TradingSystemImpl implements TradingSystem {
             return response;
         }
     }
+
     @Override
     public Integer getProductIDByName(String productName, int storeID) {
         for(Store s : stores.values())
@@ -2885,59 +2863,12 @@ public class TradingSystemImpl implements TradingSystem {
         return -1;
     }
 
-    public Response getTreeInBuild(Sale s){ //int storeID
-        //Sale s=stores.get(storeId).getDiscountPolicy().getSale();
-        JSONObject jsonPost = new JSONObject();
-        try{
-            jsonPost.put("Sale", s);
-        }
-        catch (Exception e) {
-            System.out.println(errMsgGenerator("Server", "TradingSystemImpl", "2789", "Error: getTreeInBuild, making post json"));
-        }
-        //JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner + path, jsonPost.toString(), this.connID);
-        //Response response = Response.makeResponseFromJSON(jsonResponse);
-        Response response = new Response("fine");
-        return  response;
-    }
-
-
-
-    //todo ____________________NeeFunctions___________________
+    //todo ____________________NewFunctions___________________
 
     @Override
     public Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID){
-
-//        DummyMaxSale Max =new DummyMaxSale(1);
-//
-//        DummyStoreSale storeSale = new DummyStoreSale(2,56, 50);
-//        DummyAndExpression andExpression = new DummyAndExpression(4);
-//
-//        DummyProductSale productSale=new DummyProductSale(3,4,10);
-//        DummyOrExpression Or=new DummyOrExpression(5);
-//
-//        DummyPriceForGetSale exp1 = new DummyPriceForGetSale( 6,1000);
-//        DummyQuantityForGetSale exp2 = new DummyQuantityForGetSale(7,3,2);
-//
-//        DummyPriceForGetSale exp11=new DummyPriceForGetSale(8,10000);
-//        DummyNumOfProductsForGetSale exp22=new DummyNumOfProductsForGetSale(9,10);
-//
-//
-//        Max.setSale(1,productSale);
-//        Max.setSale(1,storeSale);
-//
-//        Max.setExpression(2,andExpression);
-//        Max.setExpression(3,Or);
-//
-//        Max.setExpression(4,exp1);
-//        Max.setExpression(4,exp2);
-//
-//        Max.setExpression(5,exp11);
-//        Max.setExpression(5,exp22);
-//
-//
-         Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
-         response.AddPair("tree",this.tmpBuyingPolicyForStore.get(storeID));
-        //todo fix case null?;
+        Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
+        response.AddPair("tree",this.tmpBuyingPolicyForStore.get(storeID));
         System.out.println("\n\n------ in TS ------\n");
         System.out.println(response);
 
@@ -2946,10 +2877,8 @@ public class TradingSystemImpl implements TradingSystem {
 
     @Override
     public Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID){
-
         Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
         response.AddPair("tree",this.tmpDiscountPolicyForStore.get(storeID));
-        //todo fix case null?
         System.out.println("\n\n------ in TS ------\n");
         System.out.println(response);
 
@@ -2970,10 +2899,58 @@ public class TradingSystemImpl implements TradingSystem {
         switch (mode){
            case  1:
             return createSaleNode(storeID, nodeID, quantity,productID, maxQuantity, category, numOfProductsForSale, priceForSale, quantityForSale, discount, type);
-           case 2:
+           case  2:
             return createExpNode(storeID, nodeID, productID, maxQuantity, category, type);
         }
         return new Response(true, "AddNodeToBuildingTree: The mode "+mode+" is not valid");
+    }
+
+    @Override
+    public Response CloseDiscountPolicyTree(String connID, int userID, int storeID) {
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditDiscountPolicy);
+        Response res = response;
+        if(res.getIsErr()){
+            return res;
+        }
+        Sale sale= this.tmpDiscountPolicyForStore.get(storeID).closeSale();
+        Store s=this.stores.get(storeID);
+        Response r=sale.checkValidity(storeID);
+        if(r.getIsErr()){
+            return r;
+        }
+        DiscountPolicy discountPolicy=new DiscountPolicy(storeID,sale);
+        s.setDiscountPolicy(discountPolicy);
+        this.tmpDiscountPolicyForStore.remove(storeID);
+//        DBSale parent=new DBSale(sale,null);
+//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+        res= data_controller.AddDiscountPolicy(storeID,sale);
+        if(res.getIsErr())
+            return res;
+        return new Response("Discount Policy for store "+ storeID+" added successfully" );
+    }
+
+    @Override
+    public Response CloseBuingPolicyTree(String connID, int userID, int storeID) {
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditDiscountPolicy);
+        Response res = response;
+        if(res.getIsErr()){
+            return res;
+        }
+        Expression exp= this.tmpBuyingPolicyForStore.get(storeID).closeExp();
+        Store s=this.stores.get(storeID);
+        Response r=exp.checkValidity(storeID);
+        if(r.getIsErr()){
+            return r;
+        }
+        BuyingPolicy buyingPolicy=new BuyingPolicy(storeID,exp);
+        s.setBuyingPolicy(buyingPolicy);
+        this.tmpBuyingPolicyForStore.remove(storeID);
+//        DBSale parent=new DBSale(sale,null);
+//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+        res= data_controller.AddBuyingPolicy(storeID,exp);
+        if(res.getIsErr())
+            return res;
+        return new Response("Buying Policy for store "+ storeID+" added successfully" );
     }
 
     private Response createExpNode(int storeID, int nodeID,int productID, int maxQuantity, String category,String type) {
@@ -3148,8 +3125,6 @@ public class TradingSystemImpl implements TradingSystem {
         return  new Response(true, "crateNodeSale: the type is not valid");
         }
 
-
-
     public static ExternalServices getPaymentSystem() {
         return paymentSystem;
     }
@@ -3165,7 +3140,6 @@ public class TradingSystemImpl implements TradingSystem {
     public static void setSupplySystem(ExternalServices supplySystem) {
         TradingSystemImpl.supplySystem = supplySystem;
     }
-
 
     /**
      * @requirement 6.5

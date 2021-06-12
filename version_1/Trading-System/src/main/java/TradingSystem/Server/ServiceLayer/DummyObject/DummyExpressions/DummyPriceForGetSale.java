@@ -1,5 +1,7 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummySimpleSale;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -17,26 +19,6 @@ public class DummyPriceForGetSale extends DummySimpleExpression {
         this.priceForSale = priceForSale;
     }
 
-//    @Override
-//    public String toString() {
-//        JSONObject JOFirst = new JSONObject();
-//        JSONObject JO = new JSONObject();
-//        try {
-//            JO.put("NodeID", this);
-//            JO.put("priceForSale", priceForSale);
-//
-//        } catch (Exception e) {
-//            System.out.println("DummyPriceForGetSale toString error");
-//        }
-//        try {
-//            JOFirst.accumulate("PriceForGetSale", JO);
-//        } catch (JSONException e) {
-//            e.printStackTrace();
-//        }
-//        return  JOFirst.toString();
-//    }
-
-
     @Override
     public Map<String,Object> createMap() {
         Map<String,Object> mapElements=new HashMap<>();
@@ -50,6 +32,11 @@ public class DummyPriceForGetSale extends DummySimpleExpression {
     @Override
     public String getName() {
         return "PriceForGetSale";
+    }
+
+    @Override
+    public Expression closeExp() {
+        return new PriceForGetSale(priceForSale);
     }
 
     public Integer getPriceForSale() {

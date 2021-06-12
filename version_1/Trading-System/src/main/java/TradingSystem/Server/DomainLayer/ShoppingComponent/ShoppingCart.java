@@ -124,6 +124,8 @@ public class ShoppingCart {
                   return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
             }
         }
+
+        //todo - change!
         if(!isGuset){
             //Adds to the db
             data_controller.addProductToBag(getUserID(), storeID, productID, quantity);

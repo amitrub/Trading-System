@@ -647,16 +647,36 @@ public class ProxyTrading implements TradingSystem {
 
     @Override
     public Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID) {
+        if(real!=null)
+            return real.ShowBuyingPolicyBuildingTree(connID,userID,storeID);
         return null;
     }
 
     @Override
     public Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID) {
+        if(real!=null)
+            return real.ShowDiscountPolicyBuildingTree(connID,userID,storeID);
         return null;
     }
 
     @Override
     public Response AddNodeToBuildingTree(int userID, String connID, int storeID, int nodeID, int quantity, int productID, int maxQuantity, String category, int numOfProductsForSale, int priceForSale, int quantityForSale, int discount, int mode, String type) {
+        if(real!=null)
+            return real.AddNodeToBuildingTree(userID,connID,storeID,nodeID,quantity,productID,maxQuantity,category,numOfProductsForSale,priceForSale,quantityForSale,discount,mode,type);
+        return null;
+    }
+
+    @Override
+    public Response CloseDiscountPolicyTree(String connID, int userID, int storeID) {
+        if(real!=null)
+            return real.CloseDiscountPolicyTree(connID,userID,storeID);
+        return null;
+    }
+
+    @Override
+    public Response CloseBuingPolicyTree(String connID, int userID, int storeID) {
+        if(real!=null)
+            return real.CloseBuingPolicyTree(connID,userID,storeID);
         return null;
     }
 

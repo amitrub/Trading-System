@@ -1,5 +1,7 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.NumOfProductsForGetSale;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,6 +49,11 @@ public class DummyNumOfProductsForGetSale extends DummySimpleExpression {
     @Override
     public String getName() {
         return "NumOfProductsForGetSale";
+    }
+
+    @Override
+    public Expression closeExp() {
+        return new NumOfProductsForGetSale(numOfProductsForSale);
     }
 
     public Integer getNumOfProductsForSale() {

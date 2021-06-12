@@ -99,6 +99,9 @@ function UserStoreHistory(props) {
                   onChange={(e) => updateID(e)}
                   //   about="Show number of results:"
                 >
+                  <option value={-1} disabled>
+                    ---
+                  </option>
                   {props.label === "userHistory"
                     ? users.map((currUser) => (
                         <option value={currUser.userID}>

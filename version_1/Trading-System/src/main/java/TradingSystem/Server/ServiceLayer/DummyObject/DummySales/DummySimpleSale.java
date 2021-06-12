@@ -1,5 +1,6 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummySales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions.DummyExpression;
 
 import java.util.HashMap;
@@ -51,6 +52,11 @@ public abstract class DummySimpleSale implements DummySale{
     @Override
     public String getName() {
         return "SimpleSale";
+    }
+
+    @Override
+    public Sale closeSale() {
+        return null;
     }
 
     public Integer getNodeID() {

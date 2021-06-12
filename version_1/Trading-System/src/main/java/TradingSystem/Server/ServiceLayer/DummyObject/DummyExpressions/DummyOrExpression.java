@@ -1,8 +1,7 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.OrComposite;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -48,6 +47,17 @@ public class DummyOrExpression extends DummyCompositeExpression{
     @Override
     public String getName() {
         return "OrComposite";
+    }
+
+    @Override
+    public Expression closeExp() {
+        OrComposite Or=new OrComposite();
+        for (DummyExpression DE:children
+             ) {
+            Expression Exp=DE.closeExp();
+            Or.add(Exp);
+        }
+        return Or;
     }
 
 
