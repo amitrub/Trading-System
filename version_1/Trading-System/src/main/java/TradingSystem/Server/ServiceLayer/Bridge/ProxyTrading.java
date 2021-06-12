@@ -651,6 +651,16 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
+    public Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID) {
+        return null;
+    }
+
+    @Override
+    public Response AddNodeToBuildingTree(int userID, String connID, int storeID, int nodeID, int quantity, int productID, int maxQuantity, String category, int numOfProductsForSale, int priceForSale, int quantityForSale, int discount, int mode, String type) {
+        return null;
+    }
+
+    @Override
     public Integer getStoreIDByName(String storeName) {
         if(real!=null)
             return real.getStoreIDByName(storeName);
