@@ -11,6 +11,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -32,114 +33,159 @@ public class StoreService {
     @Autowired
     ManagerPermissionTypeRepository managerPermissionTypeRepository;
 
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response AddStore(String storeName, int founderID){
-        DataStore store = new DataStore(storeName);
-        Optional<DataSubscriber> founder = subscriberRepository.findById(founderID);
-        if(!founder.isPresent()){
-            return new Response(true,"Could not find founder");
+        try {
+            DataStore store = new DataStore(storeName);
+            Optional<DataSubscriber> founder = subscriberRepository.findById(founderID);
+            if(!founder.isPresent()){
+                return new Response(true,"Could not find founder");
+            }
+            store.setFounder(founder.get());
+            DataStore dataStore = storeRepository.saveAndFlush(store);
+            Response response=new Response(false,"Store was added successfully");
+            response.AddStoreID(dataStore.getStoreID());
+            return response;
         }
-        store.setFounder(founder.get());
-        DataStore dataStore = storeRepository.saveAndFlush(store);
-        Response response=new Response(false,"Store was added successfully");
-        response.AddStoreID(dataStore.getStoreID());
-        return response;
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
 
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
-        Optional<DataStore> store = storeRepository.findById(storeID);
-        Optional<DataSubscriber> newOwner = subscriberRepository.findById(newOwnerID);
-        if(!store.isPresent() || !newOwner.isPresent()){
-            return new Response(true,"Cannot find store or user");
+        try {
+            Optional<DataStore> store = storeRepository.findById(storeID);
+            Optional<DataSubscriber> newOwner = subscriberRepository.findById(newOwnerID);
+            if(!store.isPresent() || !newOwner.isPresent()){
+                return new Response(true,"Cannot find store or user");
+            }
+            store.get().AddNewOwner(newOwner.get());
+            storeRepository.saveAndFlush(store.get());
+            DataSubscriber appointment = null;
+            if(OP.getAppointmentId()!=-1&&OP.getAppointmentId()!=null){
+                appointment = subscriberRepository.getOne(OP.getAppointmentId());
+            }
+            DataOwnerPermissions dataOwnerPermissions = new DataOwnerPermissions(newOwner.get(), store.get(), appointment);
+            ownerPermissionsRepository.saveAndFlush(dataOwnerPermissions);
+            for (PermissionEnum.Permission permission: OP.getPermissions()){
+                DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
+                DataOwnerPermissionType permissionType = new DataOwnerPermissionType(dataOwnerPermissions, dataPermission);
+                ownerPermissionTypeRepository.saveAndFlush(permissionType);
+            }
+            return new Response(false," ");
         }
-        store.get().AddNewOwner(newOwner.get());
-        storeRepository.saveAndFlush(store.get());
-        DataSubscriber appointment = null;
-        if(OP.getAppointmentId()!=-1&&OP.getAppointmentId()!=null){
-            appointment = subscriberRepository.getOne(OP.getAppointmentId());
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
         }
-        DataOwnerPermissions dataOwnerPermissions = new DataOwnerPermissions(newOwner.get(), store.get(), appointment);
-        ownerPermissionsRepository.saveAndFlush(dataOwnerPermissions);
-        for (PermissionEnum.Permission permission: OP.getPermissions()){
-            DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
-            DataOwnerPermissionType permissionType = new DataOwnerPermissionType(dataOwnerPermissions, dataPermission);
-            ownerPermissionTypeRepository.saveAndFlush(permissionType);
-        }
-        return new Response(false," ");
     }
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
-        Optional<DataStore> store = storeRepository.findById(storeID);
-        Optional<DataSubscriber> newManager = subscriberRepository.findById(newManagerID);
-        if(!store.isPresent() || !newManager.isPresent()){
-            return new Response(true,"Could not find store or manager");
+        try {
+            Optional<DataStore> store = storeRepository.findById(storeID);
+            Optional<DataSubscriber> newManager = subscriberRepository.findById(newManagerID);
+            if(!store.isPresent() || !newManager.isPresent()){
+                return new Response(true,"Could not find store or manager");
+            }
+            store.get().AddNewManager(newManager.get());
+            storeRepository.saveAndFlush(store.get());
+            DataSubscriber appointment = subscriberRepository.getOne(MP.getAppointmentId());
+            DataManagerPermissions dataManagerPermissions = new DataManagerPermissions(newManager.get(), store.get(), appointment);
+            managerPermissionsRepository.saveAndFlush(dataManagerPermissions);
+            for (PermissionEnum.Permission permission: MP.getPermissions()){
+                DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
+                DataManagerPermissionType permissionType = new DataManagerPermissionType(dataManagerPermissions, dataPermission);
+                managerPermissionTypeRepository.saveAndFlush(permissionType);
+            }
+            return new Response(false," ");
         }
-        store.get().AddNewManager(newManager.get());
-        storeRepository.saveAndFlush(store.get());
-        DataSubscriber appointment = subscriberRepository.getOne(MP.getAppointmentId());
-        DataManagerPermissions dataManagerPermissions = new DataManagerPermissions(newManager.get(), store.get(), appointment);
-        managerPermissionsRepository.saveAndFlush(dataManagerPermissions);
-        for (PermissionEnum.Permission permission: MP.getPermissions()){
-            DataPermission.Permission dataPermission = DataPermission.toDataPermission(permission);
-            DataManagerPermissionType permissionType = new DataManagerPermissionType(dataManagerPermissions, dataPermission);
-            managerPermissionTypeRepository.saveAndFlush(permissionType);
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
         }
-        return new Response(false," ");
     }
 
 
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response getAllStores(){
-        Response response= new Response();
-        response.AddDBStoresList(storeRepository.findAll());
-        return response;
+        try {
+            Response response= new Response();
+            response.AddDBStoresList(storeRepository.findAll());
+            return response;
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response findStorebyId(int storeid){
-       Optional<DataStore> res= storeRepository.findById(storeid);
-       if(!res.isPresent()){
-           return new Response(true,"Store id doesn't exist");
-       }
-        Response response= new Response();
-        response.AddDataStore(res.get());
-        return response;
+        try {
+            Optional<DataStore> res= storeRepository.findById(storeid);
+            if(!res.isPresent()){
+                return new Response(true,"Store id doesn't exist");
+            }
+            Response response= new Response();
+            response.AddDataStore(res.get());
+            return response;
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
+
     }
 
     public void deleteAll(){
         storeRepository.deleteAll();
     }
 
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response getAllStoresOfOwner(int userId){
-        Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
-        if(!subscriber.isPresent()){
-            return new Response(true,"Could not find user");
+        try {
+            Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
+            if(!subscriber.isPresent()){
+                return new Response(true,"Could not find user");
+            }
+            List<DataStore> stores= storeRepository.findAllByOwnersContains(subscriber.get());
+            Response response=new Response(false," ");
+            response.AddDBStoresList(stores);
+            return response;
         }
-        List<DataStore> stores= storeRepository.findAllByOwnersContains(subscriber.get());
-        Response response=new Response(false," ");
-        response.AddDBStoresList(stores);
-        return response;
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
 
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response getAllStoresofFounder(int userId){
-        Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
-        if(!subscriber.isPresent()){
-            return new Response(true,"Could not found user id");
+        try {
+            Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
+            if(!subscriber.isPresent()){
+                return new Response(true,"Could not found user id");
+            }
+            List<DataStore> stores= storeRepository.findAllByFounder(subscriber.get());
+            Response response=new Response(false," ");
+            response.AddDBStoresList(stores);
+            return response;
         }
-        List<DataStore> stores= storeRepository.findAllByFounder(subscriber.get());
-        Response response=new Response(false," ");
-        response.AddDBStoresList(stores);
-        return response;
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
 
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response getAllStoresofManager(int userId) {
-        Optional<DataSubscriber> subscriber = subscriberRepository.findById(userId);
-        if (!subscriber.isPresent()) {
-            return new Response(true, "could not find subscriber");
+        try {
+            Optional<DataSubscriber> subscriber = subscriberRepository.findById(userId);
+            if (!subscriber.isPresent()) {
+                return new Response(true, "could not find subscriber");
+            }
+            List<DataStore> stores = storeRepository.findAllByManagersContains(subscriber.get());
+            Response response = new Response(false, " ");
+            response.AddDBStoresList(stores);
+            return response;
         }
-        List<DataStore> stores = storeRepository.findAllByManagersContains(subscriber.get());
-        Response response = new Response(false, " ");
-        response.AddDBStoresList(stores);
-        return response;
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
 //    public void AddNewOwner(int storeId, Integer userId, Integer newOwnerId){
 //        DataSubscriber owner= subscriberRepository.getOne(userId);

@@ -19,6 +19,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -217,6 +218,7 @@ public class Data_Controller {
         DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.getDataStore(),parent);
         return buyingService.AddBuyingPolicy(buyingPolicy);
     }
+
     public Response AddDiscountPolicy(Integer storeId, Sale sale){
         DBSale parent=new DBSale(sale,null);
         Response response= findStorebyId(storeId);

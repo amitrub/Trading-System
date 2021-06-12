@@ -10,6 +10,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import javax.transaction.Transactional;
 import java.util.*;
@@ -31,34 +32,40 @@ public class ShoppingHistoryService {
     @Autowired
     ShoppingBagProductRepository shoppingBagProductRepository;
 
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
-        Integer userID = shoppingHistory.getUserID();
-        Integer storeID = shoppingHistory.getStoreID();
-        Date date = shoppingHistory.getDate();
-        Double finalPrice = shoppingHistory.getFinalPrice();
-        DataSubscriber user = null;
-        if (userID>=1){
-            user = subscriberRepository.getOne(userID);
-        }
-        Optional<DataStore> store = storeRepository.findById(storeID);
-        if(!store.isPresent()){
-            return new Response(true,"Could not add history");
-        }
-        DataShoppingHistory dataShoppingHistory = new DataShoppingHistory(user, store.get(), date, finalPrice);
+        try {
+            Integer userID = shoppingHistory.getUserID();
+            Integer storeID = shoppingHistory.getStoreID();
+            Date date = shoppingHistory.getDate();
+            Double finalPrice = shoppingHistory.getFinalPrice();
+            DataSubscriber user = null;
+            if (userID>=1){
+                user = subscriberRepository.getOne(userID);
+            }
+            Optional<DataStore> store = storeRepository.findById(storeID);
+            if(!store.isPresent()){
+                return new Response(true,"Could not add history");
+            }
+            DataShoppingHistory dataShoppingHistory = new DataShoppingHistory(user, store.get(), date, finalPrice);
 
-        List<Product> products = shoppingHistory.getProducts();
-        for (Product p : products){
-            DataHistoryProduct historyProduct = new DataHistoryProduct(p);
-            dataShoppingHistory.addProduct(historyProduct);
+            List<Product> products = shoppingHistory.getProducts();
+            for (Product p : products){
+                DataHistoryProduct historyProduct = new DataHistoryProduct(p);
+                dataShoppingHistory.addProduct(historyProduct);
+            }
+            shoppingHistoryRepository.save(dataShoppingHistory);
+            return new Response(true,"History wad added successfully");
         }
-        shoppingHistoryRepository.save(dataShoppingHistory);
-        return new Response(true,"History wad added successfully");
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Time limit is over, upload to db failed");
+        }
     }
 
     public void deleteAll(){
         shoppingHistoryRepository.deleteAll();
     }
+
     public List<DataShoppingHistory> findAllBySubscriber(int userid){
         DataSubscriber subscriber=subscriberRepository.getOne(userid);
         return shoppingHistoryRepository.findAllBySubscriber(subscriber);

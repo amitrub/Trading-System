@@ -26,7 +26,7 @@ public class DiscountPolicyService {
     @Autowired
     DBSaleExpRepository saleExpRepository;
 
-    //TODO- make transaction
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response AddDiscountPolicy(DataDiscountPolicy dataDiscountPolicy){
         try {
             DBSale sale= dataDiscountPolicy.getSale();
@@ -36,18 +36,23 @@ public class DiscountPolicyService {
             discountPolicyService.saveAndFlush(dataDiscountPolicy);
             return new Response(false," ");
         }
-        catch (HibernateException e){
+        catch (Exception e){
             return new Response(true,"Could not add discount Policy");
         }
     }
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response getDiscountByStore(Integer storeid) throws DataAccessException {
-        Optional<DataDiscountPolicy> dataDiscountPolicy= discountPolicyService.findById(storeid);
-        if(!dataDiscountPolicy.isPresent()){
-            return new Response(true,"could not find discount policy for store");
+        try {
+            Optional<DataDiscountPolicy> dataDiscountPolicy= discountPolicyService.findById(storeid);
+            if(!dataDiscountPolicy.isPresent()){
+                return new Response(true,"could not find discount policy for store");
+            }
+            Response response=new Response(false, " ");
+            response.AddDBDiscountPolicy(dataDiscountPolicy.get());
+            return response;
         }
-        Response response=new Response(false, " ");
-        response.AddDBDiscountPolicy(dataDiscountPolicy.get());
-        return response;
+        catch (Exception e){
+            return new Response(true,"Could not add discount Policy");
+        }
     }
 }

@@ -11,6 +11,7 @@ import TradingSystem.Server.DataLayer.Repositories.SubscriberRepository;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import java.util.List;
 import java.util.Optional;
@@ -33,25 +34,35 @@ public class ProductService {
     public ProductService() {
 
     }
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response AddProductToStore(int storeID, String productName,
                                          String category, Double price, int quantity) {
-        DataProduct product = new DataProduct(productName, category, price, quantity);
-        DataStore store = storeRepository.getOne(storeID);
-        product.setStore(store);
-        DataProduct dataProduct =  productRepository.saveAndFlush(product);
-        Response response=new Response(false, "Product was added successfully");
-        response.AddProductID(dataProduct.getProductID());
-        return response;
-    }
-
-    public Response RemoveProduct(int productId) {
-        Optional<DataProduct> product=productRepository.findById(productId);
-        if(!product.isPresent()){
-            return new Response(true,"Product id doesn't exist");
+        try {
+            DataProduct product = new DataProduct(productName, category, price, quantity);
+            DataStore store = storeRepository.getOne(storeID);
+            product.setStore(store);
+            DataProduct dataProduct =  productRepository.saveAndFlush(product);
+            Response response=new Response(false, "Product was added successfully");
+            response.AddProductID(dataProduct.getProductID());
+            return response;
         }
-        productRepository.removeDataProductByProductID(productId);
-        return new Response("Removed product successfully");
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
+    }
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    public Response RemoveProduct(int productId) {
+        try {
+            Optional<DataProduct> product=productRepository.findById(productId);
+            if(!product.isPresent()){
+                return new Response(true,"Product id doesn't exist");
+            }
+            productRepository.removeDataProductByProductID(productId);
+            return new Response("Removed product successfully");
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
 
     public Response findDummyProductByStore(Integer storeID){
@@ -65,14 +76,20 @@ public class ProductService {
         return response;
     }
 
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response setQuantity(Integer productID, int newQuantity){
-        Optional<DataProduct> product = productRepository.findById(productID);
-        if(!product.isPresent()){
-            return new Response(true,"Could not find product");
+        try {
+            Optional<DataProduct> product = productRepository.findById(productID);
+            if(!product.isPresent()){
+                return new Response(true,"Could not find product");
+            }
+            product.get().setQuantity(newQuantity);
+            productRepository.saveAndFlush(product.get());
+            return new Response(false," ");
         }
-        product.get().setQuantity(newQuantity);
-        productRepository.saveAndFlush(product.get());
-        return new Response(false," ");
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
 
 
@@ -80,37 +97,53 @@ public class ProductService {
         productRepository.deleteAll();
     }
 
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response editProductDetails(Integer productID, String productName, Double price, String category, Integer quantity) {
-        Optional<DataProduct> product_opt = productRepository.findById(productID);
-        if(!product_opt.isPresent()){
-            return new Response(true,"Could not find product");
+        try {
+            Optional<DataProduct> product_opt = productRepository.findById(productID);
+            if(!product_opt.isPresent()){
+                return new Response(true,"Could not find product");
+            }
+            DataProduct product=product_opt.get();
+            product.setProductName(productName);
+            product.setPrice(price);
+            product.setCategory(category);
+            product.setQuantity(quantity);
+            productRepository.saveAndFlush(product);
+            return new Response(false," ");
         }
-        DataProduct product=product_opt.get();
-        product.setProductName(productName);
-        product.setPrice(price);
-        product.setCategory(category);
-        product.setQuantity(quantity);
-        productRepository.saveAndFlush(product);
-        return new Response(false," ");
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response addCommentToProduct(Integer productID, Integer userID, String comment) {
-        Optional<DataProduct> product = productRepository.findById(productID);
-        Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
-        if(!product.isPresent() || !subscriber.isPresent()){
-            return new Response(true, "Could not find product or user");
+        try {
+            Optional<DataProduct> product = productRepository.findById(productID);
+            Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
+            if(!product.isPresent() || !subscriber.isPresent()){
+                return new Response(true, "Could not find product or user");
+            }
+            DataComment comment1 = new DataComment(subscriber.get(), product.get(), comment);
+            commentRepository.saveAndFlush(comment1);
+            return new Response(false," ");
         }
-        DataComment comment1 = new DataComment(subscriber.get(), product.get(), comment);
-        commentRepository.saveAndFlush(comment1);
-        return new Response(false," ");
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the store on the limit time");
+        }
     }
 
 
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response findAllByCategoryAndProductNameAndPriceBetween(String name,String category, int min, int max){
-        List<DataProduct> products=productRepository.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);
-        Response response=new Response(false, " ");
-        response.AddDBProductsList(products);
-        return response;
+        try {
+            List<DataProduct> products=productRepository.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);
+            Response response=new Response(false, " ");
+            response.AddDBProductsList(products);
+            return response;
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Time limit is over, upload to db failed");
+        }
     }
 }
