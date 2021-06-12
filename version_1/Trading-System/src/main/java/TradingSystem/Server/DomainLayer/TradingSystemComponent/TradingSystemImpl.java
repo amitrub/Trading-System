@@ -2058,6 +2058,9 @@ public class TradingSystemImpl implements TradingSystem {
             return r;
         }
         DiscountPolicy d=new DiscountPolicy(storeID,sale);
+        if(this.tmpDiscountPolicyForStore.containsKey(storeID)){
+            this.tmpDiscountPolicyForStore.remove(storeID);
+        }
         s.setDiscountPolicy(d);
         DBSale parent=new DBSale(sale,null);
         data_controller.AddDiscountPolicy(new DataDiscountPolicy(storeID,parent));
@@ -2265,6 +2268,9 @@ public class TradingSystemImpl implements TradingSystem {
         }
         Store s=this.stores.get(storeID);
         BuyingPolicy b=new BuyingPolicy(storeID,exp);
+        if(this.tmpBuyingPolicyForStore.containsKey(storeID)){
+            this.tmpBuyingPolicyForStore.remove(storeID);
+        }
         s.setBuyingPolicy(b);
         //ADD to db
         DBExpression parent=new DBExpression(exp,null);
@@ -2839,9 +2845,8 @@ public class TradingSystemImpl implements TradingSystem {
 //
 //
          Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
-          //response.AddPair("tree1",andExpression);
          response.AddPair("tree",this.tmpBuyingPolicyForStore.get(storeID));
-//
+        //todo fix case null?;
         System.out.println("\n\n------ in TS ------\n");
         System.out.println(response);
 
@@ -2852,9 +2857,8 @@ public class TradingSystemImpl implements TradingSystem {
     public Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID){
 
         Response response = new Response(false, "ShowBuyingPolicyBuildingTree: success");
-        //response.AddPair("tree1",andExpression);
         response.AddPair("tree",this.tmpDiscountPolicyForStore.get(storeID));
-
+        //todo fix case null?
         System.out.println("\n\n------ in TS ------\n");
         System.out.println(response);
 
@@ -2971,6 +2975,9 @@ public class TradingSystemImpl implements TradingSystem {
                 return new Response("createSaleNode: The node XorComposite added successfully");
             }
             case "StoreSale": {
+                if (discount<0) {
+                    return new Response(true, "createSaleNode: in create StoreSale there is invalid parameter discount");
+                }
                 DummyStoreSale StoreSale = new DummyStoreSale(stores.get(storeID).getNextSaleID(), storeID, discount);
                 if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
                     this.tmpDiscountPolicyForStore.put(storeID, StoreSale);
@@ -2980,6 +2987,9 @@ public class TradingSystemImpl implements TradingSystem {
                 return new Response("createSaleNode: The node StoreSale added successfully");
             }
             case "ProductSale": {
+                if (discount<0 || productID<0 ){
+                    return new Response(true, "createSaleNode: in create ProductSale there is invalid parameters");
+                }
                 DummyProductSale ProductSale = new DummyProductSale(stores.get(storeID).getNextSaleID(), productID, discount);
                 if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
                     this.tmpDiscountPolicyForStore.put(storeID, ProductSale);
@@ -2989,6 +2999,9 @@ public class TradingSystemImpl implements TradingSystem {
                 return new Response("createSaleNode: The node ProductSale added successfully");
             }
             case "CategorySale": {
+                if (discount<0||category==null) {
+                    return new Response(true, "createSaleNode: in create CategorySale there is invalid parameters");
+                }
                 DummyCategorySale ProductSale = new DummyCategorySale(stores.get(storeID).getNextSaleID(), category, discount);
                 if (this.tmpDiscountPolicyForStore.get(storeID) == null) {
                     this.tmpDiscountPolicyForStore.put(storeID, ProductSale);
