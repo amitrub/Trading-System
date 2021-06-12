@@ -55,7 +55,7 @@ public class ShoppingHistoryService {
                 dataShoppingHistory.addProduct(historyProduct);
             }
             shoppingHistoryRepository.save(dataShoppingHistory);
-            return new Response(true,"History wad added successfully");
+            return new Response(false,"History wad added successfully");
         }
         catch (UnexpectedRollbackException e){
             return new Response(true," Time limit is over, upload to db failed");

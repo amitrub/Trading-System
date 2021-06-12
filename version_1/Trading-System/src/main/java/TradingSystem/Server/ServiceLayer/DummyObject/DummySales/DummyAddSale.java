@@ -1,5 +1,9 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummySales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.AndComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.AddComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.MaxComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions.DummyExpression;
 
 import java.util.HashMap;
@@ -28,6 +32,17 @@ public class DummyAddSale extends DummyCompositeSale {
     @Override
     public String getName() {
         return "AddComposite";
+    }
+
+    @Override
+    public Sale closeSale() {
+        AddComposite Add=new AddComposite();
+        for (DummySale DS:children
+        ) {
+            Sale sale=DS.closeSale();
+            Add.add(sale);
+        }
+        return Add;
     }
 
 }

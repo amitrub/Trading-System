@@ -1,6 +1,7 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummySales;
 
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions.DummyExpression;
 
 import java.util.*;
@@ -62,6 +63,11 @@ public abstract class DummyCompositeSale implements DummySale{
     @Override
     public String getName() {
         return "CompositeSale";
+    }
+
+    @Override
+    public Sale closeSale() {
+        return null;
     }
 
     public Integer getNodeID() {

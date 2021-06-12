@@ -261,10 +261,11 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/store/{storeID}/add_buying_policy")
     public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        System.out.println("---------add_buying_policy----------");
-        Map<String,Object> map=(Map<String,Object>)obj.get("expression");
-        Expression exp=tradingSystem.CreateExpForBuy(storeID,map);
-        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
+//        System.out.println("---------add_buying_policy----------");
+//        Map<String,Object> map=(Map<String,Object>)obj.get("expression");
+//        Expression exp=tradingSystem.CreateExpForBuy(storeID,map);
+//        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
+        Response res = this.tradingSystem.CloseBuingPolicyTree(connID,userID,storeID);
         WriteToLogger(res);
         return res;
     }
@@ -287,11 +288,12 @@ public class StoreOwnerServiceHttp {
     @PostMapping("{userID}/store/{storeID}/add_discount_policy")
     public Response AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
         System.out.println("\n\n-----------------------------------------------------------------\n\n\n");
-       Map<String, Object> map=(Map<String, Object> )obj.get("expression");
-        System.out.println(map);
-
-        Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
-        Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
+//       Map<String, Object> map=(Map<String, Object> )obj.get("expression");
+//        System.out.println(map);
+//
+//        Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
+        Response res = this.tradingSystem.CloseDiscountPolicyTree(connID,userID,storeID);
+      //  Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
         WriteToLogger(res);
         return res;
     }
@@ -761,6 +763,24 @@ public class StoreOwnerServiceHttp {
         }
         Response res = tradingSystem.AddNodeToBuildingTree(userID,connID,storeID, nodeID, quantity, productID,maxQuantity,category,numOfProductsForSale,priceForSale,quantityForSale,discount,mode, type);
         res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    @PostMapping("{userID}/store/{storeID}/close_discount_policy_tree")
+    public Response CloseDiscountPolicyTree(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        System.out.println("\n\n-----------------------DDDDDDDDDD -----------\n\n");
+        Response res = this.tradingSystem.CloseDiscountPolicyTree(connID,userID,storeID);
+        System.out.println(res);
+        WriteToLogger(res);
+        return res;
+    }
+
+    @PostMapping("{userID}/store/{storeID}/close_buying_policy_tree")
+    public Response CloseBuingPolicyTree(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        System.out.println("\n\n-----------------------DDDDDDDDDD -----------\n\n");
+        Response res = this.tradingSystem.CloseBuingPolicyTree(connID,userID,storeID);
+        System.out.println(res);
         WriteToLogger(res);
         return res;
     }

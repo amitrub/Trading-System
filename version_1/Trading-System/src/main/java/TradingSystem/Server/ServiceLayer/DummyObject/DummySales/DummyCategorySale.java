@@ -1,5 +1,10 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummySales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.CategorySale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.ProductSale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,6 +34,14 @@ public class DummyCategorySale extends DummySimpleSale{
     @Override
     public String getName() {
         return "CategorySale";
+    }
+
+    @Override
+    public Sale closeSale() {
+        CategorySale CS=new CategorySale(category, discount);
+        Expression exp=this.expression.closeExp();
+        CS.setExpression(exp);
+        return CS;
     }
 
     public String getCategory() {

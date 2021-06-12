@@ -136,4 +136,8 @@ public interface TradingSystem {
     Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID);
 
     Response AddNodeToBuildingTree(int userID, String connID, int storeID, int nodeID, int quantity, int productID, int maxQuantity, String category, int numOfProductsForSale, int priceForSale, int quantityForSale, int discount, int mode, String type);
+
+    Response CloseDiscountPolicyTree(String connID, int userID, int storeID);
+
+    Response CloseBuingPolicyTree(String connID, int userID, int storeID);
 }

@@ -1,5 +1,6 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -53,6 +54,11 @@ public abstract class DummySimpleExpression implements DummyExpression {
     @Override
     public String getName() {
         return "SimpleExpression";
+    }
+
+    @Override
+    public Expression closeExp() {
+        return null;
     }
 
     public Integer getNodeID() {

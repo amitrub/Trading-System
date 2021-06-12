@@ -1,5 +1,8 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummySales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.MaxComposite;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -24,6 +27,17 @@ public class DummyMaxSale  extends DummyCompositeSale{
     @Override
     public String getName() {
         return "MaxComposite";
+    }
+
+    @Override
+    public Sale closeSale() {
+        MaxComposite Max=new MaxComposite();
+        for (DummySale DS:children
+             ) {
+            Sale sale=DS.closeSale();
+            Max.add(sale);
+        }
+        return Max;
     }
 
 }

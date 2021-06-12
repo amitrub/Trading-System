@@ -1,5 +1,6 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummyCompositeSale;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.DummySale;
 import org.json.JSONArray;
@@ -73,6 +74,11 @@ public abstract class DummyCompositeExpression implements DummyExpression {
     @Override
     public String getName() {
         return "CompositeExpression";
+    }
+
+    @Override
+    public Expression closeExp() {
+        return null;
     }
 
     public Integer getNodeID() {

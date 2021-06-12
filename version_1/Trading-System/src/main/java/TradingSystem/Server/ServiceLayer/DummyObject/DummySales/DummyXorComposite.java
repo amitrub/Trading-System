@@ -1,5 +1,8 @@
 package TradingSystem.Server.ServiceLayer.DummyObject.DummySales;
 
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
+import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.XorComposite;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,6 +29,17 @@ public class DummyXorComposite extends DummyCompositeSale {
     @Override
     public String getName() {
         return "XorComposite";
+    }
+
+    @Override
+    public Sale closeSale() {
+        XorComposite xor=new XorComposite();
+        for (DummySale DS:children
+             ) {
+            Sale sale=DS.closeSale();
+            xor.add(sale);
+        }
+        return xor;
     }
 
 
