@@ -2,6 +2,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
@@ -624,7 +625,13 @@ public class Store extends Observable {
             this.Bids = new ConcurrentLinkedDeque<>();
         }
         ConcurrentHashMap<Integer,Boolean> list=this.createOwnerList();
-        this.Bids.add(new Bid(userID, productID,this.id,productPrice,quantity,list));
+        data_controller.AddBidForProduct(productID, userID, productPrice, quantity, list);
+        Bid bid = new Bid(userID, productID,this.id,productPrice,quantity,list);
+        this.Bids.add(bid);
+    }
+    public void UploadBidToStore(DataBid dataBid) {
+        Bid bid = new Bid(dataBid);
+        this.Bids.add(bid);
     }
 
     public ConcurrentHashMap<Integer, Boolean> createOwnerList() {
@@ -740,8 +747,8 @@ public class Store extends Observable {
 
     //todo check the remove function
     public void removeBid(Bid bid) {
-        for (Bid b:this.Bids
-        ) {
+        data_controller.RemoveBid(bid.getProductID(), bid.getUserID());
+        for (Bid b : this.Bids) {
             if(b.getUserID()==bid.getUserID()&&b.getProductID()==bid.getProductID()){
                 this.Bids.remove(b);
             }

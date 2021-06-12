@@ -215,7 +215,9 @@ public class DataStore {
     }
 
     public void RemoveManager(DataSubscriber manager){
-        managers.remove(manager);
+        if(managers.contains(manager)){
+            managers.remove(manager);
+        }
     }
 
     public void AddNewManager(DataSubscriber newManager) {

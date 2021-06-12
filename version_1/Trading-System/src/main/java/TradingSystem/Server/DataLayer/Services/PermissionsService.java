@@ -8,12 +8,10 @@ import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataManagerPermis
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataPermission;
 import TradingSystem.Server.DataLayer.Repositories.*;
-import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -41,10 +39,14 @@ public class PermissionsService {
     public void EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         DataSubscriber manager = subscriberRepository.getOne(managerID);
         DataStore store = storeRepository.getOne(storeID);
+        store.RemoveManager(manager);
+        storeRepository.saveAndFlush(store);
         DataManagerPermissions managerPermission = managerPermissionsRepository.getOne(new UserStoreKey(managerID, storeID));
+        manager.RemoveManagerPermission(managerPermission);
+        subscriberRepository.save(manager);
+
         int appointmentID = managerPermission.getAppointment().getUserID();
-        manager.RemoveManager(store, managerPermission);
-        subscriberRepository.saveAndFlush(manager);
+
 
         store = storeRepository.getOne(storeID);
         DataSubscriber newManager = subscriberRepository.getOne(managerID);
@@ -64,31 +66,39 @@ public class PermissionsService {
     public void RemoveOwner(int storeID, int ownerID){
         DataSubscriber owner = subscriberRepository.getOne(ownerID);
         DataStore store = storeRepository.getOne(storeID);
+        store.RemoveOwner(owner);
+        storeRepository.saveAndFlush(store);
+
         DataOwnerPermissions ownerPermission = ownerPermissionsRepository.getOne(new UserStoreKey(ownerID, storeID));
-        owner.RemoveOwner(store, ownerPermission);
+        owner.RemoveOwnerPermission(ownerPermission);
         subscriberRepository.saveAndFlush(owner);
 
         List<DataOwnerPermissions> ownerPermissions = ownerPermissionsRepository.findAllByAppointment(owner);
         for (DataOwnerPermissions ownerPermissionByAppointment: ownerPermissions){
             DataSubscriber ownerByAppointment = ownerPermissionByAppointment.getSubscriber();
-            ownerByAppointment.RemoveOwner(store, ownerPermissionByAppointment);
+            store.RemoveOwner(ownerByAppointment);
+            storeRepository.saveAndFlush(store);
+            ownerByAppointment.RemoveOwnerPermission(ownerPermissionByAppointment);
             subscriberRepository.saveAndFlush(ownerByAppointment);
         }
 
         List<DataManagerPermissions> managerPermissions = managerPermissionsRepository.findAllByAppointment(owner);
         for (DataManagerPermissions managerPermissionByAppointment: managerPermissions){
             DataSubscriber managerByAppointment = managerPermissionByAppointment.getSubscriber();
-            managerByAppointment.RemoveManager(store, managerPermissionByAppointment);
+            store.RemoveManager(managerByAppointment);
+            storeRepository.saveAndFlush(store);
+            managerByAppointment.RemoveManagerPermission(managerPermissionByAppointment);
             subscriberRepository.saveAndFlush(managerByAppointment);
         }
-
     }
 
     public void RemoveManager(int storeID, int managerID){
         DataSubscriber manager = subscriberRepository.getOne(managerID);
         DataStore store = storeRepository.getOne(storeID);
+        store.RemoveManager(manager);
+        storeRepository.saveAndFlush(store);
         DataManagerPermissions managerPermission = managerPermissionsRepository.getOne(new UserStoreKey(managerID, storeID));
-        manager.RemoveManager(store, managerPermission);
-        subscriberRepository.saveAndFlush(manager);
+        manager.RemoveManagerPermission(managerPermission);
+        subscriberRepository.save(manager);
     }
 }

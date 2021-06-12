@@ -197,16 +197,17 @@ public class DataSubscriber {
         }
     }
 
-    public void RemoveOwner(DataStore store, DataOwnerPermissions ownerPermission){
-        storesOwner.remove(store);
+    public void RemoveOwnerPermission(DataOwnerPermissions ownerPermission){
         ownerPermissions.remove(ownerPermission);
-        store.RemoveOwner(this);
     }
 
-    public void RemoveManager(DataStore store, DataManagerPermissions managerPermission){
-        storesManager.remove(store);
+    public void RemoveManagerPermission(DataManagerPermissions managerPermission){
+//        if(storesManager.contains(store)){
+//            storesManager.remove(store);
+//            System.out.println("removeeeeeeeeeeee");
+//        }
         managerPermissions.remove(managerPermission);
-        store.RemoveManager(this);
+//        store.RemoveManager(this);
     }
 
     public void removeShoppingBag(DataShoppingBagCart bag) {

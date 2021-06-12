@@ -1,5 +1,6 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
@@ -20,6 +21,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @Transactional
@@ -40,6 +42,8 @@ public class Data_Controller {
     private ShoppingHistoryService shoppingHistoryService;
     @Autowired
     private PermissionsService permissionsService;
+    @Autowired
+    private BidService bidService;
 
 
     public Data_Controller(){
@@ -80,7 +84,18 @@ public class Data_Controller {
 
     public void RemoveBagProduct(int userID, Integer storeID, int productID) {
         shoppingCartService.RemoveBagProduct(userID, storeID, productID);
+    }
 
+    public void addSpacialProductToBag(int userID, Integer storeID, Integer productID, Integer quantity, int price) {
+        shoppingCartService.addSpacialProductToBag(userID, storeID, productID, quantity, price);
+    }
+
+    public void setBagSpacialFinalPrice(int userID, Integer storeID, int finalPrice) {
+        shoppingCartService.setBagSpacialFinalPrice(userID, storeID, finalPrice);
+    }
+
+    public void RemoveBagSpacialProduct(int userID, Integer storeID, int productID) {
+        shoppingCartService.RemoveBagSpacialProduct(userID, storeID, productID);
     }
 
     public List<DataOwnerPermissions> getOwnerPermissions(int userID, int storeID){
@@ -109,6 +124,37 @@ public class Data_Controller {
         productService.addCommentToProduct(productID, userID, comment);
     }
 
+    public void AddBidForProduct(int productID, int userID, Integer productPrice,Integer quantity, ConcurrentHashMap<Integer,Boolean> managerList) {
+        bidService.AddBidForProduct(productID, userID, productPrice, quantity, managerList);
+    }
+
+    public void RemoveBid(int productID, int userID) {
+        bidService.RemoveBid(productID, userID);
+    }
+
+    public void approveBid(int productID, int userID, int managerID) {
+        bidService.approveBid(productID, userID, managerID);
+    }
+
+    public void UpdateOwnerList(int productID, int userID, ConcurrentHashMap<Integer, Boolean> managerList) {
+        bidService.UpdateOwnerList(productID, userID, managerList);
+    }
+
+    public void initialAprrovment(int productID, int userID) {
+        bidService.initialAprrovment(productID, userID);
+    }
+
+    public void setBidPrice(int productID, int userID, Integer price) {
+        bidService.setBidPrice(productID, userID, price);
+    }
+
+    public void setBidQuantity(int productID, int userID, Integer quantity) {
+        bidService.setBidQuantity(productID, userID, quantity);
+    }
+
+    public List<DataBid> getAllBids(){
+        return bidService.getAllBids();
+    }
 
     public void RemoveProduct(int productId) {
         productService.RemoveProduct(productId);

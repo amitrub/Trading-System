@@ -4,6 +4,7 @@ package TradingSystem.Server.DomainLayer.ShoppingComponent;
 
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagSpacialProduct;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
@@ -81,9 +82,15 @@ public class ShoppingBag {
         this.storeID=shoppingBagCart.getStore().getStoreID();
         List<DataShoppingBagProduct> list=shoppingBagCart.getProducts();
         for(DataShoppingBagProduct product:list){
-            this.products.put(product.getProduct().getProductID(),product.getQuantity());
+            this.products.putIfAbsent(product.getProduct().getProductID(),product.getQuantity());
         }
         this.finalPrice= shoppingBagCart.getFinalPrice();
+        List<DataShoppingBagSpacialProduct> spacialProductList = shoppingBagCart.getSpacialProducts();
+        for(DataShoppingBagSpacialProduct product:spacialProductList){
+            this.priceOfSpacialProducts.putIfAbsent(product.getProduct().getProductID(), product.getPrice());
+            this.quantityOfSpacialProducts.putIfAbsent(product.getProduct().getProductID(), product.getQuantity());
+        }
+        this.SpecialPrice= shoppingBagCart.getFinalPriceSpacial();
         //todo add
        // this.SpecialPrice=shoppingBagCart.
     }
@@ -232,8 +239,10 @@ public class ShoppingBag {
           //TODO: checkkkkk
         for (Integer productID: this.quantityOfSpacialProducts.keySet()){
             Integer quantity = this.quantityOfSpacialProducts.get(productID);
+            int price = this.priceOfSpacialProducts.get(productID);
             Product p = tradingSystem.getProduct(storeID,productID);
             Product newProduct = new Product(p, quantity);
+            newProduct.setPrice((double) price);
             productsToHistory.add(newProduct);
         }
         return new ShoppingHistory(this, productsToHistory);
@@ -261,6 +270,7 @@ public class ShoppingBag {
     }
 
     public void addSPacialProduct(int productID, Integer quantity, int productPrice) {
+        data_controller.addSpacialProductToBag(userID, storeID, productID, quantity, productPrice);
         this.quantityOfSpacialProducts.put(productID,quantity);
         this.priceOfSpacialProducts.put(productID,productPrice);
     }
@@ -285,6 +295,7 @@ public class ShoppingBag {
     }
 
     public void setFinalSpecialPrice(int spacialPrice) {
+        data_controller.setBagSpacialFinalPrice(userID, storeID, spacialPrice);
         this.SpecialPrice=spacialPrice;
     }
 
@@ -293,6 +304,7 @@ public class ShoppingBag {
     }
 
     public void removeSpecialProductFromCart(int productID) {
+        data_controller.RemoveBagSpacialProduct(userID, storeID, productID);
         if(this.quantityOfSpacialProducts.containsKey(productID)){
             this.quantityOfSpacialProducts.remove(productID);
         }

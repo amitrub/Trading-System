@@ -7,6 +7,7 @@ import TradingSystem.Server.DataLayer.Data_Modules.Keys.DataShoppingBagProductKe
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserStoreKey;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagSpacialProduct;
 import TradingSystem.Server.DataLayer.Repositories.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,8 @@ public class ShoppingCartService {
     ShoppingCartRepository shoppingCartRepository;
     @Autowired
     ShoppingBagProductRepository shoppingBagProductRepository;
+    @Autowired
+    ShoppingBagSpacialProductRepository shoppingBagSpacialProductRepository;
 
     public void addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity) {
         DataSubscriber user = subscriberRepository.getOne(userID);
@@ -61,6 +64,36 @@ public class ShoppingCartService {
         shoppingCartRepository.saveAndFlush(bag);
     }
 
+    public void addSpacialProductToBag(int userID, Integer storeID, Integer productID, Integer quantity, int price) {
+        DataSubscriber user = subscriberRepository.getOne(userID);
+        DataStore store = storeRepository.getOne(storeID);
+        DataProduct product = productRepository.getOne(productID);
+        DataShoppingBagCart bag = user.FindBag(storeID);
+        if(bag==null){
+            bag = new DataShoppingBagCart(user, store);
+            shoppingCartRepository.saveAndFlush(bag);
+        }
+        DataShoppingBagSpacialProduct spacialProduct = new DataShoppingBagSpacialProduct(bag, product, quantity, price);
+        shoppingBagSpacialProductRepository.saveAndFlush(spacialProduct);
+    }
+
+    public void setBagSpacialFinalPrice(int userID, Integer storeID, int finalPrice) {
+        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
+        bag.setFinalPriceSpacial(finalPrice);
+        shoppingCartRepository.saveAndFlush(bag);
+    }
+
+
+
+    public void RemoveBagSpacialProduct(int userID, Integer storeID, int productID) {
+        DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
+        DataShoppingBagSpacialProduct product = shoppingBagSpacialProductRepository.getOne(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
+        bag.removeSpacialProduct(product);
+        shoppingCartRepository.saveAndFlush(bag);
+    }
+
+
+
     public void deleteAll(){
         shoppingCartRepository.deleteAll();
     }
@@ -72,8 +105,13 @@ public class ShoppingCartService {
         for (DataShoppingBagProduct product: productList){
             bag.removeProduct(product);
         }
+        List<DataShoppingBagSpacialProduct> spacialProductList = shoppingBagSpacialProductRepository.findAllByShoppingBag(bag);
+        for (DataShoppingBagSpacialProduct product: spacialProductList){
+            bag.removeSpacialProduct(product);
+        }
         bag = shoppingCartRepository.saveAndFlush(bag);
         setBagFinalPrice(userID,storeID, 0.0);
+        setBagSpacialFinalPrice(userID,storeID, 0);
 
         DataSubscriber subscriber = subscriberRepository.getOne(userID);
         subscriber.removeShoppingBag(bag);
