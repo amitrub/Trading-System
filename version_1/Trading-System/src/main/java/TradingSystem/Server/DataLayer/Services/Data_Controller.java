@@ -19,6 +19,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import javax.transaction.Transactional;
 import java.util.Date;
@@ -214,16 +215,17 @@ public class Data_Controller {
         if(response.getIsErr()){
             return new Response(true,"Could not found storeid");
         }
-        DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.getDataStore(),parent);
+        DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.getDataStore().getStoreID(),parent);
         return buyingService.AddBuyingPolicy(buyingPolicy);
     }
+
     public Response AddDiscountPolicy(Integer storeId, Sale sale){
         DBSale parent=new DBSale(sale,null);
         Response response= findStorebyId(storeId);
         if(response.getIsErr()){
             return new Response(true,"Could not found storeid");
         }
-        DataDiscountPolicy dataDiscountPolicy= new DataDiscountPolicy(response.getDataStore(),parent);
+        DataDiscountPolicy dataDiscountPolicy= new DataDiscountPolicy(response.getDataStore().getStoreID(),parent);
         return discountPolicyService.AddDiscountPolicy(dataDiscountPolicy);
     }
 //    public Response AddDiscountPolicy(DataDiscountPolicy service){

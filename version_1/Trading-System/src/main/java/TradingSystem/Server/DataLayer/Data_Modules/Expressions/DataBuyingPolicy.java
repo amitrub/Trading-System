@@ -30,7 +30,7 @@ public class DataBuyingPolicy {
 //    @Column(name = "buying_id")
 //    private BuyingPolicyKey key;
 
-    @OneToOne
+  //  @OneToOne
     @JoinColumn(
             name = "store_id",
             nullable = false,
@@ -39,7 +39,7 @@ public class DataBuyingPolicy {
                     name = "store_id_fk"
             )
     )
-    DataStore store_id;
+    Integer store_id;
     @ManyToOne
     @JoinColumn(
             name = "expression",
@@ -55,7 +55,7 @@ public class DataBuyingPolicy {
 
     }
 
-    public DataBuyingPolicy(DataStore store_id, DBExpression expression){
+    public DataBuyingPolicy(Integer store_id, DBExpression expression){
         this.store_id = store_id;
         this.expression=expression;
     }
@@ -72,7 +72,7 @@ public class DataBuyingPolicy {
         this.expression=expression;
     }
 
-    public DataStore getStore() {
+    public Integer getStore() {
         return store_id;
     }
 }

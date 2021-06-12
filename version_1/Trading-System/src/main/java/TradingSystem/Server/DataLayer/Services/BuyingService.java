@@ -22,18 +22,24 @@ public class BuyingService {
     @Autowired
     DBExpRepository dataExpCompositeRepository;
 
-    public Response getBuyingByStore(Integer storeid) throws EntityNotFoundException
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    public Response getBuyingByStore(Integer storeid)
     {
-        Optional<DataBuyingPolicy> buyingPolicy=buyingRepository.findById(storeid);
-        if(!buyingPolicy.isPresent()){
-            return new Response(true,"Could not found buying policy for store");
+        try {
+            Optional<DataBuyingPolicy> buyingPolicy=buyingRepository.findById(storeid);
+            if(!buyingPolicy.isPresent()){
+                return new Response(true,"Could not found buying policy for store");
+            }
+            Response response=new Response(false," ");
+            response.AddDBBuyingPolicy(buyingPolicy.get());
+            return response;
         }
-        Response response=new Response(false," ");
-        response.AddDBBuyingPolicy(buyingPolicy.get());
-        return response;
+        catch (Exception e){
+            return new Response(true,"Could not add discount Policy");
+        }
     }
 
-    //TODO make to transction
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
         try {
             DBExpression dataExpression= buyingPolicy.getExpression();
@@ -41,7 +47,7 @@ public class BuyingService {
             buyingRepository.saveAndFlush(buyingPolicy);
             return new Response(false,"buying policy was added successfully");
         }
-        catch (HibernateException e){
+        catch (Exception e){
             return new Response(true,"could not add buying policy for store");
         }
     }

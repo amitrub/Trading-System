@@ -26,7 +26,6 @@ public class DataDiscountPolicy {
             name = "DiscountID"
     )
     private Integer DiscountID;
-    @OneToOne
     @JoinColumn(
             name = "store_id",
             nullable = false,
@@ -35,7 +34,7 @@ public class DataDiscountPolicy {
                     name = "store_id_fk"
             )
     )
-    DataStore store_id;
+    Integer store_id;
     @ManyToOne
     @JoinColumn(
             name = "sale",
@@ -59,12 +58,12 @@ public class DataDiscountPolicy {
         return sale;
     }
 
-    public DataDiscountPolicy(DataStore store_id, DBSale dataDiscountPolicy){
+    public DataDiscountPolicy(Integer store_id, DBSale dataDiscountPolicy){
         this.store_id=store_id;
         this.sale= dataDiscountPolicy;
     }
 
-    public DataStore getStore(){
+    public Integer getStore(){
         return store_id;
     }
 }

@@ -11,6 +11,7 @@ import org.hibernate.Transaction;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.UnexpectedRollbackException;
 
 import javax.management.Query;
 import javax.transaction.Transactional;
@@ -27,7 +28,7 @@ public class SubcriberService {
     @Autowired
     StoreRepository storeRepository;
 
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response AddSubscriber(String userName, String password){
         try {
             DataSubscriber subscriber = new DataSubscriber(userName,password);
@@ -41,24 +42,35 @@ public class SubcriberService {
         }
     }
 
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response GetSubscriber(String userName, String password) {
 //        return null;
-        DataSubscriber subscriber = subscriberRepository.findByName(userName);
-        if(subscriber==null){
-            return new Response(true,"Cannot find user with the name "+userName);
+        try {
+            DataSubscriber subscriber = subscriberRepository.findByName(userName);
+            if(subscriber==null){
+                return new Response(true,"Cannot find user with the name "+userName);
+            }
+            else{
+                Response response=new Response(false, "The user was found");
+                response.AddDataSubscriber(subscriber);
+                return response;
+            }
         }
-        else{
-            Response response=new Response(false, "The user was found");
-            response.AddDataSubscriber(subscriber);
-            return response;
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the subscriber on the limit time");
         }
     }
-
+    @org.springframework.transaction.annotation.Transactional(timeout = 20)
     public Response getAllSubscribers(){
-        List<DataSubscriber> subscribers = subscriberRepository.findAll();
-        Response response= new Response(false,"Found a the users");
-        response.AddDBSubscribers(subscribers);
-        return response;
+        try {
+            List<DataSubscriber> subscribers = subscriberRepository.findAll();
+            Response response= new Response(false,"Found a the users");
+            response.AddDBSubscribers(subscribers);
+            return response;
+        }
+        catch (UnexpectedRollbackException e){
+            return new Response(true," Could not add the subscriber on the limit time");
+        }
     }
 
     public Response findSubscriberById(int subscriberid){
