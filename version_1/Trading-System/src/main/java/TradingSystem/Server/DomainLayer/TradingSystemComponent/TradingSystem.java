@@ -123,8 +123,6 @@ public interface TradingSystem {
 
     Response removeSpecialProductFromCart(String connID, int storeID, int productID);
 
-    //Response subscriberSpecialProductPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String id, String address, String city, String country, String zip);
-
     Integer getStoreIDByName(String storeName);
 
     Integer getProductIDByName(String productName, int storeID);
@@ -132,4 +130,10 @@ public interface TradingSystem {
     Response GetAllManager(String connID, int stoerId);
 
     Response ShowProductComments(String connID, int userID, int storeID);
+
+    Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID);
+
+    Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID);
+
+    Response AddNodeToBuildingTree(int userID, String connID, int storeID, int nodeID, int quantity, int productID, int maxQuantity, String category, int numOfProductsForSale, int priceForSale, int quantityForSale, int discount, int mode, String type);
 }
