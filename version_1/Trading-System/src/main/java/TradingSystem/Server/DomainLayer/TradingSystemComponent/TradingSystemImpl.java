@@ -3137,7 +3137,7 @@ public class TradingSystemImpl implements TradingSystem {
         return  new Response(true, "crateNodeSale: the type is not valid");
         }
 
-    }
+
 
     public static ExternalServices getPaymentSystem() {
         return paymentSystem;
