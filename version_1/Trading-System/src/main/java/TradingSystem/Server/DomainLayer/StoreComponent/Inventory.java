@@ -251,11 +251,11 @@ public class Inventory {
             boolean AddTheProduct = true;
             Product p = this.products.get(PID);
             if (name != null) {
-                AddTheProduct = p.getProductName().equals(name);
+                AddTheProduct = p.getProductName().toLowerCase(Locale.ROOT).equals(name.toLowerCase(Locale.ROOT));
             }
             if (AddTheProduct) {
                 if (category != null) {
-                    AddTheProduct = p.getCategory().equals(category);
+                    AddTheProduct = p.getCategory().toLowerCase(Locale.ROOT).equals(category.toLowerCase(Locale.ROOT));
                 }
                 if (AddTheProduct) {
                     if (minprice != -1 && maxprice != -1) {
