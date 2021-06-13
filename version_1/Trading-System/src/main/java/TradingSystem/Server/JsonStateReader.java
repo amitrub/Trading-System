@@ -8,7 +8,7 @@ public class JsonStateReader {
     public List<Map<String,String>> login;
     public List<Map<String,String>> open_store;
     public List<Map<String,Object>> add_item;
-    public List<Map<String,Object>> add_manager;
+    public List<Map<String,Object>> add_owner;
 
     public List<Map<String,String>> getRegister() {
         return register;
@@ -26,8 +26,8 @@ public class JsonStateReader {
         return add_item;
     }
 
-    public List<Map<String, Object>> getAdd_manager() {
-        return add_manager;
+    public List<Map<String, Object>> getAdd_owner() {
+        return add_owner;
     }
 
     @Override
@@ -37,7 +37,7 @@ public class JsonStateReader {
                 ", login=" + login +
                 ", open_store=" + open_store +
                 ", add_item=" + add_item +
-                ", add_manager=" + add_manager +
+                ", add_manager=" + add_owner +
                 '}';
     }
 }
