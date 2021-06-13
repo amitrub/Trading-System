@@ -5,6 +5,7 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
@@ -118,6 +119,12 @@ public class Store extends Observable {
         this.rate =store.getStoreRate();
         this.inventory=new Inventory(this.id,name, store.getProducts());
 
+        for (DataShoppingHistory dataShoppingHistory: store.getShoppingBagsHistory()){
+            if (dataShoppingHistory.getSubscriber()==null){
+                ShoppingHistory history = new ShoppingHistory(dataShoppingHistory);
+                this.shoppingHistory.add(history);
+            }
+        }
 
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
