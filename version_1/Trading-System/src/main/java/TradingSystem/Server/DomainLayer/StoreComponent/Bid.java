@@ -97,7 +97,13 @@ public class Bid {
     }
 
     public void setPrice(Integer price) {
-        data_controller.setBidPrice(productID, userID, price);
+        Response response;
+        try {
+            data_controller.setBidPrice(productID, userID, price);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         this.price = price;
     }
 
@@ -106,7 +112,13 @@ public class Bid {
     }
 
     public void setQuantity(Integer quantity) {
-        data_controller.setBidQuantity(productID, userID, quantity);
+        Response response;
+        try {
+            data_controller.setBidQuantity(productID, userID, quantity);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         this.quantity = quantity;
     }
 
@@ -136,7 +148,13 @@ public class Bid {
     }
 
     public void approveBid(int managerID) {
-        data_controller.approveBid(productID, userID, managerID);
+        Response response;
+        try {
+            data_controller.approveBid(productID, userID, managerID);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         if(this.ownerAndManagerApprovals.get(managerID)==null){
             this.ownerAndManagerApprovals.put(managerID,true);
         }
@@ -147,7 +165,13 @@ public class Bid {
     }
 
     public void UpdateOwnerList(ConcurrentHashMap<Integer, Boolean> ownerList) {
-        data_controller.UpdateOwnerList(productID, userID, ownerList);
+        Response response;
+        try {
+            data_controller.UpdateBidOwnerList(productID, userID, ownerList);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         for (Integer key :ownerList.keySet()) {
               if(!this.ownerAndManagerApprovals.keySet().contains(key)){
                   this.ownerAndManagerApprovals.put(key,false);
@@ -161,7 +185,13 @@ public class Bid {
     }
 
     public void initialAprrovment() {
-        data_controller.initialAprrovment(productID, userID);
+        Response response;
+        try {
+            data_controller.initialAprrovment(productID, userID);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         for (Integer key:this.ownerAndManagerApprovals.keySet()) {
             this.ownerAndManagerApprovals.remove(key);
             this.ownerAndManagerApprovals.put(key,false);

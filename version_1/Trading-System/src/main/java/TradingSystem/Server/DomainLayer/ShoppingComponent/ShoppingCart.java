@@ -26,7 +26,6 @@ public class ShoppingCart {
     @Autowired
     public static Data_Controller data_controller;
     public static void setData_controller(Data_Controller data_controller) {
-
         ShoppingCart.data_controller = data_controller;
     }
 
@@ -139,8 +138,13 @@ public class ShoppingCart {
         tmpProducts.put(productID,preQuantity);
         this.shoppingBags.get(storeID).addProduct(productID, quantity);
         if(!isGuset){
-            //Adds to the db
-            data_controller.addProductToBag(getUserID(), storeID, productID, quantity+preQuantity);
+            Response response;
+            try {
+                //Adds to the db
+                data_controller.addProductToBag(getUserID(), storeID, productID, quantity+preQuantity);
+            } catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
         }
         Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, tmpProducts);
         shoppingBags.get(storeID).setFinalPrice(priceForBag);
@@ -240,9 +244,6 @@ public class ShoppingCart {
             this.releaseLocks(lockList);
             return res;
         }
-        //TODO add charge to a payment
-        //TODO Add payment to each store for the products
-
         addShoppingHistory(isGuest);
         this.storesReducedProductsVain=new HashSet<>();
         this.shoppingBags = new ConcurrentHashMap<>();
@@ -299,8 +300,28 @@ public class ShoppingCart {
         return new Response();
     }
 
+    private Response BuyAddToDB(){
+        Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
+        Map<Integer, Integer> productID_quantity = new HashMap<>();
+        List<ShoppingHistory> historyList = new ArrayList<>();
+        for (Integer storeID : shoppingBagsSet) {
+            ShoppingBag shoppingBag = this.shoppingBags.get(storeID);
+            productID_quantity.putAll(shoppingBag.getAllProducts());
+            ShoppingHistory shoppingHistory = shoppingBag.createShoppingHistory();
+            historyList.add(shoppingHistory);
+        }
+        try {
+            return data_controller.subscriberPurchase(userID, productID_quantity, historyList);
+        } catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
+    }
+
     private Response Buy(boolean isGuest){
-        Response res;
+        Response res = BuyAddToDB();
+        if(res.getIsErr()){
+            return res;
+        }
         Set<Integer> shoppingBagsSet = this.shoppingBags.keySet();
         for (Integer storeID : shoppingBagsSet) {
             ShoppingBag SB = this.shoppingBags.get(storeID);
@@ -311,15 +332,6 @@ public class ShoppingCart {
                 return res;
             }
             this.storesReducedProductsVain.add(storeID);
-        }
-
-        if (!isGuest){
-            for (Integer storeID : shoppingBagsSet) {
-                Response response= data_controller.deleteSubscriberBag(userID, storeID);
-                if(response.getIsErr()){
-                    return response;
-                }
-            }
         }
         res=new Response(false, "Purchase: The reduction was made successfully ");
         return res;

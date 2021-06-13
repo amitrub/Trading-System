@@ -638,7 +638,12 @@ public class Store extends Observable {
             this.Bids = new ConcurrentLinkedDeque<>();
         }
         ConcurrentHashMap<Integer,Boolean> list=this.createOwnerList();
-        data_controller.AddBidForProduct(productID, userID, productPrice, quantity, list);
+        try {
+            data_controller.AddBidForProduct(productID, userID, productPrice, quantity, list);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         Bid bid = new Bid(userID, productID,this.id,productPrice,quantity,list);
         this.Bids.add(bid);
     }
@@ -760,7 +765,12 @@ public class Store extends Observable {
 
     //todo check the remove function
     public void removeBid(Bid bid) {
-        data_controller.RemoveBid(bid.getProductID(), bid.getUserID());
+        try {
+            data_controller.RemoveBid(bid.getProductID(), bid.getUserID());
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         for (Bid b : this.Bids) {
             if(b.getUserID()==bid.getUserID()&&b.getProductID()==bid.getProductID()){
                 this.Bids.remove(b);

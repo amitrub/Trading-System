@@ -137,7 +137,9 @@ public class DataProduct{
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
-
+    }
+    public void setReduceQuantity(int quantity) {
+        this.quantity = this.quantity-quantity;
     }
 
     public DataStore getStore() {

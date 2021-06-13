@@ -17,7 +17,6 @@ public class Inventory {
     @Autowired
     public static Data_Controller data_controller;
     public static void setData_controller(Data_Controller data_controller) {
-
         Inventory.data_controller = data_controller;
     }
 
@@ -67,8 +66,17 @@ public class Inventory {
 
     public Response addProduct(String productName, String category, Double price, int quantity){
         if (!IsProductNameExist(productName)){
-            //Adds to the db
-            Integer productID = data_controller.AddProductToStore(storeID, productName, category, price, quantity).returnProductID();
+            Response response;
+            try {
+                //Adds to the db
+                response = data_controller.AddProductToStore(storeID, productName, category, price, quantity);
+            } catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
+            if(response.getIsErr()){
+                return new Response("Error in add pruduct to DB");
+            }
+            Integer productID = response.returnProductID();
 
             Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
             this.products.put(productID,p);
@@ -112,7 +120,12 @@ public class Inventory {
     public Response deleteProduct(Integer productID) {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
-            Response response= data_controller.RemoveProduct(productID);
+            Response response;
+            try {
+                response= data_controller.RemoveProduct(productID);
+            } catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
             if(response.getIsErr())
                 return response;
             this.products.remove(productID);
@@ -232,7 +245,12 @@ public class Inventory {
             int id = (int) pair.getKey();
             if (id == productID) {
                 Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
-                Response response= data_controller.editProductDetails(productID, productName, price, category, quantity);
+                Response response;
+                try {
+                    response= data_controller.editProductDetails(productID, productName, price, category, quantity);
+                } catch (Exception e){
+                    return new Response(true, "Error In DB!");
+                }
                 if(response.getIsErr()){
                     return response;
                 }
