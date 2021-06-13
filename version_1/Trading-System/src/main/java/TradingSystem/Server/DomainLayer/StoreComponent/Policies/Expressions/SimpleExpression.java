@@ -15,7 +15,7 @@ public abstract class SimpleExpression  implements Expression{
         SimpleExpression.tradingSystem = tradingSystem;
     }
 
-    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
+    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode);
 
     @Override
     public Response checkValidity(int storeID) {

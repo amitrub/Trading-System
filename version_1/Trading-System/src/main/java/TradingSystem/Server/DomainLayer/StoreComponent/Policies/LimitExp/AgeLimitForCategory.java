@@ -26,7 +26,7 @@ public class AgeLimitForCategory extends SimpleExpression {
     }
 
     @Override
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode) {
         for (Integer key : products.keySet()
         ) {
             if(tradingSystem.getProduct(storeID, key).getCategory().equals(category)){

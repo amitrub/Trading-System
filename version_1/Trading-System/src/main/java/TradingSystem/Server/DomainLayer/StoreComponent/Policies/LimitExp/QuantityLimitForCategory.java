@@ -25,7 +25,7 @@ public class QuantityLimitForCategory extends SimpleExpression {
     }
 
     @Override
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode) {
         Integer quantity = 0;
         for (Integer key : products.keySet()
         ) {
@@ -33,7 +33,7 @@ public class QuantityLimitForCategory extends SimpleExpression {
                 quantity = quantity + products.get(key);
             }
         }
-        return maxQuantity>=quantity;
+        return maxQuantity >= quantity;
     }
 
     @Override

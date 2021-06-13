@@ -2920,7 +2920,7 @@ public class TradingSystemImpl implements TradingSystem {
         }
         DiscountPolicy discountPolicy=new DiscountPolicy(storeID,sale);
         s.setDiscountPolicy(discountPolicy);
-        this.tmpDiscountPolicyForStore.remove(storeID);
+        //this.tmpDiscountPolicyForStore.remove(storeID);
 //        DBSale parent=new DBSale(sale,null);
 //        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
         res= data_controller.AddDiscountPolicy(storeID,sale);
@@ -2944,7 +2944,7 @@ public class TradingSystemImpl implements TradingSystem {
         }
         BuyingPolicy buyingPolicy=new BuyingPolicy(storeID,exp);
         s.setBuyingPolicy(buyingPolicy);
-        this.tmpBuyingPolicyForStore.remove(storeID);
+      //  this.tmpBuyingPolicyForStore.remove(storeID);
 //        DBSale parent=new DBSale(sale,null);
 //        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
         res= data_controller.AddBuyingPolicy(storeID,exp);

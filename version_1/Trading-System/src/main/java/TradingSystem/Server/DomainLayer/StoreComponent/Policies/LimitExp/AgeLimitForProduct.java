@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
@@ -18,7 +17,7 @@ public class AgeLimitForProduct extends SimpleExpression {
     }
 
     @Override
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode) {
         if(products.get(productID)!=null){
             return userID>=minAge;
         }

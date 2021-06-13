@@ -23,9 +23,9 @@ public class Conditioning extends SimpleExpression{
         this.condIf = condIf;
     }
 
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
-        if(!condIf.evaluate(products,finalPrice, userID,storeID )){
-            return cond.evaluate(products,finalPrice, userID,storeID );
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode) {
+        if(!condIf.evaluate(products,finalPrice, userID,storeID, 1)){
+            return cond.evaluate(products,finalPrice, userID,storeID, 1);
         }
         return true;
     }

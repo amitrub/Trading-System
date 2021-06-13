@@ -124,20 +124,25 @@ public class ShoppingCart {
                   return new Response(true, "AddProductToCart: The quantity from the product is not in stock");
             }
         }
-
-        //todo - change!
-        if(!isGuset){
-            //Adds to the db
-            data_controller.addProductToBag(getUserID(), storeID, productID, quantity);
-        }
-
-        this.shoppingBags.get(storeID).addProduct(productID, quantity);
-        ConcurrentHashMap<Integer,Integer> products=this.shoppingBags.get(storeID).getProducts();
-        if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,products)) {
-            this.shoppingBags.get(storeID).RemoveProduct(productID);
+        Integer preQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
+        ConcurrentHashMap<Integer,Integer> tmpProducts=this.shoppingBags.get(storeID).getProducts();
+        tmpProducts.put(productID,quantity+preQuantity);
+        if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,tmpProducts)) {
+            if(preQuantity<=0) {
+                tmpProducts.remove(productID);
+            }
+            else{
+                tmpProducts.put(productID,preQuantity);
+            }
             return new Response(true, "Adding the product "+productID+" is against the store policy");
         }
-        Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, products);
+        tmpProducts.put(productID,preQuantity);
+        this.shoppingBags.get(storeID).addProduct(productID, quantity);
+        if(!isGuset){
+            //Adds to the db
+            data_controller.addProductToBag(getUserID(), storeID, productID, quantity+preQuantity);
+        }
+        Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, tmpProducts);
         shoppingBags.get(storeID).setFinalPrice(priceForBag);
         Response res =new Response("The product added successfully");
         return res;
@@ -156,15 +161,15 @@ public class ShoppingCart {
                 return new Response(true, " The quantity from the product is not in stock");
             }
         }
-        ConcurrentHashMap<Integer,Integer> tmpProducts=this.shoppingBags.get(storeID).getProducts();
-        if(tmpProducts.get(productID)!=null){
+        //ConcurrentHashMap<Integer,Integer> tmpProducts=this.shoppingBags.get(storeID).getProducts();
+        if(this.shoppingBags.get(storeID).getProducts().get(productID)!=null){
             return new Response(true, "The product "+productID+" is exist in the bag already");
         }
-        tmpProducts.put(productID,quantity);
-        if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,tmpProducts)) {
-            return new Response(true, "Adding the product "+productID+" is against the store policy");
-        }
-        tmpProducts.remove(productID);
+//        tmpProducts.put(productID,quantity);
+//        if (!tradingSystem.validation.checkBuyingPolicy(this.userID, storeID,tmpProducts)) {
+//            return new Response(true, "Adding the product "+productID+" is against the store policy");
+//        }
+//        tmpProducts.remove(productID);
         this.shoppingBags.get(storeID).addSPacialProduct(productID, quantity,productPrice);
         //Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, this.shoppingBags.get(storeID).getProducts());
         Integer spacialPrice=  this.shoppingBags.get(storeID).calculateSpacialPrices();
@@ -172,8 +177,6 @@ public class ShoppingCart {
         Response res =new Response("The product added successfully");
         return res;
     }
-
-
 
     private synchronized Double calculatePrice(){
         double price = 0.0;
@@ -277,7 +280,6 @@ public class ShoppingCart {
             lock.unlock();
         }
     }
-
 
     private Response checkInventoryAndLockProduct(List<Lock> lockList){
         boolean succeededToLock = false;
@@ -390,15 +392,6 @@ public class ShoppingCart {
         return outputList;
     }
 
-    /*for (Integer productID : SB.getQuantityOfSpacialProducts().keySet()) {
-                if (SB.getPriceOfSpacialProducts().containsKey(productID)) {
-                    int quantity = SB.getQuantityOfSpacialProducts().get(productID);
-                    Double price=SB.getPriceOfSpacialProducts().get(productID);
-                    Product p = tradingSystem.getProduct(storeID, productID);
-                    DummyProduct d = new DummyProduct(storeID, tradingSystem.getStoreName(storeID), productID, p.getProductName(), price, p.getCategory(), quantity);
-                    outputList.add(d);
-                }
-     */
 
     
       /**
@@ -430,12 +423,19 @@ public class ShoppingCart {
             return new Response(true,"EditCart: The product is a special product, so it cannot be edited");
         }
         Integer preQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
-        this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
-        if(!tradingSystem.validation.checkBuyingPolicy(userID,storeID,this.shoppingBags.get(storeID).getProducts())){
-            this.shoppingBags.get(storeID).editProductQuantity(productID, preQuantity);
+        ConcurrentHashMap<Integer,Integer> tmpProducts=this.shoppingBags.get(storeID).getProducts();
+        tmpProducts.put(productID,quantity+preQuantity);
+        if(!tradingSystem.validation.checkBuyingPolicy(userID,storeID,tmpProducts)){
+            if(preQuantity<=0) {
+                tmpProducts.remove(productID);
+            }
+            else{
+                tmpProducts.put(productID,preQuantity);
+            }
             return new Response(true,"EditCart: The quantity of the product is against tha store policy, so it cannot be edited");
         }
         else{
+            tmpProducts.put(productID,preQuantity);
             this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
             Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, this.shoppingBags.get(storeID).getProducts());
             shoppingBags.get(storeID).setFinalPrice(priceForBug);

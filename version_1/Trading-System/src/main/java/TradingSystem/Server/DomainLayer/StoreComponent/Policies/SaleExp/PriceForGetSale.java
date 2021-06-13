@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
@@ -14,7 +13,7 @@ public class PriceForGetSale extends SimpleExpression {
         this.priceForSale = priceForSale;
     }
 
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode){
         return finalPrice>=priceForSale;
     }
 

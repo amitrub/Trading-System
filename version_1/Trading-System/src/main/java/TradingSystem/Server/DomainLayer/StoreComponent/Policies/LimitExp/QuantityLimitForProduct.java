@@ -4,7 +4,6 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expr
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class QuantityLimitForProduct extends SimpleExpression {
@@ -23,10 +22,11 @@ public class QuantityLimitForProduct extends SimpleExpression {
     }
 
     //ToDo check!
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode){
         if(!products.isEmpty()) {
             if (products.get(productID) != null) {
-                return  maxQuantity>=products.get(productID) ;
+                int num=products.get(productID);
+                return  maxQuantity >= num;
             }
         }
         return true;

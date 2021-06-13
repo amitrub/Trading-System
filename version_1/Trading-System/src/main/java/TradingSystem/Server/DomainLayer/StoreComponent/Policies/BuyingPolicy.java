@@ -47,7 +47,7 @@ public class BuyingPolicy {
 
     public boolean checkEntitlement(ConcurrentHashMap<Integer,Integer> products, Integer userID, Double finalPrice){
        if(exp!=null) {
-           return exp.evaluate(products, finalPrice, userID, storeID);
+           return exp.evaluate(products, finalPrice, userID, storeID, 1);
        }
        return true;
     }
