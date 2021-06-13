@@ -4,13 +4,8 @@ package TradingSystem.Server.DataLayer.Services;
 import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
 import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
-import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
-import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
-import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
-import TradingSystem.Server.DataLayer.Data_Modules.Permissions.DataOwnerPermissions;
 import TradingSystem.Server.DataLayer.Data_Modules.Sales.DBSale;
 import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
-import TradingSystem.Server.DataLayer.Data_Modules.ShoppingCart.DataShoppingBagCart;
 import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataShoppingHistory;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
@@ -21,13 +16,11 @@ import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.UnexpectedRollbackException;
 
 import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -268,7 +261,7 @@ public class Data_Controller {
         if(response.getIsErr()){
             return new Response(true,"Could not found storeid");
         }
-        DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.getDataStore().getStoreID(),parent);
+        DataBuyingPolicy buyingPolicy=new DataBuyingPolicy(response.returnDataStore().getStoreID(),parent);
         return buyingService.AddBuyingPolicy(buyingPolicy);
     }
 
@@ -278,7 +271,7 @@ public class Data_Controller {
         if(response.getIsErr()){
             return new Response(true,"Could not found storeid");
         }
-        DataDiscountPolicy dataDiscountPolicy= new DataDiscountPolicy(response.getDataStore().getStoreID(),parent);
+        DataDiscountPolicy dataDiscountPolicy= new DataDiscountPolicy(response.returnDataStore().getStoreID(),parent);
         return discountPolicyService.AddDiscountPolicy(dataDiscountPolicy);
     }
 //    public Response AddDiscountPolicy(DataDiscountPolicy service){

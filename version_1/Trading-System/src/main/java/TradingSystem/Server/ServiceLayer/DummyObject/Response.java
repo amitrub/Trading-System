@@ -88,32 +88,32 @@ public class Response {
     public void AddDBDiscountPolicy(DataDiscountPolicy dataDiscountPolicy){
         this.returnObject.put("DB_Discount",dataDiscountPolicy);
     }
-    public DataSubscriber getDataSubscriber(){
+    public DataSubscriber returnDataSubscriber(){
         return (DataSubscriber)this.returnObject.get("DataSubscriber");
     }
     public void AddDBSubscribers(List<DataSubscriber> list){
         this.returnObject.put("DBsubscribers",list);
     }
-    public DataStore getDataStore(){
+    public DataStore returnDataStore(){
         return (DataStore) this.returnObject.get("storeID");
     }
-    public DataBuyingPolicy getDBBuying(){
+    public DataBuyingPolicy returnDBBuying(){
         return (DataBuyingPolicy) this.returnObject.get("DB_Buying");
     }
-    public DataDiscountPolicy getDBDiscount(){
+    public DataDiscountPolicy returnDBDiscount(){
         return (DataDiscountPolicy) this.returnObject.get("DB_Discount");
     }
     
-    public List<DataSubscriber> getDBsubscribers(){
+    public List<DataSubscriber> returnDBsubscribers(){
         return (List<DataSubscriber>)this.returnObject.get("DBsubscribers");
     }
-    public List<DataProduct> getProductsDB(){
+    public List<DataProduct> returnProductsDB(){
         return (List<DataProduct>)this.returnObject.get("DBProducts");
     }
-    public List<DataStore> getStoresDB(){
+    public List<DataStore> returnStoresDB(){
         return (List<DataStore>)this.returnObject.get("DBStores");
     }
-    public List<DataShoppingBagCart> getDBshoppingCart(){
+    public List<DataShoppingBagCart> returnDBshoppingCart(){
         return (List<DataShoppingBagCart>)this.returnObject.get("DBShoppingCart");
     }
 

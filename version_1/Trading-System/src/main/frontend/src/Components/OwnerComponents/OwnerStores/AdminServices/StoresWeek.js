@@ -31,12 +31,12 @@ function StoresWeek(props) {
     <Fragment>
       <section className="section-form" id="shoppingcart">
         <div>
-          <h5>Weekly Stores Viewers</h5>
+          <h5>Weekly Stores</h5>
           {storesWeek && storesWeek.length > 0
             ? storesWeek.map((curr) => (
                 <li>
                   <p>
-                    {curr.date} : {curr.numOfViewers} Viewrs.
+                    {curr.date} : {curr.numOfViewers} Stores.
                   </p>
                 </li>
               ))

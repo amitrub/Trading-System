@@ -291,7 +291,6 @@ public class StoreOwnerServiceHttp {
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param buyingPolicyID : int (Path)
      * @param connID: String (Header)
 
      * @return Response{
@@ -301,7 +300,8 @@ public class StoreOwnerServiceHttp {
      * }
      */
     @GetMapping("{userID}/store/{storeID}/remove_buying_policy")
-    public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID){
+    public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        System.out.println("--------------------- RemoveBuyingPolicy --------------------");
         Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
         WriteToLogger(res);
         return res;
@@ -312,7 +312,6 @@ public class StoreOwnerServiceHttp {
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param discountPolicyID : int (Path)
      * @param connID: String (Header)
 
      * @return Response{
@@ -322,7 +321,7 @@ public class StoreOwnerServiceHttp {
      * }
      */
     @GetMapping("{userID}/store/{storeID}/remove_discount_policy")
-    public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID){
+    public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
         WriteToLogger(res);
         return res;

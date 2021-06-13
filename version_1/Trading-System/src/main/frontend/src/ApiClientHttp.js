@@ -607,7 +607,7 @@ export const createApiClientHttp = () => {
         Accept: "application/json",
         connID: connID,
       };
-      // console.log(path);
+      console.log(path);
       // console.log(body);
       return axios.get(path, { headers: headers }).then((res) => {
         // console.log(res);
@@ -926,6 +926,34 @@ export const createApiClientHttp = () => {
     ShowDiscountPolicyBuildingTree: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/show_discount_policy_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    RemoveBuyingPolicy: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/remove_buying_policy`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    RemoveDiscountPolicy: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/remove_discount_policy`
       );
       const headers = {
         "Content-Type": "application/json; utf-8",

@@ -267,7 +267,7 @@ public class Inventory {
                 }
             }
         }
-        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).getProductsDB().stream()
+        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).returnProductsDB().stream()
                 .map(DataProduct::getProductID)
                 .collect(Collectors.toList());;
         products.addAll(productsDb);

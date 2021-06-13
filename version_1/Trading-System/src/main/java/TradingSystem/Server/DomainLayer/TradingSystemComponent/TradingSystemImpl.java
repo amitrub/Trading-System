@@ -2,13 +2,8 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 
 
 import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
-import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
-import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DBExpression;
-import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
 import TradingSystem.Client.ClientProxy;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
-import TradingSystem.Server.DataLayer.Data_Modules.Sales.DBSale;
-import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ExternalServices.*;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingBag;
@@ -36,7 +31,6 @@ import TradingSystem.Server.DomainLayer.UserComponent.*;
 
 import TradingSystem.Server.JsonInitReader;
 import TradingSystem.Server.JsonStateReader;
-import TradingSystem.Server.JsonUser;
 import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyExpressions.*;
@@ -44,7 +38,6 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.TradingSystemApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Scope;
@@ -119,7 +112,7 @@ public class TradingSystemImpl implements TradingSystem {
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
             Response response=this.data_controller.GetSubscriber(userName, password);
-            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).getDataSubscriber();
+            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).returnDataSubscriber();
             int userID;
             if (subscriber==null){
             //    Response response= data_controller.AddSubscriber(userName, password);
@@ -2124,7 +2117,7 @@ public class TradingSystemImpl implements TradingSystem {
         }
         s.setDiscountPolicy(d);
 //        DBSale parent=new DBSale(sale,null);
-//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+//        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
         res= data_controller.AddDiscountPolicy(storeID,sale);
         if(res.getIsErr())
             return res;
@@ -2338,7 +2331,7 @@ public class TradingSystemImpl implements TradingSystem {
         s.setBuyingPolicy(b);
         //ADD to db
 //        DBExpression parent=new DBExpression(exp,null);
-//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+//        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
         res = data_controller.AddBuyingPolicy(storeID,exp);
         if(res.getIsErr()){
             return res;
@@ -2922,7 +2915,7 @@ public class TradingSystemImpl implements TradingSystem {
         s.setDiscountPolicy(discountPolicy);
         //this.tmpDiscountPolicyForStore.remove(storeID);
 //        DBSale parent=new DBSale(sale,null);
-//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+//        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
         res= data_controller.AddDiscountPolicy(storeID,sale);
         if(res.getIsErr())
             return res;
@@ -2946,7 +2939,7 @@ public class TradingSystemImpl implements TradingSystem {
         s.setBuyingPolicy(buyingPolicy);
       //  this.tmpBuyingPolicyForStore.remove(storeID);
 //        DBSale parent=new DBSale(sale,null);
-//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+//        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
         res= data_controller.AddBuyingPolicy(storeID,exp);
         if(res.getIsErr())
             return res;

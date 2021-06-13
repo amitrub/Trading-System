@@ -3,8 +3,6 @@ package TradingSystem.Server.DomainLayer.TradingSystemComponent;
 import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
-import TradingSystem.Server.DataLayer.Data_Modules.Expressions.DataBuyingPolicy;
-import TradingSystem.Server.DataLayer.Data_Modules.Sales.DataDiscountPolicy;
 import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
@@ -13,7 +11,6 @@ import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.List;
-import java.util.Optional;
 
 public class AddFromDb {
     public final TradingSystemImpl tradingSystem;
@@ -34,23 +31,23 @@ public class AddFromDb {
     }
 
     private void UploadAllStores(){
-        List<DataStore> stores= data_controller.getAllStores().getStoresDB();
+        List<DataStore> stores= data_controller.getAllStores().returnStoresDB();
         for(DataStore store:stores){
             Store toAdd= new Store(store);
             Response response=data_controller.getBuyingByStoreId(toAdd.getId());
             if(!response.getIsErr()){
-                toAdd.setBuyingPolicy(new BuyingPolicy(response.getDBBuying()));
+                toAdd.setBuyingPolicy(new BuyingPolicy(response.returnDBBuying()));
             }
             response=data_controller.getdiscountByStoreId(toAdd.getId());
             if(!response.getIsErr()){
-                toAdd.setDiscountPolicy(new DiscountPolicy(response.getDBDiscount()));
+                toAdd.setDiscountPolicy(new DiscountPolicy(response.returnDBDiscount()));
             }
             tradingSystem.AddStoreIfNotExist(toAdd);
         }
     }
     private void UploadAllUsers(){
         Response response= data_controller.getAllSubscribers();
-        List<DataSubscriber> subscribers= response.getDBsubscribers();
+        List<DataSubscriber> subscribers= response.returnDBsubscribers();
         for(DataSubscriber subscriber:subscribers){
             User toAdd = new User(subscriber);
             tradingSystem.AddSubscriberIfNotExist(toAdd);
