@@ -52,27 +52,30 @@ public class SubscriberTests {
     //case 3.2.1
     @Test
     void openStore_Happy() {
+        client.Login("Elinor", "123");
         Integer preSize = client.showAllStores().getStores().size();
 
         Response response = client.openStore("Mania");
         assertFalse(response.getIsErr());
         assertEquals(preSize+1, client.showAllStores().getStores().size());
+        client.Logout();
     }
     //case 3.2.2
     @Test
     void openStore_SadDuplicateName() {
+        client.Login("Elinor", "123");
         client.openStore("Mania");
         Integer preSize = client.showAllStores().getStores().size();
         Response response = client.openStore("Mania");
         Integer newSize = client.showAllStores().getStores().size();
         assertTrue(response.getIsErr());
         assertEquals(preSize, newSize);
+        client.Logout();
     }
 
     //case 3.2.3
     @Test
     void sad_openStoreNotRegistered() {
-        client.Logout();
         Response response = client.openStore("American Eagle11");
         assertTrue(response.getIsErr());
     }
@@ -81,50 +84,39 @@ public class SubscriberTests {
     //case: 3.3.1
     @Test
     void writeComment() {
-        // Prepare
-        Integer storeID = setUpBeforePurchase();
-        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();;
-        client.addProductToCart(storeID, productID, 1);
+        client.Login("Nofet","123");
+        client.addProductToCart(storeID, 1, 1);
         client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         //Issue
-        Response response = client.writeComment(storeID, productID, 3, "The product is nice");
+        Response response = client.writeComment(storeID, 1, 3, "The product is nice");
         assertFalse(response.getIsErr());
+        client.Logout();
     }
     //case: 3.3.2, trying comment on product sub didn't buy
     @Test
     void sad_didntBuy_writeComment() {
-        //prepare
-        Integer storeID = setUpBeforePurchase();
-        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();
-
         //Issue
-        Response response = client.writeComment(storeID, productID, 3, "The product is nice");
+        client.Login("Nofet", "123");
+        Response response = client.writeComment(storeID, 2, 3, "The product is nice");
         assertTrue(response.getIsErr());
+        client.Logout();
     }
     //endregion
     //region requirement 3.4: User Purchase
 
-    Integer setUpBeforePurchase(){
-        client.openStore("Adidas");
-        Integer storeID = client.getStoreIDByName("Adidas").returnStoreID();
-        client.addProduct(storeID, "Short Pants", "Pants", 120.0, 2);
-        return storeID;
-    }
 
     //case 3.4.1 simple purchase
     @Test
     void Purchase_Happy() {
-        // Prepare
-        Integer storeID = setUpBeforePurchase();
-        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();
-
-        client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
-        assertEquals(ans1, "Short Pants");
+        client.Login("Elinor","123");
+        client.addProductToCart(storeID, 1, 1);
+        List ans1 = client.showShoppingCart().returnProductList();
+        assertEquals(ans1.size(), 1);
 
         //Issue
-        Integer preQuantity = client.showStoreProducts(storeID).returnProductList().get(0).getQuantity();
+        DummyProduct product1 = new DummyProduct((Map<String, Object>)client.showStoreProducts(storeID).returnProductList().get(0));
+        Integer preQuantity = product1.getQuantity();
         Response response = client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         List<DummyProduct> cartAfter = client.showShoppingCart().returnProductList();
         List<DummyProduct> productsAfter = client.showStoreProducts(storeID).returnProductList();
@@ -133,35 +125,32 @@ public class SubscriberTests {
         assertFalse(response.getIsErr());
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
         assertEquals(product.getQuantity(), preQuantity - 1); //check decrease quantity in store
+        client.Logout();
     }
 
     //case 3.4.2 input doesn't fit
     @Test
     void Purchase_Sad() {
         // Prepare
-        Integer storeID = setUpBeforePurchase();
-        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();;
-
-        client.addProductToCart(storeID, productID, 1);
-        String ans1 = client.showShoppingCart().returnProductList().get(0).getProductName();
-        assertEquals(ans1, "Short Pants");
+        client.Login("Elinor","123");
+        client.addProductToCart(storeID, 1, 1);
 
         //Issue, not valid month
         Response response = client.subscriberPurchase( "123456789", "20","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         //Assert
         assertTrue(response.getIsErr());
+        client.Logout();
     }
     // endregion
     //region requirement 3.7: User History Tests
     //case 3.7.1 have purchases
     @Test
     void showUsersHistory_Happy() {
-        Integer storeID = setUpBeforePurchase();
-        Integer productID = client.getProductIDByName("Short Pants", storeID).returnProduct();
-        client.addProductToCart(storeID, productID, 1);
+        client.Login("Elinor","123");
+        client.addProductToCart(storeID, 1, 1);
         client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
-        client.addProductToCart(storeID, productID, 1);
+        client.addProductToCart(storeID, 1, 1);
         client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
         Response response = client.showUserHistory();
@@ -171,11 +160,12 @@ public class SubscriberTests {
     //case 3.7.2 no history for this user
     @Test
     void showUserHistory_Sad_NoHistory() {
-        // Prepare
-        setUpBeforePurchase();
-
+        client.connectSystem();
+        client.Register("Avi","123");
+        client.Login("Avi","123");
         Response response = client.showUserHistory();
         assertTrue(response.getIsErr());
+        client.Logout();
     }
     //endregion
 

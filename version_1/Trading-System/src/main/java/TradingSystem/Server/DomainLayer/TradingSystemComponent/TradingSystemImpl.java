@@ -126,10 +126,10 @@ public class TradingSystemImpl implements TradingSystem {
             } else {
                 userID = subscriber.getUserID();
             }
-//            if(readJson.getLoadTest())
-//            {
-//                LoadTestInfo();
-//            }
+            if(readJson.getLoadTest())
+            {
+                LoadTestInfo();
+            }
 
             User defaultAdmin = new User(userID,userName, password);
             this.systemAdmins.put(userID, userID);
@@ -254,15 +254,15 @@ public class TradingSystemImpl implements TradingSystem {
                         }
                     }
                 }
-                if(readJson.add_manager != null) {
-                    for (Map<String, Object> addManagerMap : readJson.add_manager) {
-                        String owner = (String) addManagerMap.get("owner");
+                if(readJson.add_owner != null) {
+                    for (Map<String, Object> addOwnerMap : readJson.add_owner) {
+                        String owner = (String) addOwnerMap.get("owner");
                         if (userName.equals(owner)) {
-                            String newManager = (String) addManagerMap.get("newManager");
-                            Integer newManagerID = userName_id.get(newManager);
-                            String storeName = (String) addManagerMap.get("storeName");
+                            String newOwner = (String) addOwnerMap.get("newOwner");
+                            Integer newOwnerID = userName_id.get(newOwner);
+                            String storeName = (String) addOwnerMap.get("storeName");
                             Integer storeID = this.getStoreIDByName(storeName);
-                            AddNewManager(userID, connID, storeID, newManagerID);
+                            AddNewOwner(userID, connID, storeID, newOwnerID);
                         }
                     }
                 }
@@ -308,7 +308,18 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public void LoadTestInfo(){
-        //String connID = this.ConnectSystem().returnConnID();
+        for(int i=1; i<=1000; i++)
+        {
+            String connID = this.ConnectSystem().returnConnID();
+            Integer userID = this.Register(connID,"user"+i,"123").returnUserID();
+            connID = this.Login(connID,"user"+i,"123").returnConnID();
+            this.AddStore(userID,connID,"store"+i);
+            int storeID = this.getStoreIDByName("store"+i);
+            for(int j=1; j<=1000; j++)
+            {
+                this.AddProductToStore(userID,connID,storeID,"product"+i,"products",10.0,10);
+            }
+        }
 
     }
 

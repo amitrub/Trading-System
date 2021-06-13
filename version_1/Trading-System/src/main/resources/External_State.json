@@ -1,33 +1,36 @@
 {
   "register" : [{
-    "userName": "u1",
+    "userName": "U1",
     "password": "1234"
   },{
-    "userName": "u2",
+    "userName": "U2",
     "password": "1234"
   },{
-    "userName": "u3",
+    "userName": "U3",
+    "password": "1234"
+  },{
+    "userName": "U4",
     "password": "1234"
   }],
 
-  "login" : [{"userName": "u2"}],
+  "login" : [{"userName": "U1"}],
 
   "open_store" : [
     {
-      "userName": "u2",
+      "userName": "U1",
       "storeName": "s1"
     }],
 
   "add_item" : [{
-    "userName": "u2",
+    "userName": "U1",
     "storeName": "s1",
-    "productName": "Bamba",
-    "category": "food",
-    "price": 30.1,
-    "quantity": 100}],
+    "productName": "Wine",
+    "category": "Drink",
+    "price": 35.0,
+    "quantity": 40}],
 
-  "add_manager" : [{
-    "owner": "u2",
-    "newManager": "u3",
+  "add_owner" : [{
+    "owner": "U1",
+    "newOwner": "U4",
     "storeName":  "s1"}]
 }
