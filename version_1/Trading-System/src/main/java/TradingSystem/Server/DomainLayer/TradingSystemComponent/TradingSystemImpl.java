@@ -44,7 +44,6 @@ import TradingSystem.Server.ServiceLayer.DummyObject.DummySales.*;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
 import TradingSystem.Server.TradingSystemApplication;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import net.minidev.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.context.annotation.Scope;
@@ -119,7 +118,7 @@ public class TradingSystemImpl implements TradingSystem {
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
             Response response=this.data_controller.GetSubscriber(userName, password);
-            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).getDataSubscriber();
+            DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).returnDataSubscriber();
             int userID;
             if (subscriber==null){
             //    Response response= data_controller.AddSubscriber(userName, password);
@@ -577,7 +576,8 @@ public class TradingSystemImpl implements TradingSystem {
             return response;
         User myGuest = guests.get(guestConnID);
         User myUser = subscribers.get(response.returnUserID());
-        myUser.mergeToMyCart(myGuest.getShoppingCart());
+        //TODO: not working with DB
+//        myUser.mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
 //        myUser.updateAfterLogin();
@@ -2124,7 +2124,7 @@ public class TradingSystemImpl implements TradingSystem {
         }
         s.setDiscountPolicy(d);
 //        DBSale parent=new DBSale(sale,null);
-//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+//        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
         res= data_controller.AddDiscountPolicy(storeID,sale);
         if(res.getIsErr())
             return res;
@@ -2310,9 +2310,9 @@ public class TradingSystemImpl implements TradingSystem {
         if(stores.get(storeID)==null){
             return new Response(true, "the store not exist in the system");
         }
-        if(!stores.get(storeID).checkOwner(userID)){
-            return new Response(true, "the user is not the owner of the store");
-        }
+//        if(!stores.get(storeID).checkOwner(userID)){
+//            return new Response(true, "the user is not the owner of the store");
+//        }
         if(!hasPermission(userID,storeID,p)){
             return new Response(true, "the user does not have permission to do that");
         }
@@ -2338,7 +2338,7 @@ public class TradingSystemImpl implements TradingSystem {
         s.setBuyingPolicy(b);
         //ADD to db
 //        DBExpression parent=new DBExpression(exp,null);
-//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+//        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
         res = data_controller.AddBuyingPolicy(storeID,exp);
         if(res.getIsErr()){
             return res;
@@ -2451,39 +2451,26 @@ public class TradingSystemImpl implements TradingSystem {
         this.stores.put(store.getId(), store);
     }
 
-    //todo add permission?
+
     public Response RemoveBuyingPolicy(int userID, int storeID, String connID) {
-        if (!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "Error in Admin details");
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditDiscountPolicy);
+        Response res = response;
+        if(res.getIsErr()){
+            return res;
         }
-        if (!subscribers.containsKey(userID)) {
-             return new Response(true, "the user is not subscriber to the system");
-        }
-        if(stores.get(storeID)==null){
-            return new Response(true, "the store not exist in the system");
-        }
-        if(!stores.get(storeID).checkOwner(userID)){
-              return new Response(true, "the user is not the owner of the store");
-        }
-       if(stores.get(storeID).getBuyingPolicy()==null){
-           return new Response(true,"there is not policy");
-       }
+
+        this.tmpBuyingPolicyForStore.remove(storeID);
+
         return  stores.get(storeID).RemoveBuyingPolicy();
     }
 
     public Response RemoveDiscountPolicy(int userID, int storeID, String connID) {
-        if (!ValidConnectedUser(userID, connID)) {
-               return new Response(true, "Error in Admin details");
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditDiscountPolicy);
+        Response res = response;
+        if(res.getIsErr()){
+            return res;
         }
-        if (!subscribers.containsKey(userID)) {
-              return new Response(true, "the user is not subscriber to the system");
-        }
-        if(stores.get(storeID)==null){
-             return new Response(true, "the store not exist in the system");
-        }
-        if(!stores.get(storeID).checkOwner(userID)){
-             return new Response(true, "the user is not the owner of the store");
-        }
+        this.tmpDiscountPolicyForStore.remove(storeID);
         return stores.get(storeID).RemoveDiscountPolicy();
     }
 
@@ -2922,10 +2909,11 @@ public class TradingSystemImpl implements TradingSystem {
         s.setDiscountPolicy(discountPolicy);
         //this.tmpDiscountPolicyForStore.remove(storeID);
 //        DBSale parent=new DBSale(sale,null);
-//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
-        res= data_controller.AddDiscountPolicy(storeID,sale);
-        if(res.getIsErr())
-            return res;
+//        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
+        //TODO
+//        res= data_controller.AddDiscountPolicy(storeID,sale);
+//        if(res.getIsErr())
+//            return res;
         return new Response("Discount Policy for store "+ storeID+" added successfully" );
     }
 
@@ -2946,7 +2934,7 @@ public class TradingSystemImpl implements TradingSystem {
         s.setBuyingPolicy(buyingPolicy);
       //  this.tmpBuyingPolicyForStore.remove(storeID);
 //        DBSale parent=new DBSale(sale,null);
-//        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
+//        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
         res= data_controller.AddBuyingPolicy(storeID,exp);
         if(res.getIsErr())
             return res;

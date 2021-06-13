@@ -48,7 +48,9 @@ public class CategorySale extends SimpleSale {
                     }
                 }
             }
-            return (discountPercentage / 100) * priceForCategory;
+            Double calculate=((double) discountPercentage / 100);
+            Double ret = calculate * priceForCategory;
+            return ret;
         }
         return 0.0;
     }

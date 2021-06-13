@@ -22,8 +22,8 @@ function BuyingPolicy(props) {
       props.userID,
       props.storeID
     );
-    console.log("fetch Building Expression");
-    console.log(buyingPolicyResponse);
+    // console.log("fetch Building Expression");
+    // console.log(buyingPolicyResponse);
 
     if (buyingPolicyResponse.isErr) {
       console.log(buyingPolicyResponse.message);
@@ -43,8 +43,7 @@ function BuyingPolicy(props) {
     const updateBuyingPolicyResponse = await apiHttp.AddBuyingPolicy(
       props.connID,
       props.userID,
-      props.storeID,
-      fetchedExpression
+      props.storeID
     );
     // console.log(updateBuyingPolicyResponse);
 
@@ -54,6 +53,28 @@ function BuyingPolicy(props) {
     }
     if (updateBuyingPolicyResponse.isErr) {
       console.log(updateBuyingPolicyResponse.message);
+    }
+  }
+
+  async function cleanBuyingPolicy() {
+    console.log("cleanBuyingPolicy");
+    const cleanBuyingPolicyResponse = await apiHttp.RemoveBuyingPolicy(
+      props.connID,
+      props.userID,
+      props.storeID
+    );
+    console.log(cleanBuyingPolicyResponse);
+
+    if (cleanBuyingPolicyResponse) {
+      setFetchedExpression({
+        emptyTree:
+          "your buying policy building tree is empty, start build it :)",
+      });
+      setPopupMsg(cleanBuyingPolicyResponse.message);
+      setShowPopUp(true);
+    }
+    if (cleanBuyingPolicyResponse.isErr) {
+      console.log(cleanBuyingPolicyResponse.message);
     }
   }
 
@@ -75,12 +96,22 @@ function BuyingPolicy(props) {
 
         <div>
           <h3>if your tree is ready, press below</h3>
+        </div>
+
+        <div className="row">
           <button
             className="buttonus"
             value="load our stores..."
             onClick={updateBuyingPolicy}
           >
             Update
+          </button>
+          <button
+            className="buttonus"
+            value="load our stores..."
+            onClick={cleanBuyingPolicy}
+          >
+            Clean Tree
           </button>
         </div>
 

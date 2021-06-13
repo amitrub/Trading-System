@@ -598,7 +598,7 @@ export const createApiClientHttp = () => {
       });
     },
 
-    AddBuyingPolicy: (connID, userID, storeID, expression) => {
+    AddBuyingPolicy: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_buying_policy`
       );
@@ -607,18 +607,15 @@ export const createApiClientHttp = () => {
         Accept: "application/json",
         connID: connID,
       };
-      const body = {
-        expression: expression,
-      };
-      // console.log(path);
+      console.log(path);
       // console.log(body);
-      return axios.post(path, body, { headers: headers }).then((res) => {
+      return axios.get(path, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
       });
     },
 
-    AddDiscountPolicy: (connID, userID, storeID, expression) => {
+    AddDiscountPolicy: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_discount_policy`
       );
@@ -628,13 +625,8 @@ export const createApiClientHttp = () => {
         Accept: "application/json",
         connID: connID,
       };
-      const body = {
-        expression: expression,
-      };
-      // console.log(path);
-      // console.log(body);
 
-      return axios.post(path, body, { headers: headers }).then((res) => {
+      return axios.get(path, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
       });
@@ -934,6 +926,34 @@ export const createApiClientHttp = () => {
     ShowDiscountPolicyBuildingTree: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/show_discount_policy_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    RemoveBuyingPolicy: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/remove_buying_policy`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    RemoveDiscountPolicy: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/remove_discount_policy`
       );
       const headers = {
         "Content-Type": "application/json; utf-8",

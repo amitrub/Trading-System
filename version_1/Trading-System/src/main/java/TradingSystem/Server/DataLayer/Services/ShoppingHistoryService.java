@@ -81,7 +81,7 @@ public class ShoppingHistoryService {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
-        c.add(Calendar.DATE, -i);
+        c.add(Calendar.DATE, - i - 7);
         //   Date start = c.getTime();
         for(int j=0;j<=6;j++){
             Date start = c.getTime();
@@ -98,7 +98,7 @@ public class ShoppingHistoryService {
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
-        c.add(Calendar.DATE, -i);
+        c.add(Calendar.DATE, - i - 7);
         //   Date start = c.getTime();
         for(int j=0;j<=6;j++){
             Date start = c.getTime();

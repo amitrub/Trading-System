@@ -37,7 +37,11 @@ public class ProductSale extends SimpleSale {
             if (products.get(productID) != null) {
                 if (this.getExpression().evaluate(products, finalSale, userID, storeID,2 )) {
                     Product p = tradingSystem.getProduct(storeID, productID);
-                    Double ret = ((discountPercentage / 100) * p.getPrice()) * products.get(productID);
+                    Double price=p.getPrice();
+                    int q=products.get(productID);
+                    Double calculate=((double) discountPercentage / 100);
+                    Double ret = (calculate * price) * q;
+                   // Double ret = ((discountPercentage / 100) * p.getPrice()) * products.get(productID);
                     return ret;
                 }
             }

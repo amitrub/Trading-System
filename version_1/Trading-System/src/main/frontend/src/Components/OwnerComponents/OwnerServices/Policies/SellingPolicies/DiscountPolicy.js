@@ -41,21 +41,42 @@ function DiscountPolicy(props) {
 
   async function updateDiscountPolicy() {
     console.log("updateDiscountPolicy");
-    // const updateDiscountPolicyResponse = await apiHttp.AddDiscountPolicy(
-    //   props.connID,
-    //   props.userID,
-    //   props.storeID,
-    //   fetchedExpression
-    // );
-    // // console.log(updateDiscountPolicyResponse);
+    const updateDiscountPolicyResponse = await apiHttp.AddDiscountPolicy(
+      props.connID,
+      props.userID,
+      props.storeID
+    );
+    console.log(updateDiscountPolicyResponse);
 
-    // if (updateDiscountPolicyResponse) {
-    //   setPopupMsg(updateDiscountPolicyResponse.message);
-    //   setShowPopUp(true);
-    // }
-    // if (updateDiscountPolicyResponse.isErr) {
-    //   console.log(updateDiscountPolicyResponse.message);
-    // }
+    if (updateDiscountPolicyResponse) {
+      setPopupMsg(updateDiscountPolicyResponse.message);
+      setShowPopUp(true);
+    }
+    if (updateDiscountPolicyResponse.isErr) {
+      console.log(updateDiscountPolicyResponse.message);
+    }
+  }
+
+  async function cleanDiscountPolicy() {
+    console.log("cleanDiscountPolicy");
+    const cleanDiscountPolicyResponse = await apiHttp.RemoveDiscountPolicy(
+      props.connID,
+      props.userID,
+      props.storeID
+    );
+    console.log(cleanDiscountPolicyResponse);
+
+    if (cleanDiscountPolicyResponse) {
+      setFetchedExpression({
+        emptyTree:
+          "your buying policy building tree is empty, start build it :)",
+      });
+      setPopupMsg(cleanDiscountPolicyResponse.message);
+      setShowPopUp(true);
+    }
+    if (cleanDiscountPolicyResponse.isErr) {
+      console.log(cleanDiscountPolicyResponse.message);
+    }
   }
 
   function onClosePopup() {
@@ -76,12 +97,22 @@ function DiscountPolicy(props) {
 
         <div>
           <h3>if your tree is ready, press below</h3>
+        </div>
+
+        <div className="row">
           <button
             className="buttonus"
             value="load our stores..."
             onClick={updateDiscountPolicy}
           >
             Update
+          </button>
+          <button
+            className="buttonus"
+            value="load our stores..."
+            onClick={cleanDiscountPolicy}
+          >
+            Clean Tree
           </button>
         </div>
 

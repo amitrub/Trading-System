@@ -13,7 +13,7 @@ function InsertBuyingCompositeNode(props) {
 
   async function submitInsertBuyingCompositeNode(event) {
     event.preventDefault();
-    console.log("submitInsertBuyingCompositeNode");
+    // console.log("submitInsertBuyingCompositeNode");
 
     const insertNodeResponse = await apiHttp.AddNodeToBuildingTree(
       props.connID,

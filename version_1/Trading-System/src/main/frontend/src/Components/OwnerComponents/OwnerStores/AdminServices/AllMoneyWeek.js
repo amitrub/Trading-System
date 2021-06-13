@@ -36,7 +36,7 @@ function AllMoneyWeek(props) {
             ? moneyWeek.map((curr) => (
                 <li>
                   <p>
-                    {curr.date} : {curr.numOfViewers} Viewrs.
+                    {curr.date} : {curr.numOfViewers} $.
                   </p>
                 </li>
               ))
