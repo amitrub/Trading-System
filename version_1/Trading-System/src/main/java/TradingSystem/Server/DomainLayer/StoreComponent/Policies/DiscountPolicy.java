@@ -57,7 +57,7 @@ public class DiscountPolicy {
     public Double calculatePrice(ConcurrentHashMap<Integer,Integer> products, Integer userID, Double priceBeforeSale){
        if(sale!=null) {
            Double sale = this.sale.calculateSale(products, priceBeforeSale, userID, storeID);
-           return priceBeforeSale - sale;
+           return  sale;
        }
        return 0.0;
     }

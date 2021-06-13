@@ -2908,9 +2908,9 @@ public class TradingSystemImpl implements TradingSystem {
         //this.tmpDiscountPolicyForStore.remove(storeID);
 //        DBSale parent=new DBSale(sale,null);
 //        DataStore store=data_controller.findStorebyId(storeID).getDataStore();
-        res= data_controller.AddDiscountPolicy(storeID,sale);
-        if(res.getIsErr())
-            return res;
+//        res= data_controller.AddDiscountPolicy(storeID,sale);
+//        if(res.getIsErr())
+//            return res;
         return new Response("Discount Policy for store "+ storeID+" added successfully" );
     }
 
