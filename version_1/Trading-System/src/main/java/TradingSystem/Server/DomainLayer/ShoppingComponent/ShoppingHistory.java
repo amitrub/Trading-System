@@ -50,7 +50,10 @@ public class ShoppingHistory {
     }
 
     public ShoppingHistory(DataShoppingHistory dataShoppingHistory){
-        this.userID=dataShoppingHistory.getSubscriber().getUserID();
+        if (dataShoppingHistory.getSubscriber()!=null){
+            this.userID=dataShoppingHistory.getSubscriber().getUserID();
+        }
+        this.userID=-1;
         this.storeID=dataShoppingHistory.getStore().getStoreID();
         this.date=dataShoppingHistory.getDate();
         this.finalPrice=dataShoppingHistory.getprice();

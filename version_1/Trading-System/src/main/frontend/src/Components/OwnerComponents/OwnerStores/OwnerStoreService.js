@@ -14,6 +14,8 @@ import DiscountPolicy from "../OwnerServices/Policies/SellingPolicies/DiscountPo
 import DailyIncome from "../OwnerServices/DailyIncome";
 import ShowBiddings from "../OwnerServices/ShowBiddings";
 import ShowComments from "../OwnerServices/ShowComments";
+import ShowStoreHistory from "../OwnerServices/ShowStoreHistory";
+import ShowStoreWorkers from "../OwnerServices/ShowStoreWorkers";
 
 const apiHttp = createApiClientHttp();
 
@@ -34,6 +36,8 @@ function OwnerStoreService(props) {
   const [showDailyIncome, setShowDailyIncom] = useState(false);
   const [showBiddings, setShowBiddings] = useState(false);
   const [showComments, setShowComments] = useState(false);
+  const [showStoreWorkers, setShowStoreWorkers] = useState(false);
+  const [showStoreHistory, setShowStoreHistory] = useState(false);
 
   const store = props.currStore;
 
@@ -69,6 +73,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -94,6 +100,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -119,6 +127,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -144,6 +154,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -169,6 +181,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -194,6 +208,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -220,6 +236,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -246,6 +264,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -272,6 +292,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -298,6 +320,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -324,6 +348,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -350,6 +376,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -376,6 +404,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(true);
     setShowBiddings(false);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -402,6 +432,8 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(true);
     setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
@@ -428,11 +460,69 @@ function OwnerStoreService(props) {
     setShowDailyIncom(false);
     setShowBiddings(false);
     setShowComments(true);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(false);
 
     props.onRefresh();
   }
   function hideCommentsHandler() {
     setShowComments(false);
+
+    props.onRefresh();
+  }
+
+  //Store History Btn
+  function showStoreHistoryHandler() {
+    setShowStore(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(false);
+    setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
+    setShowAddBuyPolicy(false);
+    setShowAddSellPolicy(false);
+    setShowDailyIncom(false);
+    setShowBiddings(false);
+    setShowComments(false);
+    setShowStoreWorkers(false);
+    setShowStoreHistory(true);
+
+    props.onRefresh();
+  }
+  function hideStoreHistoryHandler() {
+    setShowStoreHistory(false);
+
+    props.onRefresh();
+  }
+
+  //Store Workers Btn
+  function showStoreWorkersHandler() {
+    setShowStore(false);
+    setShowAddProduct(false);
+    setShowChangeQuantity(false);
+    setShowEditProduct(false);
+    setShowRemoveProduct(false);
+    setShowAddOwner(false);
+    setShowRemoveOwner(false);
+    setShowAddManager(false);
+    setShowRemoveManager(false);
+    setShowPerssionsManager(false);
+    setShowAddBuyPolicy(false);
+    setShowAddSellPolicy(false);
+    setShowDailyIncom(false);
+    setShowBiddings(false);
+    setShowComments(false);
+    setShowStoreWorkers(true);
+    setShowStoreHistory(false);
+
+    props.onRefresh();
+  }
+  function hideStoreWorkersHandler() {
+    setShowStoreWorkers(false);
 
     props.onRefresh();
   }
@@ -473,7 +563,7 @@ function OwnerStoreService(props) {
               : showChangeQuantityHandler
           }
         >
-          {showChangeQuantity ? "Hide" : "Change Quantity"}
+          {showChangeQuantity ? "Hide" : "Add Quantity"}
         </button>
         {/* Edit product Btn */}
         <button
@@ -613,8 +703,37 @@ function OwnerStoreService(props) {
         >
           {showBiddings ? "Hide" : "Show Biddings"}
         </button>
-      </div>
+        <div className="row">
+          <p>---------------</p>
+        </div>
+        <div className="row">
+          {/* Store History Btn */}
+          <button
+            className="buttonus"
+            value="load our stores..."
+            onClick={
+              showStoreHistory
+                ? hideStoreHistoryHandler
+                : showStoreHistoryHandler
+            }
+          >
+            {showStoreHistory ? "Hide" : "Store History"}
+          </button>
 
+          {/* Store Workers Btn */}
+          <button
+            className="buttonus"
+            value="load our stores..."
+            onClick={
+              showStoreWorkers
+                ? hideStoreWorkersHandler
+                : showStoreWorkersHandler
+            }
+          >
+            {showStoreWorkers ? "Hide" : "Store Workers"}
+          </button>
+        </div>
+      </div>
       {/* Show Stores */}
       <div className="row">
         {showStore ? (
@@ -848,6 +967,40 @@ function OwnerStoreService(props) {
         {showBiddings ? (
           <div>
             <ShowBiddings
+              refresh={props.refresh}
+              onRefresh={props.onRefresh}
+              connID={props.connID}
+              userID={props.userID}
+              storeID={props.currStore.id}
+            />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+
+      {/* Show Store History */}
+      <div className="row">
+        {showStoreHistory ? (
+          <div>
+            <ShowStoreHistory
+              refresh={props.refresh}
+              onRefresh={props.onRefresh}
+              connID={props.connID}
+              userID={props.userID}
+              storeID={props.currStore.id}
+            />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
+
+      {/* Show Store Workers */}
+      <div className="row">
+        {showStoreWorkers ? (
+          <div>
+            <ShowStoreWorkers
               refresh={props.refresh}
               onRefresh={props.onRefresh}
               connID={props.connID}
