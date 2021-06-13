@@ -2310,9 +2310,9 @@ public class TradingSystemImpl implements TradingSystem {
         if(stores.get(storeID)==null){
             return new Response(true, "the store not exist in the system");
         }
-        if(!stores.get(storeID).checkOwner(userID)){
-            return new Response(true, "the user is not the owner of the store");
-        }
+//        if(!stores.get(storeID).checkOwner(userID)){
+//            return new Response(true, "the user is not the owner of the store");
+//        }
         if(!hasPermission(userID,storeID,p)){
             return new Response(true, "the user does not have permission to do that");
         }
@@ -2451,39 +2451,26 @@ public class TradingSystemImpl implements TradingSystem {
         this.stores.put(store.getId(), store);
     }
 
-    //todo add permission?
+
     public Response RemoveBuyingPolicy(int userID, int storeID, String connID) {
-        if (!ValidConnectedUser(userID, connID)) {
-            return new Response(true, "Error in Admin details");
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditDiscountPolicy);
+        Response res = response;
+        if(res.getIsErr()){
+            return res;
         }
-        if (!subscribers.containsKey(userID)) {
-             return new Response(true, "the user is not subscriber to the system");
-        }
-        if(stores.get(storeID)==null){
-            return new Response(true, "the store not exist in the system");
-        }
-        if(!stores.get(storeID).checkOwner(userID)){
-              return new Response(true, "the user is not the owner of the store");
-        }
-       if(stores.get(storeID).getBuyingPolicy()==null){
-           return new Response(true,"there is not policy");
-       }
+
+        this.tmpBuyingPolicyForStore.remove(storeID);
+
         return  stores.get(storeID).RemoveBuyingPolicy();
     }
 
     public Response RemoveDiscountPolicy(int userID, int storeID, String connID) {
-        if (!ValidConnectedUser(userID, connID)) {
-               return new Response(true, "Error in Admin details");
+        Response response = checkPermissionToPolicy(userID, connID, storeID, PermissionEnum.Permission.EditDiscountPolicy);
+        Response res = response;
+        if(res.getIsErr()){
+            return res;
         }
-        if (!subscribers.containsKey(userID)) {
-              return new Response(true, "the user is not subscriber to the system");
-        }
-        if(stores.get(storeID)==null){
-             return new Response(true, "the store not exist in the system");
-        }
-        if(!stores.get(storeID).checkOwner(userID)){
-             return new Response(true, "the user is not the owner of the store");
-        }
+        this.tmpDiscountPolicyForStore.remove(storeID);
         return stores.get(storeID).RemoveDiscountPolicy();
     }
 
