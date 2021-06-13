@@ -53,11 +53,11 @@ public class DiscountPolicy {
     public void AddSale(Sale sale){
         this.sale=sale;
     }
-   //TODO check
+
     public Double calculatePrice(ConcurrentHashMap<Integer,Integer> products, Integer userID, Double priceBeforeSale){
        if(sale!=null) {
            Double sale = this.sale.calculateSale(products, priceBeforeSale, userID, storeID);
-           return  sale;
+           return  priceBeforeSale-sale;
        }
        return 0.0;
     }
