@@ -1,6 +1,7 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,7 +34,10 @@ public class StoreSale extends SimpleSale {
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
       if(this.getExpression()!=null) {
           if (this.getExpression().evaluate(products, finalSale, userID, storeID, 2)) {
-              return (discountPercentage / 100) * finalSale;
+              Double price=finalSale;
+              Double calculate=((double) discountPercentage / 100);
+              Double ret = calculate * price;
+              return ret;
           }
       }
         return 0.0;

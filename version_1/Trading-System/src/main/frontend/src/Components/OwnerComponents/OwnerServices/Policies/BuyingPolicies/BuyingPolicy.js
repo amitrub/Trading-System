@@ -66,6 +66,10 @@ function BuyingPolicy(props) {
     console.log(cleanBuyingPolicyResponse);
 
     if (cleanBuyingPolicyResponse) {
+      setFetchedExpression({
+        emptyTree:
+          "your buying policy building tree is empty, start build it :)",
+      });
       setPopupMsg(cleanBuyingPolicyResponse.message);
       setShowPopUp(true);
     }

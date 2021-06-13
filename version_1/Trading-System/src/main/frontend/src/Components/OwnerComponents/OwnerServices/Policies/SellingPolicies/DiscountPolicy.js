@@ -67,6 +67,10 @@ function DiscountPolicy(props) {
     console.log(cleanDiscountPolicyResponse);
 
     if (cleanDiscountPolicyResponse) {
+      setFetchedExpression({
+        emptyTree:
+          "your buying policy building tree is empty, start build it :)",
+      });
       setPopupMsg(cleanDiscountPolicyResponse.message);
       setShowPopUp(true);
     }

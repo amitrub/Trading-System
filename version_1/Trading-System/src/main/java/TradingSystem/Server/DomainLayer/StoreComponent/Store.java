@@ -534,7 +534,7 @@ public class Store extends Observable {
         this.buyingPolicy = buyingPolicy;
     }
 
-    //todo syncronize?
+
     public Response RemoveBuyingPolicy() {
         if(this.getBuyingPolicy()==null||
                 this.getBuyingPolicy().getExp()==null){
