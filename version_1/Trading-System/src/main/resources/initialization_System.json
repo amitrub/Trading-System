@@ -1,6 +1,6 @@
 {
 
-  "local": false,
+  "local": true,
   
   "urlLocal" : "jdbc:postgresql://localhost:5432/postgres",
   "userNameLocal" : "postgres",
@@ -21,6 +21,8 @@
 
   "externalState": true,
 
-  "externalServices": false
+  "externalServices": false,
+
+  "loadTest": false
 
 }
