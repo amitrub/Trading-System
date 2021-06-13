@@ -2458,7 +2458,9 @@ public class TradingSystemImpl implements TradingSystem {
         if(res.getIsErr()){
             return res;
         }
+
         this.tmpBuyingPolicyForStore.remove(storeID);
+
         return  stores.get(storeID).RemoveBuyingPolicy();
     }
 
