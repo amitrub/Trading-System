@@ -10,7 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
@@ -22,7 +22,7 @@ public class BuyingService {
     @Autowired
     DBExpRepository dataExpCompositeRepository;
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response getBuyingByStore(Integer storeid)
     {
         try {
@@ -39,7 +39,7 @@ public class BuyingService {
         }
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
         try {
             DBExpression dataExpression= buyingPolicy.getExpression();

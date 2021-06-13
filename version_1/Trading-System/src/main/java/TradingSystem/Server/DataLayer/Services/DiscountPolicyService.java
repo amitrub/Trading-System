@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.Optional;
 
 @Service
@@ -26,7 +26,7 @@ public class DiscountPolicyService {
     @Autowired
     DBSaleExpRepository saleExpRepository;
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response AddDiscountPolicy(DataDiscountPolicy dataDiscountPolicy){
         try {
             DBSale sale= dataDiscountPolicy.getSale();
@@ -40,7 +40,7 @@ public class DiscountPolicyService {
             return new Response(true,"Could not add discount Policy");
         }
     }
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response getDiscountByStore(Integer storeid) throws DataAccessException {
         try {
             Optional<DataDiscountPolicy> dataDiscountPolicy= discountPolicyService.findById(storeid);

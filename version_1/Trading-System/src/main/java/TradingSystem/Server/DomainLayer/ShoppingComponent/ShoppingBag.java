@@ -175,7 +175,13 @@ public class ShoppingBag {
 
     public void setFinalPrice(Double finalPrice) {
         if(userID>=1){
-            Response response= data_controller.setBagFinalPrice(userID, storeID, finalPrice);
+            Response response;
+            try {
+                response= data_controller.setBagFinalPrice(userID, storeID, finalPrice);
+            } catch (Exception e){
+                return;
+//                return new Response(true, "Error In DB!");
+            }
             if (response.getIsErr()) {
                 return;
             }
@@ -253,7 +259,13 @@ public class ShoppingBag {
 
     public void editProductQuantity(int productID, int quantity) {
         if (userID >= 1) {
-            Response response = data_controller.setBagProductQuantity(userID, storeID, productID, quantity);
+            Response response;
+            try {
+                response = data_controller.setBagProductQuantity(userID, storeID, productID, quantity);
+            } catch (Exception e){
+                return;
+//                return new Response(true, "Error In DB!");
+            }
             if (response.getIsErr()) {
                 return;
             }
@@ -265,7 +277,13 @@ public class ShoppingBag {
     public void RemoveProduct(int productID) {
         if(this.products.containsKey(productID)) {
             if(userID>=1){
-                Response response= data_controller.RemoveBagProduct(userID, storeID, productID);
+                Response response;
+                try {
+                    response= data_controller.RemoveBagProduct(userID, storeID, productID);
+                } catch (Exception e){
+                    return;
+//                    return new Response(true, "Error In DB!");
+                }
                 if(response.getIsErr()){
                     return;
                 }
@@ -279,7 +297,13 @@ public class ShoppingBag {
     }
 
     public void addSPacialProduct(int productID, Integer quantity, int productPrice) {
-        data_controller.addSpacialProductToBag(userID, storeID, productID, quantity, productPrice);
+        Response response;
+        try {
+            data_controller.addSpacialProductToBag(userID, storeID, productID, quantity, productPrice);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         this.quantityOfSpacialProducts.put(productID,quantity);
         this.priceOfSpacialProducts.put(productID,productPrice);
     }
@@ -304,7 +328,13 @@ public class ShoppingBag {
     }
 
     public void setFinalSpecialPrice(int spacialPrice) {
-        data_controller.setBagSpacialFinalPrice(userID, storeID, spacialPrice);
+        Response response;
+        try {
+            data_controller.setBagSpacialFinalPrice(userID, storeID, spacialPrice);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         this.SpecialPrice=spacialPrice;
     }
 
@@ -313,7 +343,13 @@ public class ShoppingBag {
     }
 
     public void removeSpecialProductFromCart(int productID) {
-        data_controller.RemoveBagSpacialProduct(userID, storeID, productID);
+        Response response;
+        try {
+            data_controller.RemoveBagSpacialProduct(userID, storeID, productID);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         if(this.quantityOfSpacialProducts.containsKey(productID)){
             this.quantityOfSpacialProducts.remove(productID);
         }

@@ -117,7 +117,7 @@ public class TradingSystemImpl implements TradingSystem {
             }
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
-            Response response=this.data_controller.GetSubscriber(userName, password);
+//            Response response=this.data_controller.GetSubscriber(userName, password);
             DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).returnDataSubscriber();
             int userID;
             if (subscriber==null){
@@ -527,8 +527,13 @@ public class TradingSystemImpl implements TradingSystem {
             if (validation.IsUserNameExist(userName)) { 
                 return new Response(true, "Register Error: user name is taken");
             }
-            //Adds to the db
-            Response response= data_controller.AddSubscriber(userName, password);
+            Response response;
+            try{
+                //Adds to the db
+                response= data_controller.AddSubscriber(userName, password);
+            }catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
             if(response.getIsErr()){
                 return response;
             }
@@ -983,14 +988,22 @@ public class TradingSystemImpl implements TradingSystem {
                 return new Response(true, "AddStore: The store name is taken");
             }
             else {
-
-                //Adds to the db
-                Response response = data_controller.AddStore(storeName, userID);
+                Response response;
+                try{
+                    //Adds to the db
+                    response = data_controller.AddStore(storeName, userID);
+                }catch (Exception e){
+                    return new Response(true, "Error In DB!");
+                }
                 if(response.getIsErr()){
                     return response;
                 }
                 Integer storeID=response.returnStoreID();
-                response= data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
+                try{
+                    response= data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
+                }catch (Exception e){
+                    return new Response(true, "Error In DB!");
+                }
                 if(response.getIsErr()){
                     return response;
                 }
@@ -1299,9 +1312,13 @@ public class TradingSystemImpl implements TradingSystem {
         }
         OwnerPermission OP = new OwnerPermission(newOwner, storeID);
         OP.setAppointmentId(userID);
-
-        //Adds to the db
-        Response response= data_controller.AddNewOwner(storeID, newOwner, OP);
+        Response response;
+        try{
+            //Adds to the db
+            response= data_controller.AddNewOwner(storeID, newOwner, OP);
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         if(response.getIsErr()){
             return response;
         }
@@ -1351,7 +1368,12 @@ public class TradingSystemImpl implements TradingSystem {
             return new Response(true, "RemoveOwnerByOwner: The user " + ownerID + " has no permissions to do this operation");
         }
         else{
-            Response response= data_controller.RemoveOwner(storeID, removeOwnerID);
+            Response response;
+            try{
+                response= data_controller.RemoveOwner(storeID, removeOwnerID);
+            }catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
             if(response.getIsErr()){
                 return response;
             }
@@ -1433,9 +1455,13 @@ public class TradingSystemImpl implements TradingSystem {
 
         ManagerPermission MP = new ManagerPermission(newManager, storeID);
         MP.setAppointmentId(userID);
-
-        //Adds to the db
-        Response response= data_controller.AddNewManager(storeID, newManager, MP);
+        Response response;
+        try{
+            //Adds to the db
+            response= data_controller.AddNewManager(storeID, newManager, MP);
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         if(response.getIsErr()){
             return response;
         }
@@ -1490,8 +1516,13 @@ public class TradingSystemImpl implements TradingSystem {
             return res2;
         }
 
-        //Adds to the db
-        Response response= data_controller.EditManagerPermissions(storeID, managerID, permissions);
+        Response response;
+        try{
+            //Adds to the db
+            response= data_controller.EditManagerPermissions(storeID, managerID, permissions);
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         if(response.getIsErr())
             return response;
 
@@ -1555,7 +1586,12 @@ public class TradingSystemImpl implements TradingSystem {
             MTR.unlockUser();
             return res2;
         }
-        data_controller.RemoveManager(storeID, ManagerToRemove);
+        Response response;
+        try{
+            data_controller.RemoveManager(storeID, ManagerToRemove);
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
 
         MTR.removeManagedStore(storeID);
         stores.get(storeID).removeManager(ManagerToRemove);
@@ -1863,7 +1899,13 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
-        Response response= data_controller.addHistoryToStoreAndUser(sh);
+        Response response;
+        try{
+            response= data_controller.addHistoryToStoreAndUser(sh);
+        }catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         if(!response.getIsErr()){
             this.stores.get(sh.getStoreID()).addHistory(sh);
             if (!isGuest)
@@ -2126,7 +2168,11 @@ public class TradingSystemImpl implements TradingSystem {
         s.setDiscountPolicy(d);
 //        DBSale parent=new DBSale(sale,null);
 //        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
-        res= data_controller.AddDiscountPolicy(storeID,sale);
+        try{
+            res= data_controller.AddDiscountPolicy(storeID,sale);
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         if(res.getIsErr())
             return res;
         return new Response("the discountPolicy added successfully");
@@ -2340,7 +2386,11 @@ public class TradingSystemImpl implements TradingSystem {
         //ADD to db
 //        DBExpression parent=new DBExpression(exp,null);
 //        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
-        res = data_controller.AddBuyingPolicy(storeID,exp);
+        try{
+            res = data_controller.AddBuyingPolicy(storeID,exp);
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         if(res.getIsErr()){
             return res;
         }
@@ -2936,7 +2986,11 @@ public class TradingSystemImpl implements TradingSystem {
       //  this.tmpBuyingPolicyForStore.remove(storeID);
 //        DBSale parent=new DBSale(sale,null);
 //        DataStore store=data_controller.findStorebyId(storeID).returnDataStore();
-        res= data_controller.AddBuyingPolicy(storeID,exp);
+        try{
+            res= data_controller.AddBuyingPolicy(storeID,exp);
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         if(res.getIsErr())
             return res;
         return new Response("Buying Policy for store "+ storeID+" added successfully" );
@@ -3159,7 +3213,12 @@ public class TradingSystemImpl implements TradingSystem {
         if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
             return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
         }
-        HashMap<Date,Integer> hashMap = this.data_controller.getAllSubscribersWeek();
+        HashMap<Date, Integer> hashMap;
+        try{
+            hashMap = this.data_controller.getAllSubscribersWeek();
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         List<DummyDaily> list = new ArrayList<>();
         for(Map.Entry<Date, Integer> s : hashMap.entrySet())
         {
@@ -3202,7 +3261,12 @@ public class TradingSystemImpl implements TradingSystem {
         if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
             return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
         }
-        HashMap<Date,Integer> hashMap = this.data_controller.getAllStoresWeek();
+        HashMap<Date, Integer> hashMap;
+        try{
+            hashMap = this.data_controller.getAllStoresWeek();
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         List<DummyDaily> list = new ArrayList<>();
         for(Map.Entry<Date, Integer> s : hashMap.entrySet())
         {
@@ -3245,7 +3309,12 @@ public class TradingSystemImpl implements TradingSystem {
         if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
             return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
         }
-        HashMap<Date,Integer> hashMap = this.data_controller.getAllShoppingHistoriesWeek();
+        HashMap<Date, Integer> hashMap;
+        try{
+            hashMap = this.data_controller.getAllShoppingHistoriesWeek();
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         List<DummyDaily> list = new ArrayList<>();
         for(Map.Entry<Date, Integer> s : hashMap.entrySet())
         {
@@ -3288,7 +3357,12 @@ public class TradingSystemImpl implements TradingSystem {
         if(!this.hasPermission(userID, PermissionEnum.Permission.GetDailyIncomeForSystem)){
             return new Response(true, "getAllSubscribersWeek: The user " + userID + " has no permissions to see this information");
         }
-        HashMap<Date,Integer> hashMap = this.data_controller.getAllMoneyWeek();
+        HashMap<Date, Integer> hashMap;
+        try{
+            hashMap = this.data_controller.getAllMoneyWeek();
+        }catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         List<DummyDaily> list = new ArrayList<>();
         for(Map.Entry<Date, Integer> s : hashMap.entrySet())
         {

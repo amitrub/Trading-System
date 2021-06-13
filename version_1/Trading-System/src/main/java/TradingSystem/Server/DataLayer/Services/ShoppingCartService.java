@@ -14,7 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Optional;
 
@@ -35,7 +35,7 @@ public class ShoppingCartService {
     @Autowired
     ShoppingBagSpacialProductRepository shoppingBagSpacialProductRepository;
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response addProductToBag(int userID, Integer storeID, Integer productID, Integer quantity) {
         try {
             Optional<DataSubscriber> user = subscriberRepository.findById(userID);
@@ -58,7 +58,14 @@ public class ShoppingCartService {
         }
 
     }
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    public Response setBagProductQuantityAndFinalPrice(int userID, Integer storeID, int productID, Integer quantity, Double finalPrice) {
+        setBagFinalPrice(userID, storeID, finalPrice);
+        setBagProductQuantity(userID, storeID, productID, quantity);
+        return new Response(false,"Set final price and quntity was done successfully");
+    }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response setBagFinalPrice(int userID, Integer storeID, Double finalPrice) {
         try {
             DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
@@ -71,7 +78,7 @@ public class ShoppingCartService {
         }
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response setBagProductQuantity(int userID, Integer storeID, int productID, Integer quantity) {
         try {
             Optional<DataShoppingBagProduct> product = shoppingBagProductRepository.findById(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
@@ -86,7 +93,7 @@ public class ShoppingCartService {
             return new Response(true," Time limit is over, upload to db failed");
         }
     }
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response RemoveBagProduct(int userID, Integer storeID, int productID) {
         try {
             Optional<DataShoppingBagCart> bag = shoppingCartRepository.findById(new UserStoreKey(userID, storeID));
@@ -103,6 +110,7 @@ public class ShoppingCartService {
         }
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public void addSpacialProductToBag(int userID, Integer storeID, Integer productID, Integer quantity, int price) {
         DataSubscriber user = subscriberRepository.getOne(userID);
         DataStore store = storeRepository.getOne(storeID);
@@ -116,14 +124,14 @@ public class ShoppingCartService {
         shoppingBagSpacialProductRepository.saveAndFlush(spacialProduct);
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public void setBagSpacialFinalPrice(int userID, Integer storeID, int finalPrice) {
         DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
         bag.setFinalPriceSpacial(finalPrice);
         shoppingCartRepository.saveAndFlush(bag);
     }
 
-
-
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public void RemoveBagSpacialProduct(int userID, Integer storeID, int productID) {
         DataShoppingBagCart bag = shoppingCartRepository.getOne(new UserStoreKey(userID, storeID));
         DataShoppingBagSpacialProduct product = shoppingBagSpacialProductRepository.getOne(new DataShoppingBagProductKey(new UserStoreKey(userID, storeID), productID));
@@ -132,12 +140,12 @@ public class ShoppingCartService {
     }
 
 
-
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public void deleteAll(){
         shoppingCartRepository.deleteAll();
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response deleteSubscriberBag(Integer userID, Integer storeID){
         try {
             Optional<DataShoppingBagCart> bag_opt = shoppingCartRepository.findById(new UserStoreKey(userID, storeID));
@@ -160,7 +168,6 @@ public class ShoppingCartService {
             setBagFinalPrice(userID,storeID, 0.0);
             setBagSpacialFinalPrice(userID,storeID, 0);
 
-
             DataSubscriber subscriber = subscriberRepository.getOne(userID);
             subscriber.removeShoppingBag(bag);
             subscriberRepository.saveAndFlush(subscriber);
@@ -171,7 +178,7 @@ public class ShoppingCartService {
         }
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response getSubscriberShoppingCart(int userID){
         try {
             Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
@@ -190,15 +197,10 @@ public class ShoppingCartService {
             return new Response(true," Time limit is over, upload to db failed");
         }
     }
+
     public List<DataShoppingBagCart> getAllcardsBystore(int storeid){
         DataStore store=storeRepository.getOne(storeid);
         return shoppingCartRepository.findAllByStore(store);
     }
-//    public DataShoppingCart findDummyShoppingCartByUserID(int UserId){
-//        return shoppingCartRepository.findDummyShoppingCartByUserID(UserId);
-//    }
-//
-//    public void addShoppingCart(DataShoppingCart shoppingCart){
-//        shoppingCartRepository.saveAndFlush(shoppingCart);
-//    }
+
 }

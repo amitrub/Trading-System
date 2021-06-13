@@ -161,7 +161,13 @@ public class Product {
     }
 
     public void setQuantity(Integer quantity) {
-        Response response= data_controller.setQuantity(productID, quantity);
+        Response response;
+        try {
+            response= data_controller.setQuantity(productID, quantity);
+        } catch (Exception e){
+            return;
+//            return new Response(true, "Error In DB!");
+        }
         if(!response.getIsErr()){
             this.quantity = quantity;
         }
@@ -172,7 +178,12 @@ public class Product {
         if(productComments.containsKey(userID)){
             return new Response(true, "User can not post more than one comment on a product");
         }
-        Response response= data_controller.addCommentToProduct(productID, userID, comment);
+        Response response;
+        try {
+            response= data_controller.addCommentToProduct(productID, userID, comment);
+        } catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
         if(response.getIsErr()){
             return response;
         }
