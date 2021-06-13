@@ -1,10 +1,8 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class QuantityForGetSale extends SimpleExpression {
@@ -18,7 +16,7 @@ public class QuantityForGetSale extends SimpleExpression {
         this.quantityForSale = quantityForSale;
     }
 
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode){
       if(products.get(productId)!=null){
           return products.get(productId)>=quantityForSale;
       }

@@ -38,7 +38,7 @@ public class CategorySale extends SimpleSale {
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         double priceForCategory = 0.0;
         if (this.getExpression() != null) {
-            if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
+            if (this.getExpression().evaluate(products, finalSale, userID, storeID, 2)) {
                 Set<Integer> keySet = products.keySet();
                 for (Integer key : keySet
                 ) {

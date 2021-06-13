@@ -35,7 +35,7 @@ public class ProductSale extends SimpleSale {
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         if(this.getExpression()!=null) {
             if (products.get(productID) != null) {
-                if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
+                if (this.getExpression().evaluate(products, finalSale, userID, storeID,2 )) {
                     Product p = tradingSystem.getProduct(storeID, productID);
                     Double ret = ((discountPercentage / 100) * p.getPrice()) * products.get(productID);
                     return ret;
