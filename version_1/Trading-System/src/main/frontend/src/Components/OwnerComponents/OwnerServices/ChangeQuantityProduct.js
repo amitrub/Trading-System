@@ -100,7 +100,7 @@ function ChangeQuantityProduct(props) {
                 <label>&nbsp;</label>
               </div>
               <div className="col span-1-of-3">
-                <input type="submit" value="Change quantity!" />
+                <input type="submit" value="Add quantity!" />
               </div>
             </div>
           </form>

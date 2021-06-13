@@ -704,9 +704,6 @@ public class TradingSystemImpl implements TradingSystem {
             // if(((prank==-1 || store.getRate()>=srank) && !store.SearchByName(name, minprice, maxprice,prank).isEmpty())){
             dummyProducts.addAll(store.SearchProduct(name,category, minprice, maxprice));
         }
-        System.out.println("==============SearchProduct==============");
-        System.out.println(dummyProducts);
-        System.out.println("==============SearchProduct==============");
         Response res = new Response(false, "Search: Num of products from search is " + dummyProducts.size());
         res.AddPair("products", dummyProducts);
         return res;
