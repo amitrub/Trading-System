@@ -473,7 +473,7 @@ function OwnerStoreService(props) {
               : showChangeQuantityHandler
           }
         >
-          {showChangeQuantity ? "Hide" : "Change Quantity"}
+          {showChangeQuantity ? "Hide" : "Add Quantity"}
         </button>
         {/* Edit product Btn */}
         <button
