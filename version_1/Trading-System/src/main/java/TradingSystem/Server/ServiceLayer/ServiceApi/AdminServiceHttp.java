@@ -1,9 +1,9 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.*;
 @CrossOrigin("*")
 public class AdminServiceHttp {
 
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+    @Autowired
+    TradingSystemImpl tradingSystem;
+
     private static final LoggerController loggerController=LoggerController.getInstance();
 
 
@@ -123,6 +125,121 @@ public class AdminServiceHttp {
     public Response AdminStoreHistory(@PathVariable int adminID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         return tradingSystem.StoreHistoryAdmin(adminID,storeID,connID);
     }
+
+
+    /**
+     * @requirement 6.6
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "DailyIncome": {[Double]}
+     *  }
+     * }
+     */
+    @GetMapping("{userID}/admin_daily_income_for_system")
+    public Response AdminDailyIncomeForSystem(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getDailyIncomeForSystem(userID,connID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
+     */
+    @GetMapping("{userID}/admin_subscribers_week")
+    public Response AdminAllSubscribersWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getAllSubscribersWeek(connID,userID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
+     */
+    @GetMapping("{userID}/admin_stores_week")
+    public Response AdminAllStoresWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getAllStoresWeek(connID,userID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
+     */
+    @GetMapping("{userID}/admin_shopping_history_week")
+    public Response AdminAllShoppingHistoriesWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getAllShoppingHistoriesWeek(connID,userID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+    /**
+     * @requirement 6.5
+     *
+     * @param connID
+     * @param userID
+     * @return @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "DailyReview": List [{
+     *      "date": String
+     *      "numOfViewers": int
+     *  }]
+     * }
+     */
+    @GetMapping("{userID}/admin_money_week")
+    public Response AdminAllMoneyWeek(@PathVariable int userID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getAllMoneyWeek(connID,userID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+
+
+
+
 
     private void WriteToLogger(Response res){
         if(res.getIsErr()) {

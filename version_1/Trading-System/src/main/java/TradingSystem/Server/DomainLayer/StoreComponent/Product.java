@@ -1,6 +1,13 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+
+import TradingSystem.Server.DataLayer.Data_Modules.DataComment;
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DataLayer.Data_Modules.ShoppingHistory.DataHistoryProduct;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -8,6 +15,17 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
 public class Product {
+
+    @Autowired
+    public static Data_Controller data_controller;
+    public static void setData_controller(Data_Controller data_controller) {
+        Product.data_controller = data_controller;
+    }
+    @Autowired
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        Product.tradingSystem = tradingSystem;
+    }
 
     private Integer storeID;
     private String storeName;
@@ -20,9 +38,9 @@ public class Product {
 
     private final Lock lock = new ReentrantLock();
     //userID_comments
-    private ConcurrentHashMap<Integer,String> productComments;
+    private ConcurrentHashMap<Integer,String> productComments = new ConcurrentHashMap<>();
     //userID_Rate
-    private ConcurrentHashMap<Integer, Double> productRating;
+    private ConcurrentHashMap<Integer, Double> productRating = new ConcurrentHashMap<>();
 
     public Product(Integer storeID, String storeName, Integer productID, String productName, String category, Double price) {
         this.storeID = storeID;
@@ -31,8 +49,6 @@ public class Product {
         this.productName = productName;
         this.category = category;
         this.price = price;
-        this.productComments = new ConcurrentHashMap<Integer, String>();
-        this.productRating = new ConcurrentHashMap<Integer, Double>();
         this.quantity = 0;
     }
 
@@ -43,12 +59,10 @@ public class Product {
         this.productName = productName;
         this.category = category;
         this.price = price;
-        this.productComments = new ConcurrentHashMap<Integer, String>();
-        this.productRating = new ConcurrentHashMap<Integer, Double>();
         this.quantity = quantity;
     }
 
-    public Product(Product toCopyProduct) {
+    public Product(Product toCopyProduct, int quantity) {
         this.storeID = toCopyProduct.storeID;
         this.storeName = toCopyProduct.storeName;
         this.productID = toCopyProduct.productID;
@@ -56,9 +70,39 @@ public class Product {
         this.category = toCopyProduct.category;
         this.price = toCopyProduct.price;
         this.rate = toCopyProduct.rate;
-        this.productComments=new ConcurrentHashMap<Integer, String>();
-        this.productRating=new ConcurrentHashMap<Integer, Double>();
-        this.quantity = toCopyProduct.quantity;
+        this.quantity = quantity;
+    }
+
+    public Product(DataProduct product){
+        System.out.println("==================================");
+        System.out.println(product.getComments());
+        System.out.println("==================================");
+        this.storeID=product.getStore().getStoreID();
+        this.storeName=product.getStore().getStoreName();
+        this.productID=product.getProductID();
+        this.productName=product.getProductName();
+        this.category=product.getCategory();
+        this.price=product.getPrice();
+        //TODO add rate
+        this.quantity = product.getQuantity();
+        for (DataComment comment: product.getComments()){
+            try {
+                productComments.putIfAbsent(comment.getSubscriber().getUserID(),comment.getComment());
+            }
+            catch (Exception e){
+
+            }
+        }
+    }
+
+    public Product(DataHistoryProduct product, int storeID, String storename){
+        this.storeID=storeID;
+        this.storeName=storename;
+        this.productID= product.getProductID();
+        this.productName=product.getProductName();
+        this.category=product.getCategory();
+        this.price=product.getPrice();
+        this.quantity = product.getQuantity();
     }
 
     public Lock getLock() {
@@ -117,13 +161,20 @@ public class Product {
     }
 
     public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
+        Response response= data_controller.setQuantity(productID, quantity);
+        if(!response.getIsErr()){
+            this.quantity = quantity;
+        }
     }
 
     public Response addComment(Integer userID, String comment)
     {
         if(productComments.containsKey(userID)){
             return new Response(true, "User can not post more than one comment on a product");
+        }
+        Response response= data_controller.addCommentToProduct(productID, userID, comment);
+        if(response.getIsErr()){
+            return response;
         }
         this.productComments.put(userID,comment);
         return new Response("The response writing was performed successfully");

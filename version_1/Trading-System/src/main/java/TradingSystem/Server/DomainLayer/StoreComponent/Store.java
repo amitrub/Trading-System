@@ -2,30 +2,56 @@ package TradingSystem.Server.DomainLayer.StoreComponent;
 
 
 
+import TradingSystem.Server.DataLayer.Data_Modules.Bid.DataBid;
+import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
+import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
 import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.BaseState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.InitState;
+import TradingSystem.Server.DomainLayer.StoreComponent.States.RefusalState;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-//import javafx.util.Pair;
+import org.springframework.beans.factory.annotation.Autowired;
+
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
+
+//import javafx.util.Pair;
 
 public class Store extends Observable {
+
+    @Autowired
+    public static Data_Controller data_controller;
+    public static void setData_controller(Data_Controller data_controller) {
+        Store.data_controller = data_controller;
+    }
+
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        Store.tradingSystem = tradingSystem;
+    }
 
     private static int nextStoreID=0;
 
     private static int nextExpressionID=0;
+    private static int nextSaleID=0;
 
     private Integer id;
     private String name;
+    private Double rate;
 
     private final Integer founderID;
     private List<Integer> ownersIDs = new ArrayList<>();
@@ -36,18 +62,19 @@ public class Store extends Observable {
     //managersID_Permission
     private ConcurrentHashMap<Integer, ManagerPermission> managersPermission = new ConcurrentHashMap<>();;
 
+    private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
+    private Inventory inventory;
+
     private DiscountPolicy discountPolicy;
     private BuyingPolicy buyingPolicy;
 
-    private Double rate;
-    //userID_rating
-    private ConcurrentHashMap<Integer, Double> Ratings = new ConcurrentHashMap<>();;
+    //userID_Bid
+    private ConcurrentLinkedDeque<Bid> Bids = new ConcurrentLinkedDeque<Bid>();
 
-    private List<ShoppingHistory> shoppingHistory = new ArrayList<>();
+    //userID_Bidding
+    private ConcurrentHashMap<Integer, Double> usersBidding = new ConcurrentHashMap<>();;
 
-    private Inventory inventory;
 
-    private TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
 
     public Store(String name, Integer founderID,  DiscountPolicy discountPolicy, BuyingPolicy buyingPolicy) {
         this.id = getNextStoreID();
@@ -70,6 +97,49 @@ public class Store extends Observable {
         this.discountPolicy=new DiscountPolicy(this.id,null);
         this.buyingPolicy=new BuyingPolicy(this.id,null);
     }
+    public Store(int id, String name, Integer founderID) {
+        this.id = id;
+        this.name = name;
+        this.founderID = founderID;
+        this.ownersIDs.add(founderID);
+        this.rate =5.0; //todo- add rating!
+        this.inventory=new Inventory(this.id,name);
+        this.discountPolicy=new DiscountPolicy(this.id,null);
+        this.buyingPolicy=new BuyingPolicy(this.id,null);
+    }
+
+    public Store(DataStore store){
+        this.id=store.getStoreID();
+        this.name=store.getStoreName();
+        this.founderID=store.getFounder().getUserID();
+        this.ownersIDs=store.getOwners().stream().map(DataSubscriber::getUserID).collect(Collectors.toList());
+        this.ownersIDs.add(founderID);
+        this.managersIDs=store.getManagers().stream().map(DataSubscriber::getUserID).collect(Collectors.toList());
+        this.rate =store.getStoreRate();
+        this.inventory=new Inventory(this.id,name, store.getProducts());
+
+
+        this.discountPolicy=new DiscountPolicy(this.id,null);
+        this.buyingPolicy=new BuyingPolicy(this.id,null);
+    }
+
+    public void AddOwnerIfNotExist(int ownerID){
+        if (!ownersIDs.contains(ownerID)){
+            ownersIDs.add(ownerID);
+        }
+    }
+
+    public void AddManagerIfNotExist(int managerID){
+        if (!ownersIDs.contains(managerID)){
+            ownersIDs.add(managerID);
+        }
+    }
+
+    public void AddStoreProductIfNotExist(Product product){
+        inventory.AddStoreProductIfNotExist(product);
+
+    }
+
 
     public Integer getId() {
         return id;
@@ -80,9 +150,18 @@ public class Store extends Observable {
         return nextStoreID;
     }
 
-    private static synchronized int getNextExpressionID() {
+    public static synchronized int getNextExpressionID() {
         nextExpressionID++;
         return nextExpressionID;
+    }
+
+    public static synchronized int getNextSaleID() {
+        nextSaleID++;
+        return nextSaleID;
+    }
+
+    public void setInventory(Inventory inventory){
+        this.inventory=inventory;
     }
 
     public static void ClearSystem() {
@@ -127,11 +206,21 @@ public class Store extends Observable {
         return "";
     }
 
-    public String addNewManager(Integer userId, Integer newManagerId)
-    {
+    public String addNewManager(Integer userId, Integer newManagerId){
                 this.managersIDs.add(newManagerId);
                 //this.managersPermission.put(newManagerId,om);
         return "";
+    }
+
+    public void setManagersIDs(List<Integer> managersIDs){
+        this.managersIDs=managersIDs;
+    }
+    public void setOwnersIDs(List<Integer> ownersIDs){
+        this.ownersIDs=ownersIDs;
+    }
+
+    public void setShoppingHistory(List<ShoppingHistory> shoppingHistories){
+        this.shoppingHistory=shoppingHistories;
     }
 
     public String removeManager(Integer managerId) {
@@ -150,7 +239,7 @@ public class Store extends Observable {
     {
         return inventory.getProductID(this.id,computer);
     }
-
+/*
     public void addRatingToStore(Integer userID, Double Rating)
     {
         this.Ratings.put(userID,Rating);
@@ -189,7 +278,7 @@ public class Store extends Observable {
     {
         return inventory.CalculateRateForProduct(productID);
     }
-
+*/
     public List<DummyProduct> SearchProduct(String name, String category, int minprice, int maxprice) {
         List<Integer> FinalID=inventory.SearchProduct(name, category,minprice, maxprice);
         return inventory.getDummySearchForList(FinalID);
@@ -410,7 +499,7 @@ public class Store extends Observable {
         this.managersPermission.put(mp.getUserId(),mp);
     }
 
-    public void editManagerPermissions(int userID, int managerID, List<User.Permission> permissions) {
+    public void editManagerPermissions(int userID, int managerID, List<PermissionEnum.Permission> permissions) {
         ManagerPermission MP=this.managersPermission.get(managerID);
         if(MP==null){
             MP=new ManagerPermission(managerID,this.id);
@@ -445,7 +534,7 @@ public class Store extends Observable {
         this.buyingPolicy = buyingPolicy;
     }
 
-    //todo syncronize?
+
     public Response RemoveBuyingPolicy() {
         if(this.getBuyingPolicy()==null||
                 this.getBuyingPolicy().getExp()==null){
@@ -473,13 +562,44 @@ public class Store extends Observable {
     public void sendAlertToOwners(Response message){
         for(Integer ID : ownersIDs) {
             User user = tradingSystem.subscribers.get(ID);
-            System.out.println(user);
-            this.addObserver(user);
+            if(user!=null) {
+                System.out.println(user);
+                this.addObserver(user);
+            }
         }
         this.setChanged();
         this.notifyObservers(message);
         this.deleteObservers();
     }
+
+    //TODO Check!
+    //Observable pattern
+    //send alert to all owners of the store
+    public void sendAlertOfBiddingToManager(Response message){
+        for(Integer ID : managersIDs) {
+            ManagerPermission MP = this.managersPermission.get(ID);
+            if (MP != null) {
+                if (MP.hasPermission(PermissionEnum.Permission.RequestBidding)) {
+                    sendAlert(ID, message);
+                }
+            }
+           }
+        }
+           /* ManagerPermission MP=this.managersPermission.get(ID);
+            if(MP!=null) {
+                if(MP.hasPermission(PermissionEnum.Permission.RequestBidding)) {
+                    User user = tradingSystem.subscribers.get(ID);
+                    if (user != null) {
+                        System.out.println(user);
+                        this.addObserver(user);
+                    }
+                }
+            }
+        }
+        this.setChanged();
+        this.notifyObservers(message);
+        this.deleteObservers();
+            */
 
     //send alert to specific owner
     public void sendAlert(Integer ownerID, Response message){
@@ -490,6 +610,154 @@ public class Store extends Observable {
         this.deleteObserver(user);
     }
 
+    public Double getDailyIncome() {
+            Double DailyIncome=0.0;
+            for (ShoppingHistory SH:this.shoppingHistory
+            ) {
+                Date today=new Date(System.currentTimeMillis());
+                Calendar calForToday = Calendar.getInstance();
+                calForToday.setTime(today);
+                Calendar calForHistory = Calendar.getInstance();
+                calForHistory.setTime(SH.getDate());
+                if(calForHistory.get(Calendar.DAY_OF_WEEK)==calForToday.get(Calendar.DAY_OF_WEEK)){
+                    DailyIncome=DailyIncome+SH.getFinalPrice();
+                }
+            }
+            return DailyIncome;
+        }
 
+    public void AddBidForProduct(int productID, int userID, Integer productPrice,Integer quantity) {
+        if(this.Bids==null) {
+            this.Bids = new ConcurrentLinkedDeque<>();
+        }
+        ConcurrentHashMap<Integer,Boolean> list=this.createOwnerList();
+        data_controller.AddBidForProduct(productID, userID, productPrice, quantity, list);
+        Bid bid = new Bid(userID, productID,this.id,productPrice,quantity,list);
+        this.Bids.add(bid);
+    }
+    public void UploadBidToStore(DataBid dataBid) {
+        Bid bid = new Bid(dataBid);
+        this.Bids.add(bid);
+    }
 
+    public ConcurrentHashMap<Integer, Boolean> createOwnerList() {
+        ConcurrentHashMap<Integer,Boolean> list=new ConcurrentHashMap<>();
+        for (Integer key:this.OwnersID()
+             ) {
+            list.put(key,false);
+        }
+        for (Integer key: this.managersPermission.keySet()) {
+            if(this.managersPermission.get(key).hasPermission(PermissionEnum.Permission.RequestBidding)){
+                list.put(key,false);
+            }
+        }
+        return list;
+    }
+
+    public boolean CheckBidForProductExist(Integer userID, Integer productID){
+        for (Bid bid:this.Bids
+             ) {
+            if(bid.getUserID()==userID&&bid.getProductID()==productID){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void RemoveProductForPurchaseOffer(int productID, int userWhoOffer) {
+        for (Bid bid:this.Bids
+        ) {
+            if(bid.getUserID()==userWhoOffer&&bid.getProductID()==productID){
+                this.Bids.remove(bid);
+            }
+        }
+    }
+
+    public ConcurrentLinkedDeque<Bid> getBids() {
+        return Bids;
+    }
+
+    public Bid getBid(int userWhoOffer, int productID) {
+        for (Bid bid:this.Bids
+        ) {
+            if(bid.getUserID()==userWhoOffer&&bid.getProductID()==productID){
+                return bid;
+            }
+        }
+        return null;
+    }
+
+    public Response changeSubmissionBid(int userID,int userWhoOffer, int productID,int productPrice, int quantity) {
+        Bid bid = this.getBid(userWhoOffer, productID);
+        if (bid == null) {
+            return new Response(true, "ResponseForSubmissionBidding: The user " + userID + " try to to response the submission bid for product " + productID + " and user " + userWhoOffer + " but the bidding has already been answered");
+        }
+        //todo check!
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+                succeededToLock = this.getBid(userWhoOffer, productID).bidIsLock();  //todo check!
+            }
+        }
+        if(bid.isFinalState()){
+            bid.unlockBid();
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        bid.setPrice(productPrice);
+        bid.setQuantity(quantity);
+        bid.UpdateOwnerList(this.createOwnerList());
+        bid.changeState(new InitState());
+        return bid.handle(userID);
+    }
+
+    public Response approveSubmissionBid(int userID,int userWhoOffer,int productID) {
+        Bid bid=this.getBid(userWhoOffer, productID);
+        if(bid==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        //todo check!
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+                succeededToLock=bid.bidIsLock();  //todo check!
+            }
+        }
+        if(bid.isFinalState()){
+            bid.unlockBid();
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        bid.UpdateOwnerList(createOwnerList());
+        bid.changeState(new BaseState());
+        return bid.handle(userID);
+    }
+
+    public Response refuseSubmissionBid(int userID,int userWhoOffer,int productID) {
+        Bid bid=this.getBid(userWhoOffer, productID);
+        if(bid==null){
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        //todo check!
+        boolean succeededToLock = false;
+        while (!succeededToLock) {
+            synchronized (this) {
+                succeededToLock=this.getBid(userWhoOffer, productID).bidIsLock();  //todo check!
+            }
+        }
+        if(bid.isFinalState()){
+            bid.unlockBid();
+            return new Response(true, "ResponseForSubmissionBidding: The user "+userID+" try to to response the submission bid for product " +productID +" and user "+userWhoOffer+" but the bidding has already been answered");
+        }
+        bid.changeState(new RefusalState());
+        return bid.handle(userID);
+    }
+
+    //todo check the remove function
+    public void removeBid(Bid bid) {
+        data_controller.RemoveBid(bid.getProductID(), bid.getUserID());
+        for (Bid b : this.Bids) {
+            if(b.getUserID()==bid.getUserID()&&b.getProductID()==bid.getProductID()){
+                this.Bids.remove(b);
+            }
+        }
+    }
 }

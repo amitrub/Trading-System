@@ -24,12 +24,6 @@ function AddRemoveEmployee(props) {
     } else {
       setWorkers(workersResponse.returnObject.subscribers);
     }
-
-    // const workers = [
-    //   { id: 1, name: "roee" },
-    //   { id: 2, name: "hadas" },
-    //   { id: 3, name: "chango" },
-    // ];
   }
 
   useEffect(() => {
@@ -79,7 +73,7 @@ function AddRemoveEmployee(props) {
             className="contact-form"
             onSubmit={submitRemoveHandler}
           >
-            {/* product id */}
+            {/* Employee id */}
             <div className="row">
               <div className="col span-1-of-3">
                 <label htmlFor="name">Employee ID</label>
@@ -92,6 +86,10 @@ function AddRemoveEmployee(props) {
                   about="Show number of results:"
                 >
                   {/* TOOD: change map to workersResponse.workers */}
+                  <option value={-1} disabled>
+                    {" "}
+                    choose id{" "}
+                  </option>
                   {workers.map((currWorker) => (
                     <option value={currWorker.userID}>
                       {currWorker.userName}

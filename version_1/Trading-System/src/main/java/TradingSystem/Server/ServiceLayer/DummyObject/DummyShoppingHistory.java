@@ -5,7 +5,10 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public class DummyShoppingHistory {
 
@@ -14,6 +17,10 @@ public class DummyShoppingHistory {
     private List<DummyProduct> products;
     private String date;
     private Double finalPrice;
+
+    public DummyShoppingHistory(){
+
+    }
 
     public DummyShoppingHistory(ShoppingHistory toCopyShoppingHistory) {
         this.userID = toCopyShoppingHistory.getUserID();
@@ -39,7 +46,7 @@ public class DummyShoppingHistory {
             tmpFinalPrice = new Double((Integer) map.get("finalPrice"));
         }
         this.finalPrice = tmpFinalPrice;
-        this.products = (List<DummyProduct>) map.get("products");
+    //    this.products = (List<DummyProduct>) map.get("products");
     }
 
     public Integer getUserID() {
@@ -50,14 +57,18 @@ public class DummyShoppingHistory {
         return storeID;
     }
 
+//    public List<DummyProduct> getProducts() {
+//        return products;
+//    }
+
+    /*
+    public Date getDate() {
+        return date;
+    } */
+
     public List<DummyProduct> getProducts() {
         return products;
     }
-
-    public String getDate() {
-        return date;
-    }
-
 
     public Double getFinalPrice() {
         return finalPrice;
@@ -70,20 +81,20 @@ public class DummyShoppingHistory {
             JO.put("userID", userID);
             JO.put("storeID", storeID);
             JSONArray prods = new JSONArray();
-            for(DummyProduct p : products) {
-                JSONObject JProduct = new JSONObject();
-                try {
-                    JProduct.put("storeID", p.getStoreID());
-                    JProduct.put("storeName", p.getStoreName());
-                    JProduct.put("productID", p.getProductID());
-                    JProduct.put("productName", p.getProductName());
-                    JProduct.put("price", p.getPrice());
-                    JProduct.put("category", p.getCategory());
-                } catch (Exception e) {
-                    System.out.println("DummyProduct toString error");
-                }
-                prods.put(JProduct);
-            }
+//            for(DummyProduct p : products) {
+//                JSONObject JProduct = new JSONObject();
+//                try {
+//                    JProduct.put("storeID", p.getStoreID());
+//                    JProduct.put("storeName", p.getStoreName());
+//                    JProduct.put("productID", p.getProductID());
+//                    JProduct.put("productName", p.getProductName());
+//                    JProduct.put("price", p.getPrice());
+//                    JProduct.put("category", p.getCategory());
+//                } catch (Exception e) {
+//                    System.out.println("DummyProduct toString error");
+//                }
+//                prods.put(JProduct);
+//            }
             JO.put("products", prods);
             JO.put("date", date);
             JO.put("finalPrice", finalPrice);

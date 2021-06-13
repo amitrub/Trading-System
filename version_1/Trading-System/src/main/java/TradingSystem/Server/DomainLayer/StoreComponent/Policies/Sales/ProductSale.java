@@ -2,25 +2,31 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public class ProductSale extends SimpleSale {
 
-    Integer productID;
-    Double discountPercentage;
-    TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
+    @Autowired
+    public static TradingSystemImpl tradingSystem;
 
-    public ProductSale(Expression exp, Integer productID, Double discountPercentage) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        ProductSale.tradingSystem = tradingSystem;
+    }
+
+    Integer productID;
+    Integer discountPercentage;
+
+    public ProductSale(Expression exp, Integer productID, Integer discountPercentage) {
         super(exp);
         this.productID = productID;
         this.discountPercentage = discountPercentage;
     }
 
-    public ProductSale(Integer productID, Double discountPercentage) {
+    public ProductSale(Integer productID, Integer discountPercentage) {
         this.productID = productID;
         this.discountPercentage = discountPercentage;
     }
@@ -29,9 +35,13 @@ public class ProductSale extends SimpleSale {
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         if(this.getExpression()!=null) {
             if (products.get(productID) != null) {
-                if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
+                if (this.getExpression().evaluate(products, finalSale, userID, storeID,2 )) {
                     Product p = tradingSystem.getProduct(storeID, productID);
-                    Double ret = ((discountPercentage / 100) * p.getPrice()) * products.get(productID);
+                    Double price=p.getPrice();
+                    int q=products.get(productID);
+                    Double calculate=((double) discountPercentage / 100);
+                    Double ret = (calculate * price) * q;
+                   // Double ret = ((discountPercentage / 100) * p.getPrice()) * products.get(productID);
                     return ret;
                 }
             }
@@ -53,6 +63,15 @@ public class ProductSale extends SimpleSale {
         return this.getExpression().checkValidity(storeID);
     }
 
+    public Integer getProductID(){
+        return productID;
+    }
+    public Integer getDiscountPercentage(){
+        return discountPercentage;
+    }
+    public String toString(){
+        return "product id "+productID+" discount "+discountPercentage+" "+getExpression().toString();
+    }
 }
 
 /*

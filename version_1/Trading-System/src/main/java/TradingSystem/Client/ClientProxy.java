@@ -2,22 +2,30 @@ package TradingSystem.Client;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.Bridge.Trading_Driver;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Service
+@Scope("singleton")
 public class ClientProxy implements Client_Interface {
 
-    TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+    //TradingSystem tradingSystem= Trading_Driver.getTradingSystem();
+
+
+    @Autowired
+    private static TradingSystemImpl tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        ClientProxy.tradingSystem = tradingSystem;
+    }
+
+
     String ConnID;
     int userID;
     private String userName;
@@ -26,7 +34,8 @@ public class ClientProxy implements Client_Interface {
     private Client real;
 
     public ClientProxy(){
-        real=null;
+//        real=null;
+//        System.out.println(tradingSystem);
     }
 
     public void setRealBridge(Client implementation) {
@@ -34,26 +43,6 @@ public class ClientProxy implements Client_Interface {
             real = implementation;
     }
 
-
-//    @Override
-//    public String getUserName() {
-//        return null;
-//    }
-//
-//    @Override
-//    public boolean isSubscriber() {
-//        return false;
-//    }
-//
-//    @Override
-//    public boolean isOwner() {
-//        return false;
-//    }
-//
-//    @Override
-//    public String getConnID() {
-//        return null;
-//    }
 
     @Override
     public String getUserName() {
@@ -103,18 +92,18 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public int Register(String userName, String pass) {
-        Response response=tradingSystem.Register(ConnID,userName,pass);
+        Response response = tradingSystem.Register(ConnID,userName,pass);
         this.ConnID= response.returnConnID();
         this.userID= response.returnUserID();
         return userID;
     }
 
     @Override
-    public int Login(String userName, String pass) {
+    public Response Login(String userName, String pass) {
         Response response = tradingSystem.Login(ConnID,userName,pass);
         this.ConnID= response.returnConnID();
         this.userID= response.returnUserID();
-        return userID;
+        return response;
     }
 
     @Override
@@ -124,6 +113,16 @@ public class ClientProxy implements Client_Interface {
 
     @Override
     public Response showStoreProducts(int storeID) {
+        return tradingSystem.ShowStoreProducts(storeID);
+    }
+
+    @Override
+    public Response showAllStoresSubscriber() {
+        return tradingSystem.ShowAllStores();
+    }
+
+    @Override
+    public Response showStoreProductsSubscriber(int storeID) {
         return tradingSystem.ShowStoreProducts(storeID);
     }
 
@@ -163,13 +162,13 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address) {
-        return tradingSystem.guestPurchase(ConnID,name,credit_number,phone_number,address);
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
+        return tradingSystem.guestPurchase(ConnID,name,credit_number,month,year,cvv,ID,address,city,country,zip);
     }
 
     @Override
     public Response Logout() {
-        Response response=tradingSystem.Logout(this.ConnID);
+        Response response = tradingSystem.Logout(this.ConnID);
         this.ConnID=response.returnConnID();
         this.userID=-1;
         return response;
@@ -191,8 +190,8 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response subscriberPurchase(String credit_number, String phone_number, String address) {
-        return tradingSystem.subscriberPurchase(userID,ConnID,credit_number,phone_number,address);
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
+        return tradingSystem.subscriberPurchase(userID,ConnID,credit_number,month,year,cvv,ID,address,city,country,zip);
     }
 
     @Override
@@ -249,7 +248,7 @@ public class ClientProxy implements Client_Interface {
     }
 
     @Override
-    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions) {
+    public Response editManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
        return tradingSystem.EditManagerPermissions(userID,ConnID,storeID,managerID,permissions);
         //return null;
     }
@@ -302,5 +301,56 @@ public class ClientProxy implements Client_Interface {
     @Override
     public Response AdminAllUsers() {
         return tradingSystem.AllUsersHistoryAdmin(userID,ConnID);
+    }
+
+    @Override
+    public Response AdminDailyIncomeForSystem() {
+        return tradingSystem.getDailyIncomeForSystem(this.userID,this.ConnID);
+    }
+
+    @Override
+    public Response OwnerDailyIncomeForStore(int storeID) {
+        return tradingSystem.getDailyIncomeForStore(this.userID,storeID,this.ConnID);
+    }
+
+    @Override
+    public Response submissionBidding(int storeID, int productID, int quantity, int productPrice) {
+        return tradingSystem.subscriberBidding(this.userID,this.ConnID,storeID,productID,productPrice,quantity);
+    }
+
+    @Override
+    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, int productPrice,int mode) {
+         return tradingSystem.ResponseForSubmissionBidding(this.userID,this.ConnID,storeID,productID,productPrice,userWhoOffer,quantity, mode);
+    }
+
+    @Override
+    public Response RemoveSpecialProductProductFromCart(String connID, int storeID, int productID) {
+        return  tradingSystem.removeSpecialProductFromCart(connID,storeID,productID);
+    }
+
+    @Override
+    public Response ShowSpecialProductsInShoppingCart(String connID) {
+        return tradingSystem.ShowSpecialProductInShoppingCart(connID);
+    }
+
+    @Override
+    public Response ShowBids(int storeID) {
+        return tradingSystem.ShowBids(this.userID,this.ConnID,storeID);
+    }
+
+    @Override
+    public Response getStoreIDByName(String storeName) {
+        Integer storeID = tradingSystem.getStoreIDByName(storeName);
+        Response response = new Response();
+        response.AddPair("storeID", storeID);
+        return response;
+    }
+
+    @Override
+    public Response getProductIDByName(String productName, int StoreID) {
+        Integer productID = tradingSystem.getProductIDByName(productName,StoreID);
+        Response response = new Response();
+        response.AddPair("productID", productID);
+        return response;
     }
 }

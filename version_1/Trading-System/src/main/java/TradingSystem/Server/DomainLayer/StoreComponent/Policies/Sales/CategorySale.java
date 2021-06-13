@@ -2,28 +2,34 @@ package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class CategorySale extends SimpleSale {
 
+    @Autowired
+    public static TradingSystemImpl tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        CategorySale.tradingSystem = tradingSystem;
+    }
+
     //Integer saleID;
     String category;
-    Double  discountPercentage;
+    Integer  discountPercentage;
     //Expression expression;
-    TradingSystemImpl tradingSystem= TradingSystemImpl.getInstance();
 
-    public CategorySale(Expression exp,String category, Double discountPercentage) {
+    public CategorySale(Expression exp,String category, Integer discountPercentage) {
         super(exp);
         this.category = category;
         this.discountPercentage = discountPercentage;
     }
 
-    public CategorySale(String category, Double discountPercentage) {
+    public CategorySale(String category, Integer discountPercentage) {
         this.category = category;
         this.discountPercentage = discountPercentage;
     }
@@ -32,7 +38,7 @@ public class CategorySale extends SimpleSale {
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
         double priceForCategory = 0.0;
         if (this.getExpression() != null) {
-            if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
+            if (this.getExpression().evaluate(products, finalSale, userID, storeID, 2)) {
                 Set<Integer> keySet = products.keySet();
                 for (Integer key : keySet
                 ) {
@@ -42,7 +48,9 @@ public class CategorySale extends SimpleSale {
                     }
                 }
             }
-            return (discountPercentage / 100) * priceForCategory;
+            Double calculate=((double) discountPercentage / 100);
+            Double ret = calculate * priceForCategory;
+            return ret;
         }
         return 0.0;
     }
@@ -56,6 +64,19 @@ public class CategorySale extends SimpleSale {
             return new Response(true,"there is not expression from some reason");
         }
         return this.getExpression().checkValidity(storeID);
+    }
+
+    public String getCategory(){
+        return category;
+    }
+
+    public Integer getDiscountPercentage(){
+        return discountPercentage;
+    }
+
+    @Override
+    public String toString(){
+        return category+" "+discountPercentage+" "+getExpression().toString();
     }
 
 }

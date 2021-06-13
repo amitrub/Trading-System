@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
@@ -8,13 +7,13 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class PriceForGetSale extends SimpleExpression {
 
-    Double priceForSale;
+    Integer priceForSale;
 
-    public PriceForGetSale(Double priceForSale) {
+    public PriceForGetSale(Integer priceForSale) {
         this.priceForSale = priceForSale;
     }
 
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode){
         return finalPrice>=priceForSale;
     }
 
@@ -24,5 +23,14 @@ public class PriceForGetSale extends SimpleExpression {
             return new Response(true, "priceForSale cant be negative");
         }
         return new Response("correct");
+    }
+
+    public Integer getPriceForSale(){
+        return priceForSale;
+    }
+
+    @Override
+    public String toString(){
+        return "price for sale "+priceForSale;
     }
 }

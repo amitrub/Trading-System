@@ -47,7 +47,7 @@ function UserStoreHistory(props) {
 
   async function submitHistoryHandler(event) {
     event.preventDefault();
-    // console.log("before submitRemoveHandler");
+    console.log("before submitHistoryHandler");
 
     const adminResponse = await props.action(props.connID, props.userID, id);
 
@@ -99,6 +99,9 @@ function UserStoreHistory(props) {
                   onChange={(e) => updateID(e)}
                   //   about="Show number of results:"
                 >
+                  <option value={-1} disabled>
+                    ---
+                  </option>
                   {props.label === "userHistory"
                     ? users.map((currUser) => (
                         <option value={currUser.userID}>

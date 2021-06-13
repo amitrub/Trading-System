@@ -1,25 +1,31 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales;
 
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
+import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class StoreSale extends SimpleSale {
 
-    private Integer storeID;
-    private Double  discountPercentage;
-    public TradingSystemImpl tradingSystem=TradingSystemImpl.getInstance();
+    @Autowired
+    public static TradingSystemImpl tradingSystem;
 
-    public StoreSale(Expression exp,Integer storeID, Double discountPercentage) {
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        StoreSale.tradingSystem = tradingSystem;
+    }
+
+    private Integer storeID;
+    private Integer  discountPercentage;
+
+    public StoreSale(Expression exp,Integer storeID, Integer discountPercentage) {
         super(exp);
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
     }
 
-    public StoreSale(Integer storeID, Double discountPercentage) {
+    public StoreSale(Integer storeID, Integer discountPercentage) {
         this.storeID = storeID;
         this.discountPercentage = discountPercentage;
     }
@@ -27,8 +33,11 @@ public class StoreSale extends SimpleSale {
     @Override
     public Double calculateSale(ConcurrentHashMap<Integer, Integer> products, Double finalSale, Integer userID, Integer storeID) {
       if(this.getExpression()!=null) {
-          if (this.getExpression().evaluate(products, finalSale, userID, storeID)) {
-              return (discountPercentage / 100) * finalSale;
+          if (this.getExpression().evaluate(products, finalSale, userID, storeID, 2)) {
+              Double price=finalSale;
+              Double calculate=((double) discountPercentage / 100);
+              Double ret = calculate * price;
+              return ret;
           }
       }
         return 0.0;
@@ -46,6 +55,17 @@ public class StoreSale extends SimpleSale {
             return new Response(true,"there is not expression from some reason");
         }
         return this.getExpression().checkValidity(storeID);
+    }
+
+    public Integer getStoreID(){
+        return storeID;
+    }
+    public Integer getDiscountPercentage(){
+        return discountPercentage;
+    }
+
+    public String toString(){
+        return "store id "+storeID+" discount "+discountPercentage+" "+getExpression().toString();
     }
 
 }

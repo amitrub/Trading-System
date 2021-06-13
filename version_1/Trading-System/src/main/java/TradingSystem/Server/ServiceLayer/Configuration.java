@@ -49,6 +49,7 @@ public class Configuration {
     public static String urlbaseOwner = String.format("http://%s:8080/api/owner/", ip) ;
     public static String urlbaseAdmin = String.format("http://%s:8080/api/admin/", ip) ;
     public static String urlbaseManager = String.format("http://%s:8080/api/manager/", ip) ;
+    public static String urlbaseExternalSystems = String.format("https://cs-bgu-wsep.herokuapp.com/");
 
 
     public static String errMsgGenerator(String side, String className, String line, String msg) {

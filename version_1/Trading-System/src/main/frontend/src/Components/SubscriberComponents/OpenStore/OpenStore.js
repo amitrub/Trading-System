@@ -13,7 +13,7 @@ function OpenStore(props) {
 
   async function submitOpenStoreHandler(event) {
     event.preventDefault();
-    // console.log("openStore");
+    console.log("openStore");
 
     const openStoreResponse = await apiHttp.AddStore(
       props.connID,
@@ -21,8 +21,8 @@ function OpenStore(props) {
       storeName
     );
 
-    // console.log("openStore");
-    // console.log(openStoreResponse);
+    console.log("after openStore");
+    console.log(openStoreResponse);
 
     if (openStoreResponse) {
       setPopupMsg(openStoreResponse.message);

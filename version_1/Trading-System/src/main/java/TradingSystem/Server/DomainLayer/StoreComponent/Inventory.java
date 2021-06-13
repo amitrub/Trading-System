@@ -1,37 +1,58 @@
 package TradingSystem.Server.DomainLayer.StoreComponent;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
+import TradingSystem.Server.DataLayer.Services.Data_Controller;
+import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
-import java.util.concurrent.locks.Lock;
-
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.locks.Lock;
+import java.util.stream.Collectors;
 
 public class Inventory {
+
+    @Autowired
+    public static Data_Controller data_controller;
+    public static void setData_controller(Data_Controller data_controller) {
+
+        Inventory.data_controller = data_controller;
+    }
+
+    private static TradingSystemImpl tradingSystem;
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        Inventory.tradingSystem = tradingSystem;
+    }
 
     private final Integer storeID;
     private final String storeName;
     private int nextProductID = 0;
     //productID_product
-    private ConcurrentHashMap<Integer, Product> products;
-    //productID_quantity
-//    private ConcurrentHashMap<Integer, Integer> productQuantity;
-    //productID_Lock
-//    private ConcurrentHashMap<Integer, Lock> productLock;
-
+    private ConcurrentHashMap<Integer, Product> products = new ConcurrentHashMap<>();
 
     public Inventory(Integer storeID, String storeName) {
         this.storeID = storeID;
         this.storeName = storeName;
-        this.products = new ConcurrentHashMap<Integer, Product>();
-//        this.productQuantity=new ConcurrentHashMap<Integer, Integer>();
-//        this.productLock=new ConcurrentHashMap<Integer, Lock>();
+    }
+
+    public Inventory(Integer storeID, String storeName, List<DataProduct> dataProducts) {
+        this.storeID = storeID;
+        this.storeName = storeName;
+        for (DataProduct dataProduct: dataProducts){
+            Product product = new Product(dataProduct);
+            this.products.put(product.getProductID(), product);
+        }
     }
 
     private synchronized int getNextProductID() {
         this.nextProductID++;
         return this.nextProductID;
+    }
+
+    public void AddStoreProductIfNotExist(Product product){
+        products.putIfAbsent(product.getProductID(), product);
     }
 
     public List<DummyProduct> ShowStoreProducts() {
@@ -46,8 +67,10 @@ public class Inventory {
 
     public Response addProduct(String productName, String category, Double price, int quantity){
         if (!IsProductNameExist(productName)){
-            Integer productID=getNextProductID();
-            Product p=new Product(storeID, storeName, productID, productName, category, price, quantity);
+            //Adds to the db
+            Integer productID = data_controller.AddProductToStore(storeID, productName, category, price, quantity).returnProductID();
+
+            Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
             this.products.put(productID,p);
 //            this.productQuantity.put(productID,0);
 //            this.productLock.put(productID,new ReentrantLock());
@@ -71,6 +94,10 @@ public class Inventory {
         return this.products.containsKey(productID) && this.products.get(productID).getQuantity() >= quantity;
     }
 
+    public void setProducts(ConcurrentHashMap<Integer,Product> products){
+        this.products=products;
+    }
+
 
     public Response addQuantityProduct(Integer productId, Integer quantity) {
         if (this.products.containsKey(productId)) {
@@ -85,6 +112,9 @@ public class Inventory {
     public Response deleteProduct(Integer productID) {
         if (this.products.containsKey(productID)) {
 //            this.productQuantity.remove(productID);
+            Response response= data_controller.RemoveProduct(productID);
+            if(response.getIsErr())
+                return response;
             this.products.remove(productID);
 //            this.productLock.remove(productID);
             return new Response(false, "RemoveProduct: Remove product " + productID + " from the Inventory was successful");
@@ -195,14 +225,18 @@ public class Inventory {
         return products;
     }
 
-    public Response editProductDetails(Integer productId, String productName, Double price, String category, Integer quantity) {
+    public Response editProductDetails(Integer productID, String productName, Double price, String category, Integer quantity) {
         Iterator it = this.products.entrySet().iterator();
         while (it.hasNext()) {
             Map.Entry pair = (Map.Entry) it.next();
             int id = (int) pair.getKey();
-            if (id == productId) {
-                Product p = new Product(storeID, storeName, productId, productName, category, price, quantity);
-                this.products.remove(productId);
+            if (id == productID) {
+                Product p = new Product(storeID, storeName, productID, productName, category, price, quantity);
+                Response response= data_controller.editProductDetails(productID, productName, price, category, quantity);
+                if(response.getIsErr()){
+                    return response;
+                }
+                this.products.remove(productID);
                 this.products.put(id, p);
                 return new Response(false, "EditProduct: The product " + productName + " update successfully");
             }
@@ -228,13 +262,18 @@ public class Inventory {
                         AddTheProduct = p.getPrice() >= minprice && p.getPrice() <= maxprice;
                     }
                     if (AddTheProduct) {
-                        if (AddTheProduct) {
                             products.add(PID);
-                        }
                     }
                 }
             }
         }
+
+        //TODO check searchhhh
+//        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).returnProductsDB().stream()
+//                .map(DataProduct::getProductID)
+//                .collect(Collectors.toList());;
+//        products.addAll(productsDb);
+
      return products;
     }
 

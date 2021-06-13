@@ -1,6 +1,5 @@
 package TradingSystem.Server.ServiceLayer.ServiceApi;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
 import org.springframework.web.bind.annotation.*;
@@ -11,7 +10,6 @@ import java.util.Map;
 @RequestMapping(path = "api/manager")
 @CrossOrigin("*")
 public class StoreManagerService {
-    private final TradingSystemImpl tradingSystemImpl = TradingSystemImpl.getInstance();
     private static final LoggerController loggerController=LoggerController.getInstance();
 
     /**

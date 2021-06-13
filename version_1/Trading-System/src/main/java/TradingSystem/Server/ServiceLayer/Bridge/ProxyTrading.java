@@ -6,8 +6,8 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.ServiceApi.Publisher;
@@ -32,13 +32,27 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
+    public ConcurrentHashMap<Integer, User> getSubscribers() {
+        if(real!=null)
+            return real.getSubscribers();
+        return null;
+    }
+
+    @Override
+    public ConcurrentHashMap<Integer, Store> getStores() {
+        if(real!=null)
+            return real.getStores();
+        return null;
+    }
+
+    @Override
     public void ClearSystem() {
         if (real != null)
             real.ClearSystem();
     }
 
     @Override
-    public void Initialization() {
+    public void Initialization(String path) {
         if (real != null)
             real.ClearSystem();
     }
@@ -146,14 +160,14 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public boolean hasPermission(int userID, int storeID, User.Permission p) {
+    public boolean hasPermission(int userID, int storeID, PermissionEnum.Permission p) {
         if(real!=null)
             return real.hasPermission(userID,storeID,p);
         return false;
     }
 
     @Override
-    public boolean hasPermission(int userID, User.Permission p) {
+    public boolean hasPermission(int userID, PermissionEnum.Permission p) {
         if(real!=null)
             return real.hasPermission(userID,p);
         return false;
@@ -195,16 +209,23 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response guestPurchase(String connID, String name, String credit_number, String phone_number, String address) {
+    public Response guestPurchase(String connID, String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         if(real!=null)
-            return real.guestPurchase(connID,name,credit_number,phone_number,address);
+            return real.guestPurchase(connID,name,credit_number,month,year,cvv,ID,address,city,country,zip);
         return null;
     }
 
     @Override
-    public Response subscriberPurchase(int userID, String connID, String credit_number, String phone_number, String address) {
+    public Response subscriberPurchase(int userID, String connID, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         if(real!=null)
-            return real.subscriberPurchase(userID,connID,credit_number,phone_number,address);
+            return real.subscriberPurchase(userID,connID,credit_number,month,year,cvv,ID,address,city,country,zip);
+        return null;
+    }
+
+    @Override
+    public Integer getUserID(String name) {
+        if(real!=null)
+            return real.getUserID(name);
         return null;
     }
 
@@ -251,7 +272,7 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response systemRoleChecks(int userID, int storeID, int newRole, User.Permission permission) {
+    public Response systemRoleChecks(int userID, int storeID, int newRole, PermissionEnum.Permission permission) {
         if(real!=null)
             return real.systemRoleChecks(userID,storeID,newRole,permission);
         return null;
@@ -450,14 +471,14 @@ public class ProxyTrading implements TradingSystem {
     }
 
     @Override
-    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<User.Permission> permissions) {
+    public Response EditManagerPermissions(int userID, String connID, int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         if(real!=null)
             return real.EditManagerPermissions(userID,connID,storeID,managerID,permissions);
         return null;
     }
 
     @Override
-    public User.Permission changeToPermission(String per) {
+    public PermissionEnum.Permission changeToPermission(String per) {
         if(real!=null)
             return real.changeToPermission(per);
         return null;
@@ -551,5 +572,125 @@ public class ProxyTrading implements TradingSystem {
         if(real!=null)
             return real.GetAllSubscribers(connID, userID);
         return null;
+    }
+
+    @Override
+    public Response getDailyIncomeForStore(int userID, int storeID, String connID) {
+        if(real!=null)
+            return real.getDailyIncomeForStore(userID,storeID,connID);
+        return null;
+    }
+
+    @Override
+    public Response getDailyIncomeForSystem(int userID, String connID) {
+        if(real!=null)
+            return real.getDailyIncomeForSystem(userID,connID);
+        return null;
+    }
+
+    @Override
+    public Response subscriberBidding(int userID, String connID, int storeID, int productID, int productPrice, int quantity) {
+        if (real != null)
+            return real.subscriberBidding(userID, connID, storeID, productID, productPrice, quantity);
+        return null;
+    }
+
+    @Override
+    public Response ResponseForSubmissionBidding(int userID, String connID, int storeID, int productID, int productPrice, int userBiddingPrice, int quantity, int mode) {
+        if (real != null)
+            return real.ResponseForSubmissionBidding(userID, connID, storeID, productID, productPrice, userBiddingPrice, quantity, mode);
+        return null;
+    }
+
+    @Override
+    public Response ShowBids(int userID, String connID, int storeID) {
+        if(real!=null)
+            return real.ShowBids(userID, connID, storeID);
+        return null;
+    }
+
+    @Override
+    public void setSubscribers(ConcurrentHashMap<Integer, User> subscribers) {
+
+    }
+
+    @Override
+    public void setStores(ConcurrentHashMap<Integer, Store> stores) {
+
+    }
+
+    @Override
+    public Response ShowSpecialProductInShoppingCart(String connID) {
+        if(real!=null)
+            return real.ShowSpecialProductInShoppingCart(connID);
+        return null;
+    }
+
+    @Override
+    public Response removeSpecialProductFromCart(String connID, int storeID, int productID) {
+        if(real!=null)
+            return real.removeSpecialProductFromCart( connID, storeID,productID);
+        return null;
+    }
+
+    @Override
+    public Response GetAllManager(String connID, int storeId) {
+        if(real!=null)
+            return real.GetAllManager(connID,storeId);
+        return null;
+    }
+
+    @Override
+    public Response ShowProductComments(String connID, int userID, int storeID) {
+        return null;
+    }
+
+    @Override
+    public Response ShowBuyingPolicyBuildingTree(String connID, int userID, int storeID) {
+        if(real!=null)
+            return real.ShowBuyingPolicyBuildingTree(connID,userID,storeID);
+        return null;
+    }
+
+    @Override
+    public Response ShowDiscountPolicyBuildingTree(String connID, int userID, int storeID) {
+        if(real!=null)
+            return real.ShowDiscountPolicyBuildingTree(connID,userID,storeID);
+        return null;
+    }
+
+    @Override
+    public Response AddNodeToBuildingTree(int userID, String connID, int storeID, int nodeID, int quantity, int productID, int maxQuantity, String category, int numOfProductsForSale, int priceForSale, int quantityForSale, int discount, int mode, String type) {
+        if(real!=null)
+            return real.AddNodeToBuildingTree(userID,connID,storeID,nodeID,quantity,productID,maxQuantity,category,numOfProductsForSale,priceForSale,quantityForSale,discount,mode,type);
+        return null;
+    }
+
+    @Override
+    public Response CloseDiscountPolicyTree(String connID, int userID, int storeID) {
+        if(real!=null)
+            return real.CloseDiscountPolicyTree(connID,userID,storeID);
+        return null;
+    }
+
+    @Override
+    public Response CloseBuingPolicyTree(String connID, int userID, int storeID) {
+        if(real!=null)
+            return real.CloseBuingPolicyTree(connID,userID,storeID);
+        return null;
+    }
+
+    @Override
+    public Integer getStoreIDByName(String storeName) {
+        if(real!=null)
+            return real.getStoreIDByName(storeName);
+        return -1;
+    }
+
+    @Override
+    public Integer getProductIDByName(String productName, int storeID) {
+        if(real!=null)
+            return real.getProductIDByName(productName, storeID);
+        return -1;
     }
 }

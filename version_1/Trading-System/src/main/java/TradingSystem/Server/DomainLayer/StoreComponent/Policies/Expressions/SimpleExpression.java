@@ -1,15 +1,21 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions;
 
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 public abstract class SimpleExpression  implements Expression{
 
-    public TradingSystemImpl tradingSystem = TradingSystemImpl.getInstance();
-    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
+    @Autowired
+    public static TradingSystemImpl tradingSystem;
+
+    public static void setTradingSystem(TradingSystemImpl tradingSystem) {
+        SimpleExpression.tradingSystem = tradingSystem;
+    }
+
+    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode);
 
     @Override
     public Response checkValidity(int storeID) {

@@ -14,7 +14,7 @@ public class NumOfProductsForGetSale extends SimpleExpression {
     }
 
     @Override
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode) {
         return products.size()>=numOfProductsForSale;
     }
 
@@ -24,5 +24,14 @@ public class NumOfProductsForGetSale extends SimpleExpression {
             return new Response(true, "numOfProductsForSale cant be negative");
         }
         return new Response("correct");
+    }
+
+    public Integer getNumOfProductsForSale(){
+        return numOfProductsForSale;
+    }
+
+    @Override
+    public String toString(){
+        return "num of products "+numOfProductsForSale;
     }
 }

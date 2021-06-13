@@ -11,7 +11,7 @@ import static TradingSystem.Server.ServiceLayer.Configuration.errMsgGenerator;
 
 public class DummyStore {
 
-    private Integer id;
+    private final Integer id;
     private String name;
     private Double storeRate;
 

@@ -152,8 +152,39 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
+    ShowShoppingCartBid: (connID) => {
+      let path = subscriberURL.concat(`shopping_cart_special`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    //DONE
     RemoveProductFromCart: (connID, storeID, productID) => {
       let path = guestURL.concat(`shopping_cart/remove_product`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        storeID: storeID,
+        productID: productID,
+      };
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        // console.log(res);
+        return res.data;
+      });
+    },
+
+    //DONE
+    RemoveProductFromBidCart: (connID, storeID, productID) => {
+      let path = subscriberURL.concat(`shopping_cart/remove_special_product`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
@@ -189,7 +220,19 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
-    guestPurchase: (connID, name, credit_number, phone_number, address) => {
+    guestPurchase: (
+      connID,
+      guestName,
+      creditNumber,
+      month,
+      year,
+      cvv,
+      idNum,
+      adrress,
+      city,
+      country,
+      mailNum
+    ) => {
       let path = guestURL.concat(`shopping_cart/purchase`);
       const headers = {
         "Content-Type": "application/json; utf-8",
@@ -197,11 +240,21 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        name: name,
-        credit_number: credit_number,
-        phone_number: phone_number,
-        address: address,
+        name: guestName,
+        credit_number: creditNumber,
+        month: month,
+        year: year,
+        cvv: cvv,
+        ID: idNum,
+        address: adrress,
+        city: city,
+        country: country,
+        zip: mailNum,
       };
+
+      // console.log(path);
+      // console.log(body);
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -251,7 +304,7 @@ export const createApiClientHttp = () => {
         productID: parseInt(productID),
         comment: comment,
       };
-      console.log(body);
+      // console.log(body);
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -274,9 +327,15 @@ export const createApiClientHttp = () => {
     subscriberPurchase: (
       connID,
       userID,
-      credit_number,
-      phone_number,
-      address
+      creditNumber,
+      month,
+      year,
+      cvv,
+      idNum,
+      adrress,
+      city,
+      country,
+      mailNum
     ) => {
       let path = subscriberURL.concat(`${userID}/shopping_cart/purchase`);
       const headers = {
@@ -285,9 +344,45 @@ export const createApiClientHttp = () => {
         connID: connID,
       };
       const body = {
-        credit_number: credit_number,
-        phone_number: phone_number,
-        address: address,
+        credit_number: creditNumber,
+        month: month,
+        year: year,
+        cvv: cvv,
+        ID: idNum,
+        address: adrress,
+        city: city,
+        country: country,
+        zip: mailNum,
+      };
+
+      // console.log(path);
+      // console.log(body);
+
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        // console.log(res);
+        return res.data;
+      });
+    },
+
+    submissionBidding: (
+      connID,
+      userID,
+      storeID,
+      productID,
+      quantity,
+      price
+    ) => {
+      let path = subscriberURL.concat(`${userID}/submission_bidding`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        storeID: storeID,
+        productID: productID,
+        quantity: quantity,
+        productPrice: price,
       };
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
@@ -295,7 +390,79 @@ export const createApiClientHttp = () => {
       });
     },
 
+    ShowAllBiddings: (connID, userID, storeID) => {
+      let path = ownerURL.concat(` ${userID}/store/${storeID}/show_bids`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    ResponsedToBidding: (
+      connID,
+      userID,
+      storeID,
+      productID,
+      userWhoOffer,
+      quantity,
+      price,
+      mode
+    ) => {
+      let path = ownerURL.concat(`${userID}/response_for_submission_bidding`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        userWhoOffer: parseInt(userWhoOffer),
+        storeID: parseInt(storeID),
+        productID: parseInt(productID),
+        quantity: parseInt(quantity),
+        productPrice: parseInt(price),
+        mode: parseInt(mode),
+      };
+
+      // console.log(path);
+      // console.log(body);
+
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     //Owner
+    //DONE
+    ShowStoreComments: (connID, userID, storeID) => {
+      let path = ownerURL.concat(`${userID}/store/${storeID}/comments`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    OwnerDailyIncomeForStore: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/owner_daily_income_for_store`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
     //DONE
     ShowAllFoundedStores: (connID, userID) => {
       // console.log("ShowAllFoundedStores");
@@ -431,7 +598,7 @@ export const createApiClientHttp = () => {
       });
     },
 
-    AddBuyingPolicy: (connID, userID, storeID, expression) => {
+    AddBuyingPolicy: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_buying_policy`
       );
@@ -440,10 +607,9 @@ export const createApiClientHttp = () => {
         Accept: "application/json",
         connID: connID,
       };
-      const body = {
-        // expression: expression,
-      };
-      return axios.post(path, body, { headers: headers }).then((res) => {
+      console.log(path);
+      // console.log(body);
+      return axios.get(path, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
       });
@@ -453,15 +619,14 @@ export const createApiClientHttp = () => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_discount_policy`
       );
+
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",
         connID: connID,
       };
-      const body = {
-        // TODO
-      };
-      return axios.post(path, body, { headers: headers }).then((res) => {
+
+      return axios.get(path, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
       });
@@ -590,6 +755,19 @@ export const createApiClientHttp = () => {
     },
 
     //DONE
+    GetAllStoreManagers: (connID, storeID) => {
+      let path = subscriberURL.concat(`${storeID}/get_all_manager`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    //DONE
     RemoveManager: (connID, userID, storeID, managerID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/remove_manager/${managerID}`
@@ -621,7 +799,11 @@ export const createApiClientHttp = () => {
       GetInfoOfficials,
       GetInfoRequests,
       ResponseRequests,
-      GetStoreHistory
+      GetStoreHistory,
+      GetDailyIncomeForStore,
+      RequestBidding,
+      EditDiscountPolicy,
+      EditBuyingPolicy
     ) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/edit_manager_permissions/${managerID}`
@@ -644,7 +826,17 @@ export const createApiClientHttp = () => {
         GetInfoRequests: GetInfoRequests,
         ResponseRequests: ResponseRequests,
         GetStoreHistory: GetStoreHistory,
+        RequestBidding: RequestBidding,
+        EditDiscountPolicy: EditDiscountPolicy,
+        EditBuyingPolicy: EditBuyingPolicy,
+        GetDailyIncomeForStore: GetDailyIncomeForStore,
       };
+
+      // console.log("---------\n Edit Permissions \n");
+      // console.log(path);
+      // console.log(body);
+      // console.log("---------");
+
       return axios.post(path, body, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
@@ -717,6 +909,108 @@ export const createApiClientHttp = () => {
       });
     },
 
+    ShowBuyingPolicyBuildingTree: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/show_buying_policy_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    ShowDiscountPolicyBuildingTree: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/show_discount_policy_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    RemoveBuyingPolicy: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/remove_buying_policy`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    RemoveDiscountPolicy: (connID, userID, storeID) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/remove_discount_policy`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AddNodeToBuildingTree: (
+      connID,
+      userID,
+      storeID,
+      mode,
+      type,
+      nodeID,
+      quantity,
+      productID,
+      maxQuantity,
+      category,
+      numOfProductsForSale,
+      priceForSale,
+      quantityForSale,
+      discount
+    ) => {
+      let path = ownerURL.concat(
+        `${userID}/store/${storeID}/add_node_to_building_tree`
+      );
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      const body = {
+        mode: mode,
+        type: type,
+        nodeID: nodeID,
+        quantity: quantity,
+        productID: productID,
+        maxQuantity: maxQuantity,
+        category: category,
+        numOfProductsForSale: numOfProductsForSale,
+        priceForSale: priceForSale,
+        quantityForSale: quantityForSale,
+        discount: discount,
+      };
+      // console.log("Add node insert checkkk");
+      // console.log(path);
+      // console.log(body);
+      return axios.post(path, body, { headers: headers }).then((res) => {
+        // console.log(res);
+        return res.data;
+      });
+    },
+
     // Admin
     // NOT IN USE
     AdminAllUsers: (connID, adminID) => {
@@ -757,6 +1051,66 @@ export const createApiClientHttp = () => {
 
     AdminStoreHistory: (connID, adminID, storeID) => {
       let path = adminURL.concat(`${adminID}/store_history_admin/${storeID}`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminDailyIncomeForSystem: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_daily_income_for_system`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminAllSubscribersWeek: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_subscribers_week`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminAllStoresWeek: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_stores_week`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminAllShoppingHistoriesWeek: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_shopping_history_week`);
+      const headers = {
+        "Content-Type": "application/json; utf-8",
+        Accept: "application/json",
+        connID: connID,
+      };
+      return axios.get(path, { headers: headers }).then((res) => {
+        return res.data;
+      });
+    },
+
+    AdminAllMoneyWeek: (connID, adminID) => {
+      let path = adminURL.concat(`${adminID}/admin_money_week`);
       const headers = {
         "Content-Type": "application/json; utf-8",
         Accept: "application/json",

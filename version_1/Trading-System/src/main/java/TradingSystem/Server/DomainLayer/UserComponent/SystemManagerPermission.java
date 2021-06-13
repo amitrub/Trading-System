@@ -5,15 +5,18 @@ import java.util.List;
 
 public class SystemManagerPermission implements Permission{
 
-    List<User.Permission> permissions;
+    List<PermissionEnum.Permission> permissions;
 
     public SystemManagerPermission() {
-        this.permissions=new ArrayList<User.Permission>();
-        permissions.add(User.Permission.GetHistoryPurchasing);
+        this.permissions=new ArrayList<PermissionEnum.Permission>();
+        permissions.add(PermissionEnum.Permission.GetHistoryPurchasing);
+        permissions.add(PermissionEnum.Permission.GetDailyIncomeForSystem);
     }
 
+
+
     @Override
-    public boolean hasPermission(User.Permission p) {
+    public boolean hasPermission(PermissionEnum.Permission p) {
         return this.permissions.contains(p);
     }
 }

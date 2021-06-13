@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.SimpleExpression;
 
 import java.util.Calendar;
@@ -19,7 +18,7 @@ public class TimeLimit extends SimpleExpression {
     }
 
     //ToDo check!
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID){
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode){
         if(products.isEmpty()){
             return true;
         }

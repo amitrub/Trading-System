@@ -1,17 +1,12 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
 import org.json.JSONObject;
 
-import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 
 import static TradingSystem.Server.ServiceLayer.Configuration.*;
 
@@ -123,7 +118,7 @@ public class Client implements Client_Interface {
      * @param pass pass
      * @return int if ok
      */
-    public int Login(String userName, String pass){
+    public Response Login(String userName, String pass){
         String path = "login" ;
         DummyUser dummyUser = new DummyUser(userName, pass);
         JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseGuest + path, dummyUser.toString(), this.connID);
@@ -133,7 +128,7 @@ public class Client implements Client_Interface {
         this.connID = response.returnConnID();
         this.userName = userName;
         this.pass = pass;
-        return userID;
+        return response;
     }
 
      /**
@@ -146,9 +141,26 @@ public class Client implements Client_Interface {
         Response response = Response.makeResponseFromJSON(jsonResponse);
         return response;
     }
+
     public Response showStoreProducts(int storeID) {
         String path = String.format("store/%s/products", storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseGuest+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    @Override
+    public Response showAllStoresSubscriber() {
+        String path = "stores_subscriber";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber+path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    @Override
+    public Response showStoreProductsSubscriber(int storeID) {
+        String path = String.format("store/%s/products_subscriber", storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseSubscriber+path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         return response;
     }
@@ -267,18 +279,30 @@ public class Client implements Client_Interface {
      * @requirement 2.9
      * @param name
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address) {
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         String path = "shopping_cart/purchase";
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("name", name);
             jsonPost.put("credit_number", credit_number);
-            jsonPost.put("phone_number", phone_number);
+            jsonPost.put("month", month);
+            jsonPost.put("year", year);
+            jsonPost.put("cvv", cvv);
+            jsonPost.put("ID", ID);
             jsonPost.put("address", address);
+            jsonPost.put("city", city);
+            jsonPost.put("country", country);
+            jsonPost.put("zip", zip);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "157", "Error: guestPurchase, making post json"));
         }
@@ -363,17 +387,29 @@ public class Client implements Client_Interface {
     /**
      * @requirement 3.4 subscriber (user) purchase
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response subscriberPurchase(String credit_number, String phone_number, String address) {
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip) {
         String path = String.format("%s/shopping_cart/purchase", this.userID);
         JSONObject jsonPost = new JSONObject();
         try {
             jsonPost.put("credit_number", credit_number);
-            jsonPost.put("phone_number", phone_number);
+            jsonPost.put("month", month);
+            jsonPost.put("year", year);
+            jsonPost.put("cvv", cvv);
+            jsonPost.put("ID", ID);
             jsonPost.put("address", address);
+            jsonPost.put("city", city);
+            jsonPost.put("country", country);
+            jsonPost.put("zip", zip);
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "197", "Error: subscriberPurchase, making post json"));
         }
@@ -493,6 +529,8 @@ public class Client implements Client_Interface {
         return response;
     }
 
+
+
     /**
      * @requirement 4.2.3
      * @param storeID
@@ -590,11 +628,11 @@ public class Client implements Client_Interface {
      * @param permissions permissions
      * @return Response
      */
-    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions) {
+    public Response editManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         String path = String.format("%s/store/%s/edit_manager_permissions/%s", this.userID, storeID, managerID);
         JSONObject jsonPost = new JSONObject();
         try {
-            for (User.Permission permissionKey : permissions) {
+            for (PermissionEnum.Permission permissionKey : permissions) {
                 jsonPost.put("Permission", permissionKey);
             }
         } catch (Exception e) {
@@ -664,7 +702,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/store_history_owner/%s", this.userID, storeID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(ShowStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(ownerStoreHistory) response: " + response.returnHistoryList() + ANSI_RESET);
         return response;
     }
 
@@ -719,6 +757,152 @@ public class Client implements Client_Interface {
         System.out.println(ANSI_YELLOW + "(ShowAllUsersHistory) response: " + response.returnHistoryList() + ANSI_RESET);
         return response;
     }
+    /**
+     * requirement 6.6
+     * @return Double
+     */
+    @Override
+    public Response AdminDailyIncomeForSystem() {
+        String path = String.format("%s/admin_daily_income_for_system", this.userID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(AdminDailyIncomeForSystem) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
+    }
 
-    
+    /**
+     * requirement 4.12
+     * @return Double
+     */
+    @Override
+    public Response OwnerDailyIncomeForStore(int storeID) {
+        String path = String.format("%s/store/%s/store_history_owner", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(OwnerDailyIncomeForStore) response: " + response.returnHistoryList() + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * requirement 8.3.1
+     * @return Response
+     */
+    @Override
+    public Response submissionBidding(int storeID, int productID, int quantity, int productPrice) {
+        String path = String.format("%s/submission_bidding", this.userID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("storeID", storeID);
+            jsonPost.put("productID", productID);
+            jsonPost.put("quantity", productPrice);
+            jsonPost.put("productPrice", quantity);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: submissionBidding, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(submissionBidding) response: " + response + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * requirement 8.3.2
+     * @return Response
+     */
+    @Override
+    public Response ResponseForSubmissionBidding(int storeID, int productID, int userWhoOffer, int quantity, int productPrice,int mode) {
+        String path = String.format("%s/response_for_submission_bidding", this.userID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("userWhoOffer", userWhoOffer);
+            jsonPost.put("storeID", storeID);
+            jsonPost.put("productID", productID);
+            jsonPost.put("quantity", quantity);
+            jsonPost.put("productPrice", productPrice);
+            jsonPost.put("mode", mode);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: ResponseForSubmissionBidding, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(editProduct) ResponseForSubmissionBidding: " + response + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * requirement 8.3.3
+     * @return Response
+     */
+
+    @Override
+    public Response RemoveSpecialProductProductFromCart(String connID, int storeID, int productID) {
+        String path = "shopping_cart/remove_special_product";
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("storeID", storeID);
+            jsonPost.put("productID", productID);
+
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: ResponseForSubmissionBidding, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(editProduct) ResponseForSubmissionBidding: " + response + ANSI_RESET);
+        return response;
+    }
+
+    /**
+     * requirement 8.3- None
+     * @return Response
+     */
+    @Override
+    public Response ShowSpecialProductsInShoppingCart(String connID) {
+        String path = "shopping_cart_special";
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    /**
+     * requirement 8.3- None
+     * @return Response
+     */
+    @Override
+    public Response ShowBids(int storeID) {
+        String path = String.format("%s/store/%s/show_bids", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        return response;
+    }
+
+    @Override
+    public Response getStoreIDByName(String storeName)
+    {
+        String path = String.format("get_store_ID");
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("store", storeName);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "193", "Error: addProduct, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(getStoreIDByName) response: " + response + ANSI_RESET);
+        return response;
+    }
+
+    @Override
+    public Response getProductIDByName(String productName, int StoreID) {
+        String path = String.format("%s/get_product_ID", StoreID);
+        JSONObject jsonPost = new JSONObject();
+        try {
+            jsonPost.put("productName", productName);
+        } catch (Exception e) {
+            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: ResponseForSubmissionBidding, making post json"));
+        }
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
+        Response response = Response.makeResponseFromJSON(jsonResponse);
+        System.out.println(ANSI_YELLOW + "(getProductIDByName) response: " + response + ANSI_RESET);
+        return response;
+    }
 }

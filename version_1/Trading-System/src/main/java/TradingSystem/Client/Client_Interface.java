@@ -1,18 +1,12 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.BuyingPolicy;
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.DiscountPolicy;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
-import TradingSystem.Server.ServiceLayer.DummyObject.DummyStore;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.springframework.web.bind.annotation.RequestHeader;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 public interface Client_Interface {
 
@@ -51,7 +45,7 @@ public interface Client_Interface {
      * @param pass pass
      * @return int if ok
      */
-    public int Login(String userName, String pass);
+    public Response Login(String userName, String pass);
 
     /**
      * @requirement 2.5
@@ -59,6 +53,10 @@ public interface Client_Interface {
      */
     public Response showAllStores();
     public Response showStoreProducts(int storeID);
+
+    public Response showAllStoresSubscriber();
+    public Response showStoreProductsSubscriber(int storeID);
+
 
     /**
      * @requirement 2.6
@@ -93,11 +91,17 @@ public interface Client_Interface {
      * @requirement 2.9
      * @param name
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response guestPurchase(String name, String credit_number, String phone_number, String address);
+    public Response guestPurchase(String name, String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip);
 
     //Subscriber
 
@@ -134,11 +138,17 @@ public interface Client_Interface {
     /**
      * @requirement 3.4 subscriber (user) purchase
      * @param credit_number
-     * @param phone_number
+     * @param month
+     * @param year
+     * @param cvv
+     * @param ID
      * @param address
+     * @param city
+     * @param country
+     * @param zip
      * @return
      */
-    public Response subscriberPurchase(String credit_number, String phone_number, String address);
+    public Response subscriberPurchase(String credit_number, String month, String year, String cvv, String ID, String address, String city, String country, String zip);
     //Store Owner Service
 
     /**
@@ -243,7 +253,7 @@ public interface Client_Interface {
      * @param permissions permissions
      * @return Response
      */
-    public Response editManagerPermissions(int storeID, int managerID, List<User.Permission> permissions);
+    public Response editManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions);
     public Response GetPossiblePermissionsToManager(int storeId);
 
     /**
@@ -294,5 +304,51 @@ public interface Client_Interface {
      */
     public Response AdminAllUsers();
 
+    /**
+     * requirement 6.6
+     * @return Double
+     */
+    public Response AdminDailyIncomeForSystem();
+
+    /**
+     * requirement 4.12
+     * @return Double
+     */
+    public Response  OwnerDailyIncomeForStore(int storeID);
+
+    /**
+     * requirement 8.3.1
+     * @return Response
+     */
+    public Response submissionBidding( int storeID,int productID,int quantity,int productPrice);
+
+
+    /**
+     * requirement 8.3.2
+     * @return Response
+     */
+    public Response ResponseForSubmissionBidding( int storeID,int productID, int userWhoOffer,int quantity,int productPrice,int mode);
+
+    /**
+     * requirement 8.3.3
+     * @return Response
+     */
+    public Response RemoveSpecialProductProductFromCart( String connID, int storeID, int productID);
+
+    /**
+     * requirement 8.3-None
+     * @return Response
+     */
+    public Response ShowSpecialProductsInShoppingCart(String connID);
+
+    /**
+     * requirement 8.3-None
+     * @return Response
+     */
+    public Response ShowBids( int storeID);
+
+    public Response getStoreIDByName(String storeName);
+
+    public Response getProductIDByName(String productName, int StoreID);
 
 }

@@ -1,0 +1,33 @@
+{
+  "register" : [{
+    "userName": "u1",
+    "password": "1234"
+  },{
+    "userName": "u2",
+    "password": "1234"
+  },{
+    "userName": "u3",
+    "password": "1234"
+  }],
+
+  "login" : [{"userName": "u2"}],
+
+  "open_store" : [
+    {
+      "userName": "u2",
+      "storeName": "s1"
+    }],
+
+  "add_item" : [{
+    "userName": "u2",
+    "storeName": "s1",
+    "productName": "Bamba",
+    "category": "food",
+    "price": 30.1,
+    "quantity": 100}],
+
+  "add_manager" : [{
+    "owner": "u2",
+    "newManager": "u3",
+    "storeName":  "s1"}]
+}

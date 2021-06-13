@@ -3,10 +3,10 @@ package TradingSystem.Server.ServiceLayer.ServiceApi;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystem;
-import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
-import TradingSystem.Server.DomainLayer.UserComponent.User;
+import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import TradingSystem.Server.ServiceLayer.LoggerController;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
@@ -18,9 +18,15 @@ import java.util.Map;
 @RequestMapping(path = "api/owner")
 @CrossOrigin("*")
 public class StoreOwnerServiceHttp {
-    private final TradingSystem tradingSystem = TradingSystemImpl.getInstance();
+
     private static final LoggerController loggerController=LoggerController.getInstance();
 
+    @Autowired
+    private final TradingSystem tradingSystem;
+
+    public StoreOwnerServiceHttp(TradingSystem tradingSystem) {
+        this.tradingSystem = tradingSystem;
+    }
 
     /**
      * @requirement
@@ -253,11 +259,9 @@ public class StoreOwnerServiceHttp {
      *  "connID": String
      * }
      */
-    @PostMapping("{userID}/store/{storeID}/add_buying_policy}")
-    public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-        Map<String,Object> map=(Map<String,Object>)obj.get("expression");
-        Expression exp=tradingSystem.CreateExpForBuy(storeID,map);
-        Response res = this.tradingSystem.addBuyingPolicy(userID,connID,storeID,exp);
+    @GetMapping("{userID}/store/{storeID}/add_buying_policy")
+    public Response AddBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        Response res = this.tradingSystem.CloseBuingPolicyTree(connID,userID,storeID);
         WriteToLogger(res);
         return res;
     }
@@ -268,20 +272,16 @@ public class StoreOwnerServiceHttp {
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param connID: String (Header)
-     * @param obj:{
-     *  TODO: Think what values should be in Discount Policy
-     * }
      * @return Response{
      *  "isErr: boolean
      *  "message": String
      *  "connID": String
      * }
      */
-    @PostMapping("{userID}/store/{storeID}/add_discount_policy}")
-    public Response AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
-       Map<String, Object> map=(Map<String, Object> )obj.get("expression");
-        Sale sale=this.tradingSystem.createSaleForDiscount(storeID,map);
-        Response res = this.tradingSystem.addDiscountPolicy(userID,connID,storeID,sale);
+    @GetMapping("{userID}/store/{storeID}/add_discount_policy")
+    public Response AddDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        System.out.println("\n\n---------------------------AddDiscountPolicy--------------------------------------\n\n\n");
+        Response res = this.tradingSystem.CloseDiscountPolicyTree(connID,userID,storeID);
         WriteToLogger(res);
         return res;
     }
@@ -291,7 +291,6 @@ public class StoreOwnerServiceHttp {
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param buyingPolicyID : int (Path)
      * @param connID: String (Header)
 
      * @return Response{
@@ -301,7 +300,8 @@ public class StoreOwnerServiceHttp {
      * }
      */
     @GetMapping("{userID}/store/{storeID}/remove_buying_policy")
-    public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int buyingPolicyID, @RequestHeader("connID") String connID){
+    public Response RemoveBuyingPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        System.out.println("--------------------- RemoveBuyingPolicy --------------------");
         Response res = this.tradingSystem.RemoveBuyingPolicy(userID,storeID,connID);
         WriteToLogger(res);
         return res;
@@ -312,7 +312,6 @@ public class StoreOwnerServiceHttp {
      *
      * @param userID: int (Path)
      * @param storeID: int (Path)
-     * @param discountPolicyID : int (Path)
      * @param connID: String (Header)
 
      * @return Response{
@@ -322,7 +321,7 @@ public class StoreOwnerServiceHttp {
      * }
      */
     @GetMapping("{userID}/store/{storeID}/remove_discount_policy")
-    public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @PathVariable int discountPolicyID, @RequestHeader("connID") String connID){
+    public Response RemoveDiscountPolicy(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
         Response res = this.tradingSystem.RemoveDiscountPolicy(userID,storeID,connID);
         WriteToLogger(res);
         return res;
@@ -429,32 +428,40 @@ public class StoreOwnerServiceHttp {
      */
     @PostMapping("{userID}/store/{storeID}/edit_manager_permissions/{managerID}")
     public Response EditManagerPermissions(@PathVariable int userID, @PathVariable int storeID, @PathVariable int managerID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj)  {
-        List<User.Permission> Permissions=new LinkedList<>();
+        List<PermissionEnum.Permission> Permissions=new LinkedList<>();
         try {
             if((boolean) obj.get("AddProduct"))
-                Permissions.add(User.Permission.AddProduct);
+                Permissions.add(PermissionEnum.Permission.AddProduct);
             if((boolean) obj.get("ReduceProduct"))
-                Permissions.add(User.Permission.ReduceProduct);
+                Permissions.add(PermissionEnum.Permission.ReduceProduct);
             if((boolean) obj.get("DeleteProduct"))
-                Permissions.add(User.Permission.DeleteProduct);
+                Permissions.add(PermissionEnum.Permission.DeleteProduct);
             if((boolean) obj.get("EditProduct"))
-                Permissions.add(User.Permission.EditProduct);
+                Permissions.add(PermissionEnum.Permission.EditProduct);
             if((boolean) obj.get("AppointmentOwner"))
-                Permissions.add(User.Permission.AppointmentOwner);
+                Permissions.add(PermissionEnum.Permission.AppointmentOwner);
             if((boolean) obj.get("AppointmentManager"))
-                Permissions.add(User.Permission.AppointmentManager);
+                Permissions.add(PermissionEnum.Permission.AppointmentManager);
             if((boolean) obj.get("EditManagerPermission"))
-                Permissions.add(User.Permission.EditManagerPermission);
+                Permissions.add(PermissionEnum.Permission.EditManagerPermission);
             if((boolean) obj.get("RemoveManager"))
-                Permissions.add(User.Permission.RemoveManager);
+                Permissions.add(PermissionEnum.Permission.RemoveManager);
             if((boolean) obj.get("GetInfoOfficials"))
-                Permissions.add(User.Permission.GetInfoOfficials);
+                Permissions.add(PermissionEnum.Permission.GetInfoOfficials);
             if((boolean) obj.get("GetInfoRequests"))
-                Permissions.add(User.Permission.GetInfoRequests);
+                Permissions.add(PermissionEnum.Permission.GetInfoRequests);
             if((boolean) obj.get("ResponseRequests"))
-                Permissions.add(User.Permission.ResponseRequests);
+                Permissions.add(PermissionEnum.Permission.ResponseRequests);
             if((boolean) obj.get("GetStoreHistory"))
-                Permissions.add(User.Permission.GetStoreHistory);
+                Permissions.add(PermissionEnum.Permission.GetStoreHistory);
+            if((boolean) obj.get("GetDailyIncomeForStore"))
+                Permissions.add(PermissionEnum.Permission.GetDailyIncomeForStore);
+            if((boolean) obj.get("RequestBidding"))
+                Permissions.add(PermissionEnum.Permission.RequestBidding);
+            if((boolean) obj.get("EditDiscountPolicy"))
+                Permissions.add(PermissionEnum.Permission.EditDiscountPolicy);
+            if((boolean) obj.get("EditBuyingPolicy"))
+                Permissions.add(PermissionEnum.Permission.EditBuyingPolicy);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -563,6 +570,97 @@ public class StoreOwnerServiceHttp {
         return res;
     }
 
+     /**
+     * @requirement 4.12
+     *
+     * @param userID: int (Path)
+     * @param storeID: int (Path)
+     * @param connID: String (Header)
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "DailyIncome": {[Double]}
+     *  }
+     * }
+     */
+    @GetMapping("{userID}/store/{storeID}/owner_daily_income_for_store")
+    public Response OwnerDailyIncomeForStore(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID){
+        Response res = tradingSystem.getDailyIncomeForStore(userID,storeID,connID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+
+    /**
+     * @requirement 8.3.2
+     *
+     * @param userID: int (Path)
+     * @param connID: String (Header)
+     * @param obj:{
+     *  "userWhoOffer" : Integer
+     *  "storeID": Integer
+     *  "productID": Integer
+     *   "quantity" : Integer
+     *  "productPrice": Integer
+     * }
+     * @return Response{
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID": String
+     * }
+     *
+     */
+    @PostMapping("{userID}/response_for_submission_bidding")
+    public Response ResponseForSubmissionBidding(@PathVariable int userID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int mode,storeID,productID,userWhoOffer,quantity;
+        Integer productPrice;
+        try {
+            userWhoOffer = (int) obj.get("userWhoOffer");
+            storeID = (int) obj.get("storeID");
+            productID = (int) obj.get("productID");
+            quantity = (int) obj.get("quantity");
+            productPrice = (Integer) obj.get("productPrice");
+            mode=(Integer) obj.get("mode");
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in parse body : ResponseForSubmissionBidding");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.ResponseForSubmissionBidding(userID,connID,storeID,productID,productPrice,userWhoOffer,quantity,mode);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+    /**
+     * @requirement none
+     *
+     * @return Response {
+     *  "isErr: boolean
+     *  "message": String
+     *  "connID: String
+     *  "Bids": [{
+     *       "userID" :Integer
+     *       "productID" : Integer
+     *       "price " :  Double
+     *  }]
+     * }
+     */
+
+    @GetMapping("{userID}/store/{storeID}/show_bids")
+    public Response ShowBids(@PathVariable int userID,@PathVariable int storeID, @RequestHeader("connID") String connID) {
+        Response res = this.tradingSystem.ShowBids(userID, connID,storeID);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
+
+
     /**
      * @requirement none
      *
@@ -590,6 +688,13 @@ public class StoreOwnerServiceHttp {
         return res;
     }
 
+    @GetMapping("{userID}/store/{storeID}/comments")
+    public Response ShowProductComments(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        Response res = this.tradingSystem.ShowProductComments(connID,userID,storeID);
+        WriteToLogger(res);
+        return res;
+    }
+
     private void WriteToLogger(Response res){
         if(res.getIsErr()) {
             loggerController.WriteErrorMsg("Guest Error: " + res.getMessage());
@@ -598,4 +703,53 @@ public class StoreOwnerServiceHttp {
             loggerController.WriteLogMsg("Guest: " + res.getMessage());
         }
     }
+
+    @GetMapping("{userID}/store/{storeID}/show_buying_policy_building_tree")
+    public Response ShowBuyingPolicyBuildingTree(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        System.out.println("\n\n-----------------------DDDDDDDDDD -----------\n\n");
+        Response res = this.tradingSystem.ShowBuyingPolicyBuildingTree(connID,userID,storeID);
+        System.out.println(res);
+        WriteToLogger(res);
+        return res;
+    }
+
+    @GetMapping("{userID}/store/{storeID}/show_discount_policy_building_tree")
+    public Response ShowDiscountPolicyBuildingTree(@PathVariable int userID,@RequestHeader("connID") String connID,@PathVariable int storeID){
+        System.out.println("\n\n-----------------------DDDDDDDDDD -----------\n\n");
+        Response res = this.tradingSystem.ShowDiscountPolicyBuildingTree(connID,userID,storeID);
+        System.out.println(res);
+        WriteToLogger(res);
+        return res;
+    }
+
+    @PostMapping("{userID}/store/{storeID}/add_node_to_building_tree")
+    public Response AddNodeToBuildingTree(@PathVariable int userID, @PathVariable int storeID, @RequestHeader("connID") String connID, @RequestBody Map<String, Object> obj){
+        int nodeID, quantity, productID,numOfProductsForSale,priceForSale,quantityForSale,discount,maxQuantity,mode;
+        String category,type;
+        try {
+            nodeID = (int) obj.get("nodeID");
+            quantity = (int) obj.get("quantity");
+            productID = (int) obj.get("productID");
+            maxQuantity = (int) obj.get("maxQuantity");
+            category = (String) obj.get("category");
+            numOfProductsForSale = (int) obj.get("numOfProductsForSale");
+            priceForSale = (int) obj.get("priceForSale");
+            quantityForSale = (int) obj.get("quantityForSale");
+            discount = (int) obj.get("discount");
+            mode = (int) obj.get("mode");
+            type = (String) obj.get("type"); //AND, OR, COND, or one of the simples
+        }
+        catch (Exception e){
+            System.out.println(e);
+            Response res = new Response(true, "Error in Service Server parse body : AddNodeToBuildingTree");
+            System.out.println(res);
+            WriteToLogger(res);
+            return res;
+        }
+        Response res = tradingSystem.AddNodeToBuildingTree(userID,connID,storeID, nodeID, quantity, productID,maxQuantity,category,numOfProductsForSale,priceForSale,quantityForSale,discount,mode, type);
+        res.AddConnID(connID);
+        WriteToLogger(res);
+        return res;
+    }
+
 }

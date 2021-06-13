@@ -1,6 +1,5 @@
 package TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 
 import java.util.LinkedList;
@@ -14,6 +13,7 @@ public abstract class CompositeExpression implements Expression {
     public CompositeExpression(List<Expression> c){
         this.children=c;
     }
+
 
     public CompositeExpression()
     {
@@ -36,7 +36,7 @@ public abstract class CompositeExpression implements Expression {
         this.children = children;
     }
 
-    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID);
+    public abstract Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode);
 
     @Override
     public Response checkValidity(int storeID) {

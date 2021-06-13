@@ -22,7 +22,7 @@ public class QuantityLimitForStore extends SimpleExpression {
     }
 
     //ToDo check!
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode) {
         if (!products.isEmpty()) {
             int quantity = 0;
             for (Integer key : products.keySet()) {
@@ -39,5 +39,13 @@ public class QuantityLimitForStore extends SimpleExpression {
             return new Response(true, "maxQuantity cant be negative");
         }
         return new Response("correct");
+    }
+
+    public Integer getMaxQuantity(){
+        return maxQuantity;
+    }
+
+    public Integer getStoreID(){
+        return storeID;
     }
 }

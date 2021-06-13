@@ -1,5 +1,6 @@
 package TradingSystem.Server.ServiceLayer.DummyObject;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Product;
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -31,6 +32,15 @@ public class DummyProduct {
     public DummyProduct(Product product){
         this.storeID = product.getStoreID();
         this.storeName = product.getStoreName();
+        this.productID = product.getProductID();
+        this.productName = product.getProductName();
+        this.price = product.getPrice();
+        this.category = product.getCategory();
+        this.quantity = product.getQuantity();
+    }
+    public DummyProduct(DataProduct product){
+        this.storeID = product.getStore().getStoreID();
+        this.storeName = product.getStore().getStoreName();
         this.productID = product.getProductID();
         this.productName = product.getProductName();
         this.price = product.getPrice();
@@ -116,14 +126,13 @@ public class DummyProduct {
                     DummyProduct dummyProduct = new DummyProduct(storeID, storeName, productID, productName, price, category, quantity);
                     dummySearchArr.add(dummyProduct);
                 }
+
                 return dummySearchArr;
             } catch (Exception e) {
                 System.out.println(errMsgGenerator("Service", "DummySearch", "36", "error in making dummySearch from JSON object"));
             }
         return dummySearchArr;
     }
-
-
 
     @Override
     public String toString() {

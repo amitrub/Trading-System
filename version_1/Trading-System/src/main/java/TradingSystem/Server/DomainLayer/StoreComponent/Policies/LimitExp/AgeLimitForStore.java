@@ -7,8 +7,8 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class AgeLimitForStore extends SimpleExpression {
 
-    Integer minAge;
-    Integer storeID;
+    private Integer minAge;
+    private Integer storeID;
 
     public AgeLimitForStore(Integer minAge,Integer storeID) {
         this.storeID=storeID;
@@ -16,7 +16,7 @@ public class AgeLimitForStore extends SimpleExpression {
     }
 
     @Override
-    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID) {
+    public Boolean evaluate(ConcurrentHashMap<Integer, Integer> products, Double finalPrice, Integer userID, Integer storeID, int mode) {
         if(!products.isEmpty()){
             return userID>=minAge;
         }
@@ -29,5 +29,12 @@ public class AgeLimitForStore extends SimpleExpression {
             return new Response(true, "minAge cant be negative");
         }
         return new Response("correct");
+    }
+
+    public Integer getMinAge(){
+        return minAge;
+    }
+    public Integer getStoreID(){
+        return storeID;
     }
 }
