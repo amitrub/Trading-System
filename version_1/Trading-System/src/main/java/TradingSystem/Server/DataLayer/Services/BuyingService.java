@@ -22,7 +22,7 @@ public class BuyingService {
     @Autowired
     DBExpRepository dataExpCompositeRepository;
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getBuyingByStore(Integer storeid)
     {
         try {
@@ -39,7 +39,7 @@ public class BuyingService {
         }
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddBuyingPolicy(DataBuyingPolicy buyingPolicy){
         try {
             DBExpression dataExpression= buyingPolicy.getExpression();

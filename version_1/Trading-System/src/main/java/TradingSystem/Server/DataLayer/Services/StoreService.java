@@ -54,7 +54,7 @@ public class StoreService {
 
     }
 
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddStore(String storeName, int founderID){
         try {
             DataStore store = new DataStore(storeName);
@@ -77,7 +77,7 @@ public class StoreService {
         }
     }
 
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
         try {
             Optional<DataStore> store = storeRepository.findById(storeID);
@@ -104,7 +104,7 @@ public class StoreService {
             return new Response(true," Could not add the store on the limit time");
         }
     }
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
         try {
             Optional<DataStore> store = storeRepository.findById(storeID);
@@ -130,7 +130,7 @@ public class StoreService {
     }
 
 
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllStores(){
         try {
             Response response= new Response();
@@ -141,7 +141,7 @@ public class StoreService {
             return new Response(true," Could not add the store on the limit time");
         }
     }
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response findStorebyId(int storeid){
         try {
             Optional<DataStore> res= storeRepository.findById(storeid);
@@ -158,12 +158,12 @@ public class StoreService {
 
     }
 
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
         storeRepository.deleteAll();
     }
 
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllStoresOfOwner(int userId){
         try {
             Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
@@ -180,7 +180,7 @@ public class StoreService {
         }
     }
 
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllStoresofFounder(int userId){
         try {
             Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
@@ -197,7 +197,7 @@ public class StoreService {
         }
     }
 
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllStoresofManager(int userId) {
         try {
             Optional<DataSubscriber> subscriber = subscriberRepository.findById(userId);
@@ -219,7 +219,7 @@ public class StoreService {
 //        DataStore store=storeRepository.getOne(storeId);
 //
 //    }
-//    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public HashMap<Date,Integer> getAllStoresWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();

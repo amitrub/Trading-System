@@ -26,7 +26,7 @@ public class DiscountPolicyService {
     @Autowired
     DBSaleExpRepository saleExpRepository;
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddDiscountPolicy(DataDiscountPolicy dataDiscountPolicy){
         try {
             DBSale sale= dataDiscountPolicy.getSale();
@@ -40,7 +40,7 @@ public class DiscountPolicyService {
             return new Response(true,"Could not add discount Policy");
         }
     }
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getDiscountByStore(Integer storeid) throws DataAccessException {
         try {
             Optional<DataDiscountPolicy> dataDiscountPolicy= discountPolicyService.findById(storeid);

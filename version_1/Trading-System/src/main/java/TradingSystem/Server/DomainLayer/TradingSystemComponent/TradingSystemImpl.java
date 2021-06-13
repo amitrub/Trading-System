@@ -1899,18 +1899,9 @@ public class TradingSystemImpl implements TradingSystem {
     }
 
     public void addHistoryToStoreAndUser(ShoppingHistory sh, boolean isGuest) {
-        Response response;
-        try{
-            response= data_controller.addHistoryToStoreAndUser(sh);
-        }catch (Exception e){
-            return;
-//            return new Response(true, "Error In DB!");
-        }
-        if(!response.getIsErr()){
-            this.stores.get(sh.getStoreID()).addHistory(sh);
-            if (!isGuest)
-                this.subscribers.get(sh.getUserID()).addHistory(sh);
-        }
+        this.stores.get(sh.getStoreID()).addHistory(sh);
+        if (!isGuest)
+            this.subscribers.get(sh.getUserID()).addHistory(sh);
     }
 
     public Response systemRoleChecks(int userID, int storeID, int newRole, PermissionEnum.Permission permission) {
@@ -1920,10 +1911,13 @@ public class TradingSystemImpl implements TradingSystem {
         if (!this.subscribers.containsKey(newRole)) {
             return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
         }
-        //TODO: check this
-        if (!this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID) && !this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
-            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+        if (this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID)){
+            return new Response(false,"Sys OK");
         }
+        //TODO: check this
+//        if (!this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID) && !this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
+//            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+//        }
 //        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
 //            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
 //        }

@@ -21,6 +21,7 @@ import javax.transaction.Transactional;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Service
@@ -184,6 +185,14 @@ public class Data_Controller {
             return shoppingCartService.setBagProductQuantity(userID, storeID, productID, quantity);
         }
         catch (Exception e){
+            return new Response(true, "Error In DB!");
+        }
+    }
+
+    public Response subscriberPurchase(int userID, Map<Integer, Integer> productID_quantity, List<ShoppingHistory> historyList){
+        try {
+            return shoppingCartService.subscriberPurchase(userID, productID_quantity, historyList);
+        } catch (Exception e){
             return new Response(true, "Error In DB!");
         }
     }

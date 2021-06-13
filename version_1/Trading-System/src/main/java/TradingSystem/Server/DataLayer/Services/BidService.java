@@ -31,7 +31,7 @@ public class BidService {
     @Autowired
     BidManagerApprovesRepository bidManagerApprovesRepository;
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddBidForProduct(int productID, int userID, Integer productPrice, Integer quantity, ConcurrentHashMap<Integer,Boolean> managerList) {
         Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
         if(!subscriber.isPresent()){
@@ -68,7 +68,7 @@ public class BidService {
         return new Response("Bid was deleted successfully");
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response approveBid(int productID, int userID, int managerID) {
         Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
         if(!bid.isPresent()){
@@ -89,7 +89,7 @@ public class BidService {
         return new Response("Bid was approve successfully");
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response UpdateBidOwnerList(int productID, int userID, ConcurrentHashMap<Integer, Boolean> managerList) {
         Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
         if(!bid.isPresent()){
@@ -110,7 +110,7 @@ public class BidService {
         return new Response("Update Owner List successfully");
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response initialAprrovment(int productID, int userID) {
         Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
         if(!bid.isPresent()){
@@ -123,7 +123,7 @@ public class BidService {
         return new Response("initial Aprrovment successfully");
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response setBidPrice(int productID, int userID, Integer price) {
         Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
         if(!bid.isPresent()){
@@ -134,7 +134,7 @@ public class BidService {
         return new Response("set Bid Price successfully");
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response setBidQuantity(int productID, int userID, Integer quantity) {
         Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
         if(!bid.isPresent()){
@@ -144,7 +144,7 @@ public class BidService {
         bidRepository.saveAndFlush(bid.get());
         return new Response("set Bid Quantity successfully");
     }
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public List<DataBid> getAllBids(){
         return bidRepository.findAll();
     }

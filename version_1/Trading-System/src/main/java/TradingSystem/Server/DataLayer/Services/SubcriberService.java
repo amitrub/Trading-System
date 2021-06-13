@@ -1,9 +1,12 @@
 package TradingSystem.Server.DataLayer.Services;
 
+import TradingSystem.Server.DataLayer.Data_Modules.DataProduct;
 import TradingSystem.Server.DataLayer.Data_Modules.DataStore;
 import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
+import TradingSystem.Server.DataLayer.Repositories.ProductRepository;
 import TradingSystem.Server.DataLayer.Repositories.StoreRepository;
 import TradingSystem.Server.DataLayer.Repositories.SubscriberRepository;
+import TradingSystem.Server.DomainLayer.ShoppingComponent.ShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,11 +23,11 @@ public class SubcriberService {
 
     @Autowired
     SubscriberRepository subscriberRepository;
-
     @Autowired
     StoreRepository storeRepository;
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddSubscriber(String userName, String password){
         try {
             DataSubscriber subscriber = new DataSubscriber(userName,password);
@@ -38,7 +41,7 @@ public class SubcriberService {
         }
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response GetSubscriber(String userName, String password) {
 //        return null;
         try {
@@ -56,7 +59,7 @@ public class SubcriberService {
             return new Response(true," Could not add the subscriber on the limit time");
         }
     }
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllSubscribers(){
         try {
             List<DataSubscriber> subscribers = subscriberRepository.findAll();
@@ -69,7 +72,8 @@ public class SubcriberService {
         }
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response findSubscriberById(int subscriberid){
         Optional<DataSubscriber> subscriber= subscriberRepository.findById(subscriberid);
         if (!subscriber.isPresent()){
@@ -80,7 +84,7 @@ public class SubcriberService {
         return response;
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
         subscriberRepository.deleteAll();
     }
@@ -94,7 +98,7 @@ public class SubcriberService {
         return subscriberRepository.findAllByStoresOwnerContains(store);
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public HashMap<Date,Integer> getAllSubscribersWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();

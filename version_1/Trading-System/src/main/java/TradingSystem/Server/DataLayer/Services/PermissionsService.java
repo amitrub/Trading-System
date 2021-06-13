@@ -33,7 +33,7 @@ public class PermissionsService {
     @Autowired
     ManagerPermissionTypeRepository managerPermissionTypeRepository;
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getOwnerPermissions(int userID, int storeID){
         Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
         if(!subscriber.isPresent()){
@@ -45,7 +45,7 @@ public class PermissionsService {
         return response;
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         DataSubscriber manager = subscriberRepository.getOne(managerID);
         DataStore store = storeRepository.getOne(storeID);
@@ -70,7 +70,7 @@ public class PermissionsService {
         return new Response("Edit Manager Permissions successfully");
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response RemoveOwner(int storeID, int ownerID){
         DataSubscriber owner = subscriberRepository.getOne(ownerID);
         DataStore store = storeRepository.getOne(storeID);
@@ -101,7 +101,7 @@ public class PermissionsService {
         return new Response("Remove Owner successfully");
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response RemoveManager(int storeID, int managerID){
         DataSubscriber manager = subscriberRepository.getOne(managerID);
         DataStore store = storeRepository.getOne(storeID);

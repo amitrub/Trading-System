@@ -32,7 +32,7 @@ public class ShoppingHistoryService {
     @Autowired
     ShoppingBagProductRepository shoppingBagProductRepository;
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
         try {
             Integer userID = shoppingHistory.getUserID();
@@ -62,24 +62,24 @@ public class ShoppingHistoryService {
         }
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
         shoppingHistoryRepository.deleteAll();
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public List<DataShoppingHistory> findAllBySubscriber(int userid){
         DataSubscriber subscriber=subscriberRepository.getOne(userid);
         return shoppingHistoryRepository.findAllBySubscriber(subscriber);
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public List<DataShoppingHistory> findAllByStore(int storeid){
         DataStore store=storeRepository.getOne(storeid);
         return shoppingHistoryRepository.findAllByStore(store);
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public HashMap<Date,Integer> getAllShoppingHistoriesWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();
@@ -98,7 +98,7 @@ public class ShoppingHistoryService {
         return hashMap;
     }
 
-    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public HashMap<Date,Integer> getAllMoneyWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();
