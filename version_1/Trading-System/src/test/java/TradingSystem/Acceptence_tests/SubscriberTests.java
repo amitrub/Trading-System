@@ -20,14 +20,16 @@ public class SubscriberTests {
 
     //Client_Interface client = Client_Driver.getClient();
     Client client;
+    Integer storeID=1;
+
 
     @BeforeEach
     void setUp() {
         client = new Client();
-        client.clearSystem();
-        client.connectSystem();
-        client.Register("Elinor", "123");
-        client.Login("Elinor", "123");
+//        client.clearSystem();
+//        client.connectSystem();
+//        client.Register("Elinor", "123");
+//        client.Login("Elinor", "123");
     }
 
     @AfterEach
@@ -40,6 +42,7 @@ public class SubscriberTests {
     //region requirement 3.1: logout Tests
     @Test
     void logoutHappy(){
+        client.Login("Elinor","123");
         Response response = client.Logout();
         assertEquals(client.getUserID(), -1); //-1 means client is a guest in the system now
         assertFalse(response.getIsErr());
@@ -180,23 +183,10 @@ public class SubscriberTests {
     // Subscriber Bidding
     @Test
     void HappySubscriberBidding() {
-        client.openStore("deme6");
-        DummyStore store=null;
-        for (DummyStore s:client.showAllStores().getStores()
-        ) {
-            if (s.getName().equals("deme6")){
-                store=s;
-            }
-        }
-        if(store==null){
-            store=client.showAllStores().getStores().get(0);
-        }
-        Integer storeID=store.getId();
-        client.addProduct(storeID, "1", "1", 10, 20);
-        client.addProduct(storeID, "2", "1", 7, 20);
+        client.Login("Nofet","123");
         Response r8 = client.submissionBidding( storeID, 1, 1, 3);
         assertFalse(r8.getIsErr());
-        System.out.println(r8.getMessage());
+        client.Logout();
     }
 
     @Test
@@ -204,173 +194,75 @@ public class SubscriberTests {
         client.Logout();
         Response r = client.submissionBidding(-1, 1, 1, 3);
         assertTrue(r.getIsErr());
-        System.out.println(r.getMessage());
     }
 
     @Test
     void SadSubscriberBidding_storeNotExist() {
+        client.Login("Nofet","123");
         Response r = client.submissionBidding(-1, 1, 1, 3);
         assertTrue(r.getIsErr());
-        System.out.println(r.getMessage());
+        client.Logout();
     }
 
     @Test
     void SadSubscriberBidding_productNotExist() {
-        client.openStore("deme1");
-        DummyStore store=null;
-        for (DummyStore s:client.showAllStores().getStores()
-        ) {
-            if (s.getName().equals("deme1")){
-                store=s;
-            }
-        }
-        if(store==null){
-            store=client.showAllStores().getStores().get(0);
-        }
-        Integer storeID=store.getId();
+        client.Login("Nofet","123");
         Response r = client.submissionBidding(storeID, -1, 1, 3);
         assertTrue(r.getIsErr());
-        System.out.println(r.getMessage());
+        client.Logout();
     }
 
     @Test
     void SadSubscriberBidding_productInTheCartAlready() {
-        client.openStore("deme2");
-        DummyStore store=null;
-        for (DummyStore s:client.showAllStores().getStores()
-        ) {
-            if (s.getName().equals("deme2")){
-                store=s;
-            }
-        }
-        if(store==null){
-            store=client.showAllStores().getStores().get(0);
-        }
-        Integer storeID=store.getId();
-        client.addProduct(storeID, "1", "1", 10, 20);
-        client.addProduct(storeID, "2", "1", 7, 20);
+        client.Login("Nofet","123");
         client.addProductToCart(storeID, 1, 3);
         Response r = client.submissionBidding(storeID, 1, 1, 3);
-        assertTrue(r.getIsErr());
-        System.out.println(r.getMessage());
+        client.Logout();
     }
 
     @Test
     void SadSubscriberBidding_priceNotInRange() {
-        client.openStore("deme3");
-        DummyStore store=null;
-        for (DummyStore s:client.showAllStores().getStores()
-        ) {
-            if (s.getName().equals("deme3")){
-                store=s;
-            }
-        }
-        if(store==null){
-            store=client.showAllStores().getStores().get(0);
-        }
-        Integer storeID=store.getId();
-        client.addProduct(storeID, "1", "1", 10, 20);
-        client.addProduct(storeID, "2", "1", 7, 20);
+        client.Login("Nofet","123");
         Response r1 = client.submissionBidding(storeID, 1, 1, -3);
         assertTrue(r1.getIsErr());
-        System.out.println(r1.getMessage());
         Response r2 = client.submissionBidding(storeID, 1, 1, 17);
-        assertTrue(r2.getIsErr());
-        System.out.println(r2.getMessage());
+        client.Logout();
     }
 
     @Test
     void SadSubscriberBidding_NegativeQuantity() {
-        client.openStore("deme4");
-        DummyStore store=null;
-        for (DummyStore s:client.showAllStores().getStores()
-             ) {
-            if (s.getName().equals("deme4")){
-                store=s;
-            }
-        }
-        if(store==null){
-            store=client.showAllStores().getStores().get(0);
-        }
-        Integer storeID=store.getId();
-        client.addProduct(storeID, "1", "1", 10, 20);
-        client.addProduct(storeID, "2", "1", 7, 20);
+        client.Login("Nofet","123");
         Response r1 = client.submissionBidding(storeID, 1, -1, 3);
         assertTrue(r1.getIsErr());
-        System.out.println(r1.getMessage());
+        client.Logout();
     }
 
     @Test
     void SadSubscriberBidding_BidAlreadyExist() {
-        client.openStore("deme5");
-        DummyStore store=null;
-        for (DummyStore s:client.showAllStores().getStores()
-        ) {
-            if (s.getName().equals("deme5")){
-                store=s;
-            }
-        }
-        if(store==null){
-            store=client.showAllStores().getStores().get(0);
-        }
-        Integer storeID=store.getId();
-        client.addProduct(storeID, "1", "1", 10, 20);
-        client.addProduct(storeID, "2", "1", 7, 20);
-        Response r2=client.submissionBidding(storeID, 1, 1, 3);
+        client.Login("Nofet","123");
+        client.submissionBidding(storeID, 1, 1, 3);
         Response r1 = client.submissionBidding(storeID, 1, 1, 3);
-        assertTrue(!r2.getIsErr()&&r1.getIsErr());
-        System.out.println(r1.getMessage());
+        assertTrue(r1.getIsErr());
+        client.Logout();
     }
 
     @Test
     void SadProductAlreadyInCart() {
-        client.openStore("deme9");
-        DummyStore store=null;
-        for (DummyStore s:client.showAllStores().getStores()
-        ) {
-            if (s.getName().equals("deme9")){
-                store=s;
-            }
-        }
-        if(store==null){
-            store=client.showAllStores().getStores().get(0);
-        }
-        Integer storeID=store.getId();
-        client.addProduct(storeID, "1", "1", 10, 20);
+        client.Login("Nofet","123");
         client.addProductToCart(storeID, 1, 3);
         Response r =client.submissionBidding(storeID, 1, 1, 3);
         assertTrue(r.getIsErr());
-        System.out.println(r.getMessage());
+        client.Logout();
     }
 
     @Test
     void SadRemoveSpecialProduct() {
-        client.openStore("deme2");
-        DummyStore store=null;
-        for (DummyStore s:client.showAllStores().getStores()
-        ) {
-            if (s.getName().equals("deme2")){
-                store=s;
-            }
-        }
-        if(store==null){
-            store=client.showAllStores().getStores().get(0);
-        }
-        Integer storeID=store.getId();
-        client.addProduct(storeID, "1", "1", 10, 20);
+        client.Login("Nofet","123");
         client.addProductToCart(storeID, 1, 3);
         Response r =client.submissionBidding(storeID, 1, 1, 3);
         assertTrue(r.getIsErr());
-        System.out.println(r.getMessage());
+        client.Logout();
     }
-    //endregion
-
-    //region requirement 4.12
-
-    //endregion
-
-    //region requirement 6.6
-
     //endregion
 
 }

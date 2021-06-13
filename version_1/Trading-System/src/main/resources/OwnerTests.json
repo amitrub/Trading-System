@@ -1,0 +1,32 @@
+{
+  "register" : [{
+    "userName": "Nofet",
+    "password": "123"
+  },{
+    "userName": "Elinor",
+    "password": "123"
+  }],
+
+  "login" : [{"userName": "Elinor"}],
+
+  "open_store" : [
+    {
+      "userName": "Elinor",
+      "storeName": "Adidas"
+    }],
+
+  "add_item" : [{
+    "userName": "Elinor",
+    "storeName": "Adidas",
+    "productName": "Sneakers",
+    "category": "Shoes",
+    "price": 80.0,
+    "quantity": 25},
+    {
+      "userName": "Elinor",
+      "storeName": "Adidas",
+      "productName": "Boots",
+      "category": "Shoes",
+      "price": 100.0,
+      "quantity": 25}]
+}
