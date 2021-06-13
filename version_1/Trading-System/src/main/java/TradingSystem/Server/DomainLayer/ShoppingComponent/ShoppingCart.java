@@ -440,6 +440,9 @@ public class ShoppingCart {
             Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, this.shoppingBags.get(storeID).getProducts());
             shoppingBags.get(storeID).setFinalPrice(priceForBug);
         }
+        System.out.println("=================editProductQuantityFromCart==================");
+        System.out.println("===================================");
+        System.out.println("===============editProductQuantityFromCart====================");
         return new Response(false,"EditCart: The quantity of the product update successfully");
 }
 

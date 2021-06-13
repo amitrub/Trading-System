@@ -2,12 +2,15 @@ import React, { useState } from "react";
 import "../../../Design/grid.css";
 import "../../../Design/style.css";
 import createApiClientHttp from "../../../ApiClientHttp";
+import MyPopup from "../../OtherComponents/MyPopup/MyPopup";
 
 const apiHtml = createApiClientHttp();
 
 function ProductInCart(props) {
   const product = props.currProduct;
   const [editedQuantity, setEditedQuantity] = useState(product.quantity);
+  const [showPopUp, setShowPopUp] = useState(false);
+  const [popupMsg, setPopupMsg] = useState("");
 
   function submitNewQuantity(event) {
     const strQuantity = event.target.value;
@@ -23,11 +26,15 @@ function ProductInCart(props) {
       editedQuantity
     );
 
-    if (editCartResponse.isErr) {
-      console.log(editCartResponse.message);
-    } else {
-      //we make the shopping cart refresh on the other component
-      props.onRefresh();
+    if (editCartResponse) {
+      if (editCartResponse.isErr) {
+        console.log(editCartResponse.message);
+      } else {
+        setPopupMsg(editCartResponse.message);
+        setShowPopUp(true);
+        //we make the shopping cart refresh on the other component
+        props.onRefresh();
+      }
     }
   }
 
@@ -39,12 +46,21 @@ function ProductInCart(props) {
       product.productID
     );
 
-    if (removeProdFromCartResponse.isErr) {
-      console.log(removeProdFromCartResponse.message);
-    } else {
-      //we make the shopping cart refresh on the other component
-      props.onRefresh();
+    if (removeProdFromCartResponse) {
+      if (removeProdFromCartResponse.isErr) {
+        console.log(removeProdFromCartResponse.message);
+      } else {
+        setPopupMsg(removeProdFromCartResponse.message);
+        setShowPopUp(true);
+        //we make the shopping cart refresh on the other component
+        props.onRefresh();
+      }
     }
+  }
+
+  function onClosePopup() {
+    setShowPopUp(false);
+    props.onRefresh();
   }
 
   return (
@@ -89,6 +105,11 @@ function ProductInCart(props) {
         </button>
         {/* </form> */}
       </div>
+      {showPopUp ? (
+        <MyPopup errMsg={popupMsg} onClosePopup={onClosePopup}></MyPopup>
+      ) : (
+        ""
+      )}
     </div>
   );
 }

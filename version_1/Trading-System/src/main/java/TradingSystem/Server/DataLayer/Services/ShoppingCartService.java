@@ -96,7 +96,7 @@ public class ShoppingCartService {
             }
             bag.get().removeProduct(product.get());
             shoppingCartRepository.saveAndFlush(bag.get());
-            return new Response(true,"Successfully removed product");
+            return new Response(false,"Successfully removed product");
         }
         catch (UnexpectedRollbackException e){
             return new Response(true," Time limit is over, upload to db failed");
