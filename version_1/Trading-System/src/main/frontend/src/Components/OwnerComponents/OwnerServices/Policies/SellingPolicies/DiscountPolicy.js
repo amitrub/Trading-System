@@ -41,21 +41,20 @@ function DiscountPolicy(props) {
 
   async function updateDiscountPolicy() {
     console.log("updateDiscountPolicy");
-    // const updateDiscountPolicyResponse = await apiHttp.AddDiscountPolicy(
-    //   props.connID,
-    //   props.userID,
-    //   props.storeID,
-    //   fetchedExpression
-    // );
-    // // console.log(updateDiscountPolicyResponse);
+    const updateDiscountPolicyResponse = await apiHttp.AddDiscountPolicy(
+      props.connID,
+      props.userID,
+      props.storeID
+    );
+    console.log(updateDiscountPolicyResponse);
 
-    // if (updateDiscountPolicyResponse) {
-    //   setPopupMsg(updateDiscountPolicyResponse.message);
-    //   setShowPopUp(true);
-    // }
-    // if (updateDiscountPolicyResponse.isErr) {
-    //   console.log(updateDiscountPolicyResponse.message);
-    // }
+    if (updateDiscountPolicyResponse) {
+      setPopupMsg(updateDiscountPolicyResponse.message);
+      setShowPopUp(true);
+    }
+    if (updateDiscountPolicyResponse.isErr) {
+      console.log(updateDiscountPolicyResponse.message);
+    }
   }
 
   function onClosePopup() {

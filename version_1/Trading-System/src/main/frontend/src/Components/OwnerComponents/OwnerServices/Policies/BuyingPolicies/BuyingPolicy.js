@@ -43,8 +43,7 @@ function BuyingPolicy(props) {
     const updateBuyingPolicyResponse = await apiHttp.AddBuyingPolicy(
       props.connID,
       props.userID,
-      props.storeID,
-      fetchedExpression
+      props.storeID
     );
     // console.log(updateBuyingPolicyResponse);
 

@@ -598,7 +598,7 @@ export const createApiClientHttp = () => {
       });
     },
 
-    AddBuyingPolicy: (connID, userID, storeID, expression) => {
+    AddBuyingPolicy: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_buying_policy`
       );
@@ -607,18 +607,15 @@ export const createApiClientHttp = () => {
         Accept: "application/json",
         connID: connID,
       };
-      const body = {
-        expression: expression,
-      };
       // console.log(path);
       // console.log(body);
-      return axios.post(path, body, { headers: headers }).then((res) => {
+      return axios.get(path, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
       });
     },
 
-    AddDiscountPolicy: (connID, userID, storeID, expression) => {
+    AddDiscountPolicy: (connID, userID, storeID) => {
       let path = ownerURL.concat(
         `${userID}/store/${storeID}/add_discount_policy`
       );
@@ -628,13 +625,8 @@ export const createApiClientHttp = () => {
         Accept: "application/json",
         connID: connID,
       };
-      const body = {
-        expression: expression,
-      };
-      // console.log(path);
-      // console.log(body);
 
-      return axios.post(path, body, { headers: headers }).then((res) => {
+      return axios.get(path, { headers: headers }).then((res) => {
         // console.log(res);
         return res.data;
       });
