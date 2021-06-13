@@ -125,8 +125,12 @@ public class ShoppingCart {
             }
         }
         if(!isGuset){
-            //Adds to the db
-            data_controller.addProductToBag(getUserID(), storeID, productID, quantity);
+            try {
+                //Adds to the db
+                data_controller.addProductToBag(getUserID(), storeID, productID, quantity);
+            } catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
         }
 
         this.shoppingBags.get(storeID).addProduct(productID, quantity);
@@ -428,15 +432,17 @@ public class ShoppingCart {
             return new Response(true,"EditCart: The product is a special product, so it cannot be edited");
         }
         Integer preQuantity = this.shoppingBags.get(storeID).getProductQuantity(productID);
-        this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
+        Response response = this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
+        if(response.getIsErr()){
+            return response;
+        }
         if(!tradingSystem.validation.checkBuyingPolicy(userID,storeID,this.shoppingBags.get(storeID).getProducts())){
             this.shoppingBags.get(storeID).editProductQuantity(productID, preQuantity);
             return new Response(true,"EditCart: The quantity of the product is against tha store policy, so it cannot be edited");
         }
         else{
-            this.shoppingBags.get(storeID).editProductQuantity(productID, quantity);
             Double priceForBug = tradingSystem.calculateBugPrice(userID, storeID, this.shoppingBags.get(storeID).getProducts());
-            shoppingBags.get(storeID).setFinalPrice(priceForBug);
+            this.shoppingBags.get(storeID).editProductQuantityAndFinalPrice(productID, quantity, priceForBug);
         }
         return new Response(false,"EditCart: The quantity of the product update successfully");
 }

@@ -248,14 +248,40 @@ public class ShoppingBag {
         return new ShoppingHistory(this, productsToHistory);
     }
 
-    public void editProductQuantity(int productID, int quantity) {
-        if (userID >= 1) {
-            Response response = data_controller.setBagProductQuantity(userID, storeID, productID, quantity);
-            if (!response.getIsErr()) {
-                this.products.remove(productID);
-                this.products.put(productID, quantity);
+    public Response editProductQuantityAndFinalPrice(int productID, int quantity, double priceForBug) {
+        if(userID>=1){
+            Response response;
+            try {
+                response= data_controller.setBagProductQuantityAndFinalPrice(userID, storeID, productID, quantity, priceForBug);
+            } catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
+            if (response.getIsErr()) {
+                return response;
             }
         }
+        this.products.remove(productID);
+        this.products.put(productID, quantity);
+        this.finalPrice = finalPrice;
+        return new Response("good");
+
+    }
+
+    public Response editProductQuantity(int productID, int quantity) {
+        if (userID >= 1) {
+            Response response;
+            try {
+                response = data_controller.setBagProductQuantity(userID, storeID, productID, quantity);
+            } catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
+            if (response.getIsErr()) {
+                return response;
+            }
+        }
+        this.products.remove(productID);
+        this.products.put(productID, quantity);
+        return new Response("good");
     }
   
     public void RemoveProduct(int productID) {

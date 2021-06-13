@@ -147,7 +147,7 @@ public class Bid {
     }
 
     public void UpdateOwnerList(ConcurrentHashMap<Integer, Boolean> ownerList) {
-        data_controller.UpdateOwnerList(productID, userID, ownerList);
+        data_controller.UpdateBidOwnerList(productID, userID, ownerList);
         for (Integer key :ownerList.keySet()) {
               if(!this.ownerAndManagerApprovals.keySet().contains(key)){
                   this.ownerAndManagerApprovals.put(key,false);

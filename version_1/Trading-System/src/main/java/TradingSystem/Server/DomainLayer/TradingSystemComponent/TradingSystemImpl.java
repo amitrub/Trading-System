@@ -118,7 +118,6 @@ public class TradingSystemImpl implements TradingSystem {
             }
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
-            Response response=this.data_controller.GetSubscriber(userName, password);
             DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).getDataSubscriber();
             int userID;
             if (subscriber==null){
@@ -355,19 +354,7 @@ public class TradingSystemImpl implements TradingSystem {
         stores.putIfAbsent(store.getId(),store);
     }
 
-    public void AddOwnerIfNotExist(int ownerID, int storeID){
-        Store store = stores.get(storeID);
-        User owner = subscribers.get(ownerID);
-        store.AddOwnerIfNotExist(ownerID);
-        owner.AddOwnerStoresIfNotExist(storeID);
-    }
 
-    public void AddManagerIfNotExist(int managerID, int storeID){
-        Store store = stores.get(storeID);
-        User manager = subscribers.get(managerID);
-        store.AddManagerIfNotExist(managerID);
-        manager.AddManagerStoresIfNotExist(storeID);
-    }
 
     public void UploadBidToStore(int storeID, DataBid dataBid) {
         if(stores.containsKey(storeID)){
@@ -376,15 +363,6 @@ public class TradingSystemImpl implements TradingSystem {
         }
     }
 
-    public void AddStoreProductIfNotExist(Integer storeID, Product product){
-        Store store = stores.get(storeID);
-        store.AddStoreProductIfNotExist(product);
-    }
-
-    public void AddShoppingBagIfNotExist(ShoppingBag shoppingBag){
-        User user = subscribers.get(shoppingBag.getUserID());
-        user.AddShoppingBagIfNotExist(shoppingBag);
-    }
 
     public ConcurrentHashMap<Integer, User> getSubscribers() {
         return subscribers;
@@ -528,8 +506,15 @@ public class TradingSystemImpl implements TradingSystem {
             if (validation.IsUserNameExist(userName)) { 
                 return new Response(true, "Register Error: user name is taken");
             }
+
+            Response response;
+            try {
+                response= data_controller.AddSubscriber(userName, password);
+            } catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
+
             //Adds to the db
-            Response response= data_controller.AddSubscriber(userName, password);
             if(response.getIsErr()){
                 return response;
             }
@@ -577,7 +562,8 @@ public class TradingSystemImpl implements TradingSystem {
             return response;
         User myGuest = guests.get(guestConnID);
         User myUser = subscribers.get(response.returnUserID());
-        myUser.mergeToMyCart(myGuest.getShoppingCart());
+//        TODO : add merge to db
+//        myUser.mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
 //        myUser.updateAfterLogin();
@@ -718,8 +704,6 @@ public class TradingSystemImpl implements TradingSystem {
      * @return
      */
     public Response AddProductToCart(String connID, int StoreId, int productId, int quantity){
-        System.out.println("---------------------AddProductToCart----------------------");
-        System.out.println("---------------------AddProductToCart----------------------");
         if(guests.containsKey(connID)){
             User myGuest= guests.get(connID);
             Response res = myGuest.AddProductToCart(StoreId,productId,quantity);
@@ -984,14 +968,13 @@ public class TradingSystemImpl implements TradingSystem {
 
                 //Adds to the db
                 Response response = data_controller.AddStore(storeName, userID);
+                System.out.println("=====================AddStore===================");
+                System.out.println(response);
+                System.out.println("=====================AddStore===================");
                 if(response.getIsErr()){
                     return response;
                 }
                 Integer storeID=response.returnStoreID();
-                response= data_controller.AddNewOwner(storeID, userID, new OwnerPermission(userID, storeID));
-                if(response.getIsErr()){
-                    return response;
-                }
 
                 Store newStore = new Store(storeID, storeName, userID);
                 User user = subscribers.get(userID);
@@ -1001,6 +984,7 @@ public class TradingSystemImpl implements TradingSystem {
                 Response res = new Response( "AddStore: Add store " + storeName + " was successful");
                 res.AddPair("storeID", newStore.getId());
                 res.AddUserSubscriber(user.isManaged(), user.isOwner(), user.isFounder(),systemAdmins.containsKey(userID));
+                System.out.println(res);
                 return res; 
             }
         }

@@ -12,6 +12,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -32,6 +33,7 @@ public class PermissionsService {
     @Autowired
     ManagerPermissionTypeRepository managerPermissionTypeRepository;
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response getOwnerPermissions(int userID, int storeID){
         Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
         if(!subscriber.isPresent()){
@@ -43,7 +45,8 @@ public class PermissionsService {
         return response;
     }
 
-    public void EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    public Response EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         DataSubscriber manager = subscriberRepository.getOne(managerID);
         DataStore store = storeRepository.getOne(storeID);
         store.RemoveManager(manager);
@@ -64,9 +67,11 @@ public class PermissionsService {
             DataManagerPermissionType permissionType = new DataManagerPermissionType(dataManagerPermissions, dataPermission);
             managerPermissionTypeRepository.saveAndFlush(permissionType);
         }
+        return new Response("Edit Manager Permissions successfully");
     }
 
-    public void RemoveOwner(int storeID, int ownerID){
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    public Response RemoveOwner(int storeID, int ownerID){
         DataSubscriber owner = subscriberRepository.getOne(ownerID);
         DataStore store = storeRepository.getOne(storeID);
         store.RemoveOwner(owner);
@@ -93,10 +98,11 @@ public class PermissionsService {
             managerByAppointment.RemoveManagerPermission(managerPermissionByAppointment);
             subscriberRepository.saveAndFlush(managerByAppointment);
         }
-
+        return new Response("Remove Owner successfully");
     }
 
-    public void RemoveManager(int storeID, int managerID){
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    public Response RemoveManager(int storeID, int managerID){
         DataSubscriber manager = subscriberRepository.getOne(managerID);
         DataStore store = storeRepository.getOne(storeID);
         store.RemoveManager(manager);
@@ -104,5 +110,6 @@ public class PermissionsService {
         DataManagerPermissions managerPermission = managerPermissionsRepository.getOne(new UserStoreKey(managerID, storeID));
         manager.RemoveManagerPermission(managerPermission);
         subscriberRepository.save(manager);
+        return new Response("Remove Manager successfully");
     }
 }

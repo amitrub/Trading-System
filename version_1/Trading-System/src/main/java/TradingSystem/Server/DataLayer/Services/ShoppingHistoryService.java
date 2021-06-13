@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
@@ -32,7 +32,7 @@ public class ShoppingHistoryService {
     @Autowired
     ShoppingBagProductRepository shoppingBagProductRepository;
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public Response addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
         try {
             Integer userID = shoppingHistory.getUserID();
@@ -55,26 +55,31 @@ public class ShoppingHistoryService {
                 dataShoppingHistory.addProduct(historyProduct);
             }
             shoppingHistoryRepository.save(dataShoppingHistory);
-            return new Response(true,"History wad added successfully");
+            return new Response(false,"History wad added successfully");
         }
         catch (UnexpectedRollbackException e){
             return new Response(true," Time limit is over, upload to db failed");
         }
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public void deleteAll(){
         shoppingHistoryRepository.deleteAll();
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public List<DataShoppingHistory> findAllBySubscriber(int userid){
         DataSubscriber subscriber=subscriberRepository.getOne(userid);
         return shoppingHistoryRepository.findAllBySubscriber(subscriber);
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public List<DataShoppingHistory> findAllByStore(int storeid){
         DataStore store=storeRepository.getOne(storeid);
         return shoppingHistoryRepository.findAllByStore(store);
     }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public HashMap<Date,Integer> getAllShoppingHistoriesWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();
@@ -92,6 +97,8 @@ public class ShoppingHistoryService {
         }
         return hashMap;
     }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
     public HashMap<Date,Integer> getAllMoneyWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();
