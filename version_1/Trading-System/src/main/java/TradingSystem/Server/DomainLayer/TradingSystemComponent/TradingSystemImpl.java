@@ -215,10 +215,7 @@ public class TradingSystemImpl implements TradingSystem {
             Map<String, Integer> userName_id = new HashMap<>();
 
             String connID = ConnectSystem().returnConnID();
-//            for (JsonUser user: readJson.register){
-//                Integer userID = Register(connID, user.getUserName(), user.getPassword()).returnUserID();
-//                userName_id.put(user.getUserName(), userID);
-//            }
+
             for(Map<String, String> registerMap: readJson.register)
             {
                 String userName = registerMap.get("userName");
@@ -243,29 +240,34 @@ public class TradingSystemImpl implements TradingSystem {
                         storeName_id.put(storeName, storeID);
                     }
                 }
-                for (Map<String, Object> addItemMap : readJson.add_item) {
-                    String userNameOpenStore = (String) addItemMap.get("userName");
-                    if (userName.equals(userNameOpenStore)) {
-                        String storeName = (String) addItemMap.get("storeName");
-                        Integer storeID = storeName_id.get(storeName);
-                        String productName = (String) addItemMap.get("productName");
-                        String category = (String) addItemMap.get("category");
-                        Double price = (Double) addItemMap.get("price");
-                        Integer quantity = (Integer) addItemMap.get("quantity");
-                        AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
+                if(readJson.add_item != null) {
+                    for (Map<String, Object> addItemMap : readJson.add_item) {
+                        String userNameOpenStore = (String) addItemMap.get("userName");
+                        if (userName.equals(userNameOpenStore)) {
+                            String storeName = (String) addItemMap.get("storeName");
+                            Integer storeID = storeName_id.get(storeName);
+                            String productName = (String) addItemMap.get("productName");
+                            String category = (String) addItemMap.get("category");
+                            Double price = (Double) addItemMap.get("price");
+                            Integer quantity = (Integer) addItemMap.get("quantity");
+                            AddProductToStore(userID, connID, storeID, productName, category, price, quantity);
+                        }
                     }
                 }
-                for (Map<String, Object> addManagerMap : readJson.add_manager) {
-                    String owner = (String) addManagerMap.get("owner");
-                    if (userName.equals(owner)) {
-                        String newManager = (String) addManagerMap.get("newManager");
-                        Integer newManagerID = userName_id.get(newManager);
-                        String storeName = (String) addManagerMap.get("storeName");
-                        Integer storeID = this.getStoreIDByName(storeName);
-                        AddNewManager(userID, connID, storeID, newManagerID);
+                if(readJson.add_manager != null) {
+                    for (Map<String, Object> addManagerMap : readJson.add_manager) {
+                        String owner = (String) addManagerMap.get("owner");
+                        if (userName.equals(owner)) {
+                            String newManager = (String) addManagerMap.get("newManager");
+                            Integer newManagerID = userName_id.get(newManager);
+                            String storeName = (String) addManagerMap.get("storeName");
+                            Integer storeID = this.getStoreIDByName(storeName);
+                            AddNewManager(userID, connID, storeID, newManagerID);
+                        }
                     }
                 }
                 connID = Logout(connID).returnConnID();
+
             }
             Exit(connID);
         }

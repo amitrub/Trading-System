@@ -742,7 +742,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/stores", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(ShowAllStoresHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(ShowAllStoresHistory) response: " + response + ANSI_RESET);
         return response;
     }
 
@@ -754,7 +754,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/users", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(ShowAllUsersHistory) response: " + response.returnHistoryList() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(ShowAllUsersHistory) response: " + response + ANSI_RESET);
         return response;
     }
     /**
@@ -766,7 +766,7 @@ public class Client implements Client_Interface {
         String path = String.format("%s/admin_daily_income_for_system", this.userID);
         JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(AdminDailyIncomeForSystem) response: " + response.returnHistoryList() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(AdminDailyIncomeForSystem) response: " + response + ANSI_RESET);
         return response;
     }
 
@@ -776,10 +776,10 @@ public class Client implements Client_Interface {
      */
     @Override
     public Response OwnerDailyIncomeForStore(int storeID) {
-        String path = String.format("%s/store/%s/store_history_owner", this.userID, storeID);
-        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseAdmin + path, this.connID);
+        String path = String.format("%s/store/%s/owner_daily_income_for_store", this.userID, storeID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
-        System.out.println(ANSI_YELLOW + "(OwnerDailyIncomeForStore) response: " + response.returnHistoryList() + ANSI_RESET);
+        System.out.println(ANSI_YELLOW + "(OwnerDailyIncomeForStore) response: " + response + ANSI_RESET);
         return response;
     }
 
@@ -799,7 +799,7 @@ public class Client implements Client_Interface {
         } catch (Exception e) {
             System.out.println(errMsgGenerator("Client", "Client", "216", "Error: submissionBidding, making post json"));
         }
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner+path, jsonPost.toString(), this.connID);
+        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseSubscriber+path, jsonPost.toString(), this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(submissionBidding) response: " + response + ANSI_RESET);
         return response;
