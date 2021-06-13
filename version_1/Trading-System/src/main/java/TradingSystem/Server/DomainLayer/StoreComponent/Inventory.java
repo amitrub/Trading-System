@@ -267,10 +267,12 @@ public class Inventory {
                 }
             }
         }
-        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).returnProductsDB().stream()
-                .map(DataProduct::getProductID)
-                .collect(Collectors.toList());;
-        products.addAll(productsDb);
+
+        //TODO check searchhhh
+//        List<Integer> productsDb= data_controller.findAllByCategoryAndProductNameAndPriceBetween(name,category,minprice,maxprice).returnProductsDB().stream()
+//                .map(DataProduct::getProductID)
+//                .collect(Collectors.toList());;
+//        products.addAll(productsDb);
 
      return products;
     }

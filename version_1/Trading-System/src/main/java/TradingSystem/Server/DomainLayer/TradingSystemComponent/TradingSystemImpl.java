@@ -576,7 +576,8 @@ public class TradingSystemImpl implements TradingSystem {
             return response;
         User myGuest = guests.get(guestConnID);
         User myUser = subscribers.get(response.returnUserID());
-        myUser.mergeToMyCart(myGuest.getShoppingCart());
+        //TODO: not working with DB
+//        myUser.mergeToMyCart(myGuest.getShoppingCart());
         String connID = connectSubscriberToSystemConnID(response.returnUserID());
         guests.remove(guestConnID);
 //        myUser.updateAfterLogin();
