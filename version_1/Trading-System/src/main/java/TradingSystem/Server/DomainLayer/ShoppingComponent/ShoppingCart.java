@@ -26,7 +26,6 @@ public class ShoppingCart {
     @Autowired
     public static Data_Controller data_controller;
     public static void setData_controller(Data_Controller data_controller) {
-
         ShoppingCart.data_controller = data_controller;
     }
 
@@ -139,8 +138,13 @@ public class ShoppingCart {
         tmpProducts.put(productID,preQuantity);
         this.shoppingBags.get(storeID).addProduct(productID, quantity);
         if(!isGuset){
-            //Adds to the db
-            data_controller.addProductToBag(getUserID(), storeID, productID, quantity+preQuantity);
+            Response response;
+            try {
+                //Adds to the db
+                data_controller.addProductToBag(getUserID(), storeID, productID, quantity+preQuantity);
+            } catch (Exception e){
+                return new Response(true, "Error In DB!");
+            }
         }
         Double priceForBag = tradingSystem.calculateBugPrice(productID, storeID, tmpProducts);
         shoppingBags.get(storeID).setFinalPrice(priceForBag);
@@ -315,7 +319,12 @@ public class ShoppingCart {
 
         if (!isGuest){
             for (Integer storeID : shoppingBagsSet) {
-                Response response= data_controller.deleteSubscriberBag(userID, storeID);
+                Response response;
+                try {
+                    response= data_controller.deleteSubscriberBag(userID, storeID);
+                } catch (Exception e){
+                    return new Response(true, "Error In DB!");
+                }
                 if(response.getIsErr()){
                     return response;
                 }
