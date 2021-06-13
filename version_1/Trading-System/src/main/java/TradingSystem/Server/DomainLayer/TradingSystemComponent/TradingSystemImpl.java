@@ -1922,10 +1922,13 @@ public class TradingSystemImpl implements TradingSystem {
         if (!this.subscribers.containsKey(newRole)) {
             return new Response(true, "User "+newRole+" is not subscriber, so it impossible to "+permission.toString()+" him for store");
         }
-        //TODO: check this
-        if (!this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID) && !this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
-            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+        if (this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID)) {
+            return new Response(false, "SYS OK");
         }
+        //TODO: check this
+//        if (!this.subscribers.get(userID).getMyFoundedStoresIDs().contains(storeID) && !this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
+//            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
+//        }
 //        if (!this.subscribers.get(userID).getMyOwnerStore().contains(storeID)){
 //            return new Response(true, "User "+userID+" is not the owner of the store, so he can not "+permission.toString()+" to the store");
 //        }
