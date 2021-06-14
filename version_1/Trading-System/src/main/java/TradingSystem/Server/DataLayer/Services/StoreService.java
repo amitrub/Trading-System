@@ -10,14 +10,19 @@ import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.interceptor.TransactionAspectSupport;
 
-import javax.transaction.Transactional;
+
+//import javax.transaction.Transactional;
+import java.sql.SQLException;
 import java.util.*;
 
 @Service
-@Transactional
+//@Transactional
 public class StoreService {
 
     @Autowired
@@ -33,7 +38,23 @@ public class StoreService {
     @Autowired
     ManagerPermissionTypeRepository managerPermissionTypeRepository;
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class })
+    public void test(){
+
+        DataStore store = new DataStore("a2");
+        Optional<DataSubscriber> founder = subscriberRepository.findById(1);
+        store.setFounder(founder.get());
+        storeRepository.saveAndFlush(store);
+        System.out.println("sleep");
+//        Thread.sleep(7000);
+        System.out.println("finish sleep");
+        DataSubscriber founder1 = subscriberRepository.getOne(7);
+        System.out.println(founder1.getName());
+//        throw new Exception("Throwing exception for demoing Rollback!!!");
+
+    }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddStore(String storeName, int founderID){
         try {
             DataStore store = new DataStore(storeName);
@@ -43,7 +64,11 @@ public class StoreService {
             }
             store.setFounder(founder.get());
             DataStore dataStore = storeRepository.saveAndFlush(store);
-            Response response=new Response(false,"Store was added successfully");
+            Response response=AddNewOwner(dataStore.getStoreID(), founderID, new OwnerPermission(founderID, dataStore.getStoreID()));
+            if (response.getIsErr()){
+                return response;
+            }
+            response=new Response(false,"Store was added successfully");
             response.AddStoreID(dataStore.getStoreID());
             return response;
         }
@@ -52,7 +77,7 @@ public class StoreService {
         }
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddNewOwner(int storeID, int newOwnerID, OwnerPermission OP) {
         try {
             Optional<DataStore> store = storeRepository.findById(storeID);
@@ -79,7 +104,7 @@ public class StoreService {
             return new Response(true," Could not add the store on the limit time");
         }
     }
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddNewManager(int storeID, int newManagerID, ManagerPermission MP) {
         try {
             Optional<DataStore> store = storeRepository.findById(storeID);
@@ -105,7 +130,7 @@ public class StoreService {
     }
 
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllStores(){
         try {
             Response response= new Response();
@@ -116,7 +141,7 @@ public class StoreService {
             return new Response(true," Could not add the store on the limit time");
         }
     }
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response findStorebyId(int storeid){
         try {
             Optional<DataStore> res= storeRepository.findById(storeid);
@@ -133,11 +158,12 @@ public class StoreService {
 
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
         storeRepository.deleteAll();
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllStoresOfOwner(int userId){
         try {
             Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
@@ -154,7 +180,7 @@ public class StoreService {
         }
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllStoresofFounder(int userId){
         try {
             Optional<DataSubscriber> subscriber= subscriberRepository.findById(userId);
@@ -171,7 +197,7 @@ public class StoreService {
         }
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response getAllStoresofManager(int userId) {
         try {
             Optional<DataSubscriber> subscriber = subscriberRepository.findById(userId);
@@ -193,13 +219,14 @@ public class StoreService {
 //        DataStore store=storeRepository.getOne(storeId);
 //
 //    }
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public HashMap<Date,Integer> getAllStoresWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
-        c.add(Calendar.DATE, - i - 7);
+        c.add(Calendar.DATE, -i - 7);
         //   Date start = c.getTime();
         for(int j=0;j<=6;j++){
             Date start = c.getTime();

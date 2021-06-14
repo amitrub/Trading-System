@@ -6,7 +6,7 @@ import amit from "../img/develops/rubin.jpeg";
 import reut from "../img/develops/reut.jpeg";
 import nofet from "../img/develops/nofet.jpeg";
 import elinor from "../img/develops/elinor.jpeg";
-import React, { Component }  from 'react';
+import React, { Component } from "react";
 
 function Programers() {
   return (
@@ -72,7 +72,7 @@ function Programers() {
           </div>
           <div className="city-feature">
             <i className="ion-ios-star icon-small"></i>
-            version manager
+            DB monster
           </div>
           <div className="city-feature">
             <i className="ion-social-twitter icon-small"></i>

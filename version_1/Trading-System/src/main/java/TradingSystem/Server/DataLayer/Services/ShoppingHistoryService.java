@@ -12,7 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 @Service
@@ -32,7 +32,7 @@ public class ShoppingHistoryService {
     @Autowired
     ShoppingBagProductRepository shoppingBagProductRepository;
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
         try {
             Integer userID = shoppingHistory.getUserID();
@@ -62,26 +62,31 @@ public class ShoppingHistoryService {
         }
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
         shoppingHistoryRepository.deleteAll();
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public List<DataShoppingHistory> findAllBySubscriber(int userid){
         DataSubscriber subscriber=subscriberRepository.getOne(userid);
         return shoppingHistoryRepository.findAllBySubscriber(subscriber);
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public List<DataShoppingHistory> findAllByStore(int storeid){
         DataStore store=storeRepository.getOne(storeid);
         return shoppingHistoryRepository.findAllByStore(store);
     }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public HashMap<Date,Integer> getAllShoppingHistoriesWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
-        c.add(Calendar.DATE, - i - 7);
+        c.add(Calendar.DATE, -i-7);
         //   Date start = c.getTime();
         for(int j=0;j<=6;j++){
             Date start = c.getTime();
@@ -92,13 +97,15 @@ public class ShoppingHistoryService {
         }
         return hashMap;
     }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public HashMap<Date,Integer> getAllMoneyWeek(){
         HashMap<Date,Integer> hashMap=new HashMap<>();
         Date date = new Date();
         Calendar c = Calendar.getInstance();
         c.setTime(date);
         int i = c.get(Calendar.DAY_OF_WEEK) - c.getFirstDayOfWeek();
-        c.add(Calendar.DATE, - i - 7);
+        c.add(Calendar.DATE, -i-7);
         //   Date start = c.getTime();
         for(int j=0;j<=6;j++){
             Date start = c.getTime();

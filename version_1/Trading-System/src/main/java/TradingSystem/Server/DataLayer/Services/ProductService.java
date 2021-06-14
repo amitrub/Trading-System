@@ -12,6 +12,7 @@ import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.UnexpectedRollbackException;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -34,7 +35,7 @@ public class ProductService {
     public ProductService() {
 
     }
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response AddProductToStore(int storeID, String productName,
                                          String category, Double price, int quantity) {
         try {
@@ -50,7 +51,7 @@ public class ProductService {
             return new Response(true," Could not add the store on the limit time");
         }
     }
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response RemoveProduct(int productId) {
         try {
             Optional<DataProduct> product=productRepository.findById(productId);
@@ -65,6 +66,7 @@ public class ProductService {
         }
     }
 
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response findDummyProductByStore(Integer storeID){
         Optional<DataStore> store = storeRepository.findById(storeID);
         if(!store.isPresent()){
@@ -76,28 +78,24 @@ public class ProductService {
         return response;
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response setQuantity(Integer productID, int newQuantity){
-        try {
-            Optional<DataProduct> product = productRepository.findById(productID);
-            if(!product.isPresent()){
-                return new Response(true,"Could not find product");
-            }
-            product.get().setQuantity(newQuantity);
-            productRepository.saveAndFlush(product.get());
-            return new Response(false," ");
+        Optional<DataProduct> product = productRepository.findById(productID);
+        if(!product.isPresent()){
+            return new Response(true,"Could not find product");
         }
-        catch (UnexpectedRollbackException e){
-            return new Response(true," Could not add the store on the limit time");
-        }
+        product.get().setQuantity(newQuantity);
+        productRepository.saveAndFlush(product.get());
+        return new Response(false," ");
+
     }
 
-
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
         productRepository.deleteAll();
     }
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response editProductDetails(Integer productID, String productName, Double price, String category, Integer quantity) {
         try {
             Optional<DataProduct> product_opt = productRepository.findById(productID);
@@ -116,7 +114,7 @@ public class ProductService {
             return new Response(true," Could not add the store on the limit time");
         }
     }
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response addCommentToProduct(Integer productID, Integer userID, String comment) {
         try {
             Optional<DataProduct> product = productRepository.findById(productID);
@@ -134,7 +132,7 @@ public class ProductService {
     }
 
 
-    @org.springframework.transaction.annotation.Transactional(timeout = 20)
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response findAllByCategoryAndProductNameAndPriceBetween(String name,String category, int min, int max){
         try {
             List<DataProduct> products=productRepository.findAllByCategoryAndProductNameAndPriceBetween(name,category,min,max);

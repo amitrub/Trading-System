@@ -8,10 +8,11 @@ import TradingSystem.Server.DataLayer.Data_Modules.DataSubscriber;
 import TradingSystem.Server.DataLayer.Data_Modules.Keys.BidManagerKey;
 import TradingSystem.Server.DataLayer.Data_Modules.Keys.UserProductKey;
 import TradingSystem.Server.DataLayer.Repositories.*;
+import TradingSystem.Server.ServiceLayer.DummyObject.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -30,74 +31,120 @@ public class BidService {
     @Autowired
     BidManagerApprovesRepository bidManagerApprovesRepository;
 
-
-    public void AddBidForProduct(int productID, int userID, Integer productPrice,Integer quantity, ConcurrentHashMap<Integer,Boolean> managerList) {
-        DataSubscriber subscriber = subscriberRepository.getOne(userID);
-        DataProduct product = productRepository.getOne(productID);
-        DataBid bid = new DataBid(subscriber, product, productPrice, quantity);
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public Response AddBidForProduct(int productID, int userID, Integer productPrice, Integer quantity, ConcurrentHashMap<Integer,Boolean> managerList) {
+        Optional<DataSubscriber> subscriber = subscriberRepository.findById(userID);
+        if(!subscriber.isPresent()){
+            return new Response(true,"Could not find subscriber");
+        }
+        Optional<DataProduct> product = productRepository.findById(productID);
+        if(!product.isPresent()){
+            return new Response(true,"Could not find product");
+        }
+        DataBid bid = new DataBid(subscriber.get(), product.get(), productPrice, quantity);
         bidRepository.saveAndFlush(bid);
         for (Integer managerID: managerList.keySet()){
             boolean approves = managerList.get(managerID);
-            DataSubscriber manager = subscriberRepository.getOne(managerID);
-            DataBidManagerApproves bidManagerApproves = new DataBidManagerApproves(bid, manager, approves);
+            Optional<DataSubscriber> manager = subscriberRepository.findById(managerID);
+            if(!manager.isPresent()){
+                return new Response(true,"Could not find manager");
+            }
+            DataBidManagerApproves bidManagerApproves = new DataBidManagerApproves(bid, manager.get(), approves);
             bidManagerApprovesRepository.saveAndFlush(bidManagerApproves);
         }
+        return new Response("Bid was added successfully");
     }
 
-    public void RemoveBid(int productID, int userID) {
-        DataBid bid = bidRepository.getOne(new UserProductKey(userID, productID));
-        for (DataBidManagerApproves managerApproves: bid.getOwnerAndManagerApprovals()){
+    @Transactional(rollbackFor = { Exception.class }, timeout = 20)
+    public Response RemoveBid(int productID, int userID) {
+        Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
+        if(!bid.isPresent()){
+            return new Response(true,"Could not find bid");
+        }
+        for (DataBidManagerApproves managerApproves: bid.get().getOwnerAndManagerApprovals()){
             bidManagerApprovesRepository.delete(managerApproves);
         }
-        bidRepository.delete(bid);
+        bidRepository.delete(bid.get());
+        return new Response("Bid was deleted successfully");
     }
 
-    public void approveBid(int productID, int userID, int managerID) {
-        DataBid bid = bidRepository.getOne(new UserProductKey(userID, productID));
-        DataSubscriber manager = subscriberRepository.getOne(managerID);
-        DataBidManagerApproves managerApproves = bidManagerApprovesRepository.getOne(new BidManagerKey(bid.getKey(), managerID));
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public Response approveBid(int productID, int userID, int managerID) {
+        Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
+        if(!bid.isPresent()){
+            return new Response(true,"Could not find bid");
+        }
+        Optional<DataSubscriber> manager = subscriberRepository.findById(managerID);
+        if(!manager.isPresent()){
+            return new Response(true,"Could not find manager");
+        }
+        DataBidManagerApproves managerApproves = bidManagerApprovesRepository.getOne(new BidManagerKey(bid.get().getKey(), managerID));
         if(managerApproves == null){
-            managerApproves = new DataBidManagerApproves(bid, manager, true);
+            managerApproves = new DataBidManagerApproves(bid.get(), manager.get(), true);
         }
         else {
             managerApproves.setApproves(true);
         }
         bidManagerApprovesRepository.saveAndFlush(managerApproves);
+        return new Response("Bid was approve successfully");
     }
 
-    public void UpdateOwnerList(int productID, int userID, ConcurrentHashMap<Integer, Boolean> managerList) {
-        DataBid bid = bidRepository.getOne(new UserProductKey(userID, productID));
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public Response UpdateBidOwnerList(int productID, int userID, ConcurrentHashMap<Integer, Boolean> managerList) {
+        Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
+        if(!bid.isPresent()){
+            return new Response(true,"Could not find bid");
+        }
         for (Integer managerID: managerList.keySet()) {
             boolean approves = managerList.get(managerID);
-            DataSubscriber manager = subscriberRepository.getOne(managerID);
-            DataBidManagerApproves managerApproves = bidManagerApprovesRepository.getOne(new BidManagerKey(bid.getKey(), managerID));
+            Optional<DataSubscriber> manager = subscriberRepository.findById(managerID);
+            if(!manager.isPresent()){
+                return new Response(true,"Could not find manager");
+            }
+            DataBidManagerApproves managerApproves = bidManagerApprovesRepository.getOne(new BidManagerKey(bid.get().getKey(), managerID));
             if(managerApproves == null){
-                managerApproves = new DataBidManagerApproves(bid, manager, approves);
+                managerApproves = new DataBidManagerApproves(bid.get(), manager.get(), approves);
                 bidManagerApprovesRepository.saveAndFlush(managerApproves);
             }
         }
+        return new Response("Update Owner List successfully");
     }
 
-    public void initialAprrovment(int productID, int userID) {
-        DataBid bid = bidRepository.getOne(new UserProductKey(userID, productID));
-        for (DataBidManagerApproves managerApproves: bid.getOwnerAndManagerApprovals()){
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public Response initialAprrovment(int productID, int userID) {
+        Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
+        if(!bid.isPresent()){
+            return new Response(true,"Could not find bid");
+        }
+        for (DataBidManagerApproves managerApproves: bid.get().getOwnerAndManagerApprovals()){
             managerApproves.setApproves(false);
             bidManagerApprovesRepository.saveAndFlush(managerApproves);
         }
+        return new Response("initial Aprrovment successfully");
     }
 
-    public void setBidPrice(int productID, int userID, Integer price) {
-        DataBid bid = bidRepository.getOne(new UserProductKey(userID, productID));
-        bid.setPrice(price);
-        bidRepository.saveAndFlush(bid);
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public Response setBidPrice(int productID, int userID, Integer price) {
+        Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
+        if(!bid.isPresent()){
+            return new Response(true,"Could not find bid");
+        }
+        bid.get().setPrice(price);
+        bidRepository.saveAndFlush(bid.get());
+        return new Response("set Bid Price successfully");
     }
 
-    public void setBidQuantity(int productID, int userID, Integer quantity) {
-        DataBid bid = bidRepository.getOne(new UserProductKey(userID, productID));
-        bid.setQuantity(quantity);
-        bidRepository.saveAndFlush(bid);
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public Response setBidQuantity(int productID, int userID, Integer quantity) {
+        Optional<DataBid> bid = bidRepository.findById(new UserProductKey(userID, productID));
+        if(!bid.isPresent()){
+            return new Response(true,"Could not find bid");
+        }
+        bid.get().setQuantity(quantity);
+        bidRepository.saveAndFlush(bid.get());
+        return new Response("set Bid Quantity successfully");
     }
-
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public List<DataBid> getAllBids(){
         return bidRepository.findAll();
     }
