@@ -23,6 +23,7 @@ public class BaseState implements State {
             bid.changeState(new ApproveState());
             return bid.handle(ownerId);
         }
+        bid.unlockBid();
         return new Response("The Bid approve successfully");
     }
 

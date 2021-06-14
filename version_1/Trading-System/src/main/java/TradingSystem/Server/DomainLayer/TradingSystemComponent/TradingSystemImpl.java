@@ -117,7 +117,7 @@ public class TradingSystemImpl implements TradingSystem {
             }
             String userName = readJson.getAdmin().getUserName();
             String password = readJson.getAdmin().getPassword();
-//            Response response=this.data_controller.GetSubscriber(userName, password);
+            Response response=this.data_controller.GetSubscriber(userName, password);
             DataSubscriber subscriber = this.data_controller.GetSubscriber(userName, password).returnDataSubscriber();
             int userID;
             if (subscriber==null){
