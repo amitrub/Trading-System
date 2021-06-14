@@ -5,6 +5,7 @@ import TradingSystem.Server.DomainLayer.ExternalServices.PaymentInfo;
 import TradingSystem.Server.DomainLayer.ExternalServices.PaymentSystem;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,11 @@ class PaymentSystemTest {
         connID = tradingSystem.ConnectSystem().returnConnID();
         tradingSystem.Register(connID, "Elinor", "123");
         connID= tradingSystem.Login(connID, "Elinor", "123").returnConnID();
+    }
 
+    @AfterEach
+    void tearDown() {
+        tradingSystem.ClearSystem();
     }
 
     @Test

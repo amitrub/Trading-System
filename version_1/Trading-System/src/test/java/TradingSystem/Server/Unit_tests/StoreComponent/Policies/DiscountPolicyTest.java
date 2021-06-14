@@ -82,14 +82,14 @@ class DiscountPolicyTest {
         tradingSystem.addDiscountPolicy(EuserId,EconnID,storeID,sale);
         assertEquals(2790.0, newPrice, 0);
     }
-
-    @Test
-    void Happyupload(){
-        System.out.println("--------------------HELLLLLLLLLLLO---------------");
-        Store store=tradingSystem.stores.get(storeID);
-        DiscountPolicy discountPolicy=store.getDiscountPolicy();
-        System.out.println("Discount policy--------"+discountPolicy.toString());
-    }
+// TODO CHECK
+//    @Test
+//    void Happyupload(){
+//        System.out.println("--------------------HELLLLLLLLLLLO---------------");
+//        Store store=tradingSystem.stores.get(storeID);
+//        DiscountPolicy discountPolicy=store.getDiscountPolicy();
+//        System.out.println("Discount policy--------"+discountPolicy.toString());
+//    }
 
     @Test
     void SadStoreSaleTest() {

@@ -6,6 +6,7 @@ import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.Quantit
 import TradingSystem.Server.DomainLayer.StoreComponent.Store;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -49,6 +50,11 @@ public class BiddingTest {
         tradingSystem.AddProductToStore(NofetID,NconnID,NofetStore,"test1","test1",10,20);
         tradingSystem.AddProductToStore(NofetID,NconnID,NofetStore,"test2","test1",7,20);
 
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        tradingSystem.ClearSystem();
     }
 
     //region requirement 3.8

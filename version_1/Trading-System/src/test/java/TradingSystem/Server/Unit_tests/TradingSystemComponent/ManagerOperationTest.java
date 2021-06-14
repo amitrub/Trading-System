@@ -3,6 +3,7 @@ package TradingSystem.Server.Unit_tests.TradingSystemComponent;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
@@ -48,6 +49,11 @@ public class ManagerOperationTest {
         NofetStore = tradingSystem.getStoreIDByName("NofetStore");
         ElinorStore = tradingSystem.getStoreIDByName("ElinorStore");
 
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        tradingSystem.ClearSystem();
     }
 
     @Test

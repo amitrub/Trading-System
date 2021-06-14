@@ -9,6 +9,7 @@ import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyProduct;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
@@ -58,6 +59,11 @@ class ShoppingCartTest {
         tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "computer", "Technology", 3000.0,20);
         tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "Bag", "Beauty", 100.0,50);
         tradingSystem.AddProductToStore(NuserId, NconnID, storeID1, "Bed", "Fun", 4500.0,30);
+    }
+
+    @AfterEach
+    void tearDown() {
+        tradingSystem.ClearSystem();
     }
 
     //requirement 2.7
