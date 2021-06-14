@@ -148,4 +148,10 @@ public class BidService {
     public List<DataBid> getAllBids(){
         return bidRepository.findAll();
     }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public void deleteAll(){
+        bidManagerApprovesRepository.deleteAll();
+        bidRepository.deleteAll();
+    }
 }
