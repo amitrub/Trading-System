@@ -39,7 +39,7 @@ public class AdminTests {
 
         client.Register("Nofet", "123");
         Response res = client.Login("Nofet", "123");
-        client.addProductToCart(storeID, 1, 5);
+        client.addProductToCart(storeID, productID1, 5);
         client.subscriberPurchase("123456789", "4", "2022", "123", "123456789", "Rager 101", "Beer Sheva", "Israel", "8458527");
 
         client.Login("amit", "qweasd");
