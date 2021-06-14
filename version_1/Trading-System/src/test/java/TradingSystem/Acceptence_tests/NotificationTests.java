@@ -72,6 +72,7 @@ public class NotificationTests {
         }
     }
 
+    /*
     @Test
     void WriteCommentAlert() {
         client.Login("Hadas", "123");
@@ -90,4 +91,6 @@ public class NotificationTests {
             System.out.println("Problem!");
         }
     }
+
+     */
 }

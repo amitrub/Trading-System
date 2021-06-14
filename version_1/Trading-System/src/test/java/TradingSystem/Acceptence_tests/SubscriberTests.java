@@ -19,17 +19,21 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class SubscriberTests {
 
     //Client_Interface client = Client_Driver.getClient();
-    Client client;
-    Integer storeID=1;
+    Client client = new Client();
+    Integer storeID;
 
 
     @BeforeEach
     void setUp() {
-        client = new Client();
-//        client.clearSystem();
-//        client.connectSystem();
-//        client.Register("Elinor", "123");
-//        client.Login("Elinor", "123");
+        client.clearSystem();
+        client.connectSystem();
+        client.Register("Nofet","123");
+
+        client.Register("Elinor", "123");
+        client.Login("Elinor", "123");
+        client.openStore("Store");
+        storeID = client.getStoreIDByName("Store").returnStoreID();
+        client.addProduct(storeID,"prod","product",20.0,10);
     }
 
     @AfterEach
@@ -42,7 +46,6 @@ public class SubscriberTests {
     //region requirement 3.1: logout Tests
     @Test
     void logoutHappy(){
-        client.Login("Elinor","123");
         Response response = client.Logout();
         assertEquals(client.getUserID(), -1); //-1 means client is a guest in the system now
         assertFalse(response.getIsErr());
@@ -52,7 +55,6 @@ public class SubscriberTests {
     //case 3.2.1
     @Test
     void openStore_Happy() {
-        client.Login("Elinor", "123");
         Integer preSize = client.showAllStores().getStores().size();
 
         Response response = client.openStore("Mania");
@@ -63,7 +65,6 @@ public class SubscriberTests {
     //case 3.2.2
     @Test
     void openStore_SadDuplicateName() {
-        client.Login("Elinor", "123");
         client.openStore("Mania");
         Integer preSize = client.showAllStores().getStores().size();
         Response response = client.openStore("Mania");
@@ -76,12 +77,15 @@ public class SubscriberTests {
     //case 3.2.3
     @Test
     void sad_openStoreNotRegistered() {
+        client.Logout();
         Response response = client.openStore("American Eagle11");
         assertTrue(response.getIsErr());
     }
     //endregion
     //region requirement 3.3: Write Comment
     //case: 3.3.1
+    //TODO
+    /*
     @Test
     void writeComment() {
         client.Login("Nofet","123");
@@ -93,6 +97,7 @@ public class SubscriberTests {
         assertFalse(response.getIsErr());
         client.Logout();
     }
+     */
     //case: 3.3.2, trying comment on product sub didn't buy
     @Test
     void sad_didntBuy_writeComment() {
@@ -104,12 +109,12 @@ public class SubscriberTests {
     }
     //endregion
     //region requirement 3.4: User Purchase
-
-
+//TODO
+/*
     //case 3.4.1 simple purchase
     @Test
     void Purchase_Happy() {
-        client.Login("Elinor","123");
+        client.Login("Nofet","123");
         client.addProductToCart(storeID, 1, 1);
         List ans1 = client.showShoppingCart().returnProductList();
         assertEquals(ans1.size(), 1);
@@ -127,12 +132,13 @@ public class SubscriberTests {
         assertEquals(product.getQuantity(), preQuantity - 1); //check decrease quantity in store
         client.Logout();
     }
+ */
 
     //case 3.4.2 input doesn't fit
     @Test
     void Purchase_Sad() {
         // Prepare
-        client.Login("Elinor","123");
+        client.Login("Nofet","123");
         client.addProductToCart(storeID, 1, 1);
 
         //Issue, not valid month
@@ -144,19 +150,22 @@ public class SubscriberTests {
     }
     // endregion
     //region requirement 3.7: User History Tests
+    /*
     //case 3.7.1 have purchases
     @Test
     void showUsersHistory_Happy() {
-        client.Login("Elinor","123");
+        client.Login("Nofet","123");
         client.addProductToCart(storeID, 1, 1);
         client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
         client.addProductToCart(storeID, 1, 1);
         client.subscriberPurchase( "123456789", "4","2022" , "123", "123456789", "Rager 101","Beer Sheva","Israel","8458527");
 
+        client.Login("Nofet","123");
         Response response = client.showUserHistory();
         assertFalse(response.getIsErr());
         assertEquals(response.returnHistoryList().size(), 2);
     }
+     */
     //case 3.7.2 no history for this user
     @Test
     void showUserHistory_Sad_NoHistory() {
@@ -171,6 +180,7 @@ public class SubscriberTests {
 
     //region requirement 3.8
     // Subscriber Bidding
+    /*
     @Test
     void HappySubscriberBidding() {
         client.Login("Nofet","123");
@@ -178,7 +188,7 @@ public class SubscriberTests {
         assertFalse(r8.getIsErr());
         client.Logout();
     }
-
+     */
     @Test
     void SadSubscriberBidding_unsubscribe() {
         client.Logout();

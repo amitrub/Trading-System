@@ -28,7 +28,7 @@ public class AdminTests {
     public void setUp() {
         client.clearSystem();
         client.connectSystem();
-        userID = client.Register("elinor", "123");
+        client.Register("elinor", "123");
         client.Login("elinor", "123");
         client.openStore("Store");
         storeID = client.getStoreIDByName("Store").returnStoreID();
@@ -37,12 +37,10 @@ public class AdminTests {
         Integer productID1 = client.getProductIDByName("Sneakers", storeID).returnProduct();
         client.Logout();
 
-        client.Register("Nofet", "123");
+        userID = client.Register("Nofet", "123");
         Response res = client.Login("Nofet", "123");
-        client.addProductToCart(storeID, 1, 5);
+        client.addProductToCart(storeID, productID1, 5);
         client.subscriberPurchase("123456789", "4", "2022", "123", "123456789", "Rager 101", "Beer Sheva", "Israel", "8458527");
-
-        client.Login("amit", "qweasd");
     }
 
     @AfterEach
@@ -54,49 +52,50 @@ public class AdminTests {
     //region requirement 6.4: Purchase history
     @Test
     void HappyStoreHistory() {
+        client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.adminStoreHistory(storeID).returnHistoryList();
         assertEquals(history.size(), 1);
     }
 
     @Test
     void HappyUserHistory() {
-        //client.Login("amit", "qweasd");
+        client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.adminUserHistory(userID).returnHistoryList();
         assertEquals(history.size(), 1);
     }
 
     @Test
     void HappyAllStores() {
-        //client.Login("amit", "qweasd");
+        client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.AdminAllStores().returnHistoryList();
         assertEquals(history.size(), 1);
     }
 
     @Test
     void HappyAllUsers() {
-        //client.Login("amit", "qweasd");
+        client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.AdminAllUsers().returnHistoryList();
         assertEquals(history.size(), 1);
     }
 
     @Test
     void SadAdminUser() {
-        client.Login("elinor", "123");
+        client.Login("Nofet", "123");
         List<DummyShoppingHistory> history = client.adminStoreHistory(storeID).returnHistoryList();
         assertEquals(history.size(), 0);
     }
 
     @Test
     void SadStoreId() {
-        //client.Login("amit", "qweasd");
+        client.Login("amit", "qweasd");
         List<DummyShoppingHistory> history = client.adminStoreHistory(storeID + 1).returnHistoryList();
         assertEquals(history.size(), 0);
     }
 
     @Test
     void SadUserId() {
-        //client.Login("amit", "qweasd");
-        List<DummyShoppingHistory> history = client.adminUserHistory(userID + 1).returnHistoryList();
+        client.Login("amit", "qweasd");
+        List<DummyShoppingHistory> history = client.adminUserHistory(userID +4).returnHistoryList();
         assertEquals(history.size(), 0);
     }
     //endregion
@@ -104,10 +103,10 @@ public class AdminTests {
     // region requirement 6.6 : get daily income for system
     @Test
     void HappyDailyIncomeForSystem() {
-        //client.Login("amit", "qweasd");
+        client.Login("amit", "qweasd");
         Response r2 = client.AdminDailyIncomeForSystem();
         Integer DailyIncome = (Integer) r2.getReturnObject().get("DailyIncome");
-        Assertions.assertEquals(DailyIncome, 0);
+        Assertions.assertEquals(DailyIncome, 400);
     }
 
     @Test

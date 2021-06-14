@@ -1790,7 +1790,7 @@ public class TradingSystemImpl implements TradingSystem {
         if (!ValidConnectedUser(AdminID, connID)) {
             return new Response(true, "UserHistory: User is not connected");
         }
-        if (!hasPermission(AdminID, userID, PermissionEnum.Permission.GetHistoryPurchasing)) {
+        if (!hasPermission(AdminID, PermissionEnum.Permission.GetHistoryPurchasing)) {
             List<DummyShoppingHistory> list = new ArrayList<>();
             Response res = new Response(true, "UserHistory: User has no permission to watch the history");
             res.AddPair("history", list);

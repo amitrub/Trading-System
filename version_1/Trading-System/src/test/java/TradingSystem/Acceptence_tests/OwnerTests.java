@@ -29,7 +29,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class OwnerTests {
 
-    Client client;
+    Client client = new Client();
 
     //Client_Interface client;
     Integer storeID;
@@ -40,18 +40,13 @@ public class OwnerTests {
 
     @BeforeEach
     void setUp() {
-        client = new Client();
-        //client.clearSystem();
+        client.clearSystem();
         client.connectSystem();
-        newUserID = 1;
-
-        //client.connectSystem();
-        //client.Register("Elinor", "123");
-        //client.Login("Elinor", "123");
-        //client.openStore("Adidas");
-        //storeID = client.getStoreIDByName("Adidas").returnStoreID();
-        storeID=1;
-        //client.addProduct(storeID, "Dress", "Dress", 80.0, 25);
+        newUserID=client.Register("Elinor", "123");
+        client.Login("Elinor", "123");
+        client.openStore("Adidas");
+        storeID = client.getStoreIDByName("Adidas").returnStoreID();
+        client.addProduct(storeID, "Dress", "Dress", 80.0, 25);
     }
 
     @AfterEach
