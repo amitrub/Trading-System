@@ -14,10 +14,17 @@ import TradingSystem.Server.DomainLayer.UserComponent.ManagerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.OwnerPermission;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.hibernate.HibernateException;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -45,6 +52,7 @@ public class Data_Controller {
     private PermissionsService permissionsService;
     @Autowired
     private BidService bidService;
+    private TradingSystem.Server.DataLayer.Services.ProductService productService1;
 
 
     public Data_Controller(){
@@ -406,11 +414,10 @@ public class Data_Controller {
     }
 
     public void deleteAll(){
+        System.out.println("---------------------DELETE-----------");
         productService.deleteAll();
         subscriberService.deleteAll();
-        shoppingHistoryService.deleteAll();
-        storeService.deleteAll();
-        shoppingCartService.deleteAll();
+        System.out.println("---------------------DELETE Finish-----------");
     }
 
     public Response AddBuyingPolicy(Integer storeId, Expression expression){

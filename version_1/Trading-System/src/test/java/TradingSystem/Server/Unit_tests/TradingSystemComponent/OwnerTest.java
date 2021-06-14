@@ -12,12 +12,14 @@ import TradingSystem.Server.DomainLayer.Task.ResultUnitTests;
 import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -28,7 +30,8 @@ import java.util.concurrent.*;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(args = {"src/main/resources/initialization_System.json","src/main/resources/External_State.json"})
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 public class OwnerTest {
 
     @Autowired
@@ -74,6 +77,7 @@ public class OwnerTest {
         Nstore = tradingSystem.stores.get(NofetStore);
     }
 
+    @After
     public void tearDown(){
         tradingSystem.ClearSystem();
     }

@@ -170,6 +170,8 @@ public class ShoppingCartService {
     @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
         shoppingCartRepository.deleteAll();
+//        shoppingBagProductRepository.deleteAll();
+//        shoppingBagSpacialProductRepository.deleteAll();
     }
 
     @Transactional(rollbackFor = { Exception.class }, timeout = 10)

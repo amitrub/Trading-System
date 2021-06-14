@@ -55,4 +55,11 @@ public class DiscountPolicyService {
             return new Response(true,"Could not add discount Policy");
         }
     }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public void deleteAll(){
+        saleExpRepository.deleteAll();
+        saleRepository.deleteAll();
+        discountPolicyService.deleteAll();
+    }
 }

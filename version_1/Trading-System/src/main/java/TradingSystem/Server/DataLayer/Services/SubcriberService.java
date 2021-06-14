@@ -86,6 +86,7 @@ public class SubcriberService {
 
     @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
+        System.out.println("---------Delete All subscribers");
         subscriberRepository.deleteAll();
     }
 

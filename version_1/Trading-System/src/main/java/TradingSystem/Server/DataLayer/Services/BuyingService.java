@@ -51,4 +51,10 @@ public class BuyingService {
             return new Response(true,"could not add buying policy for store");
         }
     }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public void deleteAll(){
+      //  dataExpCompositeRepository.deleteAll();
+        buyingRepository.deleteAll();
+    }
 }

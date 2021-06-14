@@ -112,4 +112,10 @@ public class PermissionsService {
         subscriberRepository.save(manager);
         return new Response("Remove Manager successfully");
     }
+
+    @Transactional(rollbackFor = { Exception.class }, timeout = 10)
+    public void deleteAll(){
+        ownerPermissionsRepository.deleteAll();
+        managerPermissionsRepository.deleteAll();
+    }
 }

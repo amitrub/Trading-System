@@ -2,7 +2,7 @@
 
   "local": true,
   
-  "urlLocal" : "jdbc:postgresql://localhost:5432/postgres",
+  "urlLocal" : "jdbc:postgresql://localhost:5432/test3",
   "userNameLocal" : "postgres",
   "passwordLocal" : "8119",
   
@@ -11,7 +11,7 @@
   "passwordRemote" : "3449692b73c15abc8af3746d92eb5f75d0601cb147cfdc658894e0ff77aeffbb",
 
   "ddlAuto" : "create",
-  "showSql" : "true",
+  "showSql" : "false",
   "dialect" : "org.hibernate.dialect.PostgreSQLDialect",
   "formatSql" : "true",
   "admin" : {

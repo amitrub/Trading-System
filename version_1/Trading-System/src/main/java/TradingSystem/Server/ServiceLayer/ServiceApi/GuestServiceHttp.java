@@ -65,6 +65,14 @@ public class GuestServiceHttp {
         return res;
     }
 
+//    @GetMapping("deleteAll")
+//    public Response Delete(){
+//        Response res = this.tradingSystem.Exit();
+//        tradingSystem.printUsers();
+//        WriteToLogger(res);
+//        return res;
+//    }
+
     /**
      * @requirement 2.3
      *

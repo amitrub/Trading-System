@@ -31,6 +31,8 @@ public class ShoppingHistoryService {
     ShoppingCartRepository shoppingCartRepository;
     @Autowired
     ShoppingBagProductRepository shoppingBagProductRepository;
+    @Autowired
+    DataProductHistoryRepostiory dataProductHistoryRepostiory;
 
     @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public Response addHistoryToStoreAndUser(ShoppingHistory shoppingHistory){
@@ -64,6 +66,7 @@ public class ShoppingHistoryService {
 
     @Transactional(rollbackFor = { Exception.class }, timeout = 10)
     public void deleteAll(){
+        dataProductHistoryRepostiory.deleteAll();
         shoppingHistoryRepository.deleteAll();
     }
 
