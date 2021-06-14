@@ -1,6 +1,6 @@
 {
 
-  "local": true,
+  "local": false,
   
   "urlLocal" : "jdbc:postgresql://localhost:5432/postgres",
   "userNameLocal" : "postgres",
@@ -19,7 +19,7 @@
     "password": "qweasd"
   },
 
-  "externalState": true,
+  "externalState": false,
 
   "externalServices": false,
 
