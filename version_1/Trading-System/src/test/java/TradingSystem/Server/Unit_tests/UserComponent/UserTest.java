@@ -8,12 +8,16 @@ import TradingSystem.Server.DomainLayer.TradingSystemComponent.TradingSystemImpl
 import TradingSystem.Server.DomainLayer.UserComponent.User;
 import TradingSystem.Server.ServiceLayer.DummyObject.DummyShoppingHistory;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import TradingSystem.Server.TradingSystemApplication;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.Assertions;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.ArrayList;
@@ -27,7 +31,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 @RunWith(SpringRunner.class)
-@SpringBootTest
+@SpringBootTest(args = {"src/main/resources/initialization_System.json","src/main/resources/External_State.json"})
 public class UserTest {
 
     @Autowired
@@ -68,6 +72,7 @@ public class UserTest {
         Estore = tradingSystem.stores.get(ElinorStore);
     }
 
+    @After
     public void tearDown(){
         tradingSystem.ClearSystem();
     }
@@ -301,5 +306,5 @@ public class UserTest {
 
     }
 
-
+    //endregion
 }
