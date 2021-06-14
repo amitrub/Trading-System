@@ -2,7 +2,7 @@
 
   "local": true,
   
-  "urlLocal" : "jdbc:postgresql://localhost:5432/test3",
+  "urlLocal" : "jdbc:postgresql://localhost:5432/postgres",
   "userNameLocal" : "postgres",
   "passwordLocal" : "8119",
   

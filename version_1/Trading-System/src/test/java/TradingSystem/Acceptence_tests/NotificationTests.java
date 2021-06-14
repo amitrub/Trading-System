@@ -4,6 +4,7 @@ import TradingSystem.Client.Client;
 import TradingSystem.Client.Client_Driver;
 import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -34,6 +35,11 @@ public class NotificationTests {
         client.Logout();
 
         userId2 = client.Register("Hadas", "123");
+    }
+
+    @AfterEach
+    void tearDown() {
+        client.clearSystem();
     }
 
     @Test
@@ -72,22 +78,22 @@ public class NotificationTests {
         }
     }
 
-    @Test
-    void WriteCommentAlert() {
-        client.Login("Hadas", "123");
-        client.addProductToCart(storeID, productID, 2);
-        client.subscriberPurchase("123","2","2022","123","123456","Rager 101","Beer Sheva","Israel","123");
-        client.writeComment(storeID, productID, 3.0, "Nice");
-        client.Logout();
-
-        //check that elinor has a messages;
-        Response response = client.Login("Elinor", "123");
-        try {
-            List<String> notConnectedMessages = (List<String>) response.getReturnObject().get("messages");
-            assertEquals(notConnectedMessages.size(), 2);
-        }
-        catch (Exception e){
-            System.out.println("Problem!");
-        }
-    }
+//    @Test
+//    void WriteCommentAlert() {
+//        client.Login("Hadas", "123");
+//        client.addProductToCart(storeID, productID, 2);
+//        client.subscriberPurchase("123","2","2022","123","123456","Rager 101","Beer Sheva","Israel","123");
+//        client.writeComment(storeID, productID, 3.0, "Nice");
+//        client.Logout();
+//
+//        //check that elinor has a messages;
+//        Response response = client.Login("Elinor", "123");
+//        try {
+//            List<String> notConnectedMessages = (List<String>) response.getReturnObject().get("messages");
+//            assertEquals(notConnectedMessages.size(), 2);
+//        }
+//        catch (Exception e){
+//            System.out.println("Problem!");
+//        }
+//    }
 }
