@@ -45,7 +45,7 @@ public class ManagerTests {
         client.clearSystem();
     }
 
-
+/*
     @Test
     void PermissionsHappy() {
         //prepare
@@ -78,7 +78,7 @@ public class ManagerTests {
         List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
         assertEquals(storeProducts1.size(), 0);
     }
-
+*/
     //endregion
 
 

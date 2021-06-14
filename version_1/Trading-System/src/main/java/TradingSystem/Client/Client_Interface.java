@@ -1,10 +1,8 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.Response;
-import org.springframework.web.bind.annotation.RequestHeader;
 
 import java.util.List;
 
@@ -185,10 +183,9 @@ public interface Client_Interface {
     /**
      * @requirement 4.2.1
      * @param storeID
-     * @param storeID
      * @return Response
      */
-    public Response addBuyingPolicy(int storeID, Expression exp);
+    public Response addBuyingPolicy(int storeID);
 
     /**
      * @requirement 4.2.2

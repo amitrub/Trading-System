@@ -1,6 +1,5 @@
 package TradingSystem.Client;
 
-import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Expressions.Expression;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.Sales.Sale;
 import TradingSystem.Server.DomainLayer.UserComponent.PermissionEnum;
 import TradingSystem.Server.ServiceLayer.DummyObject.*;
@@ -203,8 +202,6 @@ public class Client implements Client_Interface {
         Response response = Response.makeResponseFromJSON(jsonArray);
         //List<DummyProduct> dummyProductResponeArr = response.returnProductList();
         System.out.println(ANSI_YELLOW + "(Search) response: " + response.returnProductList() + ANSI_RESET);
-//        this.userID = response.getUserID();
-//        this.connID = response.getConnID();
         //return dummyProductResponeArr;
         return response;
     }
@@ -491,19 +488,11 @@ public class Client implements Client_Interface {
     /**
      * @requirement 4.2.1
      * @param storeID
-     * @param storeID
      * @return Response
      */
-    public Response addBuyingPolicy(int storeID, Expression exp){
+    public Response addBuyingPolicy(int storeID){
         String path = String.format("%s/store/%s/add_buying_policy", this.userID, storeID);
-        JSONObject jsonPost = new JSONObject();
-        try{
-            jsonPost.put("Expression", exp);
-        }
-        catch (Exception e) {
-            System.out.println(errMsgGenerator("Client", "Client", "216", "Error: editProduct, making post json"));
-        }
-        JSONObject jsonResponse = HttpRequest.sendPOSTGETRequest(urlbaseOwner + path,jsonPost.toString(), this.connID);
+        JSONObject jsonResponse = HttpRequest.sendGetRequest(urlbaseOwner + path, this.connID);
         Response response = Response.makeResponseFromJSON(jsonResponse);
         System.out.println(ANSI_YELLOW + "(addBuyingPolicy) response: " + response + ANSI_RESET);
         return response;
