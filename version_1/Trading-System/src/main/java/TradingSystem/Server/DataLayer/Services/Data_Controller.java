@@ -243,7 +243,8 @@ public class Data_Controller {
     //ADD pair Owner_permissions to get list of the permissions
     public Response getOwnerPermissions(int userID, int storeID){
         try {
-            return permissionsService.getOwnerPermissions(userID, storeID);
+         //   return permissionsService.getOwnerPermissions(userID, storeID);
+            return new Response();
         }
         catch (Exception e){
             return new Response(true, "Error In DB!");
@@ -286,7 +287,7 @@ public class Data_Controller {
 
     public Response EditManagerPermissions(int storeID, int managerID, List<PermissionEnum.Permission> permissions) {
         try {
-            permissionsService.EditManagerPermissions(storeID, managerID, permissions);
+         //   permissionsService.EditManagerPermissions(storeID, managerID, permissions);
             return new Response("");
         }
         catch (Exception e){
@@ -296,7 +297,7 @@ public class Data_Controller {
 
     public Response RemoveOwner(int storeID, int ownerID){
         try {
-            permissionsService.RemoveOwner(storeID, ownerID);
+        //    permissionsService.RemoveOwner(storeID, ownerID);
             return new Response(false, "");
         }
         catch (Exception e){
@@ -306,7 +307,7 @@ public class Data_Controller {
 
     public Response RemoveManager(int storeID, int managerID){
         try {
-            permissionsService.RemoveManager(storeID, managerID);
+      //      permissionsService.RemoveManager(storeID, managerID);
             return new Response(false, "");
         }
         catch (Exception e){

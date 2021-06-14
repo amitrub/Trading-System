@@ -199,7 +199,7 @@ public class TradingSystemImpl implements TradingSystem {
         this.subscribers.put(userID, defaultAdmin);
         this.systemManagerPermissions.put(userID,new SystemManagerPermission());
         printUsers();
-        data_controller.deleteAll();
+     //   data_controller.deleteAll();
     }
 
 
