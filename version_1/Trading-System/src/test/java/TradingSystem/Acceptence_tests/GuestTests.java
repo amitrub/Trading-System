@@ -355,6 +355,7 @@ public class GuestTests {
 
     //endregion
     //region Purchase tests requirement 2.9
+    /*
     @Test
     void Purchase_Happy() {
         // Prepare
@@ -393,6 +394,8 @@ public class GuestTests {
         assertEquals(cartAfter.size(), 0); //check cart is empty after purchase
         assertEquals(product4.getQuantity(), preQuantity-1); //check decrease quantity in store
     }
+
+     */
     @Test
     void Purchase_SadWrongPayingDetails() {
         // Prepare
