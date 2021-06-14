@@ -250,8 +250,6 @@ public class StoreOwnerServiceHttp {
      * @param userID: int (Path)
      * @param storeID: int (Path)
      * @param connID: String (Header)
-     * @param obj:{
-     *  TODO: Think what values should be in Buying Policy
      * }
      * @return Response{
      *  "isErr: boolean

@@ -1,8 +1,6 @@
 package TradingSystem.Acceptence_tests;
 
 import TradingSystem.Client.Client;
-import TradingSystem.Client.Client_Driver;
-import TradingSystem.Client.Client_Interface;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForProduct;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.LimitExp.QuantityLimitForStore;
 import TradingSystem.Server.DomainLayer.StoreComponent.Policies.SaleExp.PriceForGetSale;
@@ -23,36 +21,15 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class PoliciesTests {
 
+
     //Client_Interface client = Client_Driver.getClient();
 
-    Client client;
+    Client client= new Client();
     Integer storeID;
 
-    //region other functions
-    Integer getStoreID(List<DummyStore> stores, String storeName)
-    {
-        for (int i=0; i<stores.size(); i++)
-        {
-            if(stores.get(i).getName().equals(storeName))
-                return stores.get(i).getId();
-        }
-        return -1;
-    }
-
-    Integer getProductID(List<DummyProduct> storeProducts, String productName)
-    {
-        for (int i=0; i<storeProducts.size(); i++)
-        {
-            if(storeProducts.get(i).getProductName().equals(productName))
-                return storeProducts.get(i).getProductID();
-        }
-        return -1;
-    }
-    //endregion
 
     @BeforeEach
     void setUp() {
-        client = new Client();
         client.clearSystem();
         client.connectSystem();
         client.Register("elinor", "123");
@@ -68,12 +45,11 @@ public class PoliciesTests {
         client.exitSystem();
         client.clearSystem();
     }
-
+/*
     //region requirement 4.2.1: Add Discount Policy
     @Test
     void Happy_AddDiscountPolicy() {
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
 
         PriceForGetSale exp1 = new PriceForGetSale( 100);
         PriceForGetSale exp2 = new PriceForGetSale( 200);
@@ -90,7 +66,7 @@ public class PoliciesTests {
     void Sad_AddDiscountPolicy1() {
         //illegal productID
         List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
         QuantityForGetSale quantityExp = new QuantityForGetSale(productID2+1,2);
         ProductSale sale = new ProductSale(quantityExp, productID2+1, 20);
         Response res = client.addDiscountPolicy(storeID, sale);
@@ -100,8 +76,7 @@ public class PoliciesTests {
     @Test
     void Sad_AddDiscountPolicy2() {
         //illegal discount percentage
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
         QuantityForGetSale quantityExp = new QuantityForGetSale(productID2,2);
         ProductSale sale = new ProductSale(quantityExp, productID2, 200);
         Response res = client.addDiscountPolicy(storeID, sale);
@@ -111,8 +86,7 @@ public class PoliciesTests {
     @Test
     void Sad_AddDiscountPolicy3() {
         //no permission to add policy
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
         QuantityForGetSale quantityExp = new QuantityForGetSale(productID2,2);
         ProductSale sale = new ProductSale(quantityExp, productID2, 50);
         client.Logout();
@@ -128,41 +102,38 @@ public class PoliciesTests {
     @Test
     void Happy_AddBuyingPolicy() {
         QuantityLimitForStore quantityExp = new QuantityLimitForStore(2, storeID);
-        Response res = client.addBuyingPolicy(storeID, quantityExp);
+        Response res = client.addBuyingPolicy(storeID);
         assertFalse(res.getIsErr());
     }
 
     @Test
     void Sad_AddBuyingPolicy1() {
         //illegal productID
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
         QuantityLimitForProduct quantity = new QuantityLimitForProduct(2, productID2+1);
-        Response res = client.addBuyingPolicy(storeID, quantity);
+        Response res = client.addBuyingPolicy(storeID);
         assertTrue(res.getIsErr());
     }
 
     @Test
     void Sad_AddBuyingPolicy2() {
         //illegal discount percentage
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
         QuantityLimitForProduct quantity = new QuantityLimitForProduct(-5, productID2);
-        Response res = client.addBuyingPolicy(storeID, quantity);
+        Response res = client.addBuyingPolicy(storeID);
         assertTrue(res.getIsErr());
     }
 
     @Test
     void Sad_AddBuyingPolicy3() {
         //no permission to add policy
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
         QuantityLimitForProduct quantity = new QuantityLimitForProduct(5, productID2);
         client.Logout();
 
         client.Register("reut", "123");
         client.Login("reut", "123");
-        Response res = client.addBuyingPolicy(storeID, quantity);
+        Response res = client.addBuyingPolicy(storeID);
         assertTrue(res.getIsErr());
     }
     //endregion
@@ -204,7 +175,7 @@ public class PoliciesTests {
     @Test
     void Happy_RemoveBuyingPolicy() {
         QuantityLimitForStore quantityExp = new QuantityLimitForStore(2, storeID);
-        client.addBuyingPolicy(storeID, quantityExp);
+        client.addBuyingPolicy(storeID);
 
         Response res = client.removeBuyingPolicy(storeID);
         assertFalse(res.getIsErr());
@@ -221,7 +192,7 @@ public class PoliciesTests {
     void Sad_RemoveBuyingPolicy2() {
         //no permission to remove policy
         QuantityLimitForStore quantityExp = new QuantityLimitForStore(2, storeID);
-        client.addBuyingPolicy(storeID, quantityExp);
+        client.addBuyingPolicy(storeID);
         client.Logout();
 
         client.Register("reut", "123");
@@ -234,13 +205,12 @@ public class PoliciesTests {
     //region requirement 4.2.5: Get Information of Policies
     @Test
     void Happy_GetInfo() {
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
         QuantityForGetSale quantityExp1 = new QuantityForGetSale(productID2,2);
         ProductSale sale = new ProductSale(quantityExp1, productID2, 50);
         client.addDiscountPolicy(storeID, sale);
         QuantityLimitForStore quantityExp2 = new QuantityLimitForStore(5, storeID);
-        client.addBuyingPolicy(storeID, quantityExp2);
+        client.addBuyingPolicy(storeID);
 
         Response res = client.getPoliciesInfo(storeID);
         assertFalse(res.getIsErr());
@@ -248,8 +218,7 @@ public class PoliciesTests {
 
     @Test
     void Sad_NoPermissionToInfo() {
-        List<DummyProduct> storeProducts1 = client.showStoreProducts(storeID).returnProductList();
-        Integer productID2 = getProductID(storeProducts1,"White T-Shirt");
+        Integer productID2 = client.getProductIDByName("White T-Shirt",storeID).returnProductID();
         QuantityForGetSale quantityExp = new QuantityForGetSale(productID2,2);
         ProductSale sale = new ProductSale(quantityExp, productID2, 50);
         client.addDiscountPolicy(storeID, sale);
@@ -268,5 +237,7 @@ public class PoliciesTests {
     }
 
     //endregion
+
+ */
 
 }
